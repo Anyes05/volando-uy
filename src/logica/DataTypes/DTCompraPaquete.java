@@ -14,7 +14,4 @@ public class DTCompraPaquete extends DTReserva{
     }
 
     //Setters
-    public void setVencimiento(DTFecha vencimiento) {
-        this.vencimiento = vencimiento;
-    }
 }

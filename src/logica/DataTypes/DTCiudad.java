@@ -18,11 +18,5 @@ public class DTCiudad {
     }
 
     //Setters
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
 
 }

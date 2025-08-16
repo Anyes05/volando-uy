@@ -20,12 +20,5 @@ public class DTAerolinea  extends DTUsuario{
     }
 
     // Setters
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public void setLinkSitioWeb(String linkSitioWeb) {
-        this.linkSitioWeb = linkSitioWeb;
-    }
 
 }

@@ -21,12 +21,4 @@ public class DTReserva {
 
     // Setters
 
-    public void setFechaReserva(DTFecha fechaReserva) {
-        this.fechaReserva = fechaReserva;
-    }
-
-    public void setCostoReserva(float costoReserva) {
-        this.costoReserva = costoReserva;
-    }
-
 }

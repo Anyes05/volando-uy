@@ -25,13 +25,4 @@ public class DTPasajes {
     }
 
     //Setters
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-    public void setCantidadEquipajeExtra(int cantidadEquipajeExtra) {
-        this.cantidadEquipajeExtra = cantidadEquipajeExtra;
-    }
 }

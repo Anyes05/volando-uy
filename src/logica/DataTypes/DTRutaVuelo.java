@@ -56,36 +56,4 @@ public class DTRutaVuelo {
     }
 
     //Setters
-    public void setHoraVuelo(DTHora horaVuelo) {
-        this.horaVuelo = horaVuelo;
     }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-    public void setFechaAlta(DTFecha fechaAlta) {
-        this.fechaAlta = fechaAlta;
-    }
-    public void setCostoBase(CostoBase costoBase) {
-        this.costoBase = costoBase;
-    }
-    public void setCostoEquipajeExtra(int costoEquipajeExtra) {
-        this.costoEquipajeExtra = costoEquipajeExtra;
-    }
-    public void setAerolinea(DTAerolinea aerolinea) {
-        this.aerolinea = aerolinea;
-    }
-    public void setCategoria(DTCategoria categoria) {
-        this.categoria = categoria;
-    }
-
-    public void setCiudadOrigen(DTCiudad ciudadOrigen) {
-        this.ciudadOrigen = ciudadOrigen;
-    }
-
-    public void setCiudadDestino(DTCiudad ciudadDestino) {
-        this.ciudadDestino = ciudadDestino;
-    }
-}

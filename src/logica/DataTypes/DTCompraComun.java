@@ -16,7 +16,4 @@ public class DTCompraComun extends DTReserva {
 
     // Setters
 
-    public void setTipoAsiento(TipoAsiento tipoAsiento){
-        this.tipoAsiento = tipoAsiento;
-    }
 }

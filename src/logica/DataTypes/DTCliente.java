@@ -40,24 +40,4 @@ public class DTCliente extends DTUsuario{
     }
     // Setters
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public void setNumeroDocumento(String numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-    }
-
-    public void setNacionalidad(String nacionalidad) {
-        this.nacionalidad = nacionalidad;
-    }
-
-    public void setFechaNacimiento(DTFecha fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public void setTipoDocumento(TipoDoc tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
-    }
-
 }

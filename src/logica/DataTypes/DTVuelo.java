@@ -38,23 +38,6 @@ public class DTVuelo {
     }
 
     //Setters
-    public void setDuracion(DTHora duracion) {
-        this.duracion = duracion;
-    }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    public void setFechaVuelo(DTFecha fechaVuelo) {
-        this.fechaVuelo = fechaVuelo;
-    }
-    public void setAsientosMaxEjecutivo(int asientosMaxEjecutivo) {
-        this.asientosMaxEjecutivo = asientosMaxEjecutivo;
-    }
-    public void setAsientosMaxTurista(int asientosMaxTurista) {
-        this.asientosMaxTurista = asientosMaxTurista;
-    }
-    public void setFechaAlta(DTFecha fechaAlta) {
-        this.fechaAlta = fechaAlta;
-    }
+
 
 }

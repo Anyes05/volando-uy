@@ -27,16 +27,5 @@ public class DTFecha {
 
     //Setters
 
-    public void setDia(int dia) {
-        this.dia = dia;
-    }
-
-    public void setMes(int mes) {
-        this.mes = mes;
-    }
-
-    public void setAno(int ano) {
-        this.ano = ano;
-    }
 
 }

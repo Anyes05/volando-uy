@@ -9,6 +9,7 @@ public class DTHora {
         this.minutos = minutos;
     }
 
+    //Getters
     public int getHora() {
         return hora;
     }
@@ -17,11 +18,5 @@ public class DTHora {
         return minutos;
     }
 
-    public void setHora(int hora) {
-        this.hora = hora;
-    }
 
-    public void setMinutos(int minutos) {
-        this.minutos = minutos;
-    }
 }

@@ -38,23 +38,5 @@ public class DTPaqueteVuelos {
     }
 
     // Setters
-    public void setTipoAsiento(TipoAsiento tipoAsiento) {
-        this.tipoAsiento = tipoAsiento;
-    }
-    public void setDiasValidos(int diasValidos) {
-        this.diasValidos = diasValidos;
-    }
-    public void setDescuento(float descuento) {
-        this.descuento = descuento;
-    }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-    public void setCostoTotal(float costoTotal) {
-        this.costoTotal = costoTotal;
-    }
 
 }

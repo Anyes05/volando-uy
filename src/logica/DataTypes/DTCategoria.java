@@ -1,8 +1,14 @@
 package logica.DataTypes;
 
-public enum DTCategoria {
-    Montanias,
-    Nieve,
-    Desierto,
-    Selva
+public class DTCategoria {
+    private String nombre;
+
+    public DTCategoria(String nombre){
+        this.nombre=nombre;
+    }
+
+    //Getters
+    public String getNombre() {
+        return nombre;
+    }
 }
