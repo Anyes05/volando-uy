@@ -1,4 +1,4 @@
-package DataTypes;
+package logica.DataTypes;
 
 public enum CostoBase {
     costoTurista,

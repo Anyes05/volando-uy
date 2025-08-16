@@ -1,4 +1,4 @@
-package DataTypes;
+package logica.DataTypes;
 
 public class DTAerolinea  extends DTUsuario{
     private String descripcion;
