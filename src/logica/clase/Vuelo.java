@@ -1,4 +1,4 @@
 package logica.clase;
 
-public class ciudad {
+public class Vuelo {
 }

@@ -1,31 +1,27 @@
 package logica.clase;
 
 import logica.DataTypes.CostoBase;
-import logica.DataTypes.DTCategoria;
-import logica.DataTypes.DTAerolinea;
-import logica.DataTypes.DTVuelo;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class rutaVuelo {
+public class RutaVuelo {
     private String nombre;
     private String descripcion;
     private CostoBase costoBase;
     private float costoEquipajeExtra;
 
     // Relaciones de muchos
-    private List<DTCategoria> categorias;   // 1..*
-    private List<DTVuelo> vuelos;           // 1..*
-    private List<DTAerolinea> aerolineas;
+    private List<Categoria> categorias;   // 1..*
+    private List<Vuelo> vuelos;           // 1..*
+    private List<Aerolinea> aerolineas;
 
     //Relaciones de uno
-    private ciudad ciudadOrigen;
-    private ciudad ciudadDestino;
+    private Ciudad ciudadOrigen;
+    private Ciudad ciudadDestino;
 
     //CONSTRUCTOR
-    public rutaVuelo(String nombre, String descripcion, CostoBase costoBase, float costoEquipajeExtra) {
+    public RutaVuelo(String nombre, String descripcion, CostoBase costoBase, float costoEquipajeExtra) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costoBase = costoBase;
@@ -34,6 +30,9 @@ public class rutaVuelo {
         this.categorias = new ArrayList<>();
         this.vuelos = new ArrayList<>();
         this.aerolineas = new ArrayList<>();
+
+        this.ciudadDestino= null;
+        this.ciudadOrigen= null;
     }
 
     //GET Y SET
@@ -69,43 +68,43 @@ public class rutaVuelo {
         this.costoEquipajeExtra = costoEquipajeExtra;
     }
 
-    public List<DTCategoria> getCategorias() {
+    public List<Categoria> getCategorias() {
         return categorias;
     }
 
-    public void setCategorias(List<DTCategoria> categorias) {
+    public void setCategorias(List<Categoria> categorias) {
         this.categorias = categorias;
     }
 
-    public ciudad getCiudadDestino() {
+    public Ciudad getCiudadDestino() {
         return ciudadDestino;
     }
 
-    public void setCiudadDestino(ciudad ciudadDestino) {
+    public void setCiudadDestino(Ciudad ciudadDestino) {
         this.ciudadDestino = ciudadDestino;
     }
 
-    public List<DTVuelo> getVuelos() {
+    public List<Vuelo> getVuelos() {
         return vuelos;
     }
 
-    public void setVuelos(List<DTVuelo> vuelos) {
+    public void setVuelos(List<Vuelo> vuelos) {
         this.vuelos = vuelos;
     }
 
-    public List<DTAerolinea> getAerolineas() {
+    public List<Aerolinea> getAerolineas() {
         return aerolineas;
     }
 
-    public void setAerolineas(List<DTAerolinea> aerolineas) {
+    public void setAerolineas(List<Aerolinea> aerolineas) {
         this.aerolineas = aerolineas;
     }
 
-    public ciudad getCiudadOrigen() {
+    public Ciudad getCiudadOrigen() {
         return ciudadOrigen;
     }
 
-    public void setCiudadOrigen(ciudad ciudadOrigen) {
+    public void setCiudadOrigen(Ciudad ciudadOrigen) {
         this.ciudadOrigen = ciudadOrigen;
     }
 }
