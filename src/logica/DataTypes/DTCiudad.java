@@ -1,4 +1,4 @@
-package DataTypes;
+package logica.DataTypes;
 
 public class DTCiudad {
     private String nombre;
