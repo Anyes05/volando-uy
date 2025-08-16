@@ -23,6 +23,7 @@ public class PaqueteVuelo {
         this.descuento = descuento;
         this.costoBase = costoBase;
         this.costoTotal = costoTotal;
+        this.cantidad = null;
     }
 
     // Getter y Setter

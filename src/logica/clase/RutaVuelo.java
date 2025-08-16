@@ -30,6 +30,9 @@ public class RutaVuelo {
         this.categorias = new ArrayList<>();
         this.vuelos = new ArrayList<>();
         this.aerolineas = new ArrayList<>();
+
+        this.ciudadDestino= null;
+        this.ciudadOrigen= null;
     }
 
     //GET Y SET
