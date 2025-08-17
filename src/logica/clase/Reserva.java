@@ -6,7 +6,7 @@ import logica.DataTypes.DTFecha;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Reserva {
+public abstract class Reserva {
     //Atributos
     private DTCliente cliente;
     private DTFecha fechaReserva;
@@ -57,4 +57,7 @@ public class Reserva {
     public void setPasajeros(List<DTCliente> pasajeros) {
         this.pasajeros = pasajeros;
     }
+
+    public abstract int calcularCosto();
+
 }

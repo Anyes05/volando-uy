@@ -22,4 +22,12 @@ public class CompraComun extends Reserva{
     public void setTipoAsiento(TipoAsiento tipoAsiento) {
         this.tipoAsiento = tipoAsiento;
     }
+
+    @Override
+    public int calcularCosto() {
+        return 0;
+    }
+
+
+
 }

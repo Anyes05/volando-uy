@@ -19,5 +19,10 @@ public class CompraPaquete extends Reserva {
     public void setVencimiento(DTFecha vencimiento) {
         this.vencimiento = vencimiento;
     }
+
+    @Override
+    public int calcularCosto() {
+        return 0;
+    }
 }
 
