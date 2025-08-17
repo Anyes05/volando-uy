@@ -13,7 +13,7 @@ public interface IEstacionTrabajo {
     public List<DTCliente> mostrarClientes();
     public void seleccionarCliente(String nombreCliente);
     public void relizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimineto);
-    public void altaCliente(String nickname, String nombre, String apellido,String correo, DTFecha fechaNac, String nacionalidad,tipoDoc tipoDocumento,String numeroDocumento);
+    public void altaCliente(String nickname, String nombre, String apellido,String correo, DTFecha fechaNac, String nacionalidad,TipoDoc tipoDocumento,String numeroDocumento);
     public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb);
     public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
     public List<DTAerolinea> listarAerolineas();

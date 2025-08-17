@@ -5,6 +5,6 @@ import logica.clase.EstacionTrabajo;
 
 public class Factory {
     public IEstacionTrabajo getEstacionTrabajo(){
-        return EstacionTrabajo.Instance;
+        return EstacionTrabajo.getInstance();
     }
 }

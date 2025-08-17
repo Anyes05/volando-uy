@@ -5,9 +5,9 @@ import logica.DataTypes.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EstacionTrabajo extends IEstacionTrabajo{
+public class EstacionTrabajo implements IEstacionTrabajo{
 
-    static EstacionTrabajo Instance = null;
+    private static EstacionTrabajo Instance = null;
     private List<PaqueteVuelo> paqueteVuelos;
     private List<Usuario> usuarios;
     private List<Ciudad> ciudades;
@@ -21,6 +21,7 @@ public class EstacionTrabajo extends IEstacionTrabajo{
         if(Instance == null){
             Instance = new EstacionTrabajo();
         }
+        return Instance;
     }
     public List<DTUsuario> consultarUsuarios(){
         return null;
@@ -42,7 +43,7 @@ public class EstacionTrabajo extends IEstacionTrabajo{
     public void relizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimineto){
 
     }
-    public void altaCliente(String nickname, String nombre, String apellido,String correo, DTFecha fechaNac, String nacionalidad,tipoDoc tipoDocumento,String numeroDocumento){
+    public void altaCliente(String nickname, String nombre, String apellido,String correo, DTFecha fechaNac, String nacionalidad,TipoDoc tipoDocumento,String numeroDocumento){
 
     }
     public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb){
@@ -61,7 +62,7 @@ public class EstacionTrabajo extends IEstacionTrabajo{
         return null;
     }
     public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
-
+        return null;
     }
     public List<DTVueloReserva> seleccionarVuelo(String nombre){
         return null;
@@ -73,7 +74,7 @@ public class EstacionTrabajo extends IEstacionTrabajo{
         return null;
     }
     public DTRutaVuelo registrarRuta(){
-return null
+return null;
     }
     public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre){
         return null;
