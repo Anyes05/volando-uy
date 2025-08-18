@@ -1,10 +1,15 @@
 package logica.clase;
+import logica.DataTypes.DTRutaVuelo;
 import logica.DataTypes.DTUsuario;
+
+import java.util.Calendar;
+import java.util.List;
 
 public class Aerolinea extends Usuario {
     // Atributos
     private String descripcion;
     private String linkSitioWeb;
+    private List<RutaVuelo> rutasVuelo;
 
     public Aerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb) {
         super(nickname, nombre, correo);
@@ -28,5 +33,9 @@ public class Aerolinea extends Usuario {
 
     public void setLinkSitioWeb(String linkSitioWeb) {
         this.linkSitioWeb = linkSitioWeb;
+    }
+
+    public List<RutaVuelo> getRutasVuelo() {
+        return rutasVuelo;
     }
 }

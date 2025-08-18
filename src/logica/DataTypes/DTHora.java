@@ -14,7 +14,7 @@ public class DTHora {
         return hora;
     }
 
-    public int getMinutos(int minutos) {
+    public int getMinutos() {
         return minutos;
     }
 

@@ -1,6 +1,8 @@
 package logica.clase;
 
 import logica.DataTypes.CostoBase;
+import logica.DataTypes.DTFecha;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ public class RutaVuelo {
     private String nombre;
     private String descripcion;
     private CostoBase costoBase;
-    private float costoEquipajeExtra;
+    private DTFecha fechaAlta;
 
     // Relaciones de muchos
     private List<Categoria> categorias;   // 1..*
@@ -21,18 +23,17 @@ public class RutaVuelo {
     private Ciudad ciudadDestino;
 
     //CONSTRUCTOR
-    public RutaVuelo(String nombre, String descripcion, CostoBase costoBase, float costoEquipajeExtra) {
+    public RutaVuelo(String nombre, String descripcion, CostoBase costoBase) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costoBase = costoBase;
-        this.costoEquipajeExtra = costoEquipajeExtra;
 
         this.categorias = new ArrayList<>();
         this.vuelos = new ArrayList<>();
         this.aerolineas = new ArrayList<>();
 
-        this.ciudadDestino= null;
-        this.ciudadOrigen= null;
+        this.ciudadDestino = null;
+        this.ciudadOrigen = null;
     }
 
     //GET Y SET
@@ -58,14 +59,6 @@ public class RutaVuelo {
 
     public void setCostoBase(CostoBase costoBase) {
         this.costoBase = costoBase;
-    }
-
-    public float getCostoEquipajeExtra() {
-        return costoEquipajeExtra;
-    }
-
-    public void setCostoEquipajeExtra(float costoEquipajeExtra) {
-        this.costoEquipajeExtra = costoEquipajeExtra;
     }
 
     public List<Categoria> getCategorias() {
@@ -107,4 +100,13 @@ public class RutaVuelo {
     public void setCiudadOrigen(Ciudad ciudadOrigen) {
         this.ciudadOrigen = ciudadOrigen;
     }
+
+    public DTFecha getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public void setFechaAlta(DTFecha fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
 }
+
