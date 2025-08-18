@@ -285,7 +285,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
 
 
 
-    public void altaVuelo() {
+    public void darAltaVuelo() {
         if (recordarDatosVuelo == null) {
             throw new IllegalStateException("Debe ingresar los datos del vuelo antes de registrarlo.");
         }
@@ -336,9 +336,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
     public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre){
         return null;
     }
-    public void darAltaVuelo(){
 
-    }
     public void seleccionarCliente(){
 
     }
