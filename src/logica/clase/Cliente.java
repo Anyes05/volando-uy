@@ -15,7 +15,7 @@ public class Cliente extends Usuario{
 
     private List<Reserva> reservas;
 
-    public Cliente(String nickaname, String nombre, String apellido, String correo, DTFecha fechaNacimiento, String nacionalidad, TipoDoc tipoDoc, String numeroDocumento) {
+    public Cliente(String nickaname, String nombre, String correo, String apellido, DTFecha fechaNacimiento, String nacionalidad, TipoDoc tipoDoc, String numeroDocumento) {
         super(nickaname, nombre, correo);
 
         this.apellido = apellido;
@@ -26,5 +26,52 @@ public class Cliente extends Usuario{
         this.reservas = new ArrayList<>();
     }
 
+    // Getters y Setters
+    public String getApellido() {
+        return apellido;
+    }
 
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public DTFecha getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(DTFecha fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
+
+    public void setNacionalidad(String nacionalidad) {
+        this.nacionalidad = nacionalidad;
+    }
+
+    public TipoDoc getTipoDoc() {
+        return tipoDoc;
+    }
+
+    public void setTipoDoc(TipoDoc tipoDoc) {
+        this.tipoDoc = tipoDoc;
+    }
+
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
+
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
+    }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
+    }
 }
