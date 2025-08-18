@@ -1,7 +1,6 @@
 package logica.DataTypes;
 
 public class DTRutaVuelo {
-    private DTHora horaVuelo;
     private String nombre;
     private String descripcion;
     private DTFecha fechaAlta;
@@ -10,8 +9,7 @@ public class DTRutaVuelo {
     private DTCiudad ciudadOrigen;
     private DTCiudad ciudadDestino;
 
-    public DTRutaVuelo(DTHora horaVuelo, String nombre, String descripcion, DTFecha fechaAlta, CostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
-        this.horaVuelo = horaVuelo;
+    public DTRutaVuelo( String nombre, String descripcion, DTFecha fechaAlta, CostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaAlta = fechaAlta;
@@ -22,9 +20,7 @@ public class DTRutaVuelo {
     }
 
     // Getters
-    public DTHora getHoraVuelo() {
-        return horaVuelo;
-    }
+
     public String getNombre() {
         return nombre;
     }

@@ -4,17 +4,21 @@ public class DTVuelo {
     private DTHora duracion;
     private String nombre;
     private DTFecha fechaVuelo;
+    private DTHora horaVuelo;
     private int asientosMaxEjecutivo;
     private DTFecha fechaAlta;
     private int asientosMaxTurista;
+    private DTRutaVuelo ruta;
 
-    public DTVuelo(DTHora duracion, String nombre, DTFecha fechaVuelo, int asientosMaxEjecutivo, DTFecha fechaAlta, int asientosMaxTurista) {
+    public DTVuelo(DTHora duracion, String nombre, DTFecha fechaVuelo, DTHora horaVuelo, int asientosMaxEjecutivo, DTFecha fechaAlta, int asientosMaxTurista, DTRutaVuelo ruta) {
         this.duracion = duracion;
         this.nombre = nombre;
         this.fechaVuelo = fechaVuelo;
+        this.horaVuelo = horaVuelo;
         this.asientosMaxEjecutivo = asientosMaxEjecutivo;
         this.fechaAlta = fechaAlta;
         this.asientosMaxTurista = asientosMaxTurista;
+        this.ruta = ruta;
     }
 
     //Getters
@@ -27,6 +31,7 @@ public class DTVuelo {
     public DTFecha getFechaVuelo() {
         return fechaVuelo;
     }
+    public DTHora  getHoraVuelo() { return horaVuelo; }
     public int getAsientosMaxEjecutivo() {
         return asientosMaxEjecutivo;
     }
@@ -36,6 +41,7 @@ public class DTVuelo {
     public int getAsientosMaxTurista() {
         return asientosMaxTurista;
     }
+    public DTRutaVuelo getRuta() {return ruta; }
 
     //Setters
 

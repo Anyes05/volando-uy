@@ -14,14 +14,13 @@ public class Vuelo {
     private int asientosMaxTurista;
     private int asientosMaxEjecutivo;
     private DTFecha fechaAlta;
-    private CostoBase costoBase;
 
     // REFERENCIAS
     private List<RutaVuelo> rutaVuelo;
     private List<Reserva> reserva;
 
     // ----CONSTRUCTOR----
-    public Vuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta, CostoBase costoBase) {
+    public Vuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta) {
         this.nombre = nombre;
         this.fechaVuelo = fechaVuelo;
         this.horaVuelo = horaVuelo;
@@ -29,7 +28,6 @@ public class Vuelo {
         this.asientosMaxTurista = asientosMaxTurista;
         this.asientosMaxEjecutivo = asientosMaxEjecutivo;
         this.fechaAlta = fechaAlta;
-        this.costoBase = costoBase;
 
         this.rutaVuelo = new ArrayList<>();
         this.reserva = new ArrayList<>();
@@ -92,14 +90,6 @@ public class Vuelo {
 
     public void setFechaAlta(DTFecha fechaAlta) {
         this.fechaAlta = fechaAlta;
-    }
-
-    public CostoBase getCostoBase() {
-        return costoBase;
-    }
-
-    public void setCostoBase(CostoBase costoBase) {
-        this.costoBase = costoBase;
     }
 
     public List<RutaVuelo> getRutaVuelo() {

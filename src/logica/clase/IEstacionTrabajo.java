@@ -26,13 +26,16 @@ public interface IEstacionTrabajo {
     public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
     public List<DTAerolinea> listarAerolineas();
     public void seleccionarAerolinea(String nickname);
+    public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname);
     public List<DTRutaVuelo> listarRutaVuelo();
     public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
+    public DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
     public List<DTVueloReserva> seleccionarVuelo(String nombre);
     public DTRutaVuelo ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);
+    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta);
     public void registrarRuta();
     public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre);
-    public List<DTRutaVuelo> darAltaVuelo();
+    public void darAltaVuelo();
     public void seleccionarCliente();
     public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
     public void AltaReservaVuelo(int costo);
