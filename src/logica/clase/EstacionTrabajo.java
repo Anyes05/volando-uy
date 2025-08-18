@@ -248,7 +248,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
     }
 
     public DTRutaVuelo seleccionarRutaVueloRet(String nombre) {
-        //rutaseleccionada es r
+
 
         if (aerolineaSeleccionada == null) {
             throw new IllegalStateException("Debe seleccionar una aerolínea antes de seleccionar una ruta.");
@@ -307,7 +307,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
             throw new IllegalStateException("No se encontró la ruta real asociada al vuelo.");
         }
         Vuelo nuevoVuelo = new Vuelo(
-                recordarDatosVuelo.getNombre(),// si tu clase Vuelo acepta DTRutaVuelo o RutaVuelo
+                recordarDatosVuelo.getNombre(),
                 recordarDatosVuelo.getFechaVuelo(),
                 recordarDatosVuelo.getHoraVuelo(),
                 recordarDatosVuelo.getDuracion(),
@@ -319,7 +319,6 @@ public class EstacionTrabajo implements IEstacionTrabajo{
         vuelos.add(nuevoVuelo);
         nuevoVuelo.getRutaVuelo().add(ruta);
 
-        // Limpiar el recorder
         recordarDatosVuelo = null;
     }
 
