@@ -29,9 +29,8 @@ public interface IEstacionTrabajo {
     public List<DTRutaVuelo> listarRutaVuelo();
     public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
     public List<DTVueloReserva> seleccionarVuelo(String nombre);
-    public boolean validarNombre(String nombre);
     public DTRutaVuelo ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);
-    public DTRutaVuelo registrarRuta();
+    public void registrarRuta();
     public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre);
     public List<DTRutaVuelo> darAltaVuelo();
     public void seleccionarCliente();
