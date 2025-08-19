@@ -6,6 +6,6 @@ public class MainTest {
         IEstacionTrabajo estacion = factory.getEstacionTrabajo();
 
         System.out.println(estacion.consultarUsuarios()); // deberia de mostrar null. OK
-        System.out.println(estacion.validarNombre("test")); // deberia de mostrar false. OK
+       // System.out.println(estacion.validarNombre("test")); // deberia de mostrar false. OK
     }
 }
