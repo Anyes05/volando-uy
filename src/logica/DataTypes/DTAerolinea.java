@@ -1,13 +1,17 @@
 package logica.DataTypes;
 
+import java.util.List;
+
 public class DTAerolinea  extends DTUsuario{
     private String descripcion;
     private String linkSitioWeb;
+    private List<DTRutaVuelo> rutasVuelo;
 
-    public DTAerolinea(String nickname,String nombre, String correo ,String descripcion, String linksitioweb){
+    public DTAerolinea(String nickname,String nombre, String correo ,String descripcion, String linksitioweb, List <DTRutaVuelo> rutasVuelo) {
         super(nickname,nombre,correo);
         this.descripcion=descripcion;
         this.linkSitioWeb=linksitioweb;
+        this.rutasVuelo = rutasVuelo;
     }
 
     // Getters
@@ -18,6 +22,8 @@ public class DTAerolinea  extends DTUsuario{
     public String getLinkSitioWeb() {
         return this.linkSitioWeb;
     }
+
+    public List<DTRutaVuelo> getRutasVuelo() { return this.rutasVuelo;}
 
     // Setters
 

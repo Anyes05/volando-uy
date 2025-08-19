@@ -1,19 +1,24 @@
 package logica.DataTypes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DTCliente extends DTUsuario{
     private String apellido;
     private TipoDoc tipoDocumento;
     private String numeroDocumento;
     private DTFecha fechaNacimiento;
     private String nacionalidad;
+    private List<DTReserva> reserva;
 
-    public DTCliente(String nickname, String nombre, String correo, String apellido, TipoDoc tipoDocumento, String numeroDocumento, DTFecha fechaNacimiento, String nacionalidad){
+    public DTCliente(String nickname, String nombre, String correo, String apellido, TipoDoc tipoDocumento, String numeroDocumento, DTFecha fechaNacimiento, String nacionalidad, List<DTReserva> reserva){
         super(nickname, nombre, correo);
         this.apellido = apellido;
         this.tipoDocumento = tipoDocumento;
         this.numeroDocumento = numeroDocumento;
         this.fechaNacimiento = fechaNacimiento;
         this.nacionalidad = nacionalidad;
+        this.reserva = reserva;
     }
 
     // Getters
@@ -37,6 +42,9 @@ public class DTCliente extends DTUsuario{
 
     public DTCliente getCliente(){
         return this;
+    }
+    public List<DTReserva> getReserva() {
+        return this.reserva;
     }
     // Setters
 

@@ -12,7 +12,7 @@ public interface IEstacionTrabajo {
 
     // CONSULTA DATOS DE USUARIO
     public List<DTUsuario> consultarUsuarios();
-    public DTDatoUsuario mostrarDatosUsuario(String nickname);
+    public DTUsuario mostrarDatosUsuario(String nickname);
 
     // MODIFICAR DATOS DE USUARIO
 
