@@ -25,7 +25,11 @@ public class DTFecha {
         return mes;
     }
 
-    //Setters
+    // MÉTODOS
+    @Override
+    public String toString() {
+        return dia + "/" + mes + "/" + ano;
+    }
 
 
 }

@@ -25,6 +25,13 @@ public class DTAerolinea  extends DTUsuario{
 
     public List<DTRutaVuelo> getRutasVuelo() { return this.rutasVuelo;}
 
-    // Setters
+    // MÉTODOS
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", Descripción: " + descripcion +
+                ", Sitio Web: " + linkSitioWeb;
+    }
+
 
 }

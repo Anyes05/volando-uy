@@ -24,7 +24,12 @@ public class DTUsuario {
         return this.correo;
     }
 
-    // Setters
-
+    // MÉTODOS
+    @Override
+    public String toString() {
+        return "Nickname= " + nickname + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", correo='" + correo;
+    }
 
 }
