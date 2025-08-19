@@ -12,7 +12,6 @@ public class EstacionTrabajo implements IEstacionTrabajo{
     private List<Usuario> usuarios;
     private List<Ciudad> ciudades;
     private List<Vuelo> vuelos;
-    private List<RutaVuelo> rutasVuelos;
     private String recuerdaAerolinea; // Para recordar la aerolinea seleccionada
     private DTRutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
     private Aerolinea aerolineaSeleccionada;
@@ -24,6 +23,10 @@ public class EstacionTrabajo implements IEstacionTrabajo{
         paqueteVuelos = new ArrayList<>();
         usuarios = new ArrayList<>();
         ciudades = new ArrayList<>();
+        listaDTVuelos = new ArrayList<>();
+        vuelos = new ArrayList<>();
+
+
     }
     public static EstacionTrabajo getInstance(){
         if(Instance == null){
@@ -326,7 +329,6 @@ public class EstacionTrabajo implements IEstacionTrabajo{
 
     public DTRutaVuelo seleccionarRutaVueloRet(String nombre) {
 
-
         if (aerolineaSeleccionada == null) {
             throw new IllegalStateException("Debe seleccionar una aerolínea antes de seleccionar una ruta.");
         }
@@ -446,7 +448,6 @@ public class EstacionTrabajo implements IEstacionTrabajo{
                 }
             }
         }
-
         return listaReservas;
     }
 
