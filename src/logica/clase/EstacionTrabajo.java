@@ -14,7 +14,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
     private List<Vuelo> vuelos;
     private List<RutaVuelo> rutasVuelos;
     private String recuerdaAerolinea; // Para recordar la aerolinea seleccionada
-    private DTRutaVuelo recorderRutaVuelo; // Para recordar la ruta de vuelo seleccionada
+    private DTRutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
     private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
 
@@ -198,7 +198,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
         // Crear la ruta de vuelo
         DTRutaVuelo DTrutaVuelo = new DTRutaVuelo( nombreRuta, descripcion, fechaAltaDT, costoBase, aerolineaDT, ciudadOrigenDT, ciudadDestinoDT);
         // Retornar el DTRutaVuelo creado
-        recorderRutaVuelo = DTrutaVuelo; // Guardar la ruta de vuelo seleccionada
+        recordarRutaVuelo = DTrutaVuelo; // Guardar la ruta de vuelo seleccionada
         return DTrutaVuelo;
     }
     public void registrarRuta() {
@@ -219,23 +219,23 @@ public class EstacionTrabajo implements IEstacionTrabajo{
                 throw new IllegalStateException("La aerolinea seleccionada no existe.");
             }
             // Crear la ruta de vuelo
-            if (recorderRutaVuelo == null) {
+            if (recordarRutaVuelo == null) {
                 throw new IllegalStateException("Debe ingresar los datos de la ruta antes de registrarla.");
             }
             RutaVuelo nuevaRuta = new RutaVuelo(
-                    recorderRutaVuelo.getNombre(),
-                    recorderRutaVuelo.getDescripcion(),
-                    recorderRutaVuelo.getCostoBase()
+                    recordarRutaVuelo.getNombre(),
+                    recordarRutaVuelo.getDescripcion(),
+                    recordarRutaVuelo.getCostoBase()
             );
-            nuevaRuta.setFechaAlta(recorderRutaVuelo.getFechaAlta());
+            nuevaRuta.setFechaAlta(recordarRutaVuelo.getFechaAlta());
             // Buscar las ciudades de origen y destino y asignarlas a la nueva ruta
             Ciudad ciudadOrigen = null;
             Ciudad ciudadDestino = null;
             for (Ciudad ciudad : ciudades) {
-                if (ciudad.getNombre().equalsIgnoreCase(recorderRutaVuelo.getCiudadOrigen().getNombre())) {
+                if (ciudad.getNombre().equalsIgnoreCase(recordarRutaVuelo.getCiudadOrigen().getNombre())) {
                     ciudadOrigen = ciudad;
                 }
-                if (ciudad.getNombre().equalsIgnoreCase(recorderRutaVuelo.getCiudadDestino().getNombre())) {
+                if (ciudad.getNombre().equalsIgnoreCase(recordarRutaVuelo.getCiudadDestino().getNombre())) {
                     ciudadDestino = ciudad;
                 }
             }
@@ -248,11 +248,33 @@ public class EstacionTrabajo implements IEstacionTrabajo{
             aerolineaSeleccionada.getRutasVuelo().add(nuevaRuta);
             // Limpiar las variables de selección
             recuerdaAerolinea = null;
-            recorderRutaVuelo = null;
+            recordarRutaVuelo = null;
         }
     }
 
     // CONSULTA RUTA VUELO
+    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea) {
+        List<DTRutaVuelo> listaRutas = new ArrayList<>();
+        for (Usuario u : usuarios) {
+            if (u instanceof Aerolinea a && a.getNickname().equalsIgnoreCase(nombreAerolinea)) {
+                for (RutaVuelo r : a.getRutasVuelo()) {
+                    listaRutas.add(new DTRutaVuelo(
+                            r.getNombre(),
+                            r.getDescripcion(),
+                            r.getFechaAlta(),
+                            r.getCostoBase(),
+                            new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
+                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
+                    ));
+                }
+                return listaRutas;
+            }
+        }
+        throw new IllegalArgumentException("No se encontró una aerolínea con el nickname: " + nombreAerolinea);
+    }
+
+
     public List<DTPaqueteVuelos> mostrarPaquete(){
         return null;
     }
@@ -318,7 +340,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
                         new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
                         new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais())
                 );
-                recorderRutaVuelo = dtRuta;
+                recordarRutaVuelo = dtRuta;
                 return dtRuta;
             }
         }
@@ -328,7 +350,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
 
     public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta) {
 
-        if (recorderRutaVuelo == null) {
+        if (recordarRutaVuelo == null) {
             throw new IllegalStateException("Debe seleccionar una ruta antes de ingresar los datos del vuelo.");
         }
 

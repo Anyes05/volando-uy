@@ -27,7 +27,7 @@ public interface IEstacionTrabajo {
     public List<DTAerolinea> listarAerolineas();
     public void seleccionarAerolinea(String nickname);
     public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname);
-    public List<DTRutaVuelo> listarRutaVuelo();
+    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea);
     public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
     public DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
     public List<DTVueloReserva> seleccionarVuelo(String nombre);
