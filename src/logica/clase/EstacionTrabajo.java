@@ -17,6 +17,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
     private DTRutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
     private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
+    private List<DTVuelo> listaDTVuelos;
 
 
     private EstacionTrabajo(){
@@ -380,7 +381,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
             }
         }
         if (ruta == null) {
-            throw new IllegalStateException("No se encontró la ruta real asociada al vuelo.");
+            throw new IllegalStateException("No se encontró la ruta asociada al vuelo.");
         }
         Vuelo nuevoVuelo = new Vuelo(
                 recordarDatosVuelo.getNombre(),
@@ -398,16 +399,62 @@ public class EstacionTrabajo implements IEstacionTrabajo{
         recordarDatosVuelo = null;
     }
 
+    //CONSULTA VUELO
+
+    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
+        listaDTVuelos.clear();
+        for (Vuelo v : vuelos) {
+            for (RutaVuelo r : v.getRutaVuelo()) {
+                if (r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
+                    DTRutaVuelo dtRuta = new DTRutaVuelo(
+                            r.getNombre(),
+                            r.getDescripcion(),
+                            r.getFechaAlta(),
+                            r.getCostoBase(),
+                            new DTAerolinea(aerolineaSeleccionada.getNickname(), aerolineaSeleccionada.getNombre(), aerolineaSeleccionada.getCorreo(), aerolineaSeleccionada.getDescripcion(), aerolineaSeleccionada.getLinkSitioWeb(), new ArrayList<>()),
+                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
+                    );
+                    DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta);
+
+                    listaDTVuelos.add(dtVuelo);
+                }
+            }
+        }
+        return listaDTVuelos;
+    }
+
+    public List<DTVueloReserva> seleccionarVuelo(String nombre){
+        List<DTVueloReserva> listaReservas = new ArrayList<>();
+        DTVuelo vueloSeleccionado = null;
+        for (DTVuelo dtVuelo : listaDTVuelos) {
+            if (dtVuelo.getNombre().equalsIgnoreCase(nombre)) {
+                vueloSeleccionado = dtVuelo;
+                break;
+            }
+        }
+        if (vueloSeleccionado == null)
+            throw new IllegalStateException("No se encontró el vuelo.");
+
+        // Recorremos la lista de vuelos para tomar las reservas
+        for (Vuelo v : vuelos) {
+            if (v.getNombre().equalsIgnoreCase(nombre)) {
+                for (Reserva r : v.getReserva()) {
+                    DTReserva dtReserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
+                    DTVueloReserva dtVueloR = new DTVueloReserva(vueloSeleccionado, dtReserva);
+                    listaReservas.add(dtVueloR);
+                }
+            }
+        }
+
+        return listaReservas;
+    }
 
     public List<DTRutaVuelo> listarRutaVuelo(){
         return null;
     }
-    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
-        return null;
-    }
-    public List<DTVueloReserva> seleccionarVuelo(String nombre){
-        return null;
-    }
+
+
 
     public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre){
         return null;
