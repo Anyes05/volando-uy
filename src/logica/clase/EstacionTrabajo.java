@@ -17,6 +17,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
     private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
     private List<DTVuelo> listaDTVuelos;
+    private String nicknameUsuarioAModificar;
 
 
     private EstacionTrabajo(){
@@ -97,7 +98,11 @@ public class EstacionTrabajo implements IEstacionTrabajo{
                     // Suponiendo que Reserva tiene un DTO llamado DTReserva
                     List<DTReserva> reservasDTO = new ArrayList<>();
                     for (Reserva r : c.getReservas()) {
-                        reservasDTO.add(new DTReserva(r.getFechaReserva(), r.getCostoReserva()));
+                        if (r instanceof CompraPaquete cp) {
+                            reservasDTO.add(new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento()));
+                        } else {
+                            reservasDTO.add(new DTReserva(r.getFechaReserva(), r.getCostoReserva()));
+                        }
                     }
                     return new DTCliente(
                             c.getNickname(),
@@ -129,7 +134,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
                             a.getCorreo(),
                             a.getDescripcion(),
                             a.getLinkSitioWeb(),
-                            rutasDTO // Nuevo campo en el DTO
+                            rutasDTO
                     );
                 }
             }
@@ -137,7 +142,96 @@ public class EstacionTrabajo implements IEstacionTrabajo{
         throw new IllegalArgumentException("Usuario no encontrado");
     }
 
+    //Si el administrador selecciona una ruta de vuelo o un vuelo reservado o un
+    //paquete comprado, se muestra la información detallada, tal como se indica en
+    //el caso de uso Consulta de Ruta de Vuelo, Consulta de Vuelo y Consulta
+    //de Paquete de Rutas de Vuelo, respectivamente.
+    // Lo que quiere decir que en realidad, no iría una función extra, sino que directamente uso las funciones para el caso respectivo,
+    // esto se tendrá en cuenta una vez que integré las funcionalidades.
+
     // MODIFICAR DATOS DE USUARIO
+
+    //El caso de uso comienza cuando el administrador desea modificar el
+    //perfil de un usuario. Para ello el sistema muestra la lista de todos los
+    //usuarios y el administrador elige uno.
+    // Para esto ya me sirve:
+    // public List<DTUsuario> consultarUsuarios()
+
+    // Luego, el sistema muestra todos
+    // los datos del usuario.
+    // Podría usar mostrarDatosUsuario(String nickname), pero para no mostrar las reservas, compras de paquete, o rutas de vuelo:
+
+    public DTUsuario mostrarDatosUsuarioMod(String nickname) {
+        for (Usuario u : usuarios) {
+            if (u.getNickname().equals(nickname)) {
+                if (u instanceof Cliente c) {
+                    return new DTCliente(
+                            c.getNickname(),
+                            c.getNombre(),
+                            c.getCorreo(),
+                            c.getApellido(),
+                            c.getTipoDoc(),
+                            c.getNumeroDocumento(),
+                            c.getFechaNacimiento(),
+                            c.getNacionalidad(),
+                            new ArrayList<>()
+                    );
+                } else if (u instanceof Aerolinea a) {
+                    return new DTAerolinea(
+                            a.getNickname(),
+                            a.getNombre(),
+                            a.getCorreo(),
+                            a.getDescripcion(),
+                            a.getLinkSitioWeb(),
+                            new ArrayList<>()
+                    );
+                }
+            }
+        }
+        throw new IllegalArgumentException("Usuario no encontrado");
+    }
+
+    // El administrador puede editar todos los datos
+    //básicos, menos el nickname y el correo electrónico. Cuando termina la
+    //edición, el sistema actualiza los datos del usuario.
+    public void seleccionarUsuarioAMod (String nickname) {
+        this.nicknameUsuarioAModificar = nickname;
+    }
+
+    // Para Cliente
+    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
+        if (nicknameUsuarioAModificar == null) {
+            throw new IllegalStateException("Debe seleccionar un usuario antes de modificar sus datos.");
+        }
+        for (Usuario u : usuarios) {
+            if (u instanceof Cliente c && c.getNickname().equals(nicknameUsuarioAModificar)) {
+                c.setNombre(nombre);
+                c.setApellido(apellido);
+                c.setFechaNacimiento(fechaNac);
+                c.setNacionalidad(nacionalidad);
+                c.setTipoDoc(tipoDocumento);
+                c.setNumeroDocumento(numeroDocumento);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Cliente no encontrado");
+    }
+
+    // Para Aerolinea
+    public void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb) {
+        if (nicknameUsuarioAModificar == null) {
+            throw new IllegalStateException("Debe seleccionar un usuario antes de modificar sus datos.");
+        }
+        for (Usuario u : usuarios) {
+            if (u instanceof Aerolinea a && a.getNickname().equals(nicknameUsuarioAModificar)) {
+                a.setNombre(nombre);
+                a.setDescripcion(descripcion);
+                a.setLinkSitioWeb(linkSitioWeb);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Aerolínea no encontrada");
+    }
 
 
     // ALTA RUTA VUELO

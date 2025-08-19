@@ -15,6 +15,10 @@ public interface IEstacionTrabajo {
     public DTUsuario mostrarDatosUsuario(String nickname);
 
     // MODIFICAR DATOS DE USUARIO
+    public DTUsuario mostrarDatosUsuarioMod(String nickname);
+    public void seleccionarUsuarioAMod (String nickname);
+    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
+    public void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb);
 
 
 
