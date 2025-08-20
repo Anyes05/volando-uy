@@ -21,7 +21,7 @@ public class Principal {
     private JTextArea textArea1;
     private JButton Enviar;
     private JInternalFrame altaUsuario;
-    private JInternalFrame vacio;
+    private JInternalFrame altaAerolinea;
     private JButton crearNuevoClienteButton;
     private JButton crearNuevaAerolineaButton;
     private JInternalFrame altaCliente;
@@ -33,6 +33,7 @@ public class Principal {
     private JComboBox comboBox1;
     private JButton cancelarButton;
     private JButton aceptarButton;
+    private JTextPane textPane1;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
