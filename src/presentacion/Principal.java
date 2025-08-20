@@ -34,6 +34,25 @@ public class Principal {
     private JButton cancelarButton;
     private JButton aceptarButton;
     private JTextPane textPane1;
+    private JInternalFrame consultaUsuario;
+    private JTextField textField3;
+    private JButton aceptarButton1;
+    private JRadioButton usuarioRadioButton;
+    private JRadioButton rutaDeVueloRadioButton;
+    private JRadioButton reservaDeVueloRadioButton;
+    private JRadioButton paqueteVueloRadioButton;
+    private JTextField textField4;
+    private JButton confirmarButton;
+    private JInternalFrame modificarUsuario;
+    private JTextField textField5;
+    private JButton aceptarButton2;
+    private JTextField textField6;
+    private JTextField textField7;
+    private JTextField textField8;
+    private JTextField textField9;
+    private JTextField textField10;
+    private JTextArea textArea2;
+    private JButton guardarButton;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
