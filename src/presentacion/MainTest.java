@@ -1,5 +1,7 @@
-package logica.clase;
+package presentacion;
 import logica.DataTypes.*;
+import logica.clase.Factory;
+import logica.clase.IEstacionTrabajo;
 
 public class MainTest {
     public static void main(String[] args) {
