@@ -2,6 +2,7 @@ package logica.clase;
 import logica.DataTypes.DTRutaVuelo;
 import logica.DataTypes.DTUsuario;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Aerolinea extends Usuario {
         super(nickname, nombre, correo);
         this.descripcion = descripcion;
         this.linkSitioWeb = linkSitioWeb;
+        this.rutasVuelo = new ArrayList<>();
     }
 
     // getters y setters

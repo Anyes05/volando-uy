@@ -2,6 +2,8 @@ package presentacion;
 import logica.DataTypes.*;
 import logica.clase.Factory;
 import logica.clase.IEstacionTrabajo;
+import java.util.List;
+import logica.clase.Ciudad;
 
 public class MainTest {
     public static void main(String[] args) {
@@ -66,6 +68,163 @@ public class MainTest {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        // ----- PRECARGA DE CIUDADES -----
+        estacion.agregarCiudadParaTest(new Ciudad("Montevideo", "Uruguay"));
+        estacion.agregarCiudadParaTest(new Ciudad("Buenos Aires", "Argentina"));
+
+        // ----- PRECARGA PARA ALTA DE RUTA DE VUELO -----
+        try {
+            System.out.println("\n--- Precarga de ruta de vuelo ---");
+
+            // 1. Seleccionamos la aerolínea
+            estacion.seleccionarAerolinea("air1");
+
+            // 2. Creamos la ruta de vuelo
+            DTHora horaVueloRuta = new DTHora(10, 0); // hora de salida solo para DTO
+            DTRutaVuelo ruta = estacion.ingresarDatosRuta(
+                    "MVD-BUE",                   // nombre de la ruta
+                    "Vuelo Montevideo → Buenos Aires", // descripción
+                    horaVueloRuta,               // hora de salida
+                    150.0f,                      // costo turista
+                    300.0f,                      // costo ejecutivo
+                    50.0f,                       // costo equipaje extra
+                    "Montevideo",                // ciudad origen
+                    "Buenos Aires",              // ciudad destino
+                    new DTFecha(1, 7, 2025),     // fecha alta
+                    "Turista"                    // categoría
+            );
+
+            // 3. Registramos la ruta
+            estacion.registrarRuta();
+
+            // 4. Mostrar detalles de la ruta
+            System.out.println("Ruta de vuelo registrada:");
+            System.out.println("Nombre: " + ruta.getNombre());
+            System.out.println("Descripción: " + ruta.getDescripcion());
+            System.out.println("Origen: " + ruta.getCiudadOrigen().getNombre());
+            System.out.println("Destino: " + ruta.getCiudadDestino().getNombre());
+            System.out.println("Costo Turista: " + ruta.getCostoBase().getCostoTurista());
+            System.out.println("Costo Ejecutivo: " + ruta.getCostoBase().getCostoEjecutivo());
+            System.out.println("Costo Equipaje Extra: " + ruta.getCostoBase().getCostoEquipajeExtra());
+
+        } catch (Exception e) {
+            System.out.println("Error en precarga de ruta: " + e.getMessage());
+        }
+
+// ----- PRECARGA PARA ALTA DE VUELO -----
+        try {
+            System.out.println("\n--- Precarga de vuelo ---");
+
+            // 1. Listar aerolíneas disponibles
+            System.out.println("Aerolineas disponibles:");
+            for (DTAerolinea a : estacion.listarAerolineas()) {
+                System.out.println(a);
+            }
+
+            // 2. Seleccionar aerolínea "air1" y obtener sus rutas
+            List<DTRutaVuelo> rutas = estacion.seleccionarAerolineaRet("air1");
+            System.out.println("\nRutas de air1:");
+            for (DTRutaVuelo r : rutas) {
+                System.out.println("- " + r.getNombre() + " (" + r.getCiudadOrigen().getNombre() + " → " + r.getCiudadDestino().getNombre() + ")");
+            }
+
+            // 3. Seleccionar una ruta específica
+            DTRutaVuelo rutaSeleccionada = estacion.seleccionarRutaVueloRet("MVD-BUE");
+            System.out.println("\nRuta seleccionada: " + rutaSeleccionada.getNombre());
+
+            // 4. Ingresar datos del vuelo
+            DTFecha fechaVuelo = new DTFecha(15, 8, 2025);
+            DTHora horaVuelo = new DTHora(10, 30);
+            DTHora duracion = new DTHora(2, 0);
+            int maxTurista = 100;
+            int maxEjecutivo = 20;
+            DTFecha fechaAltaVuelo = new DTFecha(20, 7, 2025);
+
+            DTVuelo dtVuelo = estacion.ingresarDatosVuelo(
+                    "AIR001",
+                    fechaVuelo,
+                    horaVuelo,
+                    duracion,
+                    maxTurista,
+                    maxEjecutivo,
+                    fechaAltaVuelo,
+                    rutaSeleccionada
+            );
+
+            // 5. Mostrar detalles del vuelo
+            System.out.println("\nDatos del vuelo ingresados:");
+            System.out.println("Nombre del vuelo: " + dtVuelo.getNombre());
+            System.out.println("Fecha: " + dtVuelo.getFechaVuelo());
+            System.out.println("Hora de salida: " + dtVuelo.getHoraVuelo().getHora() + ":" + dtVuelo.getHoraVuelo().getMinutos());
+            System.out.println("Duración: " + dtVuelo.getDuracion().getHora() + "h " + dtVuelo.getDuracion().getMinutos() + "m");
+            System.out.println("Máx. Turista: " + dtVuelo.getAsientosMaxTurista());
+            System.out.println("Máx. Ejecutivo: " + dtVuelo.getAsientosMaxEjecutivo());
+            System.out.println("Ruta asociada: " + dtVuelo.getRuta().getNombre() + " (" + dtVuelo.getRuta().getCiudadOrigen().getNombre() + " → " + dtVuelo.getRuta().getCiudadDestino().getNombre() + ")");
+            // 6. Dar de alta el vuelo
+            estacion.darAltaVuelo();
+            System.out.println("Vuelo dado de alta correctamente.");
+
+        } catch (Exception e) {
+            System.out.println("Error en precarga de vuelo: " + e.getMessage());
+        }
+
+        // ----- CONSULTA DE VUELOS -----
+        try {
+            System.out.println("\n--- Consulta de vuelos por ruta ---");
+            String nombreRuta = "MVD-BUE";
+
+            // 1. Seleccionar vuelos de la ruta
+            List<DTVuelo> vuelosRuta = estacion.seleccionarRutaVuelo(nombreRuta);
+
+            if (vuelosRuta.isEmpty()) {
+                System.out.println("No hay vuelos para la ruta " + nombreRuta);
+            } else {
+                for (DTVuelo v : vuelosRuta) {
+                    System.out.println("\nVuelo encontrado: " + v.getNombre());
+                    System.out.println("Fecha: " + v.getFechaVuelo().getDia() + "/" + v.getFechaVuelo().getMes() + "/" + v.getFechaVuelo().getAno());
+                    System.out.println("Hora: " + v.getHoraVuelo().getHora() + ":" + v.getHoraVuelo().getMinutos());
+                    System.out.println("Duración: " + v.getDuracion().getHora() + "h " + v.getDuracion().getMinutos() + "m");
+                    System.out.println("Max turista: " + v.getAsientosMaxTurista());
+                    System.out.println("Max ejecutivo: " + v.getAsientosMaxEjecutivo());
+
+                    // Datos de la ruta
+                    DTRutaVuelo ruta = v.getRuta();
+                    System.out.println("Ruta: " + ruta.getNombre() + " - " + ruta.getDescripcion());
+                    System.out.println("Origen: " + ruta.getCiudadOrigen().getNombre() + ", Destino: " + ruta.getCiudadDestino().getNombre());
+                    System.out.println("Costo turista: " + ruta.getCostoBase().getCostoTurista());
+                    System.out.println("Costo ejecutivo: " + ruta.getCostoBase().getCostoEjecutivo());
+
+                    // Aerolínea de la ruta
+                    DTAerolinea aerolinea = ruta.getAerolinea();
+                    System.out.println("Aerolínea: " + aerolinea.getNombre() + " (" + aerolinea.getNickname() + ")");
+                }
+            }
+
+            // ----- CONSULTA DE RESERVAS PARA UN VUELO -----
+            System.out.println("\n--- Consulta de reservas para un vuelo ---");
+            if (!vuelosRuta.isEmpty()) {
+                String nombreVuelo = vuelosRuta.get(0).getNombre(); // tomamos el primer vuelo de ejemplo
+                List<DTVueloReserva> reservas = estacion.seleccionarVuelo(nombreVuelo);
+
+                if (reservas.isEmpty()) {
+                    System.out.println("No hay reservas para el vuelo " + nombreVuelo);
+                } else {
+                    for (DTVueloReserva dr : reservas) {
+                        System.out.println("Reserva:");
+                        System.out.println("  Fecha reserva: " + dr.getReserva().getFechaReserva().getDia() + "/" +
+                                dr.getReserva().getFechaReserva().getMes() + "/" +
+                                dr.getReserva().getFechaReserva().getAno());
+                        System.out.println("  Costo reserva: " + dr.getReserva().getCostoReserva());
+                        System.out.println("  Vuelo asociado: " + dr.getVuelo().getNombre());
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error en consulta de vuelos o reservas: " + e.getMessage());
+        }
+
 
     }
 }
+

@@ -392,8 +392,11 @@ public class EstacionTrabajo implements IEstacionTrabajo{
 
     }
 
-    // ALTA DE VUELO
+    public void agregarCiudadParaTest(Ciudad c) {
+        ciudades.add(c);
+    }
 
+    // ALTA DE VUELO
     public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname){
         for (Usuario u : usuarios) {
             if (u instanceof Aerolinea a) {
