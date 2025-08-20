@@ -20,6 +20,19 @@ public class Principal {
     private JCalendar JCalendar1;
     private JTextArea textArea1;
     private JButton Enviar;
+    private JInternalFrame altaUsuario;
+    private JInternalFrame vacio;
+    private JButton crearNuevoClienteButton;
+    private JButton crearNuevaAerolineaButton;
+    private JInternalFrame altaCliente;
+    private JTextField Apellido;
+    private JTextField Nombre;
+    private JTextField Nickname;
+    private JTextField textField1;
+    private JTextField textField2;
+    private JComboBox comboBox1;
+    private JButton cancelarButton;
+    private JButton aceptarButton;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
@@ -27,6 +40,11 @@ public class Principal {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private void createUIComponents() {
+        // Esto es necesario porque JCalendar no es estándar de Swing
+        JCalendar1 = new com.toedter.calendar.JCalendar();
     }
 
 
