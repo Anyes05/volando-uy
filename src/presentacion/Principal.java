@@ -1,8 +1,8 @@
 package presentacion;
 
-import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JCalendar;
+
 import javax.swing.*;
-import java.util.Locale;
 
 public class Principal {
     private JPanel mainPrincipal;
@@ -15,9 +15,11 @@ public class Principal {
     private JTextField ciudadDestino;
     private JTextField costoEjecutivo;
     private JTextField costoTurista;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JSpinner spinner1;
+    private JTextField equipajeExtra;
+    private JTextField hora;
+    private JCalendar JCalendar1;
+    private JTextArea textArea1;
+    private JButton Enviar;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
@@ -27,20 +29,5 @@ public class Principal {
         frame.setVisible(true);
     }
 
-    public class DemoJCalendar {
-        public static void main(String[] args) {
-            SwingUtilities.invokeLater(() -> {
-                JFrame f = new JFrame("Calendario");
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-                Locale.setDefault(new Locale("es", "UY"));
-                JDateChooser chooser = new JDateChooser();
-                chooser.setDate(new java.util.Date());
-
-                f.add(chooser);
-                f.pack();
-                f.setLocationRelativeTo(null);
-                f.setVisible(true);
-            });
-        }
 }
