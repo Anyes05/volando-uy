@@ -40,14 +40,6 @@ public class Principal {
     private JButton aceptarButton;
     private JTextPane textPane1;
     private JPanel consultaUsuario;
-    private JTextField textField3;
-    private JButton aceptarButton1;
-    private JRadioButton usuarioRadioButton;
-    private JRadioButton rutaDeVueloRadioButton;
-    private JRadioButton reservaDeVueloRadioButton;
-    private JRadioButton paqueteVueloRadioButton;
-    private JTextField textField4;
-    private JButton confirmarButton;
     private JPanel modificarUsuario;
     private JTextField textField5;
     private JButton aceptarButton2;
@@ -65,8 +57,8 @@ public class Principal {
     private JComboBox comboBoxUsuario;
     private JPanel consultaRutaVuelo;
     private JToolBar JToolBarPrincipal;
-    private JComboBox comboBox2;
     private JList list1;
+    private JComboBox comboBox2;
     private JTextPane textPane2;
     private JTextPane textPane3;
     private JTextArea textArea3;
@@ -79,6 +71,15 @@ public class Principal {
     private JTextArea textArea9;
     private JTextArea textArea10;
     private JTextArea textArea11;
+    private JTextField textField3;
+    private JButton aceptarButton1;
+    private JRadioButton rutaDeVueloRadioButton;
+    private JRadioButton reservaDeVueloRadioButton;
+    private JTextField textField4;
+    private JRadioButton paqueteVueloRadioButton;
+    private JButton confirmarButton;
+    private JRadioButton usuarioRadioButton;
+    private JPanel principalVacio;
     private JButton button2;
 
     public Principal() {
@@ -86,7 +87,7 @@ public class Principal {
             @Override
             public void actionPerformed(ActionEvent e) {
                 parentPanel.removeAll();
-                parentPanel.add(consultaRutaVuelo);
+                parentPanel.add(principalVacio);
                 parentPanel.repaint();
                 parentPanel.revalidate();
             }
@@ -101,6 +102,12 @@ public class Principal {
                     case "Crear ruta de vuelo":
                         parentPanel.removeAll();
                         parentPanel.add(altaRutaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Consultar ruta de vuelo":
+                        parentPanel.removeAll();
+                        parentPanel.add(consultaRutaVuelo);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
