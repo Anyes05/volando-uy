@@ -4,6 +4,7 @@ import logica.clase.Factory;
 import logica.clase.IEstacionTrabajo;
 import java.util.List;
 import logica.clase.Ciudad;
+import logica.clase.CompraPaquete;
 
 public class MainTest {
     public static void main(String[] args) {
@@ -222,6 +223,42 @@ public class MainTest {
 
         } catch (Exception e) {
             System.out.println("Error en consulta de vuelos o reservas: " + e.getMessage());
+        }
+
+
+        // CONSULTA USUARIOS
+        try {
+            System.out.println("\n--- Consulta de perfil de usuario ---");
+
+            // 1. Mostrar lista de usuarios
+            List<DTUsuario> usuarios = estacion.consultarUsuarios();
+            System.out.println("Usuarios registrados:");
+            for (DTUsuario u : usuarios) {
+                System.out.println(u);
+            }
+
+            // 2. Consultar perfil de cliente
+            System.out.println("\nPerfil de cliente 'nick1':");
+            DTUsuario cliente = estacion.mostrarDatosUsuario("nick1");
+            System.out.println(cliente);
+
+            // 3. Consultar perfil de aerolínea
+            System.out.println("\nPerfil de aerolínea 'air1':");
+            DTUsuario aerolinea = estacion.mostrarDatosUsuario("air1");
+            System.out.println(aerolinea);
+
+            // 4. Mostrar rutas de vuelo de la aerolínea
+            System.out.println("\nRutas de vuelo de 'air1':");
+            List<DTRutaVuelo> rutas = estacion.listarRutaVuelo("air1");
+            for (DTRutaVuelo r : rutas) {
+                System.out.println(r);
+            }
+
+            // 5. Mostrar reservas y paquetes del cliente (si existen)
+            // Si el toString de DTCliente muestra las reservas y paquetes, ya se ven en el paso 2
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
 

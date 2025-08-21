@@ -43,5 +43,16 @@ public class DTRutaVuelo {
         return ciudadDestino;
     }
 
-    //Setters
+    // MÉTODOS
+    @Override
+    public String toString() {
+        return "RutaVuelo: " +
+                "nombre= " + nombre +
+                ", descripcion= " + descripcion +
+                ", fechaAlta=" + fechaAlta +
+                ", costoBase=" + costoBase +
+                ", aerolinea=" + aerolinea.getNombre() +
+                ", ciudadOrigen=" + ciudadOrigen.getNombre() +
+                ", ciudadDestino=" + ciudadDestino.getNombre();
     }
+}
