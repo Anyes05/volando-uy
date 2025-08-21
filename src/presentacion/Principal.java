@@ -3,6 +3,8 @@ package presentacion;
 import  com.toedter.calendar.JCalendar;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -61,8 +63,22 @@ public class Principal {
     private JButton botonInicio;
     private JComboBox comboBoxVuelos;
     private JComboBox comboBoxUsuario;
-    private JPanel panelVacio;
+    private JPanel consultaRutaVuelo;
     private JToolBar JToolBarPrincipal;
+    private JComboBox comboBox2;
+    private JList list1;
+    private JTextPane textPane2;
+    private JTextPane textPane3;
+    private JTextArea textArea3;
+    private JTextArea textArea4;
+    private JList list2;
+    private JTextArea textArea5;
+    private JTextArea textArea6;
+    private JTextArea textArea7;
+    private JTextArea textArea8;
+    private JTextArea textArea9;
+    private JTextArea textArea10;
+    private JTextArea textArea11;
     private JButton button2;
 
     public Principal() {
@@ -70,7 +86,7 @@ public class Principal {
             @Override
             public void actionPerformed(ActionEvent e) {
                 parentPanel.removeAll();
-                parentPanel.add(panelVacio);
+                parentPanel.add(consultaRutaVuelo);
                 parentPanel.repaint();
                 parentPanel.revalidate();
             }
@@ -137,7 +153,17 @@ public class Principal {
                 parentPanel.revalidate();
             }
         });
-        panelVacio.addComponentListener(new ComponentAdapter() {
+        consultaRutaVuelo.addComponentListener(new ComponentAdapter() {
+        });
+        list1.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    Object seleccion = list1.getSelectedValue();
+                    // Aquí puedes mostrar detalles, habilitar botones, etc.
+                    System.out.println("Ruta seleccionada: " + seleccion);
+                }
+            }
         });
     }
 
@@ -153,6 +179,9 @@ public class Principal {
         // Esto es necesario porque JCalendar no es estándar de Swing
         JCalendar1 = new com.toedter.calendar.JCalendar();
     }
+
+
+
 
 
 }
