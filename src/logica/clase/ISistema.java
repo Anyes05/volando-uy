@@ -4,7 +4,7 @@ import logica.DataTypes.*;
 
 import java.util.List;
 
-public interface IEstacionTrabajo {
+public interface ISistema {
 
     // ALTA USUARIO
     public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad,TipoDoc tipoDocumento,String numeroDocumento);

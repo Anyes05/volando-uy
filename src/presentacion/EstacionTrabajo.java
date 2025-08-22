@@ -9,21 +9,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 
-public class Principal {
+public class EstacionTrabajo {
     private JPanel mainPrincipal;
-    private JPanel altaRutaVuelo;
+    private JPanel altaVuelo;
     private JComboBox aerolinea;
-    private JPanel fromAltaRuta;
+    private JPanel fromAltaVuelo;
     private JTextField nombre;
     private JComboBox categoria;
     private JTextField ciudadOrigen;
     private JTextField ciudadDestino;
-    private JTextField costoEjecutivo;
-    private JTextField costoTurista;
-    private JTextField equipajeExtra;
-    private JTextField hora;
-    private JCalendar JCalendar1;
-    private JTextArea textArea1;
+    private JCalendar fechaAltaRutaVuelo;
     private JButton Enviar;
     private JPanel altaUsuario;
     private JPanel altaAerolinea;
@@ -80,9 +75,17 @@ public class Principal {
     private JButton confirmarButton;
     private JRadioButton usuarioRadioButton;
     private JPanel principalVacio;
+    private JPanel altaRuta;
+    private JCalendar fechaVuelo;
+    private JCalendar fechaAltaVuelo;
+    private JPanel consultaVuelo;
+    private JComboBox comboBox4;
+    private JComboBox aerolineaVuelo;
+    private JComboBox comboBox5;
+    private JTextArea textArea1;
     private JButton button2;
 
-    public Principal() {
+    public EstacionTrabajo() {
         botonInicio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,13 +104,25 @@ public class Principal {
                 switch (seleccionado) {
                     case "Crear ruta de vuelo":
                         parentPanel.removeAll();
-                        parentPanel.add(altaRutaVuelo);
+                        parentPanel.add(altaRuta);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
                     case "Consultar ruta de vuelo":
                         parentPanel.removeAll();
                         parentPanel.add(consultaRutaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Crear Vuelo":
+                        parentPanel.removeAll();
+                        parentPanel.add(altaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Consultar Vuelo":
+                        parentPanel.removeAll();
+                        parentPanel.add(consultaVuelo);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
@@ -172,20 +187,25 @@ public class Principal {
                 }
             }
         });
+        fechaAltaRutaVuelo.addComponentListener(new ComponentAdapter() {
+        });
     }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
-        frame.setContentPane(new Principal().mainPrincipal);
+        frame.setContentPane(new EstacionTrabajo().mainPrincipal);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
 
     private void createUIComponents() {
-        // Esto es necesario porque JCalendar no es estándar de Swing
-        JCalendar1 = new com.toedter.calendar.JCalendar();
+        // IntelliJ lo usará porque el .form tiene fechaAltaVuelo en Custom Create
+        fechaVuelo = new JCalendar();
+        fechaAltaRutaVuelo = new JCalendar();
+        fechaAltaVuelo = new JCalendar();
     }
+
 
 
 
