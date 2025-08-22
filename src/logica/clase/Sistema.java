@@ -5,9 +5,9 @@ import logica.DataTypes.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EstacionTrabajo implements IEstacionTrabajo{
+public class Sistema implements ISistema {
 
-    private static EstacionTrabajo Instance = null;
+    private static Sistema Instance = null;
     private List<PaqueteVuelo> paqueteVuelos;
     private List<Usuario> usuarios;
     private List<Ciudad> ciudades;
@@ -20,7 +20,7 @@ public class EstacionTrabajo implements IEstacionTrabajo{
     private String nicknameUsuarioAModificar;
 
 
-    private EstacionTrabajo(){
+    private Sistema(){
         paqueteVuelos = new ArrayList<>();
         usuarios = new ArrayList<>();
         ciudades = new ArrayList<>();
@@ -29,9 +29,9 @@ public class EstacionTrabajo implements IEstacionTrabajo{
 
 
     }
-    public static EstacionTrabajo getInstance(){
+    public static Sistema getInstance(){
         if(Instance == null){
-            Instance = new EstacionTrabajo();
+            Instance = new Sistema();
         }
         return Instance;
     }

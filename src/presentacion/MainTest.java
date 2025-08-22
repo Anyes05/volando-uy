@@ -1,15 +1,14 @@
 package presentacion;
 import logica.DataTypes.*;
 import logica.clase.Factory;
-import logica.clase.IEstacionTrabajo;
+import logica.clase.ISistema;
 import java.util.List;
 import logica.clase.Ciudad;
-import logica.clase.CompraPaquete;
 
 public class MainTest {
     public static void main(String[] args) {
         Factory factory = new Factory();
-        IEstacionTrabajo estacion = factory.getEstacionTrabajo();
+        ISistema estacion = factory.getSistema();
 
         // ALTA USUARIO
         // Alta de Cliente válido
