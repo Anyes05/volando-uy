@@ -42,7 +42,10 @@ public interface ISistema {
     public void seleccionarAerolinea(String nickname);
 
     public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea);
-
+    // ALTA CATEGORIA
+    public void altaCategoria(String nombre);
+    // ALTA CIUDAD
+    public void altaCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta);
 
 
     public DTRutaVuelo ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);

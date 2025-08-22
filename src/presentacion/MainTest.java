@@ -69,8 +69,12 @@ public class MainTest {
             System.out.println(e.getMessage());
         }
         // ----- PRECARGA DE CIUDADES -----
-        estacion.agregarCiudadParaTest(new Ciudad("Montevideo", "Uruguay"));
-        estacion.agregarCiudadParaTest(new Ciudad("Buenos Aires", "Argentina"));
+
+        // Crear los dtfecha para la precarga de ciudades
+        DTFecha fechaAltaCiudad = new DTFecha(1, 1, 2025);
+
+        estacion.agregarCiudadParaTest(new Ciudad("Montevideo", "Uruguay", fechaAltaCiudad));
+        estacion.agregarCiudadParaTest(new Ciudad("Buenos Aires", "Argentina", fechaAltaCiudad));
 
         // ----- PRECARGA PARA ALTA DE RUTA DE VUELO -----
         try {
