@@ -2,9 +2,9 @@ package logica.DataTypes;
 
 public class DTReserva {
     private DTFecha fechaReserva;
-    private float costoReserva;
+    private CostoBase costoReserva;
 
-    public DTReserva(DTFecha fechaReserva, float costoReserva) {
+    public DTReserva(DTFecha fechaReserva, CostoBase costoReserva) {
         this.fechaReserva = fechaReserva;
         this.costoReserva = costoReserva;
     }
@@ -15,7 +15,7 @@ public class DTReserva {
         return this.fechaReserva;
     }
 
-    public float getCostoReserva() {
+    public CostoBase getCostoReserva() {
         return this.costoReserva;
     }
 
