@@ -18,7 +18,7 @@ public class Sistema implements ISistema {
     private DTVuelo recordarDatosVuelo;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
-
+    private List<Categoria> categorias = new ArrayList<>();
 
     private Sistema(){
         paqueteVuelos = new ArrayList<>();
