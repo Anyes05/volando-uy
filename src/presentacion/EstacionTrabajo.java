@@ -1,4 +1,5 @@
 package presentacion;
+import logica.clase.Sistema;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
@@ -85,7 +86,7 @@ public class EstacionTrabajo {
     private JComboBox comboBox4;
     private JComboBox aerolineaVuelo;
     private JComboBox comboBox5;
-    private JTextArea textArea1;
+    private JTextArea descRutaText;
     private JTextField correoAltaCliente;
     private JCalendar JCalendarAltaCliente;
     private JTextField numeroDocAltaCliente;
@@ -97,6 +98,14 @@ public class EstacionTrabajo {
     private JTextField altaAerolineaNombre;
     private JTextField altaAerolineaCorreo;
     private JTextField altaAerolineaLinkWeb;
+    private JButton aceptarRuta;
+    private JTextField horaText;
+    private JTextField costoTurText;
+    private JTextField ciudadDText;
+    private JTextField ciudadOText;
+    private JTextField costoEjText;
+    private JTextField costoEqExText;
+    private JComboBox comboBoxCat;
     private JButton button2;
 
     public EstacionTrabajo() {
@@ -138,6 +147,7 @@ public class EstacionTrabajo {
                 switch (seleccionado) {
                     case "Crear ruta de vuelo":
                         parentPanel.removeAll();
+                        cargarAerolineas();
                         parentPanel.add(altaRuta);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -342,8 +352,66 @@ public class EstacionTrabajo {
             });
 
 
+        aceptarRuta.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Tomar los datos del formulario
+                    String nombreRuta = nombre.getText().trim();
+                    String descripcionRuta = descRutaText.getText().trim();
+                    String horaStr = horaText.getText().trim();
+                    String costoTuristaStr = costoTurText.getText().trim();
+                    String costoEjecutivoStr = costoEjText.getText().trim();
+                    String costoEquipajeStr = costoEqExText.getText().trim();
+                    String origen = ciudadOrigen.toString();
+                    String destino = ciudadDestino.toString();
+                    Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
+                    String categoriaSeleccionada = categoria.getSelectedItem().toString();
+                    String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
+
+                    // Seleccionar aerolínea
+                    VueloHelper.seleccionarAerolinea(nicknameAerolinea);
+
+                    // Ingresar ruta de vuelo
+                    VueloHelper.ingresarRutaVuelo(
+                            nombreRuta,
+                            descripcionRuta,
+                            horaStr,
+                            costoTuristaStr,
+                            costoEjecutivoStr,
+                            costoEquipajeStr,
+                            origen,
+                            destino,
+                            fechaCal,
+                            categoriaSeleccionada
+                    );
+
+                    JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
+
+                    // Limpiar formulario
+                    VueloHelper.resetFormularioRuta(
+                            nombre, descripcion, hora,
+                            costoTurista, costoEjecutivo, costoEquipaje,
+                            origenComboBox, destinoComboBox
+                    );
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaRuta, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
 
     }
+
+    private void cargarAerolineas() {
+        aerolineaVuelo.removeAllItems(); // limpiar combo por si ya tiene algo
+        for (DTAerolinea a : Sistema.getInstance().listarAerolineas()) {
+            aerolineaVuelo.addItem(a.getNickname());
+        }
+    }
+
+
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
