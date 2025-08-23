@@ -1347,7 +1347,10 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="true"/>
+                      <enabled value="true"/>
+                    </properties>
                   </component>
                   <component id="77851" class="javax.swing.JTextArea" default-binding="true">
                     <constraints>
