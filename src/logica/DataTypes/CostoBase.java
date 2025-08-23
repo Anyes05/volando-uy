@@ -5,6 +5,7 @@ public class CostoBase {
     private float costoEjecutivo;
     private float costoEquipajeExtra;
     private int cantidadEquipajeExtra;
+    private float costoTotal;
 
     public CostoBase(float costoTurista, float costoEjecutivo, float costoEquipajeExtra) {
         this.costoTurista = costoTurista;
@@ -45,5 +46,13 @@ public class CostoBase {
 
     public void setCantidadEquipajeExtra(int cantidadEquipajeExtra) {
         this.cantidadEquipajeExtra = cantidadEquipajeExtra;
+    }
+
+    public float getCostoTotal() {
+        return costoTotal;
+    }
+
+    public void setCostoTotal(float costoTotal) {
+        this.costoTotal = costoTotal;
     }
 }

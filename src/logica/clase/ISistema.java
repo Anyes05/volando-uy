@@ -47,15 +47,17 @@ public interface ISistema {
     // ALTA CIUDAD
     public void altaCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta);
 
+    // RESERVA VUELO
+    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
+    public void AltaReservaVuelo(int costo);
+
 
     public DTRutaVuelo ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);
 
     public void registrarRuta();
     public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre);
 
-    public void seleccionarCliente();
-    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
-    public void AltaReservaVuelo(int costo);
+
 
 }
 
