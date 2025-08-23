@@ -562,7 +562,7 @@ public class Sistema implements ISistema {
         categorias.add(nuevaCategoria);
     }
     public List<Categoria> getCategorias() {
-        return categorias; // 'categorias' es tu lista interna de categorías
+        return categorias;
     }
 
 

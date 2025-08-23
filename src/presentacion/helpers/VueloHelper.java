@@ -95,15 +95,23 @@ public class VueloHelper {
             return;
         }
 
-        int hora;
+        int hora, minutos;
         try {
-            hora = Integer.parseInt(horaStr);
-            if (hora < 0 || hora > 23) {
-                JOptionPane.showMessageDialog(null, "Ingrese una hora válida (0-23).", "Error", JOptionPane.ERROR_MESSAGE);
+            String[] partes = horaStr.split(":");
+            if (partes.length != 2) {
+                JOptionPane.showMessageDialog(null, "Formato inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            hora = Integer.parseInt(partes[0]);
+            minutos = Integer.parseInt(partes[1]);
+
+            if (hora < 0 || hora > 23 || minutos < 0 || minutos > 59) {
+                JOptionPane.showMessageDialog(null, "Ingrese una hora válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "La hora debe ser un número entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Formato inválido. Use HH:mm (ejemplo: 14:30)", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -129,7 +137,7 @@ public class VueloHelper {
                 fechaCal.get(Calendar.YEAR)
         );
 
-        DTHora horaVuelo = new DTHora(hora, 0);
+        DTHora horaVuelo = new DTHora(hora, minutos);
 
         // ------------------- CREAR LA RUTA -------------------
         try {

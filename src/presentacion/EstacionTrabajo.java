@@ -24,7 +24,6 @@ public class EstacionTrabajo {
     private JComboBox aerolinea;
     private JPanel fromAltaVuelo;
     private JTextField nombre;
-    private JComboBox categoria;
     private JTextField ciudadOrigen;
     private JTextField ciudadDestino;
     private JCalendar fechaAltaRutaVuelo;
@@ -61,7 +60,7 @@ public class EstacionTrabajo {
     private JPanel consultaRutaVuelo;
     private JToolBar JToolBarPrincipal;
     private JList list1;
-    private JComboBox comboBox2;
+    private JComboBox comboBoxAerolinea;
     private JTextPane textPane2;
     private JTextPane textPane3;
     private JTextArea textArea3;
@@ -125,6 +124,8 @@ public class EstacionTrabajo {
     private JPanel altaCategoría;
     private JTextField categoriaAltaText;
     private JButton buttonAltaCategoria;
+    private JTextField nombreAltRutaText;
+    private JTextField duracionVueloText;
     private JButton button2;
 
     public EstacionTrabajo() {
@@ -166,8 +167,8 @@ public class EstacionTrabajo {
                 switch (seleccionado) {
                     case "Crear ruta de vuelo":
                         parentPanel.removeAll();
-                        cargarAerolineas();
-                        cargarCategorias();
+                        cargarAerolineas(aerolineaVuelo);
+                        cargarCategorias(comboBoxCat);
                         parentPanel.add(altaRuta);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -180,6 +181,7 @@ public class EstacionTrabajo {
                         break;
                     case "Crear Vuelo":
                         parentPanel.removeAll();
+                        cargarAerolineas(aerolinea);
                         parentPanel.add(altaVuelo);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -383,30 +385,34 @@ public class EstacionTrabajo {
             }
             });
 
-        cargarCategorias();
-        cargarAerolineas();
+
         aceptarRuta.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Object catSel = categoria.getSelectedItem();
+                    Object catSel = comboBoxCat.getSelectedItem();
                     Object aeroSel = aerolineaVuelo.getSelectedItem();
 
-                    if(catSel == null || aeroSel == null) {
-                        JOptionPane.showMessageDialog(altaRuta, "Seleccione categoría y aerolínea", "Error", JOptionPane.ERROR_MESSAGE);
+                    if(aeroSel == null) {
+                        JOptionPane.showMessageDialog(altaRuta, "Seleccione aerolínea", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if(catSel == null) {
+                        JOptionPane.showMessageDialog(altaRuta, "Seleccione categoría", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     // Tomar los datos del formulario
-                    String nombreRuta = nombre.getText().trim();
+                    String nombreRuta = nombreAltRutaText.getText().trim();
                     String descripcionRuta = descRutaText.getText().trim();
                     String horaStr = horaText.getText().trim();
                     String costoTuristaStr = costoTurText.getText().trim();
                     String costoEjecutivoStr = costoEjText.getText().trim();
                     String costoEquipajeStr = costoEqExText.getText().trim();
-                    String origen = ciudadOrigen.getText().trim();
-                    String destino = ciudadDestino.getText().trim();
+                    String origen = ciudadOText.getText().trim();
+                    String destino = ciudadDText.getText().trim();
                     Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
-                    String categoriaSeleccionada = categoria.getSelectedItem().toString();
+                    String categoriaSeleccionada = comboBoxCat.getSelectedItem().toString();
                     String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
 
                     // Seleccionar aerolínea
@@ -473,16 +479,16 @@ public class EstacionTrabajo {
         });
     }
 
-    private void cargarAerolineas() {
-        aerolineaVuelo.removeAllItems(); // limpiar combo por si ya tiene algo
+    private void cargarAerolineas(JComboBox<String> combo) {
+        combo.removeAllItems(); // limpiar combo por si ya tiene algo
         for (DTAerolinea a : Sistema.getInstance().listarAerolineas()) {
-            aerolineaVuelo.addItem(a.getNickname());
+            combo.addItem(a.getNickname());
         }
     }
-    private void cargarCategorias() {
-        comboBoxCat.removeAllItems(); // Limpiar cualquier elemento previo
+    private void cargarCategorias(JComboBox<String> combo) {
+        combo.removeAllItems(); // Limpiar cualquier elemento previo
         for (Categoria c : Sistema.getInstance().getCategorias()) {
-            comboBoxCat.addItem(c.getNombre());
+            combo.addItem(c.getNombre());
         }
     }
 
