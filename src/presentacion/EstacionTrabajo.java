@@ -1,13 +1,19 @@
 package presentacion;
-
-import  com.toedter.calendar.JCalendar;
+import presentacion.helpers.*;
+import logica.DataTypes.*;
+import com.toedter.calendar.JCalendar;
 
 import javax.swing.*;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JTable;
+import java.awt.BorderLayout;
+
 
 public class EstacionTrabajo {
     private JPanel mainPrincipal;
@@ -25,15 +31,14 @@ public class EstacionTrabajo {
     private JButton ButtonCrearNuevoCliente;
     private JButton ButtonCrearNuevaAerolinea;
     private JPanel altaCliente;
-    private JTextField Apellido;
-    private JTextField Nombre;
-    private JTextField Nickname;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JComboBox comboBox1;
-    private JButton cancelarButton;
-    private JButton aceptarButton;
-    private JTextPane textPane1;
+    private JTextField apellidoAltaCliente;
+    private JTextField nombreAltaCliente;
+    private JTextField nicknameAltaCliente;
+    private JTextField nacionalidadAltaCliente;
+    private JComboBox comboBoxAltaCliente;
+    private JButton cancelarAltaClienteButton;
+    private JButton aceptarAltaClienteButton;
+    private JTextPane altaAerolineaDescripcion;
     private JPanel consultaUsuario;
     private JPanel modificarUsuario;
     private JTextField textField5;
@@ -66,13 +71,11 @@ public class EstacionTrabajo {
     private JTextArea textArea9;
     private JTextArea textArea10;
     private JTextArea textArea11;
-    private JTextField textField3;
     private JButton aceptarButton1;
     private JRadioButton rutaDeVueloRadioButton;
     private JRadioButton reservaDeVueloRadioButton;
     private JTextField textField4;
     private JRadioButton paqueteVueloRadioButton;
-    private JButton confirmarButton;
     private JRadioButton usuarioRadioButton;
     private JPanel principalVacio;
     private JPanel altaRuta;
@@ -83,9 +86,39 @@ public class EstacionTrabajo {
     private JComboBox aerolineaVuelo;
     private JComboBox comboBox5;
     private JTextArea textArea1;
+    private JTextField correoAltaCliente;
+    private JCalendar JCalendarAltaCliente;
+    private JTextField numeroDocAltaCliente;
+    private JTable consultaUsuarioTable1;
+    private JTable consultaUsuarioTable2;
+    private JButton altaAerolineaCancelar;
+    private JButton altaAerolineaAceptar;
+    private JTextField altaAerolineaNickname;
+    private JTextField altaAerolineaNombre;
+    private JTextField altaAerolineaCorreo;
+    private JTextField altaAerolineaLinkWeb;
     private JButton button2;
 
     public EstacionTrabajo() {
+
+/// ///////// TABLAS ////////////
+        // Columnas de la tabla
+        String[] columnas = {"Nickname", "Nombre", "Correo"};
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+
+        // Usar el atributo declarado, no crear una nueva tabla
+        consultaUsuarioTable1.setModel(modelo);
+        consultaUsuarioTable1.setAutoCreateRowSorter(true);
+
+        // Agregar la tabla a un JScrollPane para que se vean los encabezados
+        JScrollPane scroll = new JScrollPane(consultaUsuarioTable1);
+        consultaUsuario.setLayout(new BorderLayout());
+        consultaUsuario.add(scroll, BorderLayout.CENTER);
+
+
+
+//////////////////// PANEL DE BOTONES//////////////////////////////////////
+        //Boton de inicio
         botonInicio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,6 +129,7 @@ public class EstacionTrabajo {
             }
         });
 
+        // Combo boxes
         comboBoxVuelos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -150,22 +184,17 @@ public class EstacionTrabajo {
                         break;
                     case "Consultar usuario":
                         parentPanel.removeAll();
+                        UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
                         parentPanel.add(consultaUsuario);
                         parentPanel.repaint();
                         parentPanel.revalidate();
+
                         break;
                 }
                 }
         });
-        ButtonCrearNuevoCliente.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentPanel.removeAll();
-                parentPanel.add(altaCliente);
-                parentPanel.repaint();
-                parentPanel.revalidate();
-            }
-        });
+
+///////////// ALTA AEROLINEA //////////////////
         ButtonCrearNuevaAerolinea.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -175,6 +204,49 @@ public class EstacionTrabajo {
                 parentPanel.revalidate();
             }
         });
+
+        // boton de cancelar
+        altaAerolineaCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
+            }
+        });
+
+        // boton de aceptar
+        altaAerolineaAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    UsuarioHelper.crearAerolinea(
+                            altaAerolineaNickname.getText().trim(),
+                            altaAerolineaNombre.getText().trim(),
+                            altaAerolineaCorreo.getText().trim(),
+                            altaAerolineaLinkWeb.getText().trim(),
+                            altaAerolineaDescripcion.getText().trim()
+                    );
+
+                    JOptionPane.showMessageDialog(altaAerolinea, "Aerolínea creada con éxito.");
+
+                    // Resetear formulario
+                    UsuarioHelper.resetFormularioAerolinea(
+                            altaAerolineaNickname, altaAerolineaNombre, altaAerolineaCorreo, altaAerolineaLinkWeb, altaAerolineaDescripcion
+                    );
+
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaAerolinea, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+
+
+
+/// ///////// ni idea /////////
         consultaRutaVuelo.addComponentListener(new ComponentAdapter() {
         });
         list1.addListSelectionListener(new ListSelectionListener() {
@@ -189,6 +261,88 @@ public class EstacionTrabajo {
         });
         fechaAltaRutaVuelo.addComponentListener(new ComponentAdapter() {
         });
+
+////////////////////ALTA CLIENTE//////////////////////////////////
+        //Boton de entrada
+        ButtonCrearNuevoCliente.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(altaCliente);
+                parentPanel.repaint();
+                parentPanel.revalidate();
+            }
+        });
+        //Boton de cancelar alta cliente
+        cancelarAltaClienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
+            }
+        });
+
+        // LLENAR COMBO BOX CON EL ENUM
+        for (TipoDoc tipo : TipoDoc.values()) {
+            comboBoxAltaCliente.addItem(tipo);
+        }
+
+        // Boton aceptar alta cliente
+        aceptarAltaClienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Validar primero
+                    boolean valido = UsuarioHelper.validarCliente(
+                            nicknameAltaCliente,
+                            nombreAltaCliente,
+                            apellidoAltaCliente,
+                            correoAltaCliente,
+                            nacionalidadAltaCliente,
+                            (TipoDoc) comboBoxAltaCliente.getSelectedItem(),
+                            numeroDocAltaCliente
+                    );
+
+                    if (!valido) {
+                        return;
+                    }
+
+                    // crea cliente
+                    UsuarioHelper.crearCliente(
+                            nicknameAltaCliente.getText().trim(),
+                            nombreAltaCliente.getText().trim(),
+                            correoAltaCliente.getText().trim(),
+                            apellidoAltaCliente.getText().trim(),
+                            nacionalidadAltaCliente.getText().trim(),
+                            (TipoDoc) comboBoxAltaCliente.getSelectedItem(),
+                            numeroDocAltaCliente.getText().trim(),
+                            JCalendarAltaCliente.getDate()
+                    );
+
+                    JOptionPane.showMessageDialog(altaCliente, "Cliente creado con éxito.");
+
+                    // Limpiar campos
+                    UsuarioHelper.limpiarCampos(
+                            nicknameAltaCliente,
+                            nombreAltaCliente,
+                            apellidoAltaCliente,
+                            correoAltaCliente,
+                            nacionalidadAltaCliente,
+                            numeroDocAltaCliente
+                    );
+
+                    UsuarioHelper.resetFormulario(comboBoxAltaCliente, JCalendarAltaCliente, nicknameAltaCliente);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaCliente, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            });
+
+
+
     }
 
     public static void main(String[] args) {
@@ -204,6 +358,7 @@ public class EstacionTrabajo {
         fechaVuelo = new JCalendar();
         fechaAltaRutaVuelo = new JCalendar();
         fechaAltaVuelo = new JCalendar();
+        JCalendarAltaCliente = new JCalendar();
     }
 
 

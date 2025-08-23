@@ -18,7 +18,7 @@ public class Sistema implements ISistema {
     private DTVuelo recordarDatosVuelo;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
-
+    private List<Categoria> categorias = new ArrayList<>();
 
     private Sistema(){
         paqueteVuelos = new ArrayList<>();
@@ -546,6 +546,39 @@ public class Sistema implements ISistema {
             }
         }
         return listaReservas;
+    }
+
+    // ALTA CATEGORIA
+    public void altaCategoria(String nombre) {
+        if (nombre == null || nombre.isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la categoría no puede ser nulo o vacío.");
+        }
+        for (Categoria c : categorias) {
+            if (c.getNombre().equalsIgnoreCase(nombre)) {
+                throw new IllegalArgumentException("La categoría ya existe.");
+            }
+        }
+        Categoria nuevaCategoria = new Categoria(nombre);
+        categorias.add(nuevaCategoria);
+    }
+
+    // ALTA CIUDAD
+    public void altaCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta) {
+        // Verificar si el par (nombre, pais) ya existe
+        for (Ciudad c : ciudades) {
+            if (c.getNombre().equalsIgnoreCase(nombre) && c.getPais().equalsIgnoreCase(pais)) {
+                throw new IllegalArgumentException("La ciudad ya existe.");
+            }
+        }
+        // Crear la nueva ciudad
+        Ciudad nuevaCiudad = new Ciudad(nombre, pais, fechaAlta);
+        // Agregar la ciudad a la lista de ciudades
+        ciudades.add(nuevaCiudad);
+        // Si la ciudad tiene un aeropuerto, agregarlo a la lista de aeropuertos de la ciudad
+        if (aeropuerto != null) {
+            nuevaCiudad.getAeropuertos().add(aeropuerto);
+        }
+
     }
 
     public List<DTRutaVuelo> listarRutaVuelo(){
