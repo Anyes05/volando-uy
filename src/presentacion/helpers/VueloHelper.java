@@ -4,6 +4,7 @@ import presentacion.helpers.*;
 import logica.clase.Sistema;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
+import logica.clase.Aeropuerto;
 
 import java.awt.event.ComponentEvent;
 import java.util.Date;
@@ -34,8 +35,8 @@ public class VueloHelper {
             JTextField costoTurista,
             JTextField costoEjecutivo,
             JTextField costoEquipaje,
-            JComboBox<?> origen,
-            JComboBox<?> destino
+            JTextField origen,
+            JTextField destino
     ) {
         if (nombre != null) nombre.setText("");
         if (descripcion != null) descripcion.setText("");
@@ -43,8 +44,8 @@ public class VueloHelper {
         if (costoTurista != null) costoTurista.setText("");
         if (costoEjecutivo != null) costoEjecutivo.setText("");
         if (costoEquipaje != null) costoEquipaje.setText("");
-        if (origen != null) origen.setSelectedIndex(0);
-        if (destino != null) destino.setSelectedIndex(0);
+        if (origen != null) origen.setText("");
+        if (destino != null) destino.setText("");
 
         if (nombre != null) nombre.requestFocus();
     }
@@ -150,6 +151,30 @@ public class VueloHelper {
         }
 
     }
+
+    public static void crearCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta) {
+        if (nombre == null || nombre.trim().isEmpty() || pais == null || pais.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Nombre y país son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            Sistema.getInstance().altaCiudad(nombre.trim(), pais.trim(), aeropuerto, fechaAlta);
+            JOptionPane.showMessageDialog(null, "Ciudad creada con éxito.");
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void crearCategoria(String nombre) {
+        Sistema.getInstance().altaCategoria(nombre);
+    }
+
+
+
+
 }
 
 

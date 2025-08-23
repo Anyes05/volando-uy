@@ -561,6 +561,10 @@ public class Sistema implements ISistema {
         Categoria nuevaCategoria = new Categoria(nombre);
         categorias.add(nuevaCategoria);
     }
+    public List<Categoria> getCategorias() {
+        return categorias; // 'categorias' es tu lista interna de categorías
+    }
+
 
     // ALTA CIUDAD
     public void altaCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta) {

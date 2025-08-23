@@ -1,9 +1,9 @@
 package presentacion;
+import logica.clase.Categoria;
 import logica.clase.Sistema;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
-import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
 import javax.swing.JScrollPane;
@@ -15,6 +15,7 @@ import java.awt.event.ComponentAdapter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import java.awt.BorderLayout;
+import java.util.Calendar;
 
 
 public class EstacionTrabajo {
@@ -107,6 +108,23 @@ public class EstacionTrabajo {
     private JTextField costoEjText;
     private JTextField costoEqExText;
     private JComboBox comboBoxCat;
+    private JPanel altaCiudad;
+    private JTextField ciudadAltaText;
+    private JButton buttonAltaCiudad;
+    private JTextField aeropuertoAltaText;
+    private JLabel DescCiudadText;
+    private JLabel AeropuertoCiuText;
+    private JLabel SitioWebCiuText;
+    private JTextField descripcionAltaCiText;
+    private JTextField sitioWebAltaCiText;
+    private JCalendar calendarCiudadAlta;
+    private JLabel FechaAltaCiudText;
+    private JLabel CiudadAltaText;
+    private JLabel PaisAltaText;
+    private JTextField paisAltaCiText;
+    private JPanel altaCategoría;
+    private JTextField categoriaAltaText;
+    private JButton buttonAltaCategoria;
     private JButton button2;
 
     public EstacionTrabajo() {
@@ -149,6 +167,7 @@ public class EstacionTrabajo {
                     case "Crear ruta de vuelo":
                         parentPanel.removeAll();
                         cargarAerolineas();
+                        cargarCategorias();
                         parentPanel.add(altaRuta);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -168,6 +187,18 @@ public class EstacionTrabajo {
                     case "Consultar Vuelo":
                         parentPanel.removeAll();
                         parentPanel.add(consultaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Crear Ciudad":
+                        parentPanel.removeAll();
+                        parentPanel.add(altaCiudad);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Crear Categoría":
+                        parentPanel.removeAll();
+                        parentPanel.add(altaCategoría);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
@@ -352,11 +383,19 @@ public class EstacionTrabajo {
             }
             });
 
-
+        cargarCategorias();
+        cargarAerolineas();
         aceptarRuta.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    Object catSel = categoria.getSelectedItem();
+                    Object aeroSel = aerolineaVuelo.getSelectedItem();
+
+                    if(catSel == null || aeroSel == null) {
+                        JOptionPane.showMessageDialog(altaRuta, "Seleccione categoría y aerolínea", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     // Tomar los datos del formulario
                     String nombreRuta = nombre.getText().trim();
                     String descripcionRuta = descRutaText.getText().trim();
@@ -364,15 +403,14 @@ public class EstacionTrabajo {
                     String costoTuristaStr = costoTurText.getText().trim();
                     String costoEjecutivoStr = costoEjText.getText().trim();
                     String costoEquipajeStr = costoEqExText.getText().trim();
-                    String origen = ciudadOrigen.toString();
-                    String destino = ciudadDestino.toString();
+                    String origen = ciudadOrigen.getText().trim();
+                    String destino = ciudadDestino.getText().trim();
                     Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
                     String categoriaSeleccionada = categoria.getSelectedItem().toString();
                     String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
 
                     // Seleccionar aerolínea
                     VueloHelper.seleccionarAerolinea(nicknameAerolinea);
-
                     // Ingresar ruta de vuelo
                     VueloHelper.ingresarRutaVuelo(
                             nombreRuta,
@@ -386,23 +424,53 @@ public class EstacionTrabajo {
                             fechaCal,
                             categoriaSeleccionada
                     );
-
                     JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
 
-                    // Limpiar formulario
-                    VueloHelper.resetFormularioRuta(
-                            nombre, descripcion, hora,
-                            costoTurista, costoEjecutivo, costoEquipaje,
-                            origenComboBox, destinoComboBox
-                    );
-
-                } catch (Exception ex) {
+                }catch(Exception ex){
                     JOptionPane.showMessageDialog(altaRuta, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
                 }
             }
         });
+        buttonAltaCiudad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nombre = ciudadAltaText.getText().trim();
+                String pais = paisAltaCiText.getText().trim();
+                DTFecha fecha = new DTFecha(
+                        calendarCiudadAlta.getCalendar().get(Calendar.DAY_OF_MONTH),
+                        calendarCiudadAlta.getCalendar().get(Calendar.MONTH) + 1,
+                        calendarCiudadAlta.getCalendar().get(Calendar.YEAR)
+                );
 
+                // Si querés agregar un aeropuerto vacío por ahora, pasás null
+                VueloHelper.crearCiudad(nombre, pais, null, fecha);
 
+                // Limpiar campos
+                ciudadAltaText.setText("");
+                paisAltaCiText.setText("");
+                aeropuertoAltaText.setText("");
+                sitioWebAltaCiText.setText("");
+                descripcionAltaCiText.setText("");
+                calendarCiudadAlta.setCalendar(Calendar.getInstance());
+            }
+        });
+        buttonAltaCategoria.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nomCategoria = categoriaAltaText.getText().trim();
+                try {
+                    VueloHelper.crearCategoria(nomCategoria); // delega a Sistema
+                    JOptionPane.showMessageDialog(parentPanel, "Categoría creada con éxito.");
+
+                    // Limpiar campo
+                    categoriaAltaText.setText("");
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(parentPanel, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 
     private void cargarAerolineas() {
@@ -411,6 +479,13 @@ public class EstacionTrabajo {
             aerolineaVuelo.addItem(a.getNickname());
         }
     }
+    private void cargarCategorias() {
+        comboBoxCat.removeAllItems(); // Limpiar cualquier elemento previo
+        for (Categoria c : Sistema.getInstance().getCategorias()) {
+            comboBoxCat.addItem(c.getNombre());
+        }
+    }
+
 
 
 
@@ -428,6 +503,7 @@ public class EstacionTrabajo {
         fechaAltaRutaVuelo = new JCalendar();
         fechaAltaVuelo = new JCalendar();
         JCalendarAltaCliente = new JCalendar();
+        calendarCiudadAlta = new JCalendar();
     }
 
 
