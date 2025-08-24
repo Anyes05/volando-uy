@@ -8,8 +8,15 @@
     <persistence-unit name="miPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>logica.entidades.Usuario</class>
         <!-- Acá vas agregando todas tus entidades -->
+        <class>dato.entidades.Usuario</class>
+        <class>dato.entidades.Aeropuerto</class>
+        <class>dato.entidades.Vuelo</class>
+        <class>dato.entidades.RutaVuelo</class>
+        <class>dato.entidades.Ciudad</class>
+        <class>dato.entidades.Categoria</class>
+        <class>dato.entidades.Cantidad</class>
+
 
         <properties>
             <!-- Configuración de conexión -->
