@@ -1,6 +1,51 @@
 package dato.entidades;
 
-public class Aerolinea {
+import jakarta.persistence.*;
+import dato.entidades.RutaVuelo;
 
-    // many to many con rutaVuelo
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "aerolineas")
+public class Aerolinea extends Usuario{
+    @Column(nullable = false)
+    private String descripcion;
+
+    @Column(nullable = true)
+    private String linkSitioWeb;
+
+    // Mapear las rutas con JPA (many to many con rutaVuelo)
+    @OneToMany(mappedBy = "aerolinea", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RutaVuelo> rutasVuelo = new ArrayList<>();
+
+    public Aerolinea() {}
+
+    public Aerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb) {
+        super(nickname, nombre, correo);
+        this.descripcion = descripcion;
+        this.linkSitioWeb = linkSitioWeb;
+    }
+
+    // getters y setters
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getLinkSitioWeb() {
+        return linkSitioWeb;
+    }
+
+    public void setLinkSitioWeb(String linkSitioWeb) {
+        this.linkSitioWeb = linkSitioWeb;
+    }
+
+    public List<RutaVuelo> getRutasVuelo() {
+        return rutasVuelo;
+    }
 }
