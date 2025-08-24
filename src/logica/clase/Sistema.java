@@ -249,10 +249,12 @@ public class Sistema implements ISistema {
         for (Usuario u : usuarios) {    // Recorremos la lista de usuarios
             // Verificamos si el usuario es una Aerolinea y si su nickname coincide con el proporcionado
             if (u instanceof Aerolinea a && a.getNickname().toLowerCase().equals(nickname)) {
+                aerolineaSeleccionada = a;
                 recuerdaAerolinea = a.getNickname();
                 return;
             }
         }
+        aerolineaSeleccionada = null;
     }
 
     public DTRutaVuelo ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
@@ -450,7 +452,7 @@ public class Sistema implements ISistema {
 
     public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta) {
 
-        if (recordarRutaVuelo == null) {
+        if (ruta == null) { //recordarRutaVuelo==NULL
             throw new IllegalStateException("Debe seleccionar una ruta antes de ingresar los datos del vuelo.");
         }
 

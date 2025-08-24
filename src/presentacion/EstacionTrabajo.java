@@ -4,18 +4,20 @@ import logica.clase.Sistema;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
+import javax.swing.JList;
+import javax.swing.DefaultListModel;
+import javax.swing.ListSelectionModel;
+
 
 import javax.swing.*;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
-import java.awt.BorderLayout;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class EstacionTrabajo {
@@ -23,11 +25,11 @@ public class EstacionTrabajo {
     private JPanel altaVuelo;
     private JComboBox aerolinea;
     private JPanel fromAltaVuelo;
-    private JTextField nombre;
-    private JTextField ciudadOrigen;
-    private JTextField ciudadDestino;
+    private JTextField nombreAltaVuelotxt;
+    private JTextField asientosMaxTuristatxt;
+    private JTextField asientoMaxEjecutivotxt;
     private JCalendar fechaAltaRutaVuelo;
-    private JButton Enviar;
+    private JButton buttonAltaVuelo;
     private JPanel altaUsuario;
     private JPanel altaAerolinea;
     private JButton ButtonCrearNuevoCliente;
@@ -59,20 +61,19 @@ public class EstacionTrabajo {
     private JComboBox comboBoxUsuario;
     private JPanel consultaRutaVuelo;
     private JToolBar JToolBarPrincipal;
-    private JList list1;
-    private JComboBox comboBoxAerolinea;
-    private JTextPane textPane2;
-    private JTextPane textPane3;
-    private JTextArea textArea3;
-    private JTextArea textArea4;
+    //private JList list1;
+    private JComboBox comboBoxAeroRVConsulta;
+    private JTextPane nombreRVConsulta;
+    private JTextArea costoBaseRVConsulta;
+    private JTextArea fechaAltaRVConsulta;
     private JList list2;
-    private JTextArea textArea5;
-    private JTextArea textArea6;
-    private JTextArea textArea7;
-    private JTextArea textArea8;
-    private JTextArea textArea9;
-    private JTextArea textArea10;
-    private JTextArea textArea11;
+    private JTextArea nomVueloRVConsulta;
+    private JTextArea fechaVueloRVConsulta;
+    private JTextArea horaVueloRVConsulta;
+    private JTextArea duracionVueloRVConsulta;
+    private JTextArea cantAsientosMaxTuristaRVConsulta;
+    private JTextArea cantAsientoMaxEjecutivoRVConsulta;
+    private JTextArea fechaAltaVueloRVConsulta;
     private JButton aceptarButton1;
     private JRadioButton rutaDeVueloRadioButton;
     private JRadioButton reservaDeVueloRadioButton;
@@ -86,7 +87,7 @@ public class EstacionTrabajo {
     private JPanel consultaVuelo;
     private JComboBox comboBox4;
     private JComboBox aerolineaVuelo;
-    private JComboBox comboBox5;
+    private JComboBox<DTRutaVuelo> rutasVueloAltaVuelo;
     private JTextArea descRutaText;
     private JTextField correoAltaCliente;
     private JCalendar JCalendarAltaCliente;
@@ -125,8 +126,13 @@ public class EstacionTrabajo {
     private JTextField categoriaAltaText;
     private JButton buttonAltaCategoria;
     private JTextField nombreAltRutaText;
-    private JTextField duracionVueloText;
+    private JTextField duracionAltaVuelotxt;
     private JButton button2;
+    private JList<String> listCatAltaRuta;
+    private JComboBox<DTRutaVuelo> comBoxRutVueloConsultaRV;
+    private JComboBox vuelosConsultaRV;
+    private JTextPane descripcionRVConsulta;
+
 
     public EstacionTrabajo() {
 
@@ -168,13 +174,14 @@ public class EstacionTrabajo {
                     case "Crear ruta de vuelo":
                         parentPanel.removeAll();
                         cargarAerolineas(aerolineaVuelo);
-                        cargarCategorias(comboBoxCat);
+                        cargarCategorias(listCatAltaRuta);
                         parentPanel.add(altaRuta);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
                     case "Consultar ruta de vuelo":
                         parentPanel.removeAll();
+                        cargarAerolineas(comboBoxAeroRVConsulta);
                         parentPanel.add(consultaRutaVuelo);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -291,7 +298,7 @@ public class EstacionTrabajo {
 
 
 /// ///////// ni idea /////////
-        consultaRutaVuelo.addComponentListener(new ComponentAdapter() {
+        /*consultaRutaVuelo.addComponentListener(new ComponentAdapter() {
         });
         list1.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -304,7 +311,7 @@ public class EstacionTrabajo {
             }
         });
         fechaAltaRutaVuelo.addComponentListener(new ComponentAdapter() {
-        });
+        });*/
 
 ////////////////////ALTA CLIENTE//////////////////////////////////
         //Boton de entrada
@@ -390,18 +397,15 @@ public class EstacionTrabajo {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Object catSel = comboBoxCat.getSelectedItem();
-                    Object aeroSel = aerolineaVuelo.getSelectedItem();
-
-                    if(aeroSel == null) {
-                        JOptionPane.showMessageDialog(altaRuta, "Seleccione aerolínea", "Error", JOptionPane.ERROR_MESSAGE);
+                    List<String> categoriasSeleccionadas = listCatAltaRuta.getSelectedValuesList();
+                    if (categoriasSeleccionadas.isEmpty()) {
+                        JOptionPane.showMessageDialog(altaRuta,
+                                "Seleccione al menos una categoría",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    if(catSel == null) {
-                        JOptionPane.showMessageDialog(altaRuta, "Seleccione categoría", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
                     // Tomar los datos del formulario
                     String nombreRuta = nombreAltRutaText.getText().trim();
                     String descripcionRuta = descRutaText.getText().trim();
@@ -412,12 +416,12 @@ public class EstacionTrabajo {
                     String origen = ciudadOText.getText().trim();
                     String destino = ciudadDText.getText().trim();
                     Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
-                    String categoriaSeleccionada = comboBoxCat.getSelectedItem().toString();
                     String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
 
                     // Seleccionar aerolínea
                     VueloHelper.seleccionarAerolinea(nicknameAerolinea);
-                    // Ingresar ruta de vuelo
+
+                    // Ingresar ruta de vuelo (modifica el método para aceptar List<String>)
                     VueloHelper.ingresarRutaVuelo(
                             nombreRuta,
                             descripcionRuta,
@@ -428,16 +432,19 @@ public class EstacionTrabajo {
                             origen,
                             destino,
                             fechaCal,
-                            categoriaSeleccionada
+                            categoriasSeleccionadas
                     );
+
                     JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
-
-                }catch(Exception ex){
-                    JOptionPane.showMessageDialog(altaRuta, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaRuta,
+                            "Error: " + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
         buttonAltaCiudad.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -477,7 +484,105 @@ public class EstacionTrabajo {
                 }
             }
         });
+
+        buttonAltaVuelo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String nombre = nombreAltaVuelotxt.getText().trim();
+                    String duracion = duracionAltaVuelotxt.getText().trim();
+                    Calendar fechaCal = fechaAltaVuelo.getCalendar();
+                    DTFecha fecha = new DTFecha(
+                            fechaCal.get(Calendar.DAY_OF_MONTH),
+                            fechaCal.get(Calendar.MONTH) + 1,
+                            fechaCal.get(Calendar.YEAR)
+                    );
+                    int maxTurista = Integer.parseInt(asientosMaxTuristatxt.getText().trim());
+                    int maxEjecutivo = Integer.parseInt(asientoMaxEjecutivotxt.getText().trim());
+                    DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem(); // la ruta que seleccionaste en el combo
+
+                    if (ruta == null) {
+                        JOptionPane.showMessageDialog(altaVuelo, "Debe seleccionar una ruta primero.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String hora = horaText.getText().trim();
+                    VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaCal, maxTurista, maxEjecutivo, ruta);
+                    Sistema.getInstance().darAltaVuelo();
+                    JOptionPane.showMessageDialog(altaVuelo, "Vuelo registrado correctamente.");
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaVuelo, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        comboBoxAeroRVConsulta.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nickname = (String) comboBoxAeroRVConsulta.getSelectedItem();
+                if (nickname != null) {
+                    cargarRutas(comBoxRutVueloConsultaRV,nickname);
+                }
+            }
+        });
+
+        comBoxRutVueloConsultaRV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DTRutaVuelo nombreRuta = (DTRutaVuelo) comBoxRutVueloConsultaRV.getSelectedItem();
+                String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
+                if (nombreRuta != null && nicknameAerolinea != null) {
+                    mostrarDatosRuta(nicknameAerolinea, nombreRuta.getNombre());
+                }
+            }
+        });
+
+
+        comboBoxAeroRVConsulta.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nickname = (String) comboBoxAeroRVConsulta.getSelectedItem();
+                if (nickname != null) {
+                    cargarRutas(comBoxRutVueloConsultaRV,nickname);
+                }
+            }
+        });
+
+
+        aerolinea.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nickname = (String) aerolinea.getSelectedItem();
+                if (nickname != null) {
+                    cargarRutas(rutasVueloAltaVuelo, nickname);
+                }
+            }
+        });
     }
+
+    private void mostrarDatosRuta(String nicknameAerolinea,String nombreRuta) {
+        DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
+        if (ruta != null) {
+            nombreRVConsulta.setText(ruta.getNombre());
+            descripcionRVConsulta.setText(ruta.getDescripcion());
+            costoBaseRVConsulta.setText(String.valueOf(ruta.getCostoBase()));
+            fechaAltaRVConsulta.setText(ruta.getFechaAlta().toString());
+        } else {
+            JOptionPane.showMessageDialog(parentPanel, "No se encontró la ruta.");
+        }
+    }
+
+
+
+    private void cargarRutas(JComboBox<DTRutaVuelo>comboRutas, String nicknameAerolinea) {
+        comboRutas.removeAllItems(); // Limpiar combo
+        List<DTRutaVuelo> rutas = Sistema.getInstance().listarRutaVuelo(nicknameAerolinea);
+        for (DTRutaVuelo ruta : rutas) {
+            comboRutas.addItem(ruta);
+        }
+    }
+
 
     private void cargarAerolineas(JComboBox<String> combo) {
         combo.removeAllItems(); // limpiar combo por si ya tiene algo
@@ -485,12 +590,16 @@ public class EstacionTrabajo {
             combo.addItem(a.getNickname());
         }
     }
-    private void cargarCategorias(JComboBox<String> combo) {
-        combo.removeAllItems(); // Limpiar cualquier elemento previo
+    private void cargarCategorias(JList<String> lista) {
+        DefaultListModel<String> modelo = new DefaultListModel<>();
         for (Categoria c : Sistema.getInstance().getCategorias()) {
-            combo.addItem(c.getNombre());
+            modelo.addElement(c.getNombre());
         }
+        lista.setModel(modelo);
+        lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permitir varias selecciones
     }
+
+
 
 
 
@@ -510,6 +619,8 @@ public class EstacionTrabajo {
         fechaAltaVuelo = new JCalendar();
         JCalendarAltaCliente = new JCalendar();
         calendarCiudadAlta = new JCalendar();
+        listCatAltaRuta = new JList<>();
+        listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
 
