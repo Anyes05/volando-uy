@@ -45,9 +45,13 @@ public class Vuelo {
     private RutaVuelo rutaVuelo;
 
     //Relacion con reserva
-    @OneToMany
-    @JoinColumn(name = "vuelo_id")
+    @OneToMany (mappedBy = "vuelo")
     private List<Reserva> reserva;
+
+    //Relacion con compraComun, no estoy segura de si va
+    @ManyToOne
+    @JoinColumn(name = "compraComun_id")
+    private CompraComun compraComun;
 
     // CONSTRUCTOR
     public Vuelo() {
