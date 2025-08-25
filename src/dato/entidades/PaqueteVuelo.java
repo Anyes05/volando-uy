@@ -38,6 +38,13 @@ public class PaqueteVuelo {
     @ManyToOne
     private Cantidad cantidad;
 
+    //Relacion con compraPaquete
+    @ManyToOne
+    @JoinColumn(name = "compraPaquete_id")
+    private CompraPaquete compraPaquete;
+
+    // Constructores
+
     public PaqueteVuelo() { // Constuctor vacío
         this.cantidad = null;
     }
