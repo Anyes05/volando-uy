@@ -16,6 +16,8 @@
         <class>dato.entidades.Ciudad</class>
         <class>dato.entidades.Categoria</class>
         <class>dato.entidades.Cantidad</class>
+        <class>dato.entidades.PaqueteVuelo</class>
+        <class>dato.entidades.Pasaje</class>
 
 
         <properties>
