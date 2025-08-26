@@ -289,7 +289,6 @@ public class VueloHelper {
                     fecha,
                     ruta
             );
-            JOptionPane.showMessageDialog(null, "Vuelo registrado correctamente.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

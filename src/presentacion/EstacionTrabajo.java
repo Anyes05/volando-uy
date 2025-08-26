@@ -66,13 +66,6 @@ public class EstacionTrabajo {
     private JTextPane nombreRVConsulta;
     private JTextArea costoBaseRVConsulta;
     private JTextArea fechaAltaRVConsulta;
-    private JTextArea nomVueloRVConsulta;
-    private JTextArea fechaVueloRVConsulta;
-    private JTextArea horaVueloRVConsulta;
-    private JTextArea duracionVueloRVConsulta;
-    private JTextArea cantAsientosMaxTuristaRVConsulta;
-    private JTextArea cantAsientoMaxEjecutivoRVConsulta;
-    private JTextArea fechaAltaVueloRVConsulta;
     private JButton aceptarButton1;
     private JRadioButton rutaDeVueloRadioButton;
     private JRadioButton reservaDeVueloRadioButton;
@@ -137,6 +130,7 @@ public class EstacionTrabajo {
     private JTextArea costoBaseTuRVConsulta;
     private JLabel costoEquipajeExRVConsulta;
     private JTextArea costoUnEquipajeExRVConsulta;
+    private JTextField horaVuelotxt;
 
 
     private boolean cargandoAeroRV = false;
@@ -191,6 +185,14 @@ public class EstacionTrabajo {
                     case "Consultar ruta de vuelo":
                         parentPanel.removeAll();
                         cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
+                        nombreRVConsulta.setText("");
+                        descripcionRVConsulta.setText("");
+                        ciudadORVConsulta.setText("");
+                        ciudadDRVConsulta.setText("");
+                        costoBaseTuRVConsulta.setText("");
+                        costoBaseEjRVConsulta.setText("");
+                        costoUnEquipajeExRVConsulta.setText("");;
+                        fechaAltaRVConsulta.setText("");
                         comboBoxAeroRVConsulta.removeAllItems();
                         comBoxRutVueloConsultaRV.removeAllItems();
                         vuelosConsultaRV.removeAllItems();
@@ -450,6 +452,16 @@ public class EstacionTrabajo {
                     );
 
                     JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
+                    nombreAltRutaText.setText("");
+                    descRutaText.setText("");
+                    horaText.setText("");
+                    costoTurText.setText("");
+                    costoEjText.setText("");
+                    costoEqExText.setText("");
+                    ciudadOText.setText("");
+                    ciudadDText.setText("");
+                    fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
+
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(altaRuta,
                             "Error: " + ex.getMessage(),
@@ -513,20 +525,27 @@ public class EstacionTrabajo {
                     );
                     int maxTurista = Integer.parseInt(asientosMaxTuristatxt.getText().trim());
                     int maxEjecutivo = Integer.parseInt(asientoMaxEjecutivotxt.getText().trim());
-                    DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem(); // la ruta que seleccionaste en el combo
+                    DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem();
 
                     if (ruta == null) {
                         JOptionPane.showMessageDialog(altaVuelo, "Debe seleccionar una ruta primero.", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    String hora = horaText.getText().trim();
+                    String hora = horaVuelotxt.getText().trim();
                     VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaCal, maxTurista, maxEjecutivo, ruta);
                     String nicknameAerolinea = (String) aerolinea.getSelectedItem();
                     Sistema.getInstance().seleccionarAerolinea(nicknameAerolinea);
                     Sistema.getInstance().darAltaVuelo();
                     JOptionPane.showMessageDialog(altaVuelo, "Vuelo registrado correctamente.");
 
+                    nombreAltaVuelotxt.setText("");
+                    duracionAltaVuelotxt.setText("");
+                    fechaAltaVuelo.setCalendar(Calendar.getInstance());
+                    asientosMaxTuristatxt.setText("");
+                    asientoMaxEjecutivotxt.setText("");
+                    horaVuelotxt.setText("");
+                    rutasVueloAltaVuelo.setSelectedItem(null);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(altaVuelo, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }

@@ -489,8 +489,8 @@ public class Sistema implements ISistema {
                 recordarDatosVuelo.getFechaVuelo(),
                 recordarDatosVuelo.getHoraVuelo(),
                 recordarDatosVuelo.getDuracion(),
-                recordarDatosVuelo.getAsientosMaxEjecutivo(),
                 recordarDatosVuelo.getAsientosMaxTurista(),
+                recordarDatosVuelo.getAsientosMaxEjecutivo(),
                 recordarDatosVuelo.getFechaAlta()
         );
 
