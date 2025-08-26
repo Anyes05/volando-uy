@@ -9,11 +9,10 @@ public class DTRutaVuelo {
     private DTCiudad ciudadOrigen;
     private DTCiudad ciudadDestino;
 
-    public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTCostoBase DTCostoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
+    public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaAlta = fechaAlta;
-        this.DTCostoBase = DTCostoBase;
         this.aerolinea = aerolinea;
         this.ciudadOrigen = ciudadOrigen;
         this.ciudadDestino = ciudadDestino;

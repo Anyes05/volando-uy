@@ -2,6 +2,7 @@ package logica.clase;
 
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTCostoBase;
+import logica.DataTypes.TipoAsiento;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,14 @@ public abstract class Reserva {
     private Cliente cliente;
     private DTFecha fechaReserva;
     private DTCostoBase costoReserva;
+    private TipoAsiento tipoAsiento;
     private List<Pasaje> pasajeros;
 
     // Constructor
-    public Reserva(Cliente cliente, DTFecha fechaReserva) {
+    public Reserva(Cliente cliente, DTFecha fechaReserva, TipoAsiento tipoAsiento) {
         this.cliente = cliente;
         this.fechaReserva = fechaReserva;
+        this.tipoAsiento = tipoAsiento;
 
         this.pasajeros = new ArrayList<>();
     }
@@ -60,7 +63,13 @@ public abstract class Reserva {
         this.costoReserva.setCostoTotal(costoTotal);
     }
 
+    public TipoAsiento getTipoAsiento() {
+        return tipoAsiento;
+    }
 
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+        this.tipoAsiento = tipoAsiento;
+    }
 
     public abstract int calcularCosto();}
 
