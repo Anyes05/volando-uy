@@ -1,10 +1,10 @@
 package logica.clase;
 
-import logica.DataTypes.*;
-import dato.entidades.Cliente;
-import dato.entidades.Aerolinea;
-import dato.entidades.Usuario;
 
+import logica.DataTypes.*;
+import dato.entidades.Aerolinea;
+import logica.clase.Usuario;
+import logica.clase.Cliente;
 import logica.servicios.UsuarioServicio;
 import logica.servicios.ClienteServicio;
 import logica.servicios.AerolineaServicio;
@@ -20,13 +20,15 @@ public class Sistema implements ISistema {
     private List<Ciudad> ciudades;
     private List<Vuelo> vuelos;
     private String recuerdaAerolinea; // Para recordar la aerolinea seleccionada
-    private DTRutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
+    private RutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
     private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
+    private Cliente clienteSeleccionado;
+    private PaqueteVuelo paqueteSeleccionado;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
 
-    private Sistema(){
+    private Sistema() {
         paqueteVuelos = new ArrayList<>();
         usuarios = new ArrayList<>();
         ciudades = new ArrayList<>();
@@ -35,45 +37,46 @@ public class Sistema implements ISistema {
 
 
     }
-    public static Sistema getInstance(){
-        if(Instance == null){
+
+    public static Sistema getInstance() {
+        if (Instance == null) {
             Instance = new Sistema();
         }
         return Instance;
     }
 
     // ALTA USUARIO
-    private boolean existeNickname(String nickname){
+    private boolean existeNickname(String nickname) {
         ClienteServicio clienteServicio = new ClienteServicio();
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
-        
+
         // Verificar si existe en clientes
-        Cliente cliente = clienteServicio.buscarClientePorNickname(nickname);
+        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nickname);
         if (cliente != null) {
             return true;
         }
-        
+
         // Verificar si existe en aerolíneas
         Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
         if (aerolinea != null) {
             return true;
         }
-        
+
         return false;
     }
 
-    private boolean existeCorreo(String correo){
+    private boolean existeCorreo(String correo) {
         ClienteServicio clienteServicio = new ClienteServicio();
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
-        
+
         // Buscar por correo en clientes
-        List<Cliente> clientes = clienteServicio.listarClientes();
-        for (Cliente c : clientes) {
+        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+        for (dato.entidades.Cliente c : clientes) {
             if (c.getCorreo().equals(correo)) {
                 return true;
             }
         }
-        
+
         // Buscar por correo en aerolíneas
         List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
         for (Aerolinea a : aerolineas) {
@@ -81,18 +84,18 @@ public class Sistema implements ISistema {
                 return true;
             }
         }
-        
+
         return false;
     }
 
-    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad,TipoDoc tipoDocumento,String numeroDocumento){
+    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
         if (existeNickname(nickname)) {
             throw new IllegalArgumentException("El nickname ya existe.");
         }
         if (existeCorreo(correo)) {
             throw new IllegalArgumentException("El correo electrónico ya existe.");
         }
-        
+
         try {
             ClienteServicio clienteServicio = new ClienteServicio();
             clienteServicio.crearCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
@@ -100,15 +103,15 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Error al crear el cliente: " + e.getMessage());
         }
     }
-    
-    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb){
+
+    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb) {
         if (existeNickname(nickname)) {
             throw new IllegalArgumentException("El nickname ya existe.");
         }
         if (existeCorreo(correo)) {
             throw new IllegalArgumentException("El correo electrónico ya existe.");
         }
-        
+
         try {
             AerolineaServicio aerolineaServicio = new AerolineaServicio();
             aerolineaServicio.crearAerolinea(nickname, nombre, correo, descripcion, linkSitioWeb);
@@ -116,6 +119,7 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Error al crear la aerolínea: " + e.getMessage());
         }
     }
+}
 
 //    // CONSULTA DE USUARIO
 //    public List<DTUsuario> consultarUsuarios(){
@@ -331,8 +335,8 @@ public class Sistema implements ISistema {
 //        //DTHora horaVuelo = new DTHora(hora.getHora(), hora.getMinutos());
 //        // Crear la fecha de alta
 //        DTFecha fechaAltaDT = new DTFecha(fechaAlta.getDia(), fechaAlta.getMes(), fechaAlta.getAno());
-//        // Crear el costo base
 //        CostoBase costoBase = new CostoBase(costoTurista, costoEjecutivo, costoEquipajeExtra);
+//
 //        // Crear los DTCiudad para origen y destino si existen
 //        DTCiudad ciudadOrigenDT = null;
 //        DTCiudad ciudadDestinoDT = null;
@@ -348,7 +352,12 @@ public class Sistema implements ISistema {
 //            throw new IllegalArgumentException("Una de las ciudades no existe.");
 //        }
 //        // Crear la ruta de vuelo
-//        DTRutaVuelo DTrutaVuelo = new DTRutaVuelo( nombreRuta, descripcion, fechaAltaDT, costoBase, aerolineaDT, ciudadOrigenDT, ciudadDestinoDT);
+//        DTRutaVuelo DTrutaVuelo = new DTRutaVuelo( nombreRuta, descripcion, fechaAltaDT, aerolineaDT, ciudadOrigenDT, ciudadDestinoDT);
+//            RutaVuelo nuevaRuta = new RutaVuelo(
+//                    nombreRuta,
+ //                   descripcion,
+//                    costoBase
+ //           );
 //        // Retornar el DTRutaVuelo creado
 //        recordarRutaVuelo = DTrutaVuelo; // Guardar la ruta de vuelo seleccionada
 //        return DTrutaVuelo;
@@ -485,6 +494,7 @@ public class Sistema implements ISistema {
 //        }
 //        for (RutaVuelo rv : aerolineaSeleccionada.getRutasVuelo()) {
 //            if (rv.getNombre().equalsIgnoreCase(nombre)) {
+ //               recordarRutaVuelo = rv;
 //                DTRutaVuelo dtRuta = new DTRutaVuelo(
 //                        rv.getNombre(),
 //                        rv.getDescripcion(),
@@ -493,8 +503,8 @@ public class Sistema implements ISistema {
 //                        new DTAerolinea(aerolineaSeleccionada.getNickname(), aerolineaSeleccionada.getNombre(), aerolineaSeleccionada.getCorreo(), aerolineaSeleccionada.getDescripcion(), aerolineaSeleccionada.getLinkSitioWeb(), new ArrayList<>()),
 //                        new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
 //                        new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais())
+//
 //                );
-//                recordarRutaVuelo = dtRuta;
 //                return dtRuta;
 //            }
 //        }
@@ -711,9 +721,7 @@ public class Sistema implements ISistema {
 //
 //    }
 //
-//    public void AltaReservaVuelo(int costo){
 //
-//    }
 //
 //    public List<DTRutaVuelo> listarRutaVuelo(){
 //        return null;
@@ -729,4 +737,153 @@ public class Sistema implements ISistema {
 //
 //    }
 
+/*
+    // CREAR PAQUETE VUELO
+    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta, TipoAsiento tipoAsiento) {
+        for (PaqueteVuelo p : paqueteVuelos) {
+            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
+                throw new IllegalArgumentException("El nombre del paquete ya existe.");
+            }
+        }
+        if (descuento < 0 || descuento > 100) {
+            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
+        }
+        if (diasValidos <= 0) {
+            throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
+        }
+
+        try {
+            PaqueteVuelo paqueteVuelo = new PaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta, tipoAsiento);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
+        }
+    }
+
+    public List<DTPaqueteVuelos> mostrarPaquete() {
+        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
+        for (PaqueteVuelo p : paqueteVuelos) {
+            DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                    p.getNombre(),
+                    p.getDescripcion(),
+                    p.getTipoAsiento(),
+                    p.getDiasValidos(),
+                    p.getDescuento(),
+                    p.getFechaAlta()
+            );
+            listaPaquetes.add(dtPaquete); // Add the created object to the list
+        }
+        return listaPaquetes;
+    }
+
+    public void seleccionarPaquete(String nombrePaquete) {
+        for (PaqueteVuelo p : paqueteVuelos) {
+            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
+                paqueteSeleccionado = p;
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
+    }
+
+    public List<DTCliente> mostrarClientes() {
+        List<DTCliente> listaClientes = new ArrayList<>();
+        for (Usuario u : usuarios) {
+            if (u instanceof Cliente c) {
+                listaClientes.add(new DTCliente(
+                        c.getNickname(),
+                        c.getNombre(),
+                        c.getCorreo(),
+                        c.getApellido(),
+                        c.getTipoDoc(),
+                        c.getNumeroDocumento(),
+                        c.getFechaNacimiento(),
+                        c.getNacionalidad(),
+                        new ArrayList<>()
+                ));
+            }
+        }
+        return listaClientes;
+    }
+
+
+
+    public void seleccionarCliente(String nombreCliente) {
+        for (Usuario u : usuarios) {
+            if (u instanceof Cliente c && c.getNombre().equalsIgnoreCase(nombreCliente)) {
+                clienteSeleccionado = c;
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No se encontró un cliente con el nombre: " + nombreCliente);
+    }
+
+    public void realizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimiento, TipoAsiento tipoAsiento) {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de realizar la compra.");
+        }
+        if (clienteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un cliente antes de realizar la compra.");
+        }
+        if (costo < 0) {
+            throw new IllegalArgumentException("El costo no puede ser negativo.");
+        }
+        CompraPaquete compraPaquete = new CompraPaquete(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento);
+        // crear costo base
+        DTCostoBase costoBase = new DTCostoBase(0, 0, 0);
+        compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
+        clienteSeleccionado.agregarReserva(compraPaquete);
+        clienteSeleccionado.incrementarCantidadPaquetes();
+
+
+    }
+
+    public void agregarRutaAPaquete (RutaVuelo rutaSeleccionada, int cant) {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
+        }
+        if (rutaSeleccionada == null) {
+            throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
+        }
+        if (paqueteSeleccionado.getRutas().contains(rutaSeleccionada)) {
+            throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
+        }
+        paqueteSeleccionado.getRutas().add(rutaSeleccionada);
+        paqueteSeleccionado.sumarCantidad(rutaSeleccionada, cant);
+    }
+
+    // consulta paquete vuelo
+
+    public DTPaqueteVuelos consultaPaqueteVuelo (PaqueteVuelo paqueteSeleccionado) {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
+        }
+        DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                paqueteSeleccionado.getNombre(),
+                paqueteSeleccionado.getDescripcion(),
+                paqueteSeleccionado.getTipoAsiento(),
+                paqueteSeleccionado.getDiasValidos(),
+                paqueteSeleccionado.getDescuento(),
+                paqueteSeleccionado.getFechaAlta()
+        );
+        dtPaquete.setCantidad(paqueteSeleccionado.getCantidad());
+        dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
+        dtPaquete.setRutas(paqueteSeleccionado.getRutas());
+        dtPaquete.setDTCostoBase(paqueteSeleccionado.getCostoBase());
+        return dtPaquete;
+    }
+
+
 }
+
+
+ */
+
+
+
+
+
+
+
+
+
+

@@ -1,42 +1,111 @@
 package logica.DataTypes;
 
+import logica.clase.Cantidad;
+import logica.clase.RutaVuelo;
+
+import java.util.List;
+
 public class DTPaqueteVuelos {
-    private TipoAsiento tipoAsiento;
-    private int diasValidos;
-    private float descuento;
     private String nombre;
     private String descripcion;
+    private TipoAsiento tipoAsiento; // Mejor sería un Enum
+    private int diasValidos;
+    private float descuento;
+    private DTCostoBase DTCostoBase;
     private float costoTotal;
+    private DTFecha fechaAlta;
 
-    public DTPaqueteVuelos(TipoAsiento tipoAsiento, int diasValidos, float descuento, String nombre, String descripcion, float costoTotal) {
+    private List<Cantidad> cantidad;
+
+    private List<RutaVuelo> rutas;
+
+
+    public DTPaqueteVuelos(String nombre, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
         this.tipoAsiento = tipoAsiento;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.costoTotal = costoTotal;
+        this.fechaAlta = fechaAlta;
     }
 
-    //Getters
-    public TipoAsiento getTipoAsiento() {
-        return tipoAsiento;
-    }
-    public int getDiasValidos() {
-        return diasValidos;
-    }
-    public float getDescuento() {
-        return descuento;
-    }
     public String getNombre() {
         return nombre;
     }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     public String getDescripcion() {
         return descripcion;
     }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public TipoAsiento getTipoAsiento() {
+        return tipoAsiento;
+    }
+
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+        this.tipoAsiento = tipoAsiento;
+    }
+
+    public int getDiasValidos() {
+        return diasValidos;
+    }
+
+    public void setDiasValidos(int diasValidos) {
+        this.diasValidos = diasValidos;
+    }
+
+    public float getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(float descuento) {
+        this.descuento = descuento;
+    }
+
+    public DTCostoBase getDTCostoBase() {
+        return DTCostoBase;
+    }
+
+    public void setDTCostoBase(DTCostoBase DTCostoBase) {
+        this.DTCostoBase = DTCostoBase;
+    }
+
     public float getCostoTotal() {
         return costoTotal;
     }
 
-    // Setters
+    public void setCostoTotal(float costoTotal) {
+        this.costoTotal = costoTotal;
+    }
 
+    public DTFecha getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public void setFechaAlta(DTFecha fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
+
+    public List<Cantidad> getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(List<Cantidad> cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public List<RutaVuelo> getRutas() {
+        return rutas;
+    }
+
+    public void setRutas(List<RutaVuelo> rutas) {
+        this.rutas = rutas;
+    }
 }

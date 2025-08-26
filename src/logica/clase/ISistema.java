@@ -32,11 +32,13 @@ public interface ISistema {
 //    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
 //    public List<DTVueloReserva> seleccionarVuelo(String nombre);
 //
+//    // PAQUETES DE VUELO
 //    public List<DTPaqueteVuelos> mostrarPaquete();
 //    public void seleccionarPaquete(String nombrePaquete);
 //    public List<DTCliente> mostrarClientes();
 //    public void seleccionarCliente(String nombreCliente);
-//    public void relizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimineto);
+//    public void realizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimiento, TipoAsiento tipoAsiento);
+    //public void agregarRutaAPaquete(RutaVuelo ruta, int cant);
 //    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
 //
 //    public void seleccionarAerolinea(String nickname);
@@ -49,11 +51,8 @@ public interface ISistema {
 //
 //    // RESERVA VUELO
 //    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
-//    public void AltaReservaVuelo(int costo);
-//
-//
 //    public DTRutaVuelo ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);
-//
+//    // CONSULTA PAQUETE
 //    public void registrarRuta();
 //    public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre);
 //
