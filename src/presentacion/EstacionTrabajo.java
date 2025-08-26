@@ -1,9 +1,11 @@
 package presentacion;
+
 import logica.clase.Categoria;
 import logica.clase.Sistema;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
+
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
@@ -151,7 +153,6 @@ public class EstacionTrabajo {
         consultaUsuario.add(scroll, BorderLayout.CENTER);
 
 
-
 //////////////////// PANEL DE BOTONES//////////////////////////////////////
         //Boton de inicio
         botonInicio.addActionListener(new ActionListener() {
@@ -235,14 +236,14 @@ public class EstacionTrabajo {
                         break;
                     case "Consultar usuario":
                         parentPanel.removeAll();
-                        UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
+                        //UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
                         parentPanel.add(consultaUsuario);
                         parentPanel.repaint();
                         parentPanel.revalidate();
 
                         break;
                 }
-                }
+            }
         });
 
 ///////////// ALTA AEROLINEA //////////////////
@@ -293,8 +294,6 @@ public class EstacionTrabajo {
                 }
             }
         });
-
-
 
 
 /// ///////// ni idea /////////
@@ -390,7 +389,7 @@ public class EstacionTrabajo {
                     JOptionPane.showMessageDialog(altaCliente, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            });
+        });
 
 
         aceptarRuta.addActionListener(new ActionListener() {
@@ -522,7 +521,7 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 String nickname = (String) comboBoxAeroRVConsulta.getSelectedItem();
                 if (nickname != null) {
-                    cargarRutas(comBoxRutVueloConsultaRV,nickname);
+                    cargarRutas(comBoxRutVueloConsultaRV, nickname);
                 }
             }
         });
@@ -544,7 +543,7 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 String nickname = (String) comboBoxAeroRVConsulta.getSelectedItem();
                 if (nickname != null) {
-                    cargarRutas(comBoxRutVueloConsultaRV,nickname);
+                    cargarRutas(comBoxRutVueloConsultaRV, nickname);
                 }
             }
         });
@@ -561,7 +560,7 @@ public class EstacionTrabajo {
         });
     }
 
-    private void mostrarDatosRuta(String nicknameAerolinea,String nombreRuta) {
+    private void mostrarDatosRuta(String nicknameAerolinea, String nombreRuta) {
         DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
         if (ruta != null) {
             nombreRVConsulta.setText(ruta.getNombre());
@@ -574,8 +573,7 @@ public class EstacionTrabajo {
     }
 
 
-
-    private void cargarRutas(JComboBox<DTRutaVuelo>comboRutas, String nicknameAerolinea) {
+    private void cargarRutas(JComboBox<DTRutaVuelo> comboRutas, String nicknameAerolinea) {
         comboRutas.removeAllItems(); // Limpiar combo
         List<DTRutaVuelo> rutas = Sistema.getInstance().listarRutaVuelo(nicknameAerolinea);
         for (DTRutaVuelo ruta : rutas) {
@@ -590,6 +588,7 @@ public class EstacionTrabajo {
             combo.addItem(a.getNickname());
         }
     }
+
     private void cargarCategorias(JList<String> lista) {
         DefaultListModel<String> modelo = new DefaultListModel<>();
         for (Categoria c : Sistema.getInstance().getCategorias()) {
@@ -598,10 +597,6 @@ public class EstacionTrabajo {
         lista.setModel(modelo);
         lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permitir varias selecciones
     }
-
-
-
-
 
 
     public static void main(String[] args) {
@@ -622,10 +617,6 @@ public class EstacionTrabajo {
         listCatAltaRuta = new JList<>();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
-
-
-
-
 
 
 }

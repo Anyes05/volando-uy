@@ -33,60 +33,60 @@ public class UsuarioHelper {
         }
     }
 
-    // Método para actualizar un JTable con la lista de usuarios
-    public static void actualizarTablaUsuarios(JTable tablaUsuarios) {
-        if (tablaUsuarios == null) return;
-
-        // Definir las columnas
-        String[] columnas = {"Tipo", "Nickname", "Nombre", "Correo"};
-        DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
-
-        try {
-            List<DTUsuario> usuarios = Sistema.getInstance().consultarUsuarios();
-            for (DTUsuario u : usuarios) {
-                String tipo;
-                if (u instanceof DTCliente) {
-                    tipo = "Cliente";
-                } else if (u instanceof DTAerolinea) {
-                    tipo = "Aerolínea";
-                } else {
-                    tipo = "Desconocido";
-                }
-
-                Object[] fila = {
-                        tipo,
-                        u.getNickname(),
-                        u.getNombre(),
-                        u.getCorreo()
-                };
-                modeloTabla.addRow(fila);
-            }
-        } catch (IllegalStateException ex) {
-            JOptionPane.showMessageDialog(
-                    tablaUsuarios,
-                    ex.getMessage(),
-                    "Información",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        }
-
-        // Aplicar el modelo nuevo a la tabla
-        tablaUsuarios.setModel(modeloTabla);
-    }
-
-
-    // Para mostrar usuarios en consola
-    public static void comprobarUsuarios(){
-        try {
-            List<DTUsuario> lista = Sistema.getInstance().consultarUsuarios();
-            for (DTUsuario u : lista) {
-                System.out.println(u.getNickname() + " | " + u.getNombre() + " | " + u.getCorreo());
-            }
-            JOptionPane.showMessageDialog(null, "Usuarios listados en consola.");
-        } catch (IllegalStateException ex) {
-            JOptionPane.showMessageDialog(null, "No hay usuarios cargados.");
-        }
-    }
+//    // Método para actualizar un JTable con la lista de usuarios
+//    public static void actualizarTablaUsuarios(JTable tablaUsuarios) {
+//        if (tablaUsuarios == null) return;
+//
+//        // Definir las columnas
+//        String[] columnas = {"Tipo", "Nickname", "Nombre", "Correo"};
+//        DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
+//
+//        try {
+//            List<DTUsuario> usuarios = Sistema.getInstance().consultarUsuarios();
+//            for (DTUsuario u : usuarios) {
+//                String tipo;
+//                if (u instanceof DTCliente) {
+//                    tipo = "Cliente";
+//                } else if (u instanceof DTAerolinea) {
+//                    tipo = "Aerolínea";
+//                } else {
+//                    tipo = "Desconocido";
+//                }
+//
+//                Object[] fila = {
+//                        tipo,
+//                        u.getNickname(),
+//                        u.getNombre(),
+//                        u.getCorreo()
+//                };
+//                modeloTabla.addRow(fila);
+//            }
+//        } catch (IllegalStateException ex) {
+//            JOptionPane.showMessageDialog(
+//                    tablaUsuarios,
+//                    ex.getMessage(),
+//                    "Información",
+//                    JOptionPane.INFORMATION_MESSAGE
+//            );
+//        }
+//
+//        // Aplicar el modelo nuevo a la tabla
+//        tablaUsuarios.setModel(modeloTabla);
+//    }
+//
+//
+//    // Para mostrar usuarios en consola
+//    public static void comprobarUsuarios(){
+//        try {
+//            List<DTUsuario> lista = Sistema.getInstance().consultarUsuarios();
+//            for (DTUsuario u : lista) {
+//                System.out.println(u.getNickname() + " | " + u.getNombre() + " | " + u.getCorreo());
+//            }
+//            JOptionPane.showMessageDialog(null, "Usuarios listados en consola.");
+//        } catch (IllegalStateException ex) {
+//            JOptionPane.showMessageDialog(null, "No hay usuarios cargados.");
+//        }
+//    }
 
     // para validar campos de usuario antes de crearlo
     public static boolean validarCliente(

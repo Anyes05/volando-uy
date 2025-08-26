@@ -19,4 +19,6 @@ public class UsuarioServicio {
     public List<Usuario> listarUsuarios() {
         return usuarioDAO.listarTodos();
     }
+
+
 }
