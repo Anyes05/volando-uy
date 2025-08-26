@@ -17,6 +17,10 @@ public class DTCiudad {
         return pais;
     }
 
-    //Setters
+
+    public String toString() {
+        return nombre;
+    }
+
 
 }
