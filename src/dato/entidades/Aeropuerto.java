@@ -14,7 +14,6 @@ public class Aeropuerto {
 
     @ManyToOne
     @JoinColumn (name = "ciudad_id", nullable = false)  // Foreign key
-    @Column(nullable = false)
     private Ciudad ciudad;
 
     // Constructores

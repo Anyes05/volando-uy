@@ -5,11 +5,13 @@
              https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
 
-    <persistence-unit name="miPU" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="volandouyPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <!-- Acá vas agregando todas tus entidades -->
         <class>dato.entidades.Usuario</class>
+        <class>dato.entidades.Cliente</class>
+        <class>dato.entidades.Aerolinea</class>
         <class>dato.entidades.Aeropuerto</class>
         <class>dato.entidades.Vuelo</class>
         <class>dato.entidades.RutaVuelo</class>
@@ -18,7 +20,9 @@
         <class>dato.entidades.Cantidad</class>
         <class>dato.entidades.PaqueteVuelo</class>
         <class>dato.entidades.Pasaje</class>
-
+        <class>dato.entidades.Reserva</class>
+        <class>dato.entidades.CompraComun</class>
+        <class>dato.entidades.CompraPaquete</class>
 
         <properties>
             <!-- Configuración de conexión -->
