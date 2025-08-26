@@ -1,6 +1,6 @@
 package logica.clase;
 
-import logica.DataTypes.CostoBase;
+import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 public class RutaVuelo {
     private String nombre;
     private String descripcion;
-    private CostoBase costoBase;
+    private DTCostoBase DTCostoBase;
     private DTFecha fechaAlta;
 
     // Relaciones de muchos
@@ -23,10 +23,10 @@ public class RutaVuelo {
     private Ciudad ciudadDestino;
 
     //CONSTRUCTOR
-    public RutaVuelo(String nombre, String descripcion, CostoBase costoBase) {
+    public RutaVuelo(String nombre, String descripcion, DTCostoBase DTCostoBase) {
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.costoBase = costoBase;
+        this.DTCostoBase = DTCostoBase;
 
         this.categorias = new ArrayList<>();
         this.vuelos = new ArrayList<>();
@@ -53,12 +53,12 @@ public class RutaVuelo {
         this.descripcion = descripcion;
     }
 
-    public CostoBase getCostoBase() {
-        return costoBase;
+    public DTCostoBase getCostoBase() {
+        return DTCostoBase;
     }
 
-    public void setCostoBase(CostoBase costoBase) {
-        this.costoBase = costoBase;
+    public void setCostoBase(DTCostoBase DTCostoBase) {
+        this.DTCostoBase = DTCostoBase;
     }
 
     public List<Categoria> getCategorias() {

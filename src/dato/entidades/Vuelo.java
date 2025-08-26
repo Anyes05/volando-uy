@@ -6,9 +6,8 @@ import logica.DataTypes.DTFecha;
 import dato.converter.DTFechaConverter;
 import logica.DataTypes.DTHora;
 import dato.converter.DTHoraConverter;
-import logica.DataTypes.CostoBase;
+
 import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table (name = "vuelos")

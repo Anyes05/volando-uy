@@ -4,16 +4,16 @@ public class DTRutaVuelo {
     private String nombre;
     private String descripcion;
     private DTFecha fechaAlta;
-    private CostoBase costoBase;
+    private DTCostoBase DTCostoBase;
     private DTAerolinea aerolinea;
     private DTCiudad ciudadOrigen;
     private DTCiudad ciudadDestino;
 
-    public DTRutaVuelo( String nombre, String descripcion, DTFecha fechaAlta, CostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
+    public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTCostoBase DTCostoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaAlta = fechaAlta;
-        this.costoBase = costoBase;
+        this.DTCostoBase = DTCostoBase;
         this.aerolinea = aerolinea;
         this.ciudadOrigen = ciudadOrigen;
         this.ciudadDestino = ciudadDestino;
@@ -30,8 +30,8 @@ public class DTRutaVuelo {
     public DTFecha getFechaAlta() {
         return fechaAlta;
     }
-    public CostoBase getCostoBase() {
-        return costoBase;
+    public DTCostoBase getCostoBase() {
+        return DTCostoBase;
     }
     public DTAerolinea getAerolinea() {
         return aerolinea;

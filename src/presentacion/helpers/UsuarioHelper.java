@@ -33,7 +33,7 @@ public class UsuarioHelper {
         }
     }
 
-//    // Método para actualizar un JTable con la lista de usuarios
+    // Método para actualizar un JTable con la lista de usuarios
 //    public static void actualizarTablaUsuarios(JTable tablaUsuarios) {
 //        if (tablaUsuarios == null) return;
 //
