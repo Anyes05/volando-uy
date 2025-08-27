@@ -135,7 +135,7 @@ public class EstacionTrabajo {
     private JTextField horaVuelotxt;
 
 
-    private boolean cargandoAeroRV = false;
+    private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
 
@@ -421,7 +421,7 @@ public class EstacionTrabajo {
 //                    // Seleccionar aerolínea
 //                    VueloHelper.seleccionarAerolinea(nicknameAerolinea);
 //
-//                    // Ingresar ruta de vuelo (modifica el método para aceptar List<String>)
+//                    // Ingresar ruta de vuelo (acepto List<String> en categoria, pero no funciona)
 //                    VueloHelper.ingresarRutaVuelo(
 //                            nombreRuta,
 //                            descripcionRuta,
@@ -666,7 +666,7 @@ public class EstacionTrabajo {
 //        }
 //        if (esConsulta) {
 //            cargandoAeroRV = false;
-//            combo.setSelectedIndex(-1); // evita disparo inicial
+//            combo.setSelectedIndex(-1); // evita seleccion al iniciar
 //        }
 //    }
 //    private void cargarCategorias(JList<String> lista) {
@@ -675,7 +675,7 @@ public class EstacionTrabajo {
 //            modelo.addElement(c.getNombre());
 //        }
 //        lista.setModel(modelo);
-//        lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permitir varias selecciones
+//        lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permitir varias selecciones, pero no funciona
 //    }
 //
 
@@ -689,7 +689,6 @@ public class EstacionTrabajo {
     }
 
     private void createUIComponents() {
-        // IntelliJ lo usará porque el .form tiene fechaAltaVuelo en Custom Create
         fechaVuelo = new JCalendar();
         fechaAltaRutaVuelo = new JCalendar();
         fechaAltaVuelo = new JCalendar();
