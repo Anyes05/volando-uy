@@ -1,13 +1,13 @@
 package logica.DataTypes;
 
-public class CostoBase {
+public class DTCostoBase {
     private float costoTurista;
     private float costoEjecutivo;
     private float costoEquipajeExtra;
     private int cantidadEquipajeExtra;
     private float costoTotal;
 
-    public CostoBase(float costoTurista, float costoEjecutivo, float costoEquipajeExtra) {
+    public DTCostoBase(float costoTurista, float costoEjecutivo, float costoEquipajeExtra) {
         this.costoTurista = costoTurista;
         this.costoEjecutivo = costoEjecutivo;
         this.costoEquipajeExtra = costoEquipajeExtra;

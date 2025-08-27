@@ -6,13 +6,12 @@ import java.util.List;
 public class Cantidad {
     //ATRIBUTOS
     private int cant;
-    private List<RutaVuelo> rutasVuelos;
+    private RutaVuelo rutaVuelo;
 
     //CONSTRUCTOR
-    public Cantidad(int cant) {
+    public Cantidad(RutaVuelo ruta, int cant) {
         this.cant = cant;
-
-        this.rutasVuelos = new ArrayList<>();
+        this.rutaVuelo = ruta;
     }
 
     //GET Y SET
@@ -24,11 +23,12 @@ public class Cantidad {
         this.cant = cant;
     }
 
-    public List<RutaVuelo> getRutasVuelos() {
-        return rutasVuelos;
+    public RutaVuelo getRutaVuelo() {
+        return rutaVuelo;
     }
 
-    public void setRutasVuelos(List<RutaVuelo> rutasVuelos) {
-        this.rutasVuelos = rutasVuelos;
+    public void setRutasVuelos(RutaVuelo rutaVuelo) {
+        this.rutaVuelo = rutaVuelo;
     }
+
 }

@@ -16,8 +16,9 @@ public class Aerolinea extends Usuario{
     private String linkSitioWeb;
 
     // Mapear las rutas con JPA (many to many con rutaVuelo)
-    @OneToMany(mappedBy = "aerolinea", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "aerolineas") // aquí va el nombre de la propiedad en RutaVuelo
     private List<RutaVuelo> rutasVuelo = new ArrayList<>();
+
 
     public Aerolinea() {}
 

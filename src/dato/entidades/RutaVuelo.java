@@ -1,14 +1,14 @@
 package dato.entidades;
 
+import dato.converter.DTCostoBaseConverter;
 import jakarta.persistence.*;
 import java.util.List;
 
-import logica.DataTypes.CostoBase;
+import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
 import dato.converter.DTFechaConverter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "rutasVuelo")
@@ -23,8 +23,13 @@ public class RutaVuelo {
     @Column(length = 1000)
     private String descripcion;
 
-    @Embedded
-    private CostoBase costoBase;
+    @Column
+    private float costoEquipajeExtra;
+
+    @Column
+    @Convert(converter = DTCostoBaseConverter.class)
+    private DTCostoBase costoBase;
+
 
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
@@ -68,7 +73,7 @@ public class RutaVuelo {
     // Constructores
     public RutaVuelo() {}  // Obligatorio para JPA
 
-    public RutaVuelo(String nombre, String descripcion, CostoBase costoBase, DTFecha fechaAlta) { // No sé por qué no estaba fechaAlta como atributo en clase/RutaVuelo, por las dudas esperar para ver como han ido implementando
+    public RutaVuelo(String nombre, String descripcion, DTCostoBase costoBase, DTFecha fechaAlta) { // No sé por qué no estaba fechaAlta como atributo en clase/RutaVuelo, por las dudas esperar para ver como han ido implementando
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costoBase = costoBase;
@@ -91,10 +96,18 @@ public class RutaVuelo {
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public CostoBase getCostoBase() { return costoBase; }
-    public void setCostoBase(CostoBase costoBase) { this.costoBase = costoBase; }
+    public DTCostoBase getCostoBase() { return costoBase; }
+    public void setCostoBase(DTCostoBase DTCostoBase) { this.costoBase = costoBase; }
 
     public DTFecha getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
+
+    public float getCostoEquipajeExtra() {
+        return costoEquipajeExtra;
+    }
+
+    public void setCostoEquipajeExtra(float costoEquipajeExtra) {
+        this.costoEquipajeExtra = costoEquipajeExtra;
+    }
 
 }

@@ -13,8 +13,9 @@ public class ClienteDAO extends GenericDAO<Cliente> {
     public Cliente buscarPorNickname(String nickname) {
         TypedQuery<Cliente> query = em.createQuery(
                 "SELECT c FROM Cliente c WHERE c.nickname = :nickname", Cliente.class);
-        query.setParameter("doc", nickname);
+        query.setParameter("nickname", nickname); // debe coincidir con el nombre en la query
         return query.getResultStream().findFirst().orElse(null);
+
     }
 
 }

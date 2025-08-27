@@ -1,11 +1,8 @@
 package dato.entidades;
 
 import jakarta.persistence.*;
-import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTFecha;
-import logica.DataTypes.DTPasajes;
-import logica.DataTypes.TipoAsiento;
-import logica.DataTypes.CostoBase;
+import logica.DataTypes.DTCostoBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +15,19 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Cliente cliente;  // Relacion con Cliente
+    @ManyToOne
+    @JoinColumn(name = "cliente_id") // columna FK en la tabla actual
+    private Cliente cliente;
+
 
     @Column(nullable = false)
     private DTFecha fechaReserva;
 
     @Column(nullable = false)
-    private CostoBase costoReserva;
+    private DTCostoBase costoReserva;
 
     @OneToMany
-    private List<DTPasajes> pasajeros = new ArrayList<>();
+    private List<dato.entidades.Pasaje> pasajeros = new ArrayList<>();
 
     // Relacion con Vuelo
     @ManyToOne
@@ -51,11 +50,11 @@ public class Reserva {
     public DTFecha getFechaReserva() { return fechaReserva; }
     public void setFechaReserva(DTFecha fechaReserva) { this.fechaReserva = fechaReserva; }
 
-    public CostoBase getCostoReserva() { return costoReserva; }
-    public void setCostoReserva(CostoBase costoReserva) { this.costoReserva = costoReserva; }
+    public DTCostoBase getCostoReserva() { return costoReserva; }
+    public void setCostoReserva(DTCostoBase costoReserva) { this.costoReserva = costoReserva; }
 
-    public List<DTPasajes> getPasajeros() { return pasajeros; }
-    public void setPasajeros(List<DTPasajes> pasajeros) { this.pasajeros = pasajeros; }
+    public List<Pasaje> getPasajeros() { return pasajeros; }
+    public void setPasajeros(List<Pasaje> pasajeros) { this.pasajeros = pasajeros; }
 
     public Vuelo getVuelo() { return vuelo; }
     public void setVuelo(Vuelo vuelo) { this.vuelo = vuelo; }

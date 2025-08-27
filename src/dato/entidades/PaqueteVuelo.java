@@ -1,8 +1,7 @@
 package dato.entidades;
 
 import jakarta.persistence.*;
-import java.util.List;
-import logica.DataTypes.CostoBase;
+import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.TipoAsiento;
 
 @Entity
@@ -29,7 +28,7 @@ public class PaqueteVuelo {
     private float descuento;
 
     @Column(nullable = false)
-    private CostoBase costoBase;
+    private DTCostoBase DTCostoBase;
 
     @Column(nullable = false)
     private float costoTotal; // Lo dejé porque lo teníamos en la clase, pero costoTotal sería un calculado que no va en el constructor(?
@@ -50,13 +49,13 @@ public class PaqueteVuelo {
     }
 
     public PaqueteVuelo(String nombre, String descripcion, TipoAsiento tipoAsiento,
-                        int diasValidos, float descuento, CostoBase costoBase, float costoTotal) {
+                        int diasValidos, float descuento, DTCostoBase DTCostoBase, float costoTotal) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.tipoAsiento = tipoAsiento;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
-        this.costoBase = costoBase;
+        this.DTCostoBase = DTCostoBase;
         this.costoTotal = costoTotal;
         this.cantidad = null;
     }
@@ -91,8 +90,8 @@ public class PaqueteVuelo {
     public void setDescuento(float descuento) {
         this.descuento = descuento; }
 
-    public CostoBase getCostoBase() { return costoBase; }
-    public void setCostoBase(CostoBase costoBase) { this.costoBase = costoBase; }
+    public DTCostoBase getCostoBase() { return DTCostoBase; }
+    public void setCostoBase(DTCostoBase DTCostoBase) { this.DTCostoBase = DTCostoBase; }
     public float getCostoTotal() { return costoTotal; }
     public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal;}
 }
