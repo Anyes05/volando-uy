@@ -1,10 +1,12 @@
 package logica.clase;
 
 
+import dato.entidades.Cliente;
+import dato.entidades.CompraPaquete;
+import dato.entidades.Reserva;
+import dato.entidades.Usuario;
 import logica.DataTypes.*;
 import dato.entidades.Aerolinea;
-import logica.clase.Usuario;
-import logica.clase.Cliente;
 import logica.servicios.UsuarioServicio;
 import logica.servicios.ClienteServicio;
 import logica.servicios.AerolineaServicio;
@@ -21,9 +23,9 @@ public class Sistema implements ISistema {
     private List<Vuelo> vuelos;
     private String recuerdaAerolinea; // Para recordar la aerolinea seleccionada
     private RutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
-    private Aerolinea aerolineaSeleccionada;
+    //private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
-    private Cliente clienteSeleccionado;
+    //private Cliente clienteSeleccionado;
     private PaqueteVuelo paqueteSeleccionado;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
@@ -119,84 +121,82 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Error al crear la aerolínea: " + e.getMessage());
         }
     }
-}
 
-//    // CONSULTA DE USUARIO
-//    public List<DTUsuario> consultarUsuarios(){
-//        ClienteServicio clienteServicio = new ClienteServicio();
-//        AerolineaServicio aerolineaServicio = new AerolineaServicio();
-//
-//        List<DTUsuario> lista = new ArrayList<>();
-//
-//        // Obtener clientes
-//        List<Cliente> clientes = clienteServicio.listarClientes();
-//        for (Cliente c : clientes) {
-//            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo()));
-//        }
-//
-//        // Obtener aerolíneas
-//        List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
-//        for (Aerolinea a : aerolineas) {
-//            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo()));
-//        }
-//
-//        if (lista.isEmpty()) {
-//            throw new IllegalStateException("No hay usuarios registrados.");
-//        }
-//
-//        return lista;
-//    }
-//
-//    public DTUsuario mostrarDatosUsuario(String nickname){
-//        for (Usuario u : usuarios) {
-//            if (u.getNickname().equals(nickname)) {
-//                if (u instanceof Cliente c) { // me falta también los paquetes que compró.
-//                    // Suponiendo que Reserva tiene un DTO llamado DTReserva
-//                    List<DTReserva> reservasDTO = new ArrayList<>();
-//                    for (Reserva r : c.getReservas()) {
-//                        if (r instanceof CompraPaquete cp) {
-//                            reservasDTO.add(new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento()));
-//                        } else {
-//                            reservasDTO.add(new DTReserva(r.getFechaReserva(), r.getCostoReserva()));
-//                        }
-//                    }
-//                    return new DTCliente(
-//                            c.getNickname(),
-//                            c.getNombre(),
-//                            c.getCorreo(),
-//                            c.getApellido(),
-//                            c.getTipoDoc(),
-//                            c.getNumeroDocumento(),
-//                            c.getFechaNacimiento(),
-//                            c.getNacionalidad(),
-//                            reservasDTO
-//                    );
-//                } else if (u instanceof Aerolinea a) {
-//                    List<DTRutaVuelo> rutasDTO = new ArrayList<>();
-//                    for (RutaVuelo rv : a.getRutasVuelo()) {
-//                        rutasDTO.add(new DTRutaVuelo(
-//                                rv.getNombre(),
-//                                rv.getDescripcion(),
-//                                rv.getFechaAlta(),
-//                                rv.getCostoBase(),
-//                                new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
-//                                new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
-//                                new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais())
-//                        ));
-//                    }
-//                    return new DTAerolinea(
-//                            a.getNickname(),
-//                            a.getNombre(),
-//                            a.getCorreo(),
-//                            a.getDescripcion(),
-//                            a.getLinkSitioWeb(),
-//                            rutasDTO
-//                    );
-//                }
-//            }
-//        }
-//        throw new IllegalArgumentException("Usuario no encontrado");
-//    }
+    // CONSULTA DE USUARIO
+    public List<DTUsuario> consultarUsuarios(){
+        ClienteServicio clienteServicio = new ClienteServicio();
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+
+        List<DTUsuario> lista = new ArrayList<>();
+
+        // Obtener clientes
+        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+        for (dato.entidades.Cliente c : clientes) {
+            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo()));
+        }
+
+        // Obtener aerolíneas
+        List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
+        for (Aerolinea a : aerolineas) {
+            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo()));
+        }
+
+        if (lista.isEmpty()) {
+            throw new IllegalStateException("No hay usuarios registrados.");
+        }
+
+        return lista;
+    }
+
+    public DTUsuario mostrarDatosUsuario(String nickname) {
+        for (Usuario u : usuarios) {
+            if (u.getNickname().equals(nickname)) {
+                if (u instanceof Cliente c) { // me falta también los paquetes que compró.
+                    List<DTReserva> reservasDTO = new ArrayList<>();
+                    for (Reserva r : c.getReservas()) {
+                        if (r instanceof CompraPaquete cp) {
+                            reservasDTO.add(new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento()));
+                        } else {
+                            reservasDTO.add(new DTReserva(r.getFechaReserva(), r.getCostoReserva()));
+                        }
+                    }
+                    return new DTCliente(
+                            c.getNickname(),
+                            c.getNombre(),
+                            c.getCorreo(),
+                            c.getApellido(),
+                            c.getTipoDoc(),
+                            c.getNumeroDocumento(),
+                            c.getFechaNacimiento(),
+                            c.getNacionalidad(),
+                            reservasDTO
+                    );
+                } else if (u instanceof Aerolinea a) {
+                    List<DTRutaVuelo> rutasDTO = new ArrayList<>();
+                    for (dato.entidades.RutaVuelo rv : a.getRutasVuelo()) {
+                        rutasDTO.add(new DTRutaVuelo(
+                                rv.getNombre(),
+                                rv.getDescripcion(),
+                                rv.getFechaAlta(),
+                                rv.getCostoBase(),
+                                new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
+                                new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
+                                new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais())
+                        ));
+                    }
+                    return new DTAerolinea(
+                            a.getNickname(),
+                            a.getNombre(),
+                            a.getCorreo(),
+                            a.getDescripcion(),
+                            a.getLinkSitioWeb(),
+                            rutasDTO
+                    );
+                }
+            }
+        }
+        throw new IllegalArgumentException("Usuario no encontrado");
+    }
 //
 //    //Si el administrador selecciona una ruta de vuelo o un vuelo reservado o un
 //    //paquete comprado, se muestra la información detallada, tal como se indica en
@@ -355,9 +355,9 @@ public class Sistema implements ISistema {
 //        DTRutaVuelo DTrutaVuelo = new DTRutaVuelo( nombreRuta, descripcion, fechaAltaDT, aerolineaDT, ciudadOrigenDT, ciudadDestinoDT);
 //            RutaVuelo nuevaRuta = new RutaVuelo(
 //                    nombreRuta,
- //                   descripcion,
+    //                   descripcion,
 //                    costoBase
- //           );
+    //           );
 //        // Retornar el DTRutaVuelo creado
 //        recordarRutaVuelo = DTrutaVuelo; // Guardar la ruta de vuelo seleccionada
 //        return DTrutaVuelo;
@@ -494,7 +494,7 @@ public class Sistema implements ISistema {
 //        }
 //        for (RutaVuelo rv : aerolineaSeleccionada.getRutasVuelo()) {
 //            if (rv.getNombre().equalsIgnoreCase(nombre)) {
- //               recordarRutaVuelo = rv;
+    //               recordarRutaVuelo = rv;
 //                DTRutaVuelo dtRuta = new DTRutaVuelo(
 //                        rv.getNombre(),
 //                        rv.getDescripcion(),
@@ -902,16 +902,6 @@ public class Sistema implements ISistema {
 
 
 }
-
-
- */
-
-
-
-
-
-
-
-
-
+*/
+}
 
