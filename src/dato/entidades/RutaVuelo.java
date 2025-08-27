@@ -110,4 +110,19 @@ public class RutaVuelo {
         this.costoEquipajeExtra = costoEquipajeExtra;
     }
 
+    public Ciudad getCiudadOrigen() {
+        return ciudadOrigen;
+    }
+
+    public void setCiudadOrigen(Ciudad ciudadOrigen) {
+        this.ciudadOrigen = ciudadOrigen;
+    }
+
+    public Ciudad getCiudadDestino() {
+        return ciudadDestino;
+    }
+
+    public void setCiudadDestino(Ciudad ciudadDestino) {
+        this.ciudadDestino = ciudadDestino;
+    }
 }

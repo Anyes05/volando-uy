@@ -10,9 +10,9 @@ public interface ISistema {
     public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad,TipoDoc tipoDocumento,String numeroDocumento);
     public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb);
 
-//    // CONSULTA DATOS DE USUARIO
-//    public List<DTUsuario> consultarUsuarios();
-//    public DTUsuario mostrarDatosUsuario(String nickname);
+    // CONSULTA DATOS DE USUARIO
+    public List<DTUsuario> consultarUsuarios();
+    public DTUsuario mostrarDatosUsuario(String nickname);
 //
 //    // MODIFICAR DATOS DE USUARIO
 //    public DTUsuario mostrarDatosUsuarioMod(String nickname);

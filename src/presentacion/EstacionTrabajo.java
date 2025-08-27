@@ -141,7 +141,7 @@ public class EstacionTrabajo {
 
     public EstacionTrabajo() {
 
-/// ///////// TABLAS ////////////
+        /*----- TABLAS -----*/
         // Columnas de la tabla
         String[] columnas = {"Nickname", "Nombre", "Correo"};
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
@@ -155,8 +155,7 @@ public class EstacionTrabajo {
         consultaUsuario.setLayout(new BorderLayout());
         consultaUsuario.add(scroll, BorderLayout.CENTER);
 
-
-//////////////////// PANEL DE BOTONES//////////////////////////////////////
+        /*----- PANEL DE BOTONES -----*/
         //Boton de inicio
         botonInicio.addActionListener(new ActionListener() {
             @Override
@@ -168,8 +167,7 @@ public class EstacionTrabajo {
             }
         });
 
-        // Combo boxes
-//
+        /*----- MENU DE VUELOS Y RUTAS -----*/
 //        comboBoxVuelos.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
@@ -233,7 +231,7 @@ public class EstacionTrabajo {
 //            }
 //        });
 
-
+        /*----- MENU DE USUARIO -----*/
         comboBoxUsuario.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -252,14 +250,14 @@ public class EstacionTrabajo {
 //                        parentPanel.repaint();
 //                        parentPanel.revalidate();
 //                        break;
-//                    case "Consultar usuario":
-//                        parentPanel.removeAll();
-//                        //UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
-//                        parentPanel.add(consultaUsuario);
-//                        parentPanel.repaint();
-//                        parentPanel.revalidate();
-//
-//                        break;
+                    case "Consultar usuario":
+                        parentPanel.removeAll();
+                        UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
+                        parentPanel.add(consultaUsuario);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+
+                        break;
                 }
             }
         });
@@ -543,7 +541,7 @@ public class EstacionTrabajo {
 //        });
 //
 
-            /*----- CONSULTA RUTA VUELO -----*/
+        /*----- CONSULTA RUTA VUELO -----*/
 //        comBoxRutVueloConsultaRV.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
