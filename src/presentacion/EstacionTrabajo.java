@@ -86,8 +86,6 @@ public class EstacionTrabajo {
     private JTextField correoAltaCliente;
     private JCalendar JCalendarAltaCliente;
     private JTextField numeroDocAltaCliente;
-    private JTable consultaUsuarioTable1;
-    private JTable consultaUsuarioTable2;
     private JButton altaAerolineaCancelar;
     private JButton altaAerolineaAceptar;
     private JTextField altaAerolineaNickname;
@@ -133,6 +131,30 @@ public class EstacionTrabajo {
     private JLabel costoEquipajeExRVConsulta;
     private JTextArea costoUnEquipajeExRVConsulta;
     private JTextField horaVuelotxt;
+    private JPanel consultaUsuarioJpanel2;
+    private JPanel consultaUsuarioJpanel1;
+    private JTable consultaUsuarioTable1;
+    private JTable consultaUsuarioTable2;
+    private JButton consultaUsuarioAceptar;
+    private JTextField consultaUsuarioText;
+    private JPanel modificarUsuarioJPanel1;
+    private JTable modificarUsuariotable1;
+    private JPanel modificarAerolinea;
+    private JPanel modificarCliente;
+    private JTextField modificarAerolineaTextNombre;
+    private JTextField modificarAerolineaTextLink;
+    private JTextArea modificarAerolineaTextArea;
+    private JButton modificarAerolineaGuardar;
+    private JButton cancelarButton;
+    private JButton cancelarButton1;
+    private JTextField modificarClienteNombre;
+    private JTextField modificarClienteApellido;
+    private JTextField modificarClienteNacionalidad;
+    private JComboBox modificarClienteComboBox;
+    private JTextField modificarClienteDocumento;
+    private JButton modificarClienteGuardar;
+
+
 
 
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
@@ -143,17 +165,18 @@ public class EstacionTrabajo {
 
         /*----- TABLAS -----*/
         // Columnas de la tabla
-        String[] columnas = {"Nickname", "Nombre", "Correo"};
-        DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
 
-        // Usar el atributo declarado, no crear una nueva tabla
-        consultaUsuarioTable1.setModel(modelo);
-        consultaUsuarioTable1.setAutoCreateRowSorter(true);
-
-        // Agregar la tabla a un JScrollPane para que se vean los encabezados
         JScrollPane scroll = new JScrollPane(consultaUsuarioTable1);
-        consultaUsuario.setLayout(new BorderLayout());
-        consultaUsuario.add(scroll, BorderLayout.CENTER);
+        consultaUsuarioJpanel1.setLayout(new BorderLayout());
+        consultaUsuarioJpanel1.add(scroll, BorderLayout.CENTER);
+
+        JScrollPane scroll2 = new JScrollPane(consultaUsuarioTable2);
+        consultaUsuarioJpanel2.setLayout(new BorderLayout());
+        consultaUsuarioJpanel2.add(scroll2, BorderLayout.CENTER);
+
+        JScrollPane scroll3 = new JScrollPane(modificarUsuariotable1);
+        modificarUsuarioJPanel1.setLayout(new BorderLayout());
+        modificarUsuarioJPanel1.add(scroll3, BorderLayout.CENTER);
 
         /*----- PANEL DE BOTONES -----*/
         //Boton de inicio
@@ -231,6 +254,81 @@ public class EstacionTrabajo {
 //            }
 //        });
 
+        /////////////// CONSULTA USUARIO /////////////////
+        ButtonGroup grupoConsultaUsuario = new ButtonGroup();
+        grupoConsultaUsuario.add(paqueteVueloRadioButton);
+        grupoConsultaUsuario.add(usuarioRadioButton);
+        grupoConsultaUsuario.add(reservaDeVueloRadioButton);
+        grupoConsultaUsuario.add(rutaDeVueloRadioButton);
+
+
+        // 2. Listener para el botón Aceptar
+        consultaUsuarioAceptar.addActionListener(e -> {
+            String consulta = consultaUsuarioText.getText().trim();
+            if (paqueteVueloRadioButton.isSelected()) {
+                // lógica para opción 1
+              //  UsuarioHelper.mostrarPaquetes(consultaUsuarioTable2);
+            } else if (usuarioRadioButton.isSelected()) {
+                if (consulta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable2, consulta);
+                }
+
+            } else if (reservaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 3
+                // UsuarioHelper.mostrarReservasPorVuelo(consultaUsuarioTable2,consulta);
+            } else if (rutaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 4
+               // UsuarioHelper.mostrarRutaVuelo(consultaUsuarioTable2, consulta);
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        ///////////////MODIFICAR USUARIO/////////////////
+
+        aceptarButton2.addActionListener(new ActionListener() {
+            String consulta = consultaUsuarioText.getText().trim();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String tipo = UsuarioHelper.obtenerTipoUsuario(consulta);
+
+                if (tipo == null) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Usuario no encontrado",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+                if (tipo.equals("cliente")) {
+                    parentPanel.removeAll();
+                    parentPanel.add(modificarCliente);
+                    parentPanel.repaint();
+                    parentPanel.revalidate();
+
+                } else if (tipo.equals("aerolinea")) {
+                    parentPanel.removeAll();
+                    parentPanel.add(modificarAerolinea);
+                    parentPanel.repaint();
+                    parentPanel.revalidate();
+
+                } else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "El usuario no es cliente ni aerolínea",
+                            "Información",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+
+            }
+        });
+
+
+
         /*----- MENU DE USUARIO -----*/
         comboBoxUsuario.addActionListener(new ActionListener() {
             @Override
@@ -244,19 +342,19 @@ public class EstacionTrabajo {
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
-//                    case "Modificar usuario":
-//                        parentPanel.removeAll();
-//                        parentPanel.add(modificarUsuario);
-//                        parentPanel.repaint();
-//                        parentPanel.revalidate();
-//                        break;
+                    case "Modificar usuario":
+                        parentPanel.removeAll();
+                        UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
+                        parentPanel.add(modificarUsuario);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
                     case "Consultar usuario":
                         parentPanel.removeAll();
                         UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
                         parentPanel.add(consultaUsuario);
                         parentPanel.repaint();
                         parentPanel.revalidate();
-
                         break;
                 }
             }
