@@ -197,7 +197,7 @@ public class Sistema implements ISistema {
         }
         throw new IllegalArgumentException("Usuario no encontrado");
     }
-//
+
 //    //Si el administrador selecciona una ruta de vuelo o un vuelo reservado o un
 //    //paquete comprado, se muestra la información detallada, tal como se indica en
 //    //el caso de uso Consulta de Ruta de Vuelo, Consulta de Vuelo y Consulta
@@ -211,85 +211,91 @@ public class Sistema implements ISistema {
 //    //perfil de un usuario. Para ello el sistema muestra la lista de todos los
 //    //usuarios y el administrador elige uno.
 //    // Para esto ya me sirve:
+
 //    // public List<DTUsuario> consultarUsuarios()
 //
 //    // Luego, el sistema muestra todos
 //    // los datos del usuario.
 //    // Podría usar mostrarDatosUsuario(String nickname), pero para no mostrar las reservas, compras de paquete, o rutas de vuelo:
 //
-//    public DTUsuario mostrarDatosUsuarioMod(String nickname) {
-//        for (Usuario u : usuarios) {
-//            if (u.getNickname().equals(nickname)) {
-//                if (u instanceof Cliente c) {
-//                    return new DTCliente(
-//                            c.getNickname(),
-//                            c.getNombre(),
-//                            c.getCorreo(),
-//                            c.getApellido(),
-//                            c.getTipoDoc(),
-//                            c.getNumeroDocumento(),
-//                            c.getFechaNacimiento(),
-//                            c.getNacionalidad(),
-//                            new ArrayList<>()
-//                    );
-//                } else if (u instanceof Aerolinea a) {
-//                    return new DTAerolinea(
-//                            a.getNickname(),
-//                            a.getNombre(),
-//                            a.getCorreo(),
-//                            a.getDescripcion(),
-//                            a.getLinkSitioWeb(),
-//                            new ArrayList<>()
-//                    );
-//                }
-//            }
-//        }
-//        throw new IllegalArgumentException("Usuario no encontrado");
-//    }
-//
-//    // El administrador puede editar todos los datos
-//    //básicos, menos el nickname y el correo electrónico. Cuando termina la
-//    //edición, el sistema actualiza los datos del usuario.
-//    public void seleccionarUsuarioAMod (String nickname) {
-//        this.nicknameUsuarioAModificar = nickname;
-//    }
-//
-//    // Para Cliente
-//    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
-//        if (nicknameUsuarioAModificar == null) {
-//            throw new IllegalStateException("Debe seleccionar un usuario antes de modificar sus datos.");
-//        }
-//        for (Usuario u : usuarios) {
-//            if (u instanceof Cliente c && c.getNickname().equals(nicknameUsuarioAModificar)) {
-//                c.setNombre(nombre);
-//                c.setApellido(apellido);
-//                c.setFechaNacimiento(fechaNac);
-//                c.setNacionalidad(nacionalidad);
-//                c.setTipoDoc(tipoDocumento);
-//                c.setNumeroDocumento(numeroDocumento);
-//                return;
-//            }
-//        }
-//        throw new IllegalArgumentException("Cliente no encontrado");
-//    }
-//
-//    // Para Aerolinea
-//    public void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb) {
-//        if (nicknameUsuarioAModificar == null) {
-//            throw new IllegalStateException("Debe seleccionar un usuario antes de modificar sus datos.");
-//        }
-//        for (Usuario u : usuarios) {
-//            if (u instanceof Aerolinea a && a.getNickname().equals(nicknameUsuarioAModificar)) {
-//                a.setNombre(nombre);
-//                a.setDescripcion(descripcion);
-//                a.setLinkSitioWeb(linkSitioWeb);
-//                return;
-//            }
-//        }
-//        throw new IllegalArgumentException("Aerolínea no encontrada");
-//    }
-//
-//
+    public DTUsuario mostrarDatosUsuarioMod(String nickname) {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+
+        Cliente cliente = clienteServicio.buscarClientePorNickname(nickname);
+        if (cliente != null) {
+            return new DTCliente(
+                    cliente.getNickname(),
+                    cliente.getNombre(),
+                    cliente.getCorreo(),
+                    cliente.getApellido(),
+                    cliente.getTipoDoc(),
+                    cliente.getNumeroDocumento(),
+                    cliente.getFechaNacimiento(),
+                    cliente.getNacionalidad(),
+                    new ArrayList<>()
+            );
+        }
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+        if (aerolinea != null) {
+            return new DTAerolinea(
+                    aerolinea.getNickname(),
+                    aerolinea.getNombre(),
+                    aerolinea.getCorreo(),
+                    aerolinea.getDescripcion(),
+                    aerolinea.getLinkSitioWeb(),
+                    new ArrayList<>()
+            );
+        }
+
+        throw new IllegalArgumentException("Usuario no encontrado");
+    }
+
+    // El administrador puede editar todos los datos
+    //básicos, menos el nickname y el correo electrónico. Cuando termina la
+    //edición, el sistema actualiza los datos del usuario.
+
+    public void seleccionarUsuarioAMod (String nickname) {
+        this.nicknameUsuarioAModificar = nickname;
+    }
+
+    // Para Cliente
+    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
+        if (nicknameUsuarioAModificar == null) {
+            throw new IllegalStateException("Debe seleccionar un usuario antes de modificar sus datos.");
+        }
+        ClienteServicio clienteServicio = new ClienteServicio();
+        Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameUsuarioAModificar);
+        if(cliente == null) {
+            throw new IllegalArgumentException("Cliente no encontrado");
+        }
+        cliente.setNombre(nombre);
+        cliente.setApellido(apellido);
+        cliente.setFechaNacimiento(fechaNac);
+        cliente.setNacionalidad(nacionalidad);
+        cliente.setTipoDoc(tipoDocumento);
+        cliente.setNumeroDocumento(numeroDocumento);
+        clienteServicio.actualizarCliente(cliente);
+
+    }
+
+    // Para Aerolinea
+    public void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb) {
+        if (nicknameUsuarioAModificar == null) {
+            throw new IllegalStateException("Debe seleccionar un usuario antes de modificar sus datos.");
+        }
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nicknameUsuarioAModificar);
+        if(aerolinea == null) {
+            throw new IllegalArgumentException("Aerolínea no encontrada");
+        }
+        aerolinea.setNombre(nombre);
+        aerolinea.setDescripcion(descripcion);
+        aerolinea.setLinkSitioWeb(linkSitioWeb);
+        aerolineaServicio.actualizarAerolinea(aerolinea);
+    }
+
+
 //    // ALTA RUTA VUELO
 //    public List<DTAerolinea> listarAerolineas(){
 //        List<DTAerolinea> listaAerolineas = new ArrayList<>();

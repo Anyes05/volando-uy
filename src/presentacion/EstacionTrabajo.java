@@ -254,7 +254,7 @@ public class EstacionTrabajo {
 //            }
 //        });
 
-        /////////////// CONSULTA USUARIO /////////////////
+//        /////////////// CONSULTA USUARIO /////////////////
         ButtonGroup grupoConsultaUsuario = new ButtonGroup();
         grupoConsultaUsuario.add(paqueteVueloRadioButton);
         grupoConsultaUsuario.add(usuarioRadioButton);
