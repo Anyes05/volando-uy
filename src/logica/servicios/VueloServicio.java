@@ -4,6 +4,8 @@ import dato.dao.VueloDAO;
 import dato.entidades.Vuelo;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTHora;
+import java.util.List;
+import java.util.ArrayList;
 
 public class VueloServicio {
     private VueloDAO vueloDAO = new VueloDAO();
@@ -15,5 +17,13 @@ public class VueloServicio {
 
     public Vuelo obtenerVuelo(Long id) {
         return vueloDAO.buscarPorId(id);
+    }
+
+    public Vuelo buscarVueloPorNombre(String nombre) {
+        return vueloDAO.buscarPorNombre(nombre);
+    }
+
+    public List<Vuelo> listarVuelos() {
+        return vueloDAO.listarVuelos();
     }
 }

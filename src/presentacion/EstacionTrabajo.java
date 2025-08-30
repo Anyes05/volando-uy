@@ -191,12 +191,12 @@ public class EstacionTrabajo {
         });
 
         /*----- MENU DE VUELOS Y RUTAS -----*/
-//        comboBoxVuelos.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String seleccionado = (String) comboBoxVuelos.getSelectedItem();
-//                // Según lo que se elija, haces algo
-//                switch (seleccionado) {
+        comboBoxVuelos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String seleccionado = (String) comboBoxVuelos.getSelectedItem();
+                // Según lo que se elija, haces algo
+                switch (seleccionado) {
 //                    case "Crear ruta de vuelo":
 //                        parentPanel.removeAll();
 //                        cargarAerolineas(aerolineaVuelo);
@@ -244,17 +244,17 @@ public class EstacionTrabajo {
 //                        parentPanel.repaint();
 //                        parentPanel.revalidate();
 //                        break;
-//                    case "Crear Categoría":
-//                        parentPanel.removeAll();
-//                        parentPanel.add(altaCategoría);
-//                        parentPanel.repaint();
-//                        parentPanel.revalidate();
-//                        break;
-//                }
-//            }
-//        });
+                    case "Crear Categoría":
+                        parentPanel.removeAll();
+                        parentPanel.add(altaCategoría);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                }
+            }
+        });
 
-//        /////////////// CONSULTA USUARIO /////////////////
+        /////////////// CONSULTA USUARIO /////////////////
         ButtonGroup grupoConsultaUsuario = new ButtonGroup();
         grupoConsultaUsuario.add(paqueteVueloRadioButton);
         grupoConsultaUsuario.add(usuarioRadioButton);
@@ -578,23 +578,23 @@ public class EstacionTrabajo {
 //        });
 
         /*----- ALTA CATEGORIA -----*/
-//        buttonAltaCategoria.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String nomCategoria = categoriaAltaText.getText().trim();
-//                try {
-//                    VueloHelper.crearCategoria(nomCategoria);
-//                    JOptionPane.showMessageDialog(parentPanel, "Categoría creada con éxito.");
-//
-//                    // Limpiar campo
-//                    categoriaAltaText.setText("");
-//
-//                } catch (IllegalArgumentException ex) {
-//                    JOptionPane.showMessageDialog(parentPanel, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
-//
+        buttonAltaCategoria.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nomCategoria = categoriaAltaText.getText().trim();
+                try {
+                    VueloHelper.crearCategoria(nomCategoria);
+                    JOptionPane.showMessageDialog(parentPanel, "Categoría creada con éxito.");
+
+                    // Limpiar campo
+                    categoriaAltaText.setText("");
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(parentPanel, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         /*----- ALTA VUELO -----*/
 //        buttonAltaVuelo.addActionListener(new ActionListener() {
 //            @Override

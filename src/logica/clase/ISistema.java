@@ -14,24 +14,24 @@ public interface ISistema {
     public List<DTUsuario> consultarUsuarios();
     public DTUsuario mostrarDatosUsuario(String nickname);
 
-//    // MODIFICAR DATOS DE USUARIO
+    // MODIFICAR DATOS DE USUARIO
     public DTUsuario mostrarDatosUsuarioMod(String nickname);
     public void seleccionarUsuarioAMod (String nickname);
     public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
     public void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb);
-//
-//    //ALTA VUELO
+
+    //ALTA VUELO
 //    public List<DTAerolinea> listarAerolineas();
 //    public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname);
 //    public DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
 //    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta);
 //    public void darAltaVuelo();
 //    public void agregarCiudadParaTest(Ciudad ciudad);
-//
-//    //CONSULTA VUELO
+
+    //CONSULTA VUELO
 //    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
 //    public List<DTVueloReserva> seleccionarVuelo(String nombre);
-//
+
 //    // PAQUETES DE VUELO
 //    public List<DTPaqueteVuelos> mostrarPaquete();
 //    public void seleccionarPaquete(String nombrePaquete);
@@ -44,8 +44,9 @@ public interface ISistema {
 //    public void seleccionarAerolinea(String nickname);
 //
 //    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea);
-//    // ALTA CATEGORIA
-//    public void altaCategoria(String nombre);
+    // ALTA CATEGORIA
+    public void altaCategoria(String nombre);
+    public List<dato.entidades.Categoria> getCategorias();
 //    // ALTA CIUDAD
 //    public void altaCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta);
 //
