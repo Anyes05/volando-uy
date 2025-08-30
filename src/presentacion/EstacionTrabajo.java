@@ -1,17 +1,32 @@
 package presentacion;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
 
+<<<<<<< Updated upstream
+=======
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+
+
+>>>>>>> Stashed changes
 import javax.swing.*;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+<<<<<<< Updated upstream
 import java.awt.event.ComponentAdapter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
+=======
+import javax.swing.JTable;
+>>>>>>> Stashed changes
 
 
 public class EstacionTrabajo {
@@ -107,7 +122,18 @@ public class EstacionTrabajo {
     private JComboBox modificarClienteComboBox;
     private JTextField modificarClienteDocumento;
     private JButton modificarClienteGuardar;
+<<<<<<< Updated upstream
     private JButton button2;
+=======
+    private JTextField modificarClienteCorreo;
+    private JCalendar modificarClienteJCalendar;
+    private JTextField modificarAerolineaCorreo;
+
+
+    private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
+    private boolean cargandoRutasRV = false;
+    private boolean cargandoVuelosRV = false;
+>>>>>>> Stashed changes
 
     public EstacionTrabajo() {
 
@@ -142,6 +168,7 @@ public class EstacionTrabajo {
             }
         });
 
+<<<<<<< Updated upstream
         // Combo boxes
         comboBoxVuelos.addActionListener(new ActionListener() {
             @Override
@@ -177,6 +204,155 @@ public class EstacionTrabajo {
             }
         });
 
+=======
+        /*----- MENU DE VUELOS Y RUTAS -----*/
+//        comboBoxVuelos.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String seleccionado = (String) comboBoxVuelos.getSelectedItem();
+//                // Según lo que se elija, haces algo
+//                switch (seleccionado) {
+//                    case "Crear ruta de vuelo":
+//                        parentPanel.removeAll();
+//                        cargarAerolineas(aerolineaVuelo);
+//                        cargarCategorias(listCatAltaRuta);
+//                        parentPanel.add(altaRuta);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Consultar ruta de vuelo":
+//                        parentPanel.removeAll();
+//                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
+//                        nombreRVConsulta.setText("");
+//                        descripcionRVConsulta.setText("");
+//                        ciudadORVConsulta.setText("");
+//                        ciudadDRVConsulta.setText("");
+//                        costoBaseTuRVConsulta.setText("");
+//                        costoBaseEjRVConsulta.setText("");
+//                        costoUnEquipajeExRVConsulta.setText("");;
+//                        fechaAltaRVConsulta.setText("");
+//                        comboBoxAeroRVConsulta.removeAllItems();
+//                        comBoxRutVueloConsultaRV.removeAllItems();
+//                        vuelosConsultaRV.removeAllItems();
+//                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = false;
+//                        cargarAerolineas(comboBoxAeroRVConsulta);
+//                        parentPanel.add(consultaRutaVuelo);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Crear Vuelo":
+//                        parentPanel.removeAll();
+//                        cargarAerolineas(aerolinea);
+//                        parentPanel.add(altaVuelo);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Consultar Vuelo":
+//                        parentPanel.removeAll();
+//                        parentPanel.add(consultaVuelo);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Crear Ciudad":
+//                        parentPanel.removeAll();
+//                        parentPanel.add(altaCiudad);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Crear Categoría":
+//                        parentPanel.removeAll();
+//                        parentPanel.add(altaCategoría);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                }
+//            }
+//        });
+
+//        /////////////// CONSULTA USUARIO /////////////////
+        ButtonGroup grupoConsultaUsuario = new ButtonGroup();
+        grupoConsultaUsuario.add(paqueteVueloRadioButton);
+        grupoConsultaUsuario.add(usuarioRadioButton);
+        grupoConsultaUsuario.add(reservaDeVueloRadioButton);
+        grupoConsultaUsuario.add(rutaDeVueloRadioButton);
+
+
+        // 2. Listener para el botón Aceptar
+        consultaUsuarioAceptar.addActionListener(e -> {
+            String consulta = consultaUsuarioText.getText().trim();
+            if (paqueteVueloRadioButton.isSelected()) {
+                // OPCION 1 PAQUETE
+                if (consulta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un nombre de paquete", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                   // UsuarioHelper.mostrarDatosPaquete(consultaUsuarioTable2, consulta);
+                }
+
+            } else if (usuarioRadioButton.isSelected()) {
+                // OPCION 2 USUARIO
+                if (consulta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable2, consulta);
+                }
+
+            } else if (reservaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 3
+                // UsuarioHelper.mostrarReservasPorVuelo(consultaUsuarioTable2,consulta);
+            } else if (rutaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 4
+               // UsuarioHelper.mostrarRutaVuelo(consultaUsuarioTable2, consulta);
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        ///////////////MODIFICAR USUARIO/////////////////
+
+        aceptarButton2.addActionListener(new ActionListener() {
+            String consulta = consultaUsuarioText.getText().trim();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String usuario = UsuarioHelper.obtenerTipoUsuario(consulta);
+                if (UsuarioHelper.obtenerTipoUsuario(consulta)=="Cliente"){
+                    UsuarioHelper.cargarDatosClienteEnCampos(consulta,modificarClienteNombre,modificarClienteApellido,modificarClienteNacionalidad,modificarClienteComboBox,modificarClienteDocumento,modificarClienteCorreo,modificarClienteJCalendar);
+                } else {
+                    UsuarioHelper.cargarDatosAerolineaEnCampos(consulta,modificarAerolineaTextNombre,modificarAerolineaTextArea,modificarAerolineaTextLink,modificarAerolineaCorreo);
+                }
+                UsuarioHelper.abrirPanelModificacionUsuario(parentPanel,modificarCliente,modificarAerolinea,usuario);
+
+            }
+        });
+
+        modificarClienteGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.guardarCambiosCliente(
+                        modificarClienteNombre.getText().trim(),
+                        modificarClienteApellido.getText().trim(),
+                        UsuarioHelper.convertirDTfecha(modificarClienteJCalendar.getDate()),
+                        modificarClienteNacionalidad.getText().trim(),
+                        (TipoDoc) modificarClienteComboBox.getSelectedItem(),
+                        modificarClienteDocumento.getText().trim()
+                );
+            }
+        });
+
+        modificarAerolineaGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.guardarCambiosAerolinea(
+                        modificarAerolineaTextNombre.getText().trim(),
+                        modificarAerolineaTextArea.getText().trim(),
+                        modificarAerolineaTextLink.getText().trim()
+                );
+            }
+        });
+
+
+
+        /*----- MENU DE USUARIO -----*/
+>>>>>>> Stashed changes
         comboBoxUsuario.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -354,12 +530,45 @@ public class EstacionTrabajo {
         });
 
 
+<<<<<<< Updated upstream
 /////////////// CONSULTA USUARIO /////////////////
         ButtonGroup grupoConsultaUsuario = new ButtonGroup();
         grupoConsultaUsuario.add(paqueteVueloRadioButton);
         grupoConsultaUsuario.add(usuarioRadioButton);
         grupoConsultaUsuario.add(reservaDeVueloRadioButton);
         grupoConsultaUsuario.add(rutaDeVueloRadioButton);
+=======
+//        vuelosConsultaRV.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (cargandoVuelosRV) return;
+//                Object seleccionado = vuelosConsultaRV.getSelectedItem();
+//                if (seleccionado instanceof DTVuelo) {
+//                    DTVuelo vueloSeleccionado = (DTVuelo) seleccionado;
+//
+//                    JPanel panelDetalles = new JPanel();
+//                    panelDetalles.setLayout(new GridLayout(5, 1));
+//                    panelDetalles.add(new JLabel("Nombre: " + vueloSeleccionado.getNombre()));
+//                    panelDetalles.add(new JLabel("Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Duración: " + vueloSeleccionado.getDuracion().toString()));
+//                    panelDetalles.add(new JLabel("Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
+//                    panelDetalles.add(new JLabel("Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
+//                    panelDetalles.add(new JLabel("Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
+//                    panelDetalles.add(new JLabel("Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
+//                    JOptionPane.showMessageDialog(
+//                            null,
+//                            panelDetalles,
+//                            "Detalles del Vuelo",
+//                            JOptionPane.PLAIN_MESSAGE
+//                    );
+//                }
+//            }
+//        });
+
+
+    }
+>>>>>>> Stashed changes
 
 
         // 2. Listener para el botón Aceptar
@@ -444,6 +653,13 @@ public class EstacionTrabajo {
         fechaAltaRutaVuelo = new JCalendar();
         fechaAltaVuelo = new JCalendar();
         JCalendarAltaCliente = new JCalendar();
+<<<<<<< Updated upstream
+=======
+        calendarCiudadAlta = new JCalendar();
+        modificarClienteJCalendar = new JCalendar();
+        listCatAltaRuta = new JList<>();
+        listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+>>>>>>> Stashed changes
     }
 
 
