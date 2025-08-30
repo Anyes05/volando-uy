@@ -442,28 +442,6 @@ public class Sistema implements ISistema {
 //    }
 //
 //
-//    public List<DTPaqueteVuelos> mostrarPaquete(){
-//        return null;
-//    }
-//    public void seleccionarPaquete(String nombrePaquete){
-//    }
-//    public List<DTCliente> mostrarClientes(){
-//        return null;
-//    }
-//    public void seleccionarCliente(String nombreCliente){
-//
-//    }
-//    public void relizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimineto){
-//
-//    }
-//
-//    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta){
-//
-//    }
-//
-//    public void agregarCiudadParaTest(Ciudad c) {
-//        ciudades.add(c);
-//    }
 //
 //    // ALTA DE VUELO
 //    public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname){
@@ -728,22 +706,28 @@ public class Sistema implements ISistema {
 //    }
 //
 //
-//
+/*
 //    public List<DTRutaVuelo> listarRutaVuelo(){
-//        return null;
-//    }
-//
-//
-//
-//    public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre){
-//        return null;
-//    }
-//
-//    public void seleccionarCliente(){
-//
+//        List<DTRutaVuelo> listaRutas = new ArrayList<>();
+//        for (Usuario u : usuarios) {
+//            if (u instanceof Aerolinea a) {
+//                for (RutaVuelo r : a.getRutasVuelo()) {
+//                    listaRutas.add(new DTRutaVuelo(
+//                            r.getNombre(),
+//                            r.getDescripcion(),
+//                            r.getFechaAlta(),
+//                            r.getCostoBase(),
+//                            new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
+//                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+//                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
+//                    ));
+//                }
+//            }
+//        }
+//        return listaRutas;
 //    }
 
-/*
+
     // CREAR PAQUETE VUELO
     public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta, TipoAsiento tipoAsiento) {
         for (PaqueteVuelo p : paqueteVuelos) {
@@ -863,7 +847,6 @@ public class Sistema implements ISistema {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
         }
-<<<<<<< HEAD
 
         // Verificar que no exista un vuelo con el mismo nombre
         for (Vuelo v : vuelos) {
@@ -889,7 +872,6 @@ public class Sistema implements ISistema {
                 recordarDatosVuelo.getAsientosMaxTurista(),
                 recordarDatosVuelo.getAsientosMaxEjecutivo(),
                 recordarDatosVuelo.getFechaAlta()
-=======
         DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
                 paqueteSeleccionado.getNombre(),
                 paqueteSeleccionado.getDescripcion(),
@@ -897,7 +879,6 @@ public class Sistema implements ISistema {
                 paqueteSeleccionado.getDiasValidos(),
                 paqueteSeleccionado.getDescuento(),
                 paqueteSeleccionado.getFechaAlta()
->>>>>>> b84a5dbb29eac480ae9fa8162d6f636ad3e8bce2
         );
         dtPaquete.setCantidad(paqueteSeleccionado.getCantidad());
         dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
