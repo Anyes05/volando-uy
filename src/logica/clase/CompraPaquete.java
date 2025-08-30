@@ -2,12 +2,14 @@ package logica.clase;
 
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoAsiento;
 
 public class CompraPaquete extends Reserva {
     private DTFecha vencimiento;
+    private PaqueteVuelo paqueteVuelo;
 
-    public CompraPaquete(DTCliente cliente, DTFecha fechaReserva, int costoReserva, DTFecha vencimiento) {
-        super(cliente, fechaReserva, costoReserva);
+    public CompraPaquete(Cliente cliente, DTFecha fechaReserva, DTFecha vencimiento, TipoAsiento tipoAsiento) {
+        super(cliente, fechaReserva, tipoAsiento);
 
         this.vencimiento = vencimiento;
     }

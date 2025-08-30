@@ -18,5 +18,8 @@ public class DTHora {
         return minutos;
     }
 
-
+    @Override
+    public String toString() {
+        return String.format("%02d:%02d", hora, minutos);
+    }
 }

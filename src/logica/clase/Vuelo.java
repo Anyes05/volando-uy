@@ -2,7 +2,7 @@ package logica.clase;
 
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTHora;
-import logica.DataTypes.CostoBase;
+
 import java.util.ArrayList;
 import java.util.List;
 

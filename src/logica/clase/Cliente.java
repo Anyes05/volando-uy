@@ -12,6 +12,7 @@ public class Cliente extends Usuario{
     private String nacionalidad;
     private TipoDoc tipoDoc;
     private String numeroDocumento;
+    private int cantidadPaquetes;
 
     private List<Reserva> reservas;
 
@@ -24,6 +25,7 @@ public class Cliente extends Usuario{
         this.tipoDoc = tipoDoc;
         this.numeroDocumento = numeroDocumento;
         this.reservas = new ArrayList<>();
+        this.cantidadPaquetes = 0;
     }
 
     // Getters y Setters
@@ -73,5 +75,13 @@ public class Cliente extends Usuario{
 
     public void setReservas(List<Reserva> reservas) {
         this.reservas = reservas;
+    }
+
+    public void agregarReserva(Reserva reserva) {
+        this.reservas.add(reserva);
+    }
+
+    public void incrementarCantidadPaquetes() {
+        this.cantidadPaquetes++;
     }
 }

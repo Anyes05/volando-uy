@@ -3,7 +3,8 @@ package presentacion.helpers;
 import logica.clase.Sistema;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
-
+import logica.clase.*;
+import java.awt.event.ComponentEvent;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
+
+
 
 
 public class UsuarioHelper {
@@ -23,7 +26,6 @@ public class UsuarioHelper {
                 fecha.getMes(),
                 fecha.getAno());
     }
-
 
     public static DTFecha convertirDTfecha(Date fecha) {
         if (fecha == null) {
@@ -61,6 +63,7 @@ public class UsuarioHelper {
     }
 
 
+
    // private Sistema sistema = Sistema.getInstance(); // o el controlador donde está mostrarDatosUsuario
 
 
@@ -83,9 +86,11 @@ public class UsuarioHelper {
             DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
 
             if (usuario instanceof DTCliente) {
+
                 return "Cliente";
             } else if (usuario instanceof DTAerolinea) {
                 return "Aerolinea";
+
             } else {
                 return "otro";
             }
@@ -550,6 +555,7 @@ public class UsuarioHelper {
     }
 
     ////////PAQUETES DE VUELO/////////// ESTE NO RECIBE PARAMETROS POR QUE TODAVIA NO ESTA IMPLEMENTADO EN SISTEMA
+
     public static void mostrarPaquetes(JTable tabla) {
         try {
             // 1. Obtener todos los paquetes desde Sistema
@@ -605,8 +611,7 @@ public class UsuarioHelper {
             );
         }
     }
-<<<<<<< Updated upstream
-=======
+
 *//*
    public static void mostrarDatosPaquete(JTable tabla, String nombrePaquete) {
        if (tabla == null || nombrePaquete == null || nombrePaquete.isEmpty()) {
@@ -649,10 +654,9 @@ public class UsuarioHelper {
        }
    }
    */
->>>>>>> Stashed changes
 
     //////////////MOSTRAR RUTA VUELO/////////////
-    public static void mostrarRutaVuelo(JTable tabla, String nombreRuta) {
+   /* public static void mostrarRutaVuelo(JTable tabla, String nombreRuta) {
         if (nombreRuta == null || nombreRuta.isEmpty()) {
             JOptionPane.showMessageDialog(
                     null,
@@ -800,7 +804,4 @@ public class UsuarioHelper {
             );
         }
     }
-
-
-
 }

@@ -44,6 +44,8 @@ public class DTVuelo {
     public DTRutaVuelo getRuta() {return ruta; }
 
     //Setters
-
+    public String toString() {
+        return nombre;
+    }
 
 }

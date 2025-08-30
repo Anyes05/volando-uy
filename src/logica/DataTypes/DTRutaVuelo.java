@@ -4,17 +4,17 @@ public class DTRutaVuelo {
     private String nombre;
     private String descripcion;
     private DTFecha fechaAlta;
-    private CostoBase costoBase;
+    private DTCostoBase costoBase;
     private DTAerolinea aerolinea;
     private DTCiudad ciudadOrigen;
     private DTCiudad ciudadDestino;
 
-    public DTRutaVuelo( String nombre, String descripcion, DTFecha fechaAlta, CostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
+    public DTRutaVuelo(String nombre, String descripcion,DTFecha fechaAlta,DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaAlta = fechaAlta;
-        this.costoBase = costoBase;
         this.aerolinea = aerolinea;
+        this.costoBase = costoBase;
         this.ciudadOrigen = ciudadOrigen;
         this.ciudadDestino = ciudadDestino;
     }
@@ -30,7 +30,7 @@ public class DTRutaVuelo {
     public DTFecha getFechaAlta() {
         return fechaAlta;
     }
-    public CostoBase getCostoBase() {
+    public DTCostoBase getCostoBase() {
         return costoBase;
     }
     public DTAerolinea getAerolinea() {
@@ -46,13 +46,7 @@ public class DTRutaVuelo {
     // MÉTODOS
     @Override
     public String toString() {
-        return "RutaVuelo: " +
-                "nombre= " + nombre +
-                ", descripcion= " + descripcion +
-                ", fechaAlta=" + fechaAlta +
-                ", costoBase=" + costoBase +
-                ", aerolinea=" + aerolinea.getNombre() +
-                ", ciudadOrigen=" + ciudadOrigen.getNombre() +
-                ", ciudadDestino=" + ciudadDestino.getNombre();
+        return nombre;
+
     }
 }

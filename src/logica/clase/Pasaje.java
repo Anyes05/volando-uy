@@ -1,29 +1,30 @@
 package logica.clase;
 
 import logica.DataTypes.DTCliente;
+import logica.DataTypes.TipoAsiento;
 
 public class Pasaje {
     //Atributos
-    private DTCliente pasajero;
-    private int cantidadEquipajeExtra;
-
+    private Cliente pasajero;
+    private TipoAsiento tipoAsiento;
+    private int costoPasaje;
     //Relaciones
     private Reserva reserva;
 
     //Constructor
-    public Pasaje(DTCliente pasajero, int cantidadEquipajeExtra, Reserva reserva) {
+    public Pasaje(Cliente pasajero, Reserva reserva, TipoAsiento tipoAsiento) {
         this.pasajero = pasajero;
-        this.cantidadEquipajeExtra = cantidadEquipajeExtra;
         this.reserva = reserva;
+        this.tipoAsiento = tipoAsiento;
     }
 
     // getters y setters
 
-    public DTCliente getPasajero() {
+    public Cliente getPasajero() {
         return pasajero;
     }
 
-    public void setPasajero(DTCliente pasajero) {
+    public void setPasajero(Cliente pasajero) {
         this.pasajero = pasajero;
     }
 
@@ -35,11 +36,19 @@ public class Pasaje {
         this.reserva = reserva;
     }
 
-    public int getCantidadEquipajeExtra() {
-        return cantidadEquipajeExtra;
+    public TipoAsiento getTipoAsiento() {
+        return tipoAsiento;
     }
 
-    public void setCantidadEquipajeExtra(int cantidadEquipajeExtra) {
-        this.cantidadEquipajeExtra = cantidadEquipajeExtra;
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+        this.tipoAsiento = tipoAsiento;
+    }
+
+    public int getCostoPasaje() {
+        return costoPasaje;
+    }
+
+    public void setCostoPasaje(int costoPasaje) {
+        this.costoPasaje = costoPasaje;
     }
 }

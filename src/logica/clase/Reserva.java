@@ -1,24 +1,25 @@
 package logica.clase;
 
-import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.DTCostoBase;
+import logica.DataTypes.TipoAsiento;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Reserva {
     //Atributos
-    private DTCliente cliente;
+    private Cliente cliente;
     private DTFecha fechaReserva;
-    private int costoReserva;
-
-    private List<DTCliente> pasajeros;
+    private DTCostoBase costoReserva;
+    private TipoAsiento tipoAsiento;
+    private List<Pasaje> pasajeros;
 
     // Constructor
-    public Reserva(DTCliente cliente, DTFecha fechaReserva, int costoReserva) {
+    public Reserva(Cliente cliente, DTFecha fechaReserva, TipoAsiento tipoAsiento) {
         this.cliente = cliente;
         this.fechaReserva = fechaReserva;
-        this.costoReserva = costoReserva;
+        this.tipoAsiento = tipoAsiento;
 
         this.pasajeros = new ArrayList<>();
     }
@@ -26,11 +27,11 @@ public abstract class Reserva {
     // getters y setters
 
 
-    public DTCliente getCliente() {
+    public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(DTCliente cliente) {
+    public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
@@ -42,22 +43,34 @@ public abstract class Reserva {
         this.fechaReserva = fechaReserva;
     }
 
-    public int getCostoReserva() {
+    public DTCostoBase getCostoReserva() {
         return costoReserva;
     }
 
-    public void setCostoReserva(int costoReserva) {
+    public void setCostoReserva(DTCostoBase costoReserva) {
         this.costoReserva = costoReserva;
     }
 
-    public List<DTCliente> getPasajeros() {
+    public List<Pasaje> getPasajeros() {
         return pasajeros;
     }
 
-    public void setPasajeros(List<DTCliente> pasajeros) {
+    public void setPasajeros(List<Pasaje> pasajeros) {
         this.pasajeros = pasajeros;
     }
 
-    public abstract int calcularCosto();
+    public void setCostoTotal(float costoTotal) {
+        this.costoReserva.setCostoTotal(costoTotal);
+    }
 
-}
+    public TipoAsiento getTipoAsiento() {
+        return tipoAsiento;
+    }
+
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+        this.tipoAsiento = tipoAsiento;
+    }
+
+    public abstract int calcularCosto();}
+
+
