@@ -14,4 +14,8 @@ public class CategoriaServicio {
     public Categoria obtenerCategoria(Long id) {
         return categoriaDAO.buscarPorId(id);
     }
+
+    public Categoria buscarCategoriaPorNombre(String nombre) {
+        return categoriaDAO.buscarCategoriaPorNombre(nombre);
+    }
 }

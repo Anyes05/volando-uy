@@ -1,6 +1,7 @@
 package logica.clase;
 
 
+import dato.entidades.Aeropuerto;
 import dato.entidades.Cliente;
 import dato.entidades.CompraPaquete;
 import dato.entidades.Reserva;
@@ -10,6 +11,7 @@ import dato.entidades.Aerolinea;
 import logica.servicios.UsuarioServicio;
 import logica.servicios.ClienteServicio;
 import logica.servicios.AerolineaServicio;
+import logica.servicios.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +24,10 @@ public class Sistema implements ISistema {
     private List<Ciudad> ciudades;
     private List<Vuelo> vuelos;
     private String recuerdaAerolinea; // Para recordar la aerolinea seleccionada
-    private RutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
-    //private Aerolinea aerolineaSeleccionada;
+    private dato.entidades.RutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
+    private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
-    //private Cliente clienteSeleccionado;
+    private Cliente clienteSeleccionado;
     private PaqueteVuelo paqueteSeleccionado;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
@@ -297,128 +299,119 @@ public class Sistema implements ISistema {
 
 
 //    // ALTA RUTA VUELO
-//    public List<DTAerolinea> listarAerolineas(){
-//        List<DTAerolinea> listaAerolineas = new ArrayList<>();
-//        for (Usuario u : usuarios) {
-//            if (u instanceof Aerolinea a) {
-//                listaAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>())); // Le pasé este último parametro de lista vacía porque necesitaba la lista para otro caso
-//            }
-//        }
-//        return listaAerolineas;
+//    public List<DTAerolinea> listarAerolineas() {
+//    AerolineaServicio aerolineaServicio = new AerolineaServicio();
+//    List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
+//    List<DTAerolinea> listaAerolineas = new ArrayList<>();
+//
+//    for (Aerolinea a : aerolineas) {
+//        listaAerolineas.add(new DTAerolinea(
+//            a.getNickname(),
+//            a.getNombre(),
+//            a.getCorreo(),
+//            a.getDescripcion(),
+//            a.getLinkSitioWeb(),
+//            new ArrayList<>()
+//        ));
+//    }
+//    return listaAerolineas;
 //    }
 //    public void seleccionarAerolinea(String nickname) {
-//        nickname = nickname.toLowerCase();
-//        for (Usuario u : usuarios) {    // Recorremos la lista de usuarios
-//            // Verificamos si el usuario es una Aerolinea y si su nickname coincide con el proporcionado
-//            if (u instanceof Aerolinea a && a.getNickname().toLowerCase().equals(nickname)) {
-//                aerolineaSeleccionada = a;
-//                recuerdaAerolinea = a.getNickname();
-//                return;
-//            }
-//        }
-//        aerolineaSeleccionada = null;
+//    AerolineaServicio aerolineaServicio = new AerolineaServicio();
+//    Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+//    if (aerolinea != null) {
+//        // Si tienes una variable interna para la aerolínea seleccionada, asígnala aquí
+//        // aerolineaSeleccionada = aerolinea; // si existe en tu clase
+//        recuerdaAerolinea = aerolinea.getNickname();
+//    } else {
+//        // aerolineaSeleccionada = null; // si existe en tu clase
+//        recuerdaAerolinea = null;
+//    }
+//}
+//    public void ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
+//    if (recuerdaAerolinea == null) {
+//        throw new IllegalStateException("Debe seleccionar una aerolínea antes de ingresar los datos de la ruta.");
 //    }
 //
-//    public DTRutaVuelo ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
-//        // Verificar si la aerolinea ha sido seleccionada
-//        if (recuerdaAerolinea == null) {
-//            throw new IllegalStateException("Debe seleccionar una aerolinea antes de ingresar los datos de la ruta.");
-//        }
-//        // Buscar la aerolinea por su nickname
-//        Aerolinea aerolineaSeleccionada = null;
-//        for (Usuario u : usuarios) {
-//            if (u instanceof Aerolinea a && a.getNickname().equals(recuerdaAerolinea)) {
-//                aerolineaSeleccionada = a;
-//                break;
-//            }
-//        }
-//        if (aerolineaSeleccionada == null) {
-//            throw new IllegalStateException("La aerolinea seleccionada no existe.");
-//        }
-//        //Crear DTAerolinea
-//        DTAerolinea aerolineaDT = new DTAerolinea(aerolineaSeleccionada.getNickname(), aerolineaSeleccionada.getNombre(), aerolineaSeleccionada.getCorreo(), aerolineaSeleccionada.getDescripcion(), aerolineaSeleccionada.getLinkSitioWeb(), new ArrayList<>());
-//        // Crear la hora del vuelo
-//        //DTHora horaVuelo = new DTHora(hora.getHora(), hora.getMinutos());
-//        // Crear la fecha de alta
-//        DTFecha fechaAltaDT = new DTFecha(fechaAlta.getDia(), fechaAlta.getMes(), fechaAlta.getAno());
-//        CostoBase costoBase = new CostoBase(costoTurista, costoEjecutivo, costoEquipajeExtra);
+//    AerolineaServicio aerolineaServicio = new AerolineaServicio();
+//    CiudadServicio ciudadServicio = new CiudadServicio();
+//    CategoriaServicio categoriaServicio = new CategoriaServicio();
 //
-//        // Crear los DTCiudad para origen y destino si existen
-//        DTCiudad ciudadOrigenDT = null;
-//        DTCiudad ciudadDestinoDT = null;
-//        for (Ciudad ciudad : ciudades) {
-//            if (ciudad.getNombre().equalsIgnoreCase(ciudadOrigen)) {
-//                ciudadOrigenDT = new DTCiudad(ciudad.getNombre(), ciudad.getPais());
-//            }
-//            if (ciudad.getNombre().equalsIgnoreCase(ciudadDestino)) {
-//                ciudadDestinoDT = new DTCiudad(ciudad.getNombre(), ciudad.getPais());
-//            }
-//        }
-//        if (ciudadOrigenDT == null || ciudadDestinoDT == null) {
-//            throw new IllegalArgumentException("Una de las ciudades no existe.");
-//        }
-//        // Crear la ruta de vuelo
-//        DTRutaVuelo DTrutaVuelo = new DTRutaVuelo( nombreRuta, descripcion, fechaAltaDT, aerolineaDT, ciudadOrigenDT, ciudadDestinoDT);
-//            RutaVuelo nuevaRuta = new RutaVuelo(
-//                    nombreRuta,
-    //                   descripcion,
-//                    costoBase
-    //           );
-//        // Retornar el DTRutaVuelo creado
-//        recordarRutaVuelo = DTrutaVuelo; // Guardar la ruta de vuelo seleccionada
-//        return DTrutaVuelo;
+//    Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(recuerdaAerolinea);
+//    if (aerolinea == null) {
+//        throw new IllegalStateException("La aerolínea seleccionada no existe.");
 //    }
+//
+//    dato.entidades.Ciudad origen = ciudadServicio.buscarCiudadPorNombre(ciudadOrigen);
+//    dato.entidades.Ciudad destino = ciudadServicio.buscarCiudadPorNombre(ciudadDestino);
+//
+//    if (origen == null || destino == null) {
+//        throw new IllegalArgumentException("Una de las ciudades no existe.");
+//    }
+//
+//    dato.entidades.Categoria cat = categoriaServicio.buscarCategoriaPorNombre(categoria);
+//    if (cat == null) {
+//        throw new IllegalArgumentException("La categoría no existe.");
+//    }
+//
+//    DTCostoBase costoBase = new DTCostoBase(costoTurista, costoEjecutivo, costoEquipajeExtra);
+//
+//
+//    dato.entidades.RutaVuelo rutaVuelo = new dato.entidades.RutaVuelo(
+//        nombreRuta,
+//        descripcion,
+//        costoBase,
+//        fechaAlta
+//    );
+//
+//    rutaVuelo.setCiudadDestino(destino);
+//    rutaVuelo.setCiudadOrigen(origen);
+//    rutaVuelo.getCategorias().add(cat);
+//    rutaVuelo.getAerolineas().add(aerolinea);
+//
+//    recordarRutaVuelo = rutaVuelo;
+//}
+//
 //    public void registrarRuta() {
-//        {
-//            // Verificar si la aerolinea ha sido seleccionada
-//            if (recuerdaAerolinea == null) {
-//                throw new IllegalStateException("Debe seleccionar una aerolinea antes de registrar la ruta.");
-//            }
-//            // Buscar la aerolinea por su nickname
-//            Aerolinea aerolineaSeleccionada = null;
-//            for (Usuario u : usuarios) {
-//                if (u instanceof Aerolinea a && a.getNickname().equals(recuerdaAerolinea)) {
-//                    aerolineaSeleccionada = a;
-//                    break;
-//                }
-//            }
-//            if (aerolineaSeleccionada == null) {
-//                throw new IllegalStateException("La aerolinea seleccionada no existe.");
-//            }
-//            // Crear la ruta de vuelo
-//            if (recordarRutaVuelo == null) {
-//                throw new IllegalStateException("Debe ingresar los datos de la ruta antes de registrarla.");
-//            }
-//            RutaVuelo nuevaRuta = new RutaVuelo(
-//                    recordarRutaVuelo.getNombre(),
-//                    recordarRutaVuelo.getDescripcion(),
-//                    recordarRutaVuelo.getCostoBase()
-//            );
-//            nuevaRuta.setFechaAlta(recordarRutaVuelo.getFechaAlta());
-//            // Buscar las ciudades de origen y destino y asignarlas a la nueva ruta
-//            Ciudad ciudadOrigen = null;
-//            Ciudad ciudadDestino = null;
-//            for (Ciudad ciudad : ciudades) {
-//                if (ciudad.getNombre().equalsIgnoreCase(recordarRutaVuelo.getCiudadOrigen().getNombre())) {
-//                    ciudadOrigen = ciudad;
-//                }
-//                if (ciudad.getNombre().equalsIgnoreCase(recordarRutaVuelo.getCiudadDestino().getNombre())) {
-//                    ciudadDestino = ciudad;
-//                }
-//            }
-//            if (ciudadOrigen == null || ciudadDestino == null) {
-//                throw new IllegalArgumentException("Una de las ciudades no existe.");
-//            }
-//            nuevaRuta.setCiudadOrigen(ciudadOrigen);
-//            nuevaRuta.setCiudadDestino(ciudadDestino);
-//            // Agregar la nueva ruta a la lista de rutas de la aerolinea
-//            aerolineaSeleccionada.getRutasVuelo().add(nuevaRuta);
-//            // Limpiar las variables de selección
-//            recuerdaAerolinea = null;
-//            recordarRutaVuelo = null;
-//        }
+//    if (recuerdaAerolinea == null) {
+//        throw new IllegalStateException("Debe seleccionar una aerolínea antes de registrar la ruta.");
+//    }
+//    if (recordarRutaVuelo == null) {
+//        throw new IllegalStateException("Debe ingresar los datos de la ruta antes de registrarla.");
 //    }
 //
+//    AerolineaServicio aerolineaServicio = new AerolineaServicio();
+//    CiudadServicio ciudadServicio = new CiudadServicio();
+//    RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+//
+//    Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(recuerdaAerolinea);
+//    if (aerolinea == null) {
+//        throw new IllegalStateException("La aerolínea seleccionada no existe.");
+//    }
+//
+//    dato.entidades.Ciudad ciudadOrigen = ciudadServicio.buscarCiudadPorNombre(recordarRutaVuelo.getCiudadOrigen().getNombre());
+//    dato.entidades.Ciudad ciudadDestino = ciudadServicio.buscarCiudadPorNombre(recordarRutaVuelo.getCiudadDestino().getNombre());
+//    if (ciudadOrigen == null || ciudadDestino == null) {
+//        throw new IllegalArgumentException("Una de las ciudades no existe.");
+//    }
+//
+//    // Registrar la ruta usando el servicio
+//    rutaVueloServicio.registrarRutaVuelo(
+//        recordarRutaVuelo.getNombre(),
+//        recordarRutaVuelo.getDescripcion(),
+//        recordarRutaVuelo.getCostoBase(),
+//        recordarRutaVuelo.getFechaAlta(),
+//        aerolinea,
+//        ciudadOrigen,
+//        ciudadDestino,
+//        recordarRutaVuelo.getCategorias()
+//    );
+//
+//    // Limpiar las variables de selección
+//    recuerdaAerolinea = null;
+//    recordarRutaVuelo = null;
+//}
+
 //    // CONSULTA RUTA VUELO
 //    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea) {
 //        List<DTRutaVuelo> listaRutas = new ArrayList<>();
@@ -614,24 +607,19 @@ public class Sistema implements ISistema {
 //    }
 //
 //
-//    // ALTA CIUDAD
 //    public void altaCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta) {
-//        // Verificar si el par (nombre, pais) ya existe
-//        for (Ciudad c : ciudades) {
-//            if (c.getNombre().equalsIgnoreCase(nombre) && c.getPais().equalsIgnoreCase(pais)) {
-//                throw new IllegalArgumentException("La ciudad ya existe.");
-//            }
-//        }
-//        // Crear la nueva ciudad
-//        Ciudad nuevaCiudad = new Ciudad(nombre, pais, fechaAlta);
-//        // Agregar la ciudad a la lista de ciudades
-//        ciudades.add(nuevaCiudad);
-//        // Si la ciudad tiene un aeropuerto, agregarlo a la lista de aeropuertos de la ciudad
-//        if (aeropuerto != null) {
-//            nuevaCiudad.getAeropuertos().add(aeropuerto);
-//        }
+//    CiudadServicio ciudadServicio = new CiudadServicio();
 //
+//    // Verificar si la ciudad ya existe usando el servicio
+//    dato.entidades.Ciudad ciudadExistente = ciudadServicio.buscarCiudadPorNombre(nombre);
+//    if (ciudadExistente != null) {
+//        throw new IllegalArgumentException("La ciudad ya existe.");
 //    }
+//
+//    // Crear la ciudad usando el servicio
+//    ciudadServicio.registrarCiudad(nombre, pais, aeropuerto, fechaAlta);
+//}
+
 //    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
 //        if (recordarDatosVuelo == null) {
 //            throw new IllegalStateException("Debe seleccionar un vuelo antes de reservar.");

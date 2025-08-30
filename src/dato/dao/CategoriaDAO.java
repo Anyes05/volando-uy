@@ -25,4 +25,13 @@ public class CategoriaDAO {
         em.close();
         return c;
     }
+
+    public Categoria buscarCategoriaPorNombre(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        Categoria c = em.createQuery("SELECT c FROM Categoria c WHERE c.nombre = :nombre", Categoria.class)
+                     .setParameter("nombre", nombre)
+                     .getSingleResult();
+        em.close();
+        return c;
+    }
 }
