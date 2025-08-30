@@ -126,5 +126,19 @@ public class RutaVuelo {
         this.ciudadDestino = ciudadDestino;
     }
 
+    public List<Categoria> getCategorias() { return categorias; }
+
+    public void setCategorias(List<Categoria> categorias) { this.categorias = categorias;}
+
+    public List<Vuelo> getVuelos() { return vuelos; }
+
+    public void setVuelos(List<Vuelo> vuelos) { this.vuelos = vuelos; }
+
     public List<Aerolinea> getAerolineas() { return aerolineas; }
+
+    public void setAerolineas(List<Aerolinea> aerolineas) { this.aerolineas = aerolineas; }
+
+    public Cantidad getCantidad() { return cantidad; }
+
+    public void setCantidad(Cantidad cantidad) { this.cantidad = cantidad; }
 }

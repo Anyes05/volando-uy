@@ -26,4 +26,13 @@ public class CiudadDAO {
         return c;
     }
 
+    public Ciudad buscarCiudadPorNombre(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        Ciudad c = em.createQuery("SELECT c FROM Ciudad c WHERE c.nombre = :nombre", Ciudad.class)
+                     .setParameter("nombre", nombre)
+                     .getSingleResult();
+        em.close();
+        return c;
+    }
+
 }

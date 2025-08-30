@@ -54,4 +54,13 @@ public class Ciudad {
 
     public DTFecha getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
+
+    public void setAeropuerto(Aeropuerto aeropuerto) {
+        this.aeropuertos.add(aeropuerto);
+        aeropuerto.setCiudad(this); // Asegura la relación bidireccional
+    }
+
+    public List<Aeropuerto> getAeropuertosList() {
+        return aeropuertos;
+    }
 }
