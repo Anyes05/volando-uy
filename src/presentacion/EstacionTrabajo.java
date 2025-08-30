@@ -5,17 +5,16 @@ import logica.clase.Sistema;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
-
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
-
-
 import javax.swing.*;
 import javax.swing.JScrollPane;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.BorderLayout;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import java.util.Calendar;
@@ -49,13 +48,6 @@ public class EstacionTrabajo {
     private JPanel modificarUsuario;
     private JTextField textField5;
     private JButton aceptarButton2;
-    private JTextField textField6;
-    private JTextField textField7;
-    private JTextField textField8;
-    private JTextField textField9;
-    private JTextField textField10;
-    private JTextArea textArea2;
-    private JButton guardarButton;
     private JPanel parentPanel;
     private JPanel buttonsPanel;
     private JButton botonInicio;
@@ -63,6 +55,20 @@ public class EstacionTrabajo {
     private JComboBox comboBoxUsuario;
     private JPanel consultaRutaVuelo;
     private JToolBar JToolBarPrincipal;
+    private JComboBox comboBox2;
+    private JTextPane textPane2;
+    private JTextPane textPane3;
+    private JTextArea textArea3;
+    private JTextArea textArea4;
+    private JList list2;
+    private JTextArea textArea5;
+    private JTextArea textArea6;
+    private JTextArea textArea7;
+    private JTextArea textArea8;
+    private JTextArea textArea9;
+    private JTextArea textArea10;
+    private JTextArea textArea11;
+    private JButton consultaUsuarioAceptar;
     //private JList list1;
     private JComboBox comboBoxAeroRVConsulta;
     private JTextPane nombreRVConsulta;
@@ -71,7 +77,7 @@ public class EstacionTrabajo {
     private JButton aceptarButton1;
     private JRadioButton rutaDeVueloRadioButton;
     private JRadioButton reservaDeVueloRadioButton;
-    private JTextField textField4;
+    private JTextField consultaUsuarioText;
     private JRadioButton paqueteVueloRadioButton;
     private JRadioButton usuarioRadioButton;
     private JPanel principalVacio;
@@ -92,74 +98,81 @@ public class EstacionTrabajo {
     private JTextField altaAerolineaNombre;
     private JTextField altaAerolineaCorreo;
     private JTextField altaAerolineaLinkWeb;
-    private JButton aceptarRuta;
-    private JTextField horaText;
-    private JTextField costoTurText;
-    private JTextField ciudadDText;
-    private JTextField ciudadOText;
-    private JTextField costoEjText;
-    private JTextField costoEqExText;
-    private JComboBox comboBoxCat;
-    private JPanel altaCiudad;
-    private JTextField ciudadAltaText;
-    private JButton buttonAltaCiudad;
-    private JTextField aeropuertoAltaText;
-    private JLabel DescCiudadText;
-    private JLabel AeropuertoCiuText;
-    private JLabel SitioWebCiuText;
-    private JTextField descripcionAltaCiText;
-    private JTextField sitioWebAltaCiText;
-    private JCalendar calendarCiudadAlta;
-    private JLabel FechaAltaCiudText;
-    private JLabel CiudadAltaText;
-    private JLabel PaisAltaText;
-    private JTextField paisAltaCiText;
-    private JPanel altaCategoría;
-    private JTextField categoriaAltaText;
-    private JButton buttonAltaCategoria;
-    private JTextField nombreAltRutaText;
-    private JTextField duracionAltaVuelotxt;
-    private JButton button2;
-    private JList<String> listCatAltaRuta;
-    private JComboBox<DTRutaVuelo> comBoxRutVueloConsultaRV;
-    private JComboBox vuelosConsultaRV;
-    private JTextPane descripcionRVConsulta;
-    private JTextArea costoBaseEjRVConsulta;
-    private JTextArea ciudadORVConsulta;
-    private JTextArea ciudadDRVConsulta;
-    private JTextArea costoBaseTuRVConsulta;
-    private JLabel costoEquipajeExRVConsulta;
-    private JTextArea costoUnEquipajeExRVConsulta;
-    private JTextField horaVuelotxt;
-    private JPanel consultaUsuarioJpanel2;
-    private JPanel consultaUsuarioJpanel1;
-    private JTable consultaUsuarioTable1;
-    private JTable consultaUsuarioTable2;
-    private JButton consultaUsuarioAceptar;
-    private JTextField consultaUsuarioText;
-    private JPanel modificarUsuarioJPanel1;
-    private JTable modificarUsuariotable1;
-    private JPanel modificarAerolinea;
-    private JPanel modificarCliente;
-    private JTextField modificarAerolineaTextNombre;
-    private JTextField modificarAerolineaTextLink;
-    private JTextArea modificarAerolineaTextArea;
-    private JButton modificarAerolineaGuardar;
-    private JButton cancelarButton;
-    private JButton cancelarButton1;
-    private JTextField modificarClienteNombre;
-    private JTextField modificarClienteApellido;
-    private JTextField modificarClienteNacionalidad;
-    private JComboBox modificarClienteComboBox;
-    private JTextField modificarClienteDocumento;
-    private JButton modificarClienteGuardar;
+private JPanel consultaUsuarioJpanel2;
+private JPanel consultaUsuarioJpanel1;
+private JTable consultaUsuarioTable1;
+private JTable consultaUsuarioTable2;
+private JButton consultaUsuarioAceptar;
+private JTextField consultaUsuarioText;
 
+private JPanel modificarUsuarioJPanel1;
+private JTable modificarUsuariotable1;
 
+private JPanel modificarAerolinea;
+private JTextField modificarAerolineaTextNombre;
+private JTextField modificarAerolineaTextLink;
+private JTextArea modificarAerolineaTextArea;
+private JTextField modificarAerolineaCorreo;
+private JButton modificarAerolineaGuardar;
+
+private JPanel modificarCliente;
+private JTextField modificarClienteNombre;
+private JTextField modificarClienteApellido;
+private JTextField modificarClienteNacionalidad;
+private JComboBox modificarClienteComboBox;
+private JTextField modificarClienteDocumento;
+private JTextField modificarClienteCorreo;
+private JCalendar modificarClienteJCalendar;
+private JButton modificarClienteGuardar;
+
+private JButton cancelarButton;
+private JButton cancelarButton1;
+private JButton button2;
+private JButton aceptarRuta;
+
+private JTextField horaText;
+private JTextField costoTurText;
+private JTextField ciudadDText;
+private JTextField ciudadOText;
+private JTextField costoEjText;
+private JTextField costoEqExText;
+private JComboBox comboBoxCat;
+private JPanel altaCiudad;
+private JTextField ciudadAltaText;
+private JButton buttonAltaCiudad;
+private JTextField aeropuertoAltaText;
+private JLabel DescCiudadText;
+private JLabel AeropuertoCiuText;
+private JLabel SitioWebCiuText;
+private JTextField descripcionAltaCiText;
+private JTextField sitioWebAltaCiText;
+private JCalendar calendarCiudadAlta;
+private JLabel FechaAltaCiudText;
+private JLabel CiudadAltaText;
+private JLabel PaisAltaText;
+private JTextField paisAltaCiText;
+private JPanel altaCategoría;
+private JTextField categoriaAltaText;
+private JButton buttonAltaCategoria;
+private JTextField nombreAltRutaText;
+private JTextField duracionAltaVuelotxt;
+private JList<String> listCatAltaRuta;
+private JComboBox<DTRutaVuelo> comBoxRutVueloConsultaRV;
+private JComboBox vuelosConsultaRV;
+private JTextPane descripcionRVConsulta;
+private JTextArea costoBaseEjRVConsulta;
+private JTextArea ciudadORVConsulta;
+private JTextArea ciudadDRVConsulta;
+private JTextArea costoBaseTuRVConsulta;
+private JLabel costoEquipajeExRVConsulta;
+private JTextArea costoUnEquipajeExRVConsulta;
+private JTextField horaVuelotxt;
 
 
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
+
 
     public EstacionTrabajo() {
 
@@ -190,7 +203,9 @@ public class EstacionTrabajo {
             }
         });
 
+
         /*----- MENU DE VUELOS Y RUTAS -----*/
+
         comboBoxVuelos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -254,7 +269,73 @@ public class EstacionTrabajo {
             }
         });
 
-        /////////////// CONSULTA USUARIO /////////////////
+
+        /*----- MENU DE VUELOS Y RUTAS -----*/
+//        comboBoxVuelos.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String seleccionado = (String) comboBoxVuelos.getSelectedItem();
+//                // Según lo que se elija, haces algo
+//                switch (seleccionado) {
+//                    case "Crear ruta de vuelo":
+//                        parentPanel.removeAll();
+//                        cargarAerolineas(aerolineaVuelo);
+//                        cargarCategorias(listCatAltaRuta);
+//                        parentPanel.add(altaRuta);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Consultar ruta de vuelo":
+//                        parentPanel.removeAll();
+//                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
+//                        nombreRVConsulta.setText("");
+//                        descripcionRVConsulta.setText("");
+//                        ciudadORVConsulta.setText("");
+//                        ciudadDRVConsulta.setText("");
+//                        costoBaseTuRVConsulta.setText("");
+//                        costoBaseEjRVConsulta.setText("");
+//                        costoUnEquipajeExRVConsulta.setText("");;
+//                        fechaAltaRVConsulta.setText("");
+//                        comboBoxAeroRVConsulta.removeAllItems();
+//                        comBoxRutVueloConsultaRV.removeAllItems();
+//                        vuelosConsultaRV.removeAllItems();
+//                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = false;
+//                        cargarAerolineas(comboBoxAeroRVConsulta);
+//                        parentPanel.add(consultaRutaVuelo);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Crear Vuelo":
+//                        parentPanel.removeAll();
+//                        cargarAerolineas(aerolinea);
+//                        parentPanel.add(altaVuelo);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Consultar Vuelo":
+//                        parentPanel.removeAll();
+//                        parentPanel.add(consultaVuelo);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Crear Ciudad":
+//                        parentPanel.removeAll();
+//                        parentPanel.add(altaCiudad);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                    case "Crear Categoría":
+//                        parentPanel.removeAll();
+//                        parentPanel.add(altaCategoría);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
+//                }
+//            }
+//        });
+
+//        /////////////// CONSULTA USUARIO /////////////////
+
         ButtonGroup grupoConsultaUsuario = new ButtonGroup();
         grupoConsultaUsuario.add(paqueteVueloRadioButton);
         grupoConsultaUsuario.add(usuarioRadioButton);
@@ -266,9 +347,15 @@ public class EstacionTrabajo {
         consultaUsuarioAceptar.addActionListener(e -> {
             String consulta = consultaUsuarioText.getText().trim();
             if (paqueteVueloRadioButton.isSelected()) {
-                // lógica para opción 1
-              //  UsuarioHelper.mostrarPaquetes(consultaUsuarioTable2);
+                // OPCION 1 PAQUETE
+                if (consulta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un nombre de paquete", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                   // UsuarioHelper.mostrarDatosPaquete(consultaUsuarioTable2, consulta);
+                }
             } else if (usuarioRadioButton.isSelected()) {
+                // OPCION 2 USUARIO
+
                 if (consulta.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -292,44 +379,47 @@ public class EstacionTrabajo {
             String consulta = consultaUsuarioText.getText().trim();
             @Override
             public void actionPerformed(ActionEvent e) {
-                String tipo = UsuarioHelper.obtenerTipoUsuario(consulta);
 
-                if (tipo == null) {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Usuario no encontrado",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-                if (tipo.equals("cliente")) {
-                    parentPanel.removeAll();
-                    parentPanel.add(modificarCliente);
-                    parentPanel.repaint();
-                    parentPanel.revalidate();
-
-                } else if (tipo.equals("aerolinea")) {
-                    parentPanel.removeAll();
-                    parentPanel.add(modificarAerolinea);
-                    parentPanel.repaint();
-                    parentPanel.revalidate();
-
+                String usuario = UsuarioHelper.obtenerTipoUsuario(consulta);
+                if (UsuarioHelper.obtenerTipoUsuario(consulta)=="Cliente"){
+                    UsuarioHelper.cargarDatosClienteEnCampos(consulta,modificarClienteNombre,modificarClienteApellido,modificarClienteNacionalidad,modificarClienteComboBox,modificarClienteDocumento,modificarClienteCorreo,modificarClienteJCalendar);
                 } else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "El usuario no es cliente ni aerolínea",
-                            "Información",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                    UsuarioHelper.cargarDatosAerolineaEnCampos(consulta,modificarAerolineaTextNombre,modificarAerolineaTextArea,modificarAerolineaTextLink,modificarAerolineaCorreo);
                 }
+                UsuarioHelper.abrirPanelModificacionUsuario(parentPanel,modificarCliente,modificarAerolinea,usuario);
 
+            }
+        });
+
+        modificarClienteGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.guardarCambiosCliente(
+                        modificarClienteNombre.getText().trim(),
+                        modificarClienteApellido.getText().trim(),
+                        UsuarioHelper.convertirDTfecha(modificarClienteJCalendar.getDate()),
+                        modificarClienteNacionalidad.getText().trim(),
+                        (TipoDoc) modificarClienteComboBox.getSelectedItem(),
+                        modificarClienteDocumento.getText().trim()
+                );
+            }
+        });
+
+        modificarAerolineaGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.guardarCambiosAerolinea(
+                        modificarAerolineaTextNombre.getText().trim(),
+                        modificarAerolineaTextArea.getText().trim(),
+                        modificarAerolineaTextLink.getText().trim()
+                );
             }
         });
 
 
 
         /*----- MENU DE USUARIO -----*/
+
         comboBoxUsuario.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -409,7 +499,26 @@ public class EstacionTrabajo {
             }
         });
 
+
+/// ///////// ni idea /////////
+        consultaRutaVuelo.addComponentListener(new ComponentAdapter() {
+        });
+        list1.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    Object seleccion = list1.getSelectedValue();
+                    // Aquí puedes mostrar detalles, habilitar botones, etc.
+                    System.out.println("Ruta seleccionada: " + seleccion);
+                }
+            }
+        });
+        fechaAltaRutaVuelo.addComponentListener(new ComponentAdapter() {
+        });
+
+
         /*----- ALTA CLIENTE -----*/
+
         //Boton de entrada
         ButtonCrearNuevoCliente.addActionListener(new ActionListener() {
             @Override
@@ -486,7 +595,7 @@ public class EstacionTrabajo {
                     JOptionPane.showMessageDialog(altaCliente, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            });
+        });
 
         /*----- ALTA RUTA VUELO -----*/
 //        aceptarRuta.addActionListener(new ActionListener() {
@@ -588,12 +697,47 @@ public class EstacionTrabajo {
 
                     // Limpiar campo
                     categoriaAltaText.setText("");
-
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(parentPanel, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
+/////////////// CONSULTA USUARIO /////////////////
+        ButtonGroup grupoConsultaUsuario = new ButtonGroup();
+        grupoConsultaUsuario.add(paqueteVueloRadioButton);
+        grupoConsultaUsuario.add(usuarioRadioButton);
+        grupoConsultaUsuario.add(reservaDeVueloRadioButton);
+        grupoConsultaUsuario.add(rutaDeVueloRadioButton);
+
+//        vuelosConsultaRV.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (cargandoVuelosRV) return;
+//                Object seleccionado = vuelosConsultaRV.getSelectedItem();
+//                if (seleccionado instanceof DTVuelo) {
+//                    DTVuelo vueloSeleccionado = (DTVuelo) seleccionado;
+//
+//                    JPanel panelDetalles = new JPanel();
+//                    panelDetalles.setLayout(new GridLayout(5, 1));
+//                    panelDetalles.add(new JLabel("Nombre: " + vueloSeleccionado.getNombre()));
+//                    panelDetalles.add(new JLabel("Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Duración: " + vueloSeleccionado.getDuracion().toString()));
+//                    panelDetalles.add(new JLabel("Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
+//                    panelDetalles.add(new JLabel("Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
+//                    panelDetalles.add(new JLabel("Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
+//                    panelDetalles.add(new JLabel("Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
+//                    JOptionPane.showMessageDialog(
+//                            null,
+//                            panelDetalles,
+//                            "Detalles del Vuelo",
+//                            JOptionPane.PLAIN_MESSAGE
+//                    );
+//                }
+//            }
+//        });
+
 
         /*----- ALTA VUELO -----*/
 //        buttonAltaVuelo.addActionListener(new ActionListener() {
@@ -719,6 +863,75 @@ public class EstacionTrabajo {
     }
 
 
+        // 2. Listener para el botón Aceptar
+        consultaUsuarioAceptar.addActionListener(e -> {
+            String consulta = consultaUsuarioText.getText().trim();
+            if (paqueteVueloRadioButton.isSelected()) {
+                // lógica para opción 1
+                UsuarioHelper.mostrarPaquetes(consultaUsuarioTable2);
+            } else if (usuarioRadioButton.isSelected()) {
+                if (consulta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable2, consulta);
+                }
+
+            } else if (reservaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 3
+                UsuarioHelper.mostrarReservasPorVuelo(consultaUsuarioTable2,consulta);
+            } else if (rutaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 4
+                UsuarioHelper.mostrarRutaVuelo(consultaUsuarioTable2, consulta);
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        ///////////////MODIFICAR USUARIO/////////////////
+
+        aceptarButton2.addActionListener(new ActionListener() {
+            String consulta = consultaUsuarioText.getText().trim();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String tipo = UsuarioHelper.obtenerTipoUsuario(consulta);
+
+                if (tipo == null) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Usuario no encontrado",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+                if (tipo.equals("cliente")) {
+                    parentPanel.removeAll();
+                    parentPanel.add(modificarCliente);
+                    parentPanel.repaint();
+                    parentPanel.revalidate();
+
+                } else if (tipo.equals("aerolinea")) {
+                    parentPanel.removeAll();
+                    parentPanel.add(modificarAerolinea);
+                    parentPanel.repaint();
+                    parentPanel.revalidate();
+
+                } else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "El usuario no es cliente ni aerolínea",
+                            "Información",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+
+            }
+        });
+    };
+
+
+
+
 
 //    private void mostrarDatosRuta(String nicknameAerolinea,String nombreRuta) {
 //        DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
@@ -790,8 +1003,10 @@ public class EstacionTrabajo {
         fechaAltaVuelo = new JCalendar();
         JCalendarAltaCliente = new JCalendar();
         calendarCiudadAlta = new JCalendar();
+        modificarClienteJCalendar = new JCalendar();
         listCatAltaRuta = new JList<>();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
     }
 
 
