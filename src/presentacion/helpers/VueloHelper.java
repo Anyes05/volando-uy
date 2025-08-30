@@ -1,32 +1,32 @@
-//
-//package presentacion.helpers;
-//
-//import presentacion.helpers.*;
-//import logica.clase.Sistema;
-//import logica.DataTypes.*;
-//import com.toedter.calendar.JCalendar;
-//import logica.clase.Aeropuerto;
-//
-//import java.awt.event.ComponentEvent;
-//import java.util.Date;
-//import java.util.Calendar;
-//import java.util.List;
-//import java.util.ArrayList;
-//
-//import javax.swing.*;
-//import javax.swing.JScrollPane;
-//import javax.swing.event.ListSelectionEvent;
-//import javax.swing.event.ListSelectionListener;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
-//import java.awt.event.ComponentAdapter;
-//import javax.swing.table.DefaultTableModel;
-//import javax.swing.JTable;
-//import javax.swing.JScrollPane;
-//import java.awt.*;
-//import java.awt.BorderLayout;
-//
-//public class VueloHelper {
+
+package presentacion.helpers;
+
+import presentacion.helpers.*;
+import logica.clase.Sistema;
+import logica.DataTypes.*;
+import com.toedter.calendar.JCalendar;
+import logica.clase.Aeropuerto;
+
+import java.awt.event.ComponentEvent;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.List;
+import java.util.ArrayList;
+
+import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import java.awt.*;
+import java.awt.BorderLayout;
+
+public class VueloHelper {
 //
 //    // ------------------- RESET FORMULARIO -------------------
 //    public static void resetFormularioRuta(
@@ -178,10 +178,10 @@
 //        }
 //    }
 //
-//    public static void crearCategoria(String nombre) {
-//        Sistema.getInstance().altaCategoria(nombre);
-//    }
-//
+    public static void crearCategoria(String nombre) {
+        Sistema.getInstance().altaCategoria(nombre);
+    }
+
 //    public static DTRutaVuelo getRutasDeAerolinea(String nicknameAerolinea, String nombreRuta) {
 //        for (DTRutaVuelo ruta : Sistema.getInstance().listarRutaVuelo(nicknameAerolinea)) {
 //            if (ruta.getNombre().equals(nombreRuta)) return ruta;
@@ -299,5 +299,5 @@
 //
 //
 //
-//}
+}
 

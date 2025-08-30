@@ -125,4 +125,6 @@ public class RutaVuelo {
     public void setCiudadDestino(Ciudad ciudadDestino) {
         this.ciudadDestino = ciudadDestino;
     }
+
+    public List<Aerolinea> getAerolineas() { return aerolineas; }
 }
