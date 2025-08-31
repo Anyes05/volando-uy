@@ -1,5 +1,6 @@
 package presentacion.helpers;
 
+import presentacion.helpers.*;
 import logica.clase.Sistema;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
@@ -8,11 +9,20 @@ import java.awt.event.ComponentEvent;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
-
+import javax.swing.JScrollPane;
+import java.awt.*;
+import java.awt.BorderLayout;
 
 
 
@@ -26,23 +36,6 @@ public class UsuarioHelper {
                 fecha.getMes(),
                 fecha.getAno());
     }
-
-    public static DTFecha convertirDTfecha(Date fecha) {
-        if (fecha == null) {
-            return null;
-        }
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(fecha);
-
-        int dia = cal.get(Calendar.DAY_OF_MONTH);
-        int mes = cal.get(Calendar.MONTH) + 1; // ¡Ojo! Enero = 0
-        int anio = cal.get(Calendar.YEAR);
-
-        return new DTFecha(dia, mes, anio);
-    }
-
-
     //Formatear reserva
 
     public static String formatearReserva(DTReserva r) {
@@ -63,9 +56,11 @@ public class UsuarioHelper {
     }
 
 
+    private Sistema sistema; // o el controlador donde está mostrarDatosUsuario
 
-   // private Sistema sistema = Sistema.getInstance(); // o el controlador donde está mostrarDatosUsuario
-
+    public UsuarioHelper(Sistema sistema) {
+        this.sistema = sistema;
+    }
 
     /// // CAMBIAR PANEL VERLO
     public static void cambiarPanel(JPanel parentPanel, JPanel panelNuevo) {
@@ -86,11 +81,9 @@ public class UsuarioHelper {
             DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
 
             if (usuario instanceof DTCliente) {
-
-                return "Cliente";
+                return "cliente";
             } else if (usuario instanceof DTAerolinea) {
-                return "Aerolinea";
-
+                return "aerolinea";
             } else {
                 return "otro";
             }
@@ -233,132 +226,6 @@ public class UsuarioHelper {
             campo.setText("");
         }
     }
-    //MODIFICAR USUARIO
-    public static void abrirPanelModificacionUsuario(JPanel parentPanel,JPanel modificarCliente,JPanel modificarAerolinea, String nickname) {
-        if (nickname == null || nickname.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe seleccionar un usuario", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String tipo = obtenerTipoUsuario(nickname);
-
-        if (tipo == null) {
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Guardar en Sistema el usuario a modificar
-        Sistema.getInstance().seleccionarUsuarioAMod(nickname);
-
-        // Cambiar panel según tipo
-        switch (tipo) {
-            case "Cliente" -> {
-                cambiarPanel(parentPanel, modificarCliente);
-            }
-            case "Aerolinea" -> {
-                cambiarPanel(parentPanel, modificarAerolinea);
-            }
-            default -> {
-                JOptionPane.showMessageDialog(null, "Tipo de usuario no soportado para modificación", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    public static void guardarCambiosCliente(String nombre, String apellido, DTFecha fechaNac,
-                                             String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
-        try {
-            Sistema.getInstance().modificarDatosCliente(nombre, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
-            JOptionPane.showMessageDialog(null, "Datos del cliente modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al modificar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public static void guardarCambiosAerolinea(String nombre, String descripcion, String linkSitioWeb) {
-        try {
-            Sistema.getInstance().modificarDatosAerolinea(nombre, descripcion, linkSitioWeb);
-            JOptionPane.showMessageDialog(null, "Datos de la aerolínea modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al modificar aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public static void cargarDatosAerolineaEnCampos(
-            String nickname,
-            JTextField nombreField,
-            JTextArea descripcionField,
-            JTextField sitioWebField,
-            JTextField correoField
-    ) {
-        try {
-            // Obtener los datos del usuario
-            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
-
-            // Verificar que sea una aerolínea
-            if (usuario instanceof DTAerolinea aerolinea) {
-                nombreField.setText(aerolinea.getNombre());
-                descripcionField.setText(aerolinea.getDescripcion());
-                sitioWebField.setText(aerolinea.getLinkSitioWeb());
-                correoField.setText(aerolinea.getCorreo());
-            } else {
-                JOptionPane.showMessageDialog(null, "El usuario seleccionado no es una aerolínea.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar datos de la aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    public static void cargarDatosClienteEnCampos(
-            String nickname,
-            JTextField nombreField,
-            JTextField apellidoField,
-            JTextField nacionalidadField,
-            JComboBox<TipoDoc> tipoDocCombo,
-            JTextField documentoField,
-            JTextField correoField,
-            JCalendar fechaNacimientoCalendar   // <-- ahora JCalendar
-    ) {
-        try {
-            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
-
-            if (usuario instanceof DTCliente c) {
-                nombreField.setText(c.getNombre());
-                apellidoField.setText(c.getApellido());
-                nacionalidadField.setText(c.getNacionalidad());
-                tipoDocCombo.setSelectedItem(c.getTipoDocumento());
-                documentoField.setText(c.getNumeroDocumento());
-                correoField.setText(c.getCorreo());
-
-                // Setear fecha en JCalendar (no soporta null)
-                DTFecha fn = c.getFechaNacimiento();
-                if (fn != null) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.clear(); // evita arrastrar hora/minutos
-                    cal.set(fn.getAno(), fn.getMes() - 1, fn.getDia());
-                    fechaNacimientoCalendar.setCalendar(cal);
-                } else {
-                     fechaNacimientoCalendar.setDate(new Date());
-                }
-            } else {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "El usuario seleccionado no es un cliente",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error al cargar datos del cliente: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-
-
 
     // Método para actualizar un JTable con la lista de usuarios
     public static void actualizarTablaUsuarios(JTable tablaUsuarios) {
@@ -696,8 +563,7 @@ public class UsuarioHelper {
         }
     }
 
-    ////////PAQUETES DE VUELO/////////// ESTE NO RECIBE PARAMETROS POR QUE TODAVIA NO ESTA IMPLEMENTADO EN SISTEMA
-
+   /* ////////PAQUETES DE VUELO/////////// ESTE NO RECIBE PARAMETROS POR QUE TODAVIA NO ESTA IMPLEMENTADO EN SISTEMA
     public static void mostrarPaquetes(JTable tabla) {
         try {
             // 1. Obtener todos los paquetes desde Sistema
@@ -753,50 +619,7 @@ public class UsuarioHelper {
             );
         }
     }
-
-*//*
-   public static void mostrarDatosPaquete(JTable tabla, String nombrePaquete) {
-       if (tabla == null || nombrePaquete == null || nombrePaquete.isEmpty()) {
-           JOptionPane.showMessageDialog(null, "Debe proporcionar un nombre de paquete válido", "Error", JOptionPane.ERROR_MESSAGE);
-           return;
-       }
-
-       try {
-           // Cuando el backend esté listo, esto funcionará
-           PaqueteVuelo paqueteSeleccionado = Sistema.getInstance().seleccionarPaquete(nombrePaquete);
-           DTPaqueteVuelos paquete = Sistema.getInstance().consultaPaqueteVuelo(paqueteSeleccionado);
-
-           // Definir columnas horizontales
-           String[] columnas = {
-                   "Nombre", "Descripción", "Tipo Asiento", "Días Válidos",
-                   "Descuento", "Costo Base", "Costo Total", "Fecha Alta"
-           };
-
-           DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
-
-           // Agregar fila con los datos del paquete
-           modelo.addRow(new Object[]{
-                   paquete.getNombre(),
-                   paquete.getDescripcion(),
-                   paquete.getTipoAsiento(),
-                   paquete.getDiasValidos(),
-                   paquete.getDescuento(),
-                   paquete.getCostoBase() != null ? paquete.getCostoBase().toString() : "",
-                   paquete.getCostoTotal(),
-                   paquete.getFechaAlta()
-           });
-
-           tabla.setModel(modelo);
-           tabla.setAutoCreateRowSorter(true);
-
-       } catch (IllegalStateException ex) {
-           JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-       } catch (Exception ex) {
-           JOptionPane.showMessageDialog(null, "Error al mostrar datos del paquete: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-       }
-   }
-   */
-
+*/
     //////////////MOSTRAR RUTA VUELO/////////////
    /* public static void mostrarRutaVuelo(JTable tabla, String nombreRuta) {
         if (nombreRuta == null || nombreRuta.isEmpty()) {
@@ -946,4 +769,7 @@ public class UsuarioHelper {
             );
         }
     }
+*/
+
+
 }
