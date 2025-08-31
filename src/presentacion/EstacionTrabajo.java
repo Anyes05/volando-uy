@@ -161,7 +161,6 @@ public class EstacionTrabajo {
     private JButton cancelarButton1;
 
 
-
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
@@ -256,31 +255,6 @@ public class EstacionTrabajo {
                         parentPanel.revalidate();
                         break;
                 }
-            }
-        });
-
-
-        // 2. Listener para el botón Aceptar
-        consultaUsuarioAceptar.addActionListener(e -> {
-            String consulta = consultaUsuarioText.getText().trim();
-            if (paqueteVueloRadioButton.isSelected()) {
-                // lógica para opción 1
-              //  UsuarioHelper.mostrarPaquetes(consultaUsuarioTable2);
-            } else if (usuarioRadioButton.isSelected()) {
-                if (consulta.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable2, consulta);
-                }
-
-            } else if (reservaDeVueloRadioButton.isSelected()) {
-                // lógica para opción 3
-                // UsuarioHelper.mostrarReservasPorVuelo(consultaUsuarioTable2,consulta);
-            } else if (rutaDeVueloRadioButton.isSelected()) {
-                // lógica para opción 4
-               // UsuarioHelper.mostrarRutaVuelo(consultaUsuarioTable2, consulta);
-            } else {
-                JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -441,9 +415,9 @@ public class EstacionTrabajo {
                     JOptionPane.showMessageDialog(altaCliente, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            });
+        });
 
-        /*----- MODIFICAR USUARIO -----*/
+
 
         /*----- CONSULTA USUARIO -----*/
         ButtonGroup grupoConsultaUsuario = new ButtonGroup();
@@ -454,20 +428,46 @@ public class EstacionTrabajo {
 
         aceptarButton2.addActionListener(new ActionListener() {
             String consulta = consultaUsuarioText.getText().trim();
+
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 String usuario = UsuarioHelper.obtenerTipoUsuario(consulta);
-                if (UsuarioHelper.obtenerTipoUsuario(consulta)=="Cliente"){
-                    UsuarioHelper.cargarDatosClienteEnCampos(consulta,modificarClienteNombre,modificarClienteApellido,modificarClienteNacionalidad,modificarClienteComboBox,modificarClienteDocumento,modificarClienteCorreo,modificarClienteJCalendar);
+                if (UsuarioHelper.obtenerTipoUsuario(consulta) == "Cliente") {
+                    UsuarioHelper.cargarDatosClienteEnCampos(consulta, modificarClienteNombre, modificarClienteApellido, modificarClienteNacionalidad, modificarClienteComboBox, modificarClienteDocumento, modificarClienteCorreo, modificarClienteJCalendar);
                 } else {
-                    UsuarioHelper.cargarDatosAerolineaEnCampos(consulta,modificarAerolineaTextNombre,modificarAerolineaTextArea,modificarAerolineaTextLink,modificarAerolineaCorreo);
+                    UsuarioHelper.cargarDatosAerolineaEnCampos(consulta, modificarAerolineaTextNombre, modificarAerolineaTextArea, modificarAerolineaTextLink, modificarAerolineaCorreo);
                 }
-                UsuarioHelper.abrirPanelModificacionUsuario(parentPanel,modificarCliente,modificarAerolinea,usuario);
+                UsuarioHelper.abrirPanelModificacionUsuario(parentPanel, modificarCliente, modificarAerolinea, usuario);
 
             }
         });
 
+        // 2. Listener para el botón Aceptar
+        consultaUsuarioAceptar.addActionListener(e -> {
+            String consulta = consultaUsuarioText.getText().trim();
+            if (paqueteVueloRadioButton.isSelected()) {
+                // lógica para opción 1
+                //  UsuarioHelper.mostrarPaquetes(consultaUsuarioTable2);
+            } else if (usuarioRadioButton.isSelected()) {
+                if (consulta.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable2, consulta);
+                }
+
+            } else if (reservaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 3
+                // UsuarioHelper.mostrarReservasPorVuelo(consultaUsuarioTable2,consulta);
+            } else if (rutaDeVueloRadioButton.isSelected()) {
+                // lógica para opción 4
+                // UsuarioHelper.mostrarRutaVuelo(consultaUsuarioTable2, consulta);
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        /*----- MODIFICAR USUARIO -----*/
         modificarClienteGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -495,6 +495,7 @@ public class EstacionTrabajo {
 
         aceptarButton2.addActionListener(new ActionListener() {
             String consulta = consultaUsuarioText.getText().trim();
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 String tipo = UsuarioHelper.obtenerTipoUsuario(consulta);
@@ -668,7 +669,7 @@ public class EstacionTrabajo {
 //                    Sistema.getInstance().darAltaVuelo();
 //                    JOptionPane.showMessageDialog(altaVuelo, "Vuelo registrado correctamente.");
 //
-                         //limpio campos
+        //limpio campos
 //                    nombreAltaVuelotxt.setText("");
 //                    duracionAltaVuelotxt.setText("");
 //                    fechaAltaVuelo.setCalendar(Calendar.getInstance());
@@ -760,9 +761,6 @@ public class EstacionTrabajo {
 //                }
 //            }
 //        });
-    }
-
-
 
 //    private void mostrarDatosRuta(String nicknameAerolinea,String nombreRuta) {
 //        DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
@@ -818,6 +816,8 @@ public class EstacionTrabajo {
 //        lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permitir varias selecciones, pero no funciona
 //    }
 //
+
+    }
 
 
     public static void main(String[] args) {
