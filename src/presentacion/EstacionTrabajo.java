@@ -139,21 +139,26 @@ public class EstacionTrabajo {
     private JTextField consultaUsuarioText;
     private JPanel modificarUsuarioJPanel1;
     private JTable modificarUsuariotable1;
+
     private JPanel modificarAerolinea;
-    private JPanel modificarCliente;
     private JTextField modificarAerolineaTextNombre;
     private JTextField modificarAerolineaTextLink;
     private JTextArea modificarAerolineaTextArea;
+    private JTextField modificarAerolineaCorreo;
     private JButton modificarAerolineaGuardar;
-    private JButton cancelarButton;
-    private JButton cancelarButton1;
+
+    private JPanel modificarCliente;
     private JTextField modificarClienteNombre;
     private JTextField modificarClienteApellido;
     private JTextField modificarClienteNacionalidad;
     private JComboBox modificarClienteComboBox;
     private JTextField modificarClienteDocumento;
+    private JTextField modificarClienteCorreo;
+    private JCalendar modificarClienteJCalendar;
     private JButton modificarClienteGuardar;
 
+    private JButton cancelarButton;
+    private JButton cancelarButton1;
 
 
 
@@ -254,13 +259,6 @@ public class EstacionTrabajo {
             }
         });
 
-        /////////////// CONSULTA USUARIO /////////////////
-        ButtonGroup grupoConsultaUsuario = new ButtonGroup();
-        grupoConsultaUsuario.add(paqueteVueloRadioButton);
-        grupoConsultaUsuario.add(usuarioRadioButton);
-        grupoConsultaUsuario.add(reservaDeVueloRadioButton);
-        grupoConsultaUsuario.add(rutaDeVueloRadioButton);
-
 
         // 2. Listener para el botón Aceptar
         consultaUsuarioAceptar.addActionListener(e -> {
@@ -285,49 +283,6 @@ public class EstacionTrabajo {
                 JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-        ///////////////MODIFICAR USUARIO/////////////////
-
-        aceptarButton2.addActionListener(new ActionListener() {
-            String consulta = consultaUsuarioText.getText().trim();
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String tipo = UsuarioHelper.obtenerTipoUsuario(consulta);
-
-                if (tipo == null) {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Usuario no encontrado",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-                if (tipo.equals("cliente")) {
-                    parentPanel.removeAll();
-                    parentPanel.add(modificarCliente);
-                    parentPanel.repaint();
-                    parentPanel.revalidate();
-
-                } else if (tipo.equals("aerolinea")) {
-                    parentPanel.removeAll();
-                    parentPanel.add(modificarAerolinea);
-                    parentPanel.repaint();
-                    parentPanel.revalidate();
-
-                } else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "El usuario no es cliente ni aerolínea",
-                            "Información",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-                }
-
-            }
-        });
-
-
 
         /*----- MENU DE USUARIO -----*/
         comboBoxUsuario.addActionListener(new ActionListener() {
@@ -487,6 +442,95 @@ public class EstacionTrabajo {
                 }
             }
             });
+
+        /*----- MODIFICAR USUARIO -----*/
+
+        /*----- CONSULTA USUARIO -----*/
+        ButtonGroup grupoConsultaUsuario = new ButtonGroup();
+        grupoConsultaUsuario.add(paqueteVueloRadioButton);
+        grupoConsultaUsuario.add(usuarioRadioButton);
+        grupoConsultaUsuario.add(reservaDeVueloRadioButton);
+        grupoConsultaUsuario.add(rutaDeVueloRadioButton);
+
+        aceptarButton2.addActionListener(new ActionListener() {
+            String consulta = consultaUsuarioText.getText().trim();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String usuario = UsuarioHelper.obtenerTipoUsuario(consulta);
+                if (UsuarioHelper.obtenerTipoUsuario(consulta)=="Cliente"){
+                    UsuarioHelper.cargarDatosClienteEnCampos(consulta,modificarClienteNombre,modificarClienteApellido,modificarClienteNacionalidad,modificarClienteComboBox,modificarClienteDocumento,modificarClienteCorreo,modificarClienteJCalendar);
+                } else {
+                    UsuarioHelper.cargarDatosAerolineaEnCampos(consulta,modificarAerolineaTextNombre,modificarAerolineaTextArea,modificarAerolineaTextLink,modificarAerolineaCorreo);
+                }
+                UsuarioHelper.abrirPanelModificacionUsuario(parentPanel,modificarCliente,modificarAerolinea,usuario);
+
+            }
+        });
+
+        modificarClienteGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.guardarCambiosCliente(
+                        modificarClienteNombre.getText().trim(),
+                        modificarClienteApellido.getText().trim(),
+                        UsuarioHelper.convertirDTfecha(modificarClienteJCalendar.getDate()),
+                        modificarClienteNacionalidad.getText().trim(),
+                        (TipoDoc) modificarClienteComboBox.getSelectedItem(),
+                        modificarClienteDocumento.getText().trim()
+                );
+            }
+        });
+
+        modificarAerolineaGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.guardarCambiosAerolinea(
+                        modificarAerolineaTextNombre.getText().trim(),
+                        modificarAerolineaTextArea.getText().trim(),
+                        modificarAerolineaTextLink.getText().trim()
+                );
+            }
+        });
+
+        aceptarButton2.addActionListener(new ActionListener() {
+            String consulta = consultaUsuarioText.getText().trim();
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String tipo = UsuarioHelper.obtenerTipoUsuario(consulta);
+
+                if (tipo == null) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Usuario no encontrado",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+                if (tipo.equals("cliente")) {
+                    parentPanel.removeAll();
+                    parentPanel.add(modificarCliente);
+                    parentPanel.repaint();
+                    parentPanel.revalidate();
+
+                } else if (tipo.equals("aerolinea")) {
+                    parentPanel.removeAll();
+                    parentPanel.add(modificarAerolinea);
+                    parentPanel.repaint();
+                    parentPanel.revalidate();
+
+                } else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "El usuario no es cliente ni aerolínea",
+                            "Información",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+
+            }
+        });
 
         /*----- ALTA RUTA VUELO -----*/
 //        aceptarRuta.addActionListener(new ActionListener() {
@@ -791,6 +835,7 @@ public class EstacionTrabajo {
         JCalendarAltaCliente = new JCalendar();
         calendarCiudadAlta = new JCalendar();
         listCatAltaRuta = new JList<>();
+        modificarClienteJCalendar = new JCalendar();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 

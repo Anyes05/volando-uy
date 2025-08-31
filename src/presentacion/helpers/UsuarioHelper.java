@@ -93,6 +93,133 @@ public class UsuarioHelper {
         }
     }
 
+    //MODIFICAR USUARIO
+    public static void abrirPanelModificacionUsuario(JPanel parentPanel,JPanel modificarCliente,JPanel modificarAerolinea, String nickname) {
+        if (nickname == null || nickname.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar un usuario", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String tipo = obtenerTipoUsuario(nickname);
+
+        if (tipo == null) {
+            JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Guardar en Sistema el usuario a modificar
+        Sistema.getInstance().seleccionarUsuarioAMod(nickname);
+
+        // Cambiar panel según tipo
+        switch (tipo) {
+            case "Cliente" -> {
+                cambiarPanel(parentPanel, modificarCliente);
+            }
+            case "Aerolinea" -> {
+                cambiarPanel(parentPanel, modificarAerolinea);
+            }
+            default -> {
+                JOptionPane.showMessageDialog(null, "Tipo de usuario no soportado para modificación", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public static void guardarCambiosCliente(String nombre, String apellido, DTFecha fechaNac,
+                                             String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
+        try {
+            Sistema.getInstance().modificarDatosCliente(nombre, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
+            JOptionPane.showMessageDialog(null, "Datos del cliente modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al modificar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void guardarCambiosAerolinea(String nombre, String descripcion, String linkSitioWeb) {
+        try {
+            Sistema.getInstance().modificarDatosAerolinea(nombre, descripcion, linkSitioWeb);
+            JOptionPane.showMessageDialog(null, "Datos de la aerolínea modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al modificar aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void cargarDatosAerolineaEnCampos(
+            String nickname,
+            JTextField nombreField,
+            JTextArea descripcionField,
+            JTextField sitioWebField,
+            JTextField correoField
+    ) {
+        try {
+            // Obtener los datos del usuario
+            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
+
+            // Verificar que sea una aerolínea
+            if (usuario instanceof DTAerolinea aerolinea) {
+                nombreField.setText(aerolinea.getNombre());
+                descripcionField.setText(aerolinea.getDescripcion());
+                sitioWebField.setText(aerolinea.getLinkSitioWeb());
+                correoField.setText(aerolinea.getCorreo());
+            } else {
+                JOptionPane.showMessageDialog(null, "El usuario seleccionado no es una aerolínea.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar datos de la aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void cargarDatosClienteEnCampos(
+            String nickname,
+            JTextField nombreField,
+            JTextField apellidoField,
+            JTextField nacionalidadField,
+            JComboBox<TipoDoc> tipoDocCombo,
+            JTextField documentoField,
+            JTextField correoField,
+            JCalendar fechaNacimientoCalendar   // <-- ahora JCalendar
+    ) {
+        try {
+            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
+
+            if (usuario instanceof DTCliente c) {
+                nombreField.setText(c.getNombre());
+                apellidoField.setText(c.getApellido());
+                nacionalidadField.setText(c.getNacionalidad());
+                tipoDocCombo.setSelectedItem(c.getTipoDocumento());
+                documentoField.setText(c.getNumeroDocumento());
+                correoField.setText(c.getCorreo());
+
+                // Setear fecha en JCalendar (no soporta null)
+                DTFecha fn = c.getFechaNacimiento();
+                if (fn != null) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.clear(); // evita arrastrar hora/minutos
+                    cal.set(fn.getAno(), fn.getMes() - 1, fn.getDia());
+                    fechaNacimientoCalendar.setCalendar(cal);
+                } else {
+                    fechaNacimientoCalendar.setDate(new Date());
+                }
+            } else {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "El usuario seleccionado no es un cliente",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Error al cargar datos del cliente: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+
+
     // Método para limpiar campos de texto de un formulario
     public static void limpiarCampos(JTextField... campos) {
         for (JTextField campo : campos) {
@@ -267,6 +394,21 @@ public class UsuarioHelper {
                 tipoDocumento,
                 numeroDocumento
         );
+    }
+
+    public static DTFecha convertirDTfecha(Date fecha) {
+        if (fecha == null) {
+            return null;
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fecha);
+
+        int dia = cal.get(Calendar.DAY_OF_MONTH);
+        int mes = cal.get(Calendar.MONTH) + 1; // ¡Ojo! Enero = 0
+        int anio = cal.get(Calendar.YEAR);
+
+        return new DTFecha(dia, mes, anio);
     }
 
     // reiniciar ComboBox y Calendar
