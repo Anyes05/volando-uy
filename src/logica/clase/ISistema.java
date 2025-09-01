@@ -46,15 +46,16 @@ public interface ISistema {
 
 
     //ALTA VUELO
-//    public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname);
-//    public DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
-//    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta);
-//    public void darAltaVuelo();
-//    public void agregarCiudadParaTest(Ciudad ciudad);
+    public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname);
+    public DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
+    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta);
+    public void darAltaVuelo();
+    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea);
 
     //CONSULTA VUELO
 //    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
 //    public List<DTVueloReserva> seleccionarVuelo(String nombre);
+//    public List<DTRutaVuelo> listarRutaVueloDeVuelo();
 
     // PAQUETES DE VUELO
 //    public List<DTPaqueteVuelos> mostrarPaquete();
@@ -64,7 +65,7 @@ public interface ISistema {
 //    public void realizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimiento, TipoAsiento tipoAsiento);
 //    public void agregarRutaAPaquete(RutaVuelo ruta, int cant);
 //    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
-//    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea);
+
 //
 //    // RESERVA VUELO
 //    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);

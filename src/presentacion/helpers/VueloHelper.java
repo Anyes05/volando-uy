@@ -198,122 +198,122 @@ public class VueloHelper {
         }
     }
 
-//    public static DTRutaVuelo getRutasDeAerolinea(String nicknameAerolinea, String nombreRuta) {
-//        for (DTRutaVuelo ruta : Sistema.getInstance().listarRutaVuelo(nicknameAerolinea)) {
-//            if (ruta.getNombre().equals(nombreRuta)) return ruta;
-//        }
-//        return null;
-//    }
-//
-//
-//    // ------------ ALTA VUELO ----------------
-//    public static void ingresarVuelo(
-//            String nombre,
-//            String duracionStr,
-//            String horaStr,
-//            Calendar fechaCal,
-//            int maxTurista,
-//            int maxEjecutivo,
-//            DTRutaVuelo ruta
-//    ) throws Exception {
-//
-//        // ------------------- VALIDACIONES -------------------
-//        if (nombre == null || nombre.trim().isEmpty()) {
-//            JOptionPane.showMessageDialog(null, "El nombre del vuelo es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        if (duracionStr == null || duracionStr.trim().isEmpty()) {
-//            JOptionPane.showMessageDialog(null, "La duración es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        if (horaStr == null || horaStr.trim().isEmpty()) {
-//            JOptionPane.showMessageDialog(null, "La hora de salida es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        if (ruta == null) {
-//            JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta primero.", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        if (maxTurista < 0 || maxEjecutivo < 0) {
-//            JOptionPane.showMessageDialog(null, "La cantidad de asientos no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        // ------------------- PARSEAR DURACIÓN -------------------
-//        int durHoras, durMinutos;
-//        try {
-//            String[] partesDur = duracionStr.split(":");
-//            if (partesDur.length != 2) {
-//                JOptionPane.showMessageDialog(null, "Formato de duración inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            durHoras = Integer.parseInt(partesDur[0]);
-//            durMinutos = Integer.parseInt(partesDur[1]);
-//
-//            if (durHoras < 0 || durHoras > 23 || durMinutos < 0 || durMinutos > 59) {
-//                JOptionPane.showMessageDialog(null, "Ingrese una duración válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//        } catch (NumberFormatException e) {
-//            JOptionPane.showMessageDialog(null, "Formato de duración inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        DTHora duracion = new DTHora(durHoras, durMinutos);
-//
-//        // ------------------- PARSEAR HORA DE SALIDA -------------------
-//        int horaSalida, minSalida;
-//        try {
-//            String[] partesHora = horaStr.split(":");
-//            if (partesHora.length != 2) {
-//                JOptionPane.showMessageDialog(null, "Formato de hora inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            horaSalida = Integer.parseInt(partesHora[0]);
-//            minSalida = Integer.parseInt(partesHora[1]);
-//
-//            if (horaSalida < 0 || horaSalida > 23 || minSalida < 0 || minSalida > 59) {
-//                JOptionPane.showMessageDialog(null, "Ingrese una hora válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//        } catch (NumberFormatException e) {
-//            JOptionPane.showMessageDialog(null, "Formato de hora inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        DTHora horaVuelo = new DTHora(horaSalida, minSalida);
-//
-//        // ------------------- CONVERTIR FECHA -------------------
-//        DTFecha fecha = new DTFecha(
-//                fechaCal.get(Calendar.DAY_OF_MONTH),
-//                fechaCal.get(Calendar.MONTH) + 1,
-//                fechaCal.get(Calendar.YEAR)
-//        );
-//
-//        // ------------------- CREAR EL VUELO -------------------
-//        try {
-//            Sistema.getInstance().ingresarDatosVuelo(
-//                    nombre,
-//                    fecha,
-//                    horaVuelo,
-//                    duracion,
-//                    maxTurista,
-//                    maxEjecutivo,
-//                    fecha,
-//                    ruta
-//            );
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//
-//
-//
-//
+    public static DTRutaVuelo getRutasDeAerolinea(String nicknameAerolinea, String nombreRuta) {
+        for (DTRutaVuelo ruta : getSistema().listarRutaVuelo(nicknameAerolinea)) {
+            if (ruta.getNombre().equals(nombreRuta)) return ruta;
+        }
+        return null;
+    }
+
+
+    // ------------ ALTA VUELO ----------------
+    public static void ingresarVuelo(
+            String nombre,
+            String duracionStr,
+            String horaStr,
+            Calendar fechaCal,
+            int maxTurista,
+            int maxEjecutivo,
+            DTRutaVuelo ruta
+    ) throws Exception {
+
+        // ------------------- VALIDACIONES -------------------
+        if (nombre == null || nombre.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "El nombre del vuelo es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (duracionStr == null || duracionStr.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "La duración es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (horaStr == null || horaStr.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "La hora de salida es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (ruta == null) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta primero.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (maxTurista < 0 || maxEjecutivo < 0) {
+            JOptionPane.showMessageDialog(null, "La cantidad de asientos no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // ------------------- PARSEAR DURACIÓN -------------------
+        int durHoras, durMinutos;
+        try {
+            String[] partesDur = duracionStr.split(":");
+            if (partesDur.length != 2) {
+                JOptionPane.showMessageDialog(null, "Formato de duración inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            durHoras = Integer.parseInt(partesDur[0]);
+            durMinutos = Integer.parseInt(partesDur[1]);
+
+            if (durHoras < 0 || durHoras > 23 || durMinutos < 0 || durMinutos > 59) {
+                JOptionPane.showMessageDialog(null, "Ingrese una duración válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Formato de duración inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DTHora duracion = new DTHora(durHoras, durMinutos);
+
+        // ------------------- PARSEAR HORA DE SALIDA -------------------
+        int horaSalida, minSalida;
+        try {
+            String[] partesHora = horaStr.split(":");
+            if (partesHora.length != 2) {
+                JOptionPane.showMessageDialog(null, "Formato de hora inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            horaSalida = Integer.parseInt(partesHora[0]);
+            minSalida = Integer.parseInt(partesHora[1]);
+
+            if (horaSalida < 0 || horaSalida > 23 || minSalida < 0 || minSalida > 59) {
+                JOptionPane.showMessageDialog(null, "Ingrese una hora válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Formato de hora inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DTHora horaVuelo = new DTHora(horaSalida, minSalida);
+
+        // ------------------- CONVERTIR FECHA -------------------
+        DTFecha fecha = new DTFecha(
+                fechaCal.get(Calendar.DAY_OF_MONTH),
+                fechaCal.get(Calendar.MONTH) + 1,
+                fechaCal.get(Calendar.YEAR)
+        );
+
+        // ------------------- CREAR EL VUELO -------------------
+        try {
+            getSistema().ingresarDatosVuelo(
+                    nombre,
+                    fecha,
+                    horaVuelo,
+                    duracion,
+                    maxTurista,
+                    maxEjecutivo,
+                    fecha,
+                    ruta
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+
+
 }
 

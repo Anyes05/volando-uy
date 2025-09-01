@@ -42,9 +42,9 @@ public class RutaVuelo {
     // Relación con categoría
     @ManyToMany
     @JoinTable(
-        name = "ruta_categoria",
-        joinColumns = @JoinColumn(name = "ruta_id"),
-        inverseJoinColumns = @JoinColumn(name = "categoria_id")
+            name = "ruta_categoria",
+            joinColumns = @JoinColumn(name = "ruta_id"),
+            inverseJoinColumns = @JoinColumn(name = "categoria_id")
     )
     private List<Categoria> categorias;
 
@@ -55,9 +55,9 @@ public class RutaVuelo {
     // Relación con aerolínea
     @ManyToMany
     @JoinTable(
-        name = "ruta_aerolinea",
-        joinColumns = @JoinColumn(name = "ruta_id"),
-        inverseJoinColumns = @JoinColumn(name = "aerolinea_id")
+            name = "ruta_aerolinea",
+            joinColumns = @JoinColumn(name = "ruta_id"),
+            inverseJoinColumns = @JoinColumn(name = "aerolinea_id")
     )
     private List<Aerolinea> aerolineas;
 
@@ -66,12 +66,13 @@ public class RutaVuelo {
     @JoinColumn(name = "cantidad_id")
     private Cantidad cantidad;
 
-    // One to one
-    @OneToOne
+
+    //relacion con ciudad
+    @ManyToOne
     @JoinColumn(name = "ciudad_origen_id")
     private Ciudad ciudadOrigen;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "ciudad_destino_id")
     private Ciudad ciudadDestino;
 

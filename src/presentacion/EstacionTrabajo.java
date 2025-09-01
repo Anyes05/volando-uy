@@ -201,6 +201,36 @@ public class EstacionTrabajo {
         lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
+        private void mostrarDatosRuta(String nicknameAerolinea,String nombreRuta) {
+        DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
+        if (ruta != null) {
+            nombreRVConsulta.setText(ruta.getNombre());
+            descripcionRVConsulta.setText(ruta.getDescripcion());
+            ciudadORVConsulta.setText(String.valueOf(ruta.getCiudadOrigen()));
+            ciudadDRVConsulta.setText(String.valueOf(ruta.getCiudadDestino()));
+            costoBaseTuRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoTurista()));
+            costoBaseEjRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoEjecutivo()));
+            costoUnEquipajeExRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoEquipajeExtra()));
+            fechaAltaRVConsulta.setText(ruta.getFechaAlta().toString());
+        } else {
+            JOptionPane.showMessageDialog(parentPanel, "No se encontró la ruta.");
+        }
+    }
+
+    private void cargarRutas(JComboBox<DTRutaVuelo>comboRutas, String nicknameAerolinea) {
+        boolean esConsulta = (comboRutas == comBoxRutVueloConsultaRV);
+        if (esConsulta) cargandoRutasRV = true;
+        comboRutas.removeAllItems(); // Limpiar combo
+        List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(nicknameAerolinea);
+        for (DTRutaVuelo ruta : rutas) {
+            comboRutas.addItem(ruta);
+        }
+        if (esConsulta) {
+            cargandoRutasRV = false;
+            comboRutas.setSelectedIndex(-1); // evita disparo inicial
+        }
+    }
+
     public EstacionTrabajo() {
         // Obtener la instancia de ISistema a través del Factory
         Factory factory = new Factory();
@@ -268,13 +298,13 @@ public class EstacionTrabajo {
 //                        parentPanel.repaint();
 //                        parentPanel.revalidate();
 //                        break;
-//                    case "Crear Vuelo":
-//                        parentPanel.removeAll();
-//                        cargarAerolineas(aerolinea);
-//                        parentPanel.add(altaVuelo);
-//                        parentPanel.repaint();
-//                        parentPanel.revalidate();
-//                        break;
+                    case "Crear Vuelo":
+                        parentPanel.removeAll();
+                        cargarAerolineas(aerolinea);
+                        parentPanel.add(altaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
 //                    case "Consultar Vuelo":
 //                        parentPanel.removeAll();
 //                        parentPanel.add(consultaVuelo);
@@ -693,48 +723,48 @@ public class EstacionTrabajo {
 
 
         /*----- ALTA VUELO -----*/
-//        buttonAltaVuelo.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    String nombre = nombreAltaVuelotxt.getText().trim();
-//                    String duracion = duracionAltaVuelotxt.getText().trim();
-//                    Calendar fechaCal = fechaAltaVuelo.getCalendar();
-//                    DTFecha fecha = new DTFecha(
-//                            fechaCal.get(Calendar.DAY_OF_MONTH),
-//                            fechaCal.get(Calendar.MONTH) + 1,
-//                            fechaCal.get(Calendar.YEAR)
-//                    );
-//                    int maxTurista = Integer.parseInt(asientosMaxTuristatxt.getText().trim());
-//                    int maxEjecutivo = Integer.parseInt(asientoMaxEjecutivotxt.getText().trim());
-//                    DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem();
-//
-//                    if (ruta == null) {
-//                        JOptionPane.showMessageDialog(altaVuelo, "Debe seleccionar una ruta primero.", "Error", JOptionPane.ERROR_MESSAGE);
-//                        return;
-//                    }
-//
-//                    String hora = horaVuelotxt.getText().trim();
-//                    VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaCal, maxTurista, maxEjecutivo, ruta);
-//                    String nicknameAerolinea = (String) aerolinea.getSelectedItem();
-//                    Sistema.getInstance().seleccionarAerolinea(nicknameAerolinea);
-//                    Sistema.getInstance().darAltaVuelo();
-//                    JOptionPane.showMessageDialog(altaVuelo, "Vuelo registrado correctamente.");
-//
-        //limpio campos
-//                    nombreAltaVuelotxt.setText("");
-//                    duracionAltaVuelotxt.setText("");
-//                    fechaAltaVuelo.setCalendar(Calendar.getInstance());
-//                    asientosMaxTuristatxt.setText("");
-//                    asientoMaxEjecutivotxt.setText("");
-//                    horaVuelotxt.setText("");
-//                    rutasVueloAltaVuelo.setSelectedItem(null);
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(altaVuelo, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
-//
+        buttonAltaVuelo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String nombre = nombreAltaVuelotxt.getText().trim();
+                    String duracion = duracionAltaVuelotxt.getText().trim();
+                    Calendar fechaCal = fechaAltaVuelo.getCalendar();
+                    DTFecha fecha = new DTFecha(
+                            fechaCal.get(Calendar.DAY_OF_MONTH),
+                            fechaCal.get(Calendar.MONTH) + 1,
+                            fechaCal.get(Calendar.YEAR)
+                    );
+                    int maxTurista = Integer.parseInt(asientosMaxTuristatxt.getText().trim());
+                    int maxEjecutivo = Integer.parseInt(asientoMaxEjecutivotxt.getText().trim());
+                    DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem();
+
+                    if (ruta == null) {
+                        JOptionPane.showMessageDialog(altaVuelo, "Debe seleccionar una ruta primero.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String hora = horaVuelotxt.getText().trim();
+                    VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaCal, maxTurista, maxEjecutivo, ruta);
+                    String nicknameAerolinea = (String) aerolinea.getSelectedItem();
+                    sistema.seleccionarAerolinea(nicknameAerolinea);
+                    sistema.darAltaVuelo();
+                    JOptionPane.showMessageDialog(altaVuelo, "Vuelo registrado correctamente.");
+
+                    //limpio campos
+                    nombreAltaVuelotxt.setText("");
+                    duracionAltaVuelotxt.setText("");
+                    fechaAltaVuelo.setCalendar(Calendar.getInstance());
+                    asientosMaxTuristatxt.setText("");
+                    asientoMaxEjecutivotxt.setText("");
+                    horaVuelotxt.setText("");
+                    rutasVueloAltaVuelo.setSelectedItem(null);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaVuelo, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
 
         /*----- CONSULTA RUTA VUELO -----*/
 //        comBoxRutVueloConsultaRV.addActionListener(new ActionListener() {
@@ -814,37 +844,6 @@ public class EstacionTrabajo {
 //            }
 //        });
 
-//    private void mostrarDatosRuta(String nicknameAerolinea,String nombreRuta) {
-//        DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
-//        if (ruta != null) {
-//            nombreRVConsulta.setText(ruta.getNombre());
-//            descripcionRVConsulta.setText(ruta.getDescripcion());
-//            ciudadORVConsulta.setText(String.valueOf(ruta.getCiudadOrigen()));
-//            ciudadDRVConsulta.setText(String.valueOf(ruta.getCiudadDestino()));
-//            costoBaseTuRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoTurista()));
-//            costoBaseEjRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoEjecutivo()));
-//            costoUnEquipajeExRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoEquipajeExtra()));
-//            fechaAltaRVConsulta.setText(ruta.getFechaAlta().toString());
-//        } else {
-//            JOptionPane.showMessageDialog(parentPanel, "No se encontró la ruta.");
-//        }
-//    }
-//
-//
-//
-//    private void cargarRutas(JComboBox<DTRutaVuelo>comboRutas, String nicknameAerolinea) {
-//        boolean esConsulta = (comboRutas == comBoxRutVueloConsultaRV);
-//        if (esConsulta) cargandoRutasRV = true;
-//        comboRutas.removeAllItems(); // Limpiar combo
-//        List<DTRutaVuelo> rutas = Sistema.getInstance().listarRutaVuelo(nicknameAerolinea);
-//        for (DTRutaVuelo ruta : rutas) {
-//            comboRutas.addItem(ruta);
-//        }
-//        if (esConsulta) {
-//            cargandoRutasRV = false;
-//            comboRutas.setSelectedIndex(-1); // evita disparo inicial
-//        }
-//    }
     }
 
 
