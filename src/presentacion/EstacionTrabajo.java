@@ -358,7 +358,7 @@ public class EstacionTrabajo {
                         break;
                     case "Comprar paquete":
                         parentPanel.removeAll();
-                        parentPanel.add(altaVuelo);
+                        //parentPanel.add();
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
