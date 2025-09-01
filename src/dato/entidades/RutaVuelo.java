@@ -24,12 +24,17 @@ public class RutaVuelo {
     private String descripcion;
 
     @Column
-    private float costoEquipajeExtra;
-
-    @Column
     @Convert(converter = DTCostoBaseConverter.class)
     private DTCostoBase costoBase;
 
+    @Column
+    private float costoEquipajeExtra;
+
+    @Column
+    private float costoBaseTurista;
+
+    @Column
+    private float costoBaseEjecutivo;
 
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
@@ -37,9 +42,9 @@ public class RutaVuelo {
     // Relación con categoría
     @ManyToMany
     @JoinTable(
-        name = "ruta_categoria",
-        joinColumns = @JoinColumn(name = "ruta_id"),
-        inverseJoinColumns = @JoinColumn(name = "categoria_id")
+            name = "ruta_categoria",
+            joinColumns = @JoinColumn(name = "ruta_id"),
+            inverseJoinColumns = @JoinColumn(name = "categoria_id")
     )
     private List<Categoria> categorias;
 
@@ -50,9 +55,9 @@ public class RutaVuelo {
     // Relación con aerolínea
     @ManyToMany
     @JoinTable(
-        name = "ruta_aerolinea",
-        joinColumns = @JoinColumn(name = "ruta_id"),
-        inverseJoinColumns = @JoinColumn(name = "aerolinea_id")
+            name = "ruta_aerolinea",
+            joinColumns = @JoinColumn(name = "ruta_id"),
+            inverseJoinColumns = @JoinColumn(name = "aerolinea_id")
     )
     private List<Aerolinea> aerolineas;
 
@@ -78,6 +83,9 @@ public class RutaVuelo {
         this.descripcion = descripcion;
         this.costoBase = costoBase;
         this.fechaAlta = fechaAlta;
+        this.costoEquipajeExtra = costoBase.getCostoEquipajeExtra();
+        this.costoBaseEjecutivo = costoBase.getCostoEjecutivo();
+        this.costoBaseTurista = costoBase.getCostoTurista();
 
         this.categorias = new ArrayList<>();
         this.vuelos = new ArrayList<>();
@@ -141,4 +149,20 @@ public class RutaVuelo {
     public Cantidad getCantidad() { return cantidad; }
 
     public void setCantidad(Cantidad cantidad) { this.cantidad = cantidad; }
+
+    public float getCostoBaseTurista() {
+        return costoBaseTurista;
+    }
+
+    public void setCostoBaseTurista(float costoBaseTurista) {
+        this.costoBaseTurista = costoBaseTurista;
+    }
+
+    public float getCostoBaseEjecutivo() {
+        return costoBaseEjecutivo;
+    }
+
+    public void setCostoBaseEjecutivo(float costoBaseEjecutivo) {
+        this.costoBaseEjecutivo = costoBaseEjecutivo;
+    }
 }
