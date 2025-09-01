@@ -45,6 +45,18 @@
                   </model>
                 </properties>
               </component>
+              <component id="ec1aa" class="javax.swing.JComboBox" binding="comboBoxPaquetes">
+                <constraints/>
+                <properties>
+                  <model>
+                    <item value=""/>
+                    <item value="Crear paquete"/>
+                    <item value="Agregar ruta a paquete"/>
+                    <item value="Consulta de paquete"/>
+                    <item value="Comprar paquete"/>
+                  </model>
+                </properties>
+              </component>
               <component id="ae3af" class="javax.swing.JComboBox" binding="comboBoxUsuario">
                 <constraints/>
                 <properties>

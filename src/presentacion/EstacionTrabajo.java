@@ -14,7 +14,6 @@ import javax.swing.JScrollPane;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import java.util.Calendar;
 import java.util.List;
@@ -157,6 +156,7 @@ public class EstacionTrabajo {
 
     private JButton cancelarButton;
     private JButton cancelarButton1;
+    private JComboBox comboBoxPaquetes;
     private JButton precargarAeropuertosButton;
 
 
@@ -327,6 +327,42 @@ public class EstacionTrabajo {
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
+                }
+            }
+        });
+
+        /*----- MENU DE PAQUETE -----*/
+        comboBoxPaquetes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String seleccionado = (String) comboBoxPaquetes.getSelectedItem();
+                // Según lo que se elija, haces algo
+                switch (seleccionado) {
+                    case "Crear paquete":
+                        parentPanel.removeAll();
+                        //parentPanel.add();
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Agregar ruta a paquete":
+                        parentPanel.removeAll();
+                        //parentPanel.add();
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Consulta de paquete":
+                        parentPanel.removeAll();
+                        //parentPanel.add();
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Comprar paquete":
+                        parentPanel.removeAll();
+                        parentPanel.add(altaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+
                 }
             }
         });
@@ -856,6 +892,7 @@ public class EstacionTrabajo {
 //                }
 //            }
 //        });
+
 
     }
 
