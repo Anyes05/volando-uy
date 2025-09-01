@@ -1,16 +1,12 @@
 package presentacion;
 
-import logica.clase.Categoria;
-import logica.clase.Sistema;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
+import logica.clase.Factory;
 import com.toedter.calendar.JCalendar;
-
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
-
-
 import javax.swing.*;
 import javax.swing.JScrollPane;
 import java.awt.*;
@@ -159,11 +155,48 @@ public class EstacionTrabajo {
 
     private JButton cancelarButton;
     private JButton cancelarButton1;
+    private JButton precargarAeropuertosButton;
 
 
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
+
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Principal");
+        frame.setContentPane(new EstacionTrabajo().mainPrincipal);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private void createUIComponents() {
+        fechaVuelo = new JCalendar();
+        fechaAltaRutaVuelo = new JCalendar();
+        fechaAltaVuelo = new JCalendar();
+        JCalendarAltaCliente = new JCalendar();
+        calendarCiudadAlta = new JCalendar();
+        listCatAltaRuta = new JList<>();
+        modificarClienteJCalendar = new JCalendar();
+        listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    }
+
+    private void cargarAerolineas(JComboBox<String> combo) {
+        combo.removeAllItems(); // limpiar combo por si ya tiene algo
+        for (DTAerolinea a : Sistema.getInstance().listarAerolineas()) {
+            combo.addItem(a.getNickname());
+        }
+    }
+
+    private void cargarCategorias(JList<String> lista) {
+        DefaultListModel<String> modelo = new DefaultListModel<>();
+        for (dato.entidades.Categoria c : Sistema.getInstance().getCategorias()) {
+            modelo.addElement(c.getNombre());
+        }
+        lista.setModel(modelo);
+        lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    }
 
     public EstacionTrabajo() {
 
@@ -201,14 +234,14 @@ public class EstacionTrabajo {
                 String seleccionado = (String) comboBoxVuelos.getSelectedItem();
                 // Según lo que se elija, haces algo
                 switch (seleccionado) {
-//                    case "Crear ruta de vuelo":
-//                        parentPanel.removeAll();
-//                        cargarAerolineas(aerolineaVuelo);
-//                        cargarCategorias(listCatAltaRuta);
-//                        parentPanel.add(altaRuta);
-//                        parentPanel.repaint();
-//                        parentPanel.revalidate();
-//                        break;
+                    case "Crear ruta de vuelo":
+                        parentPanel.removeAll();
+                        cargarAerolineas(aerolineaVuelo);
+                        cargarCategorias(listCatAltaRuta);
+                        parentPanel.add(altaRuta);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
 //                    case "Consultar ruta de vuelo":
 //                        parentPanel.removeAll();
 //                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
@@ -242,12 +275,12 @@ public class EstacionTrabajo {
 //                        parentPanel.repaint();
 //                        parentPanel.revalidate();
 //                        break;
-//                    case "Crear Ciudad":
-//                        parentPanel.removeAll();
-//                        parentPanel.add(altaCiudad);
-//                        parentPanel.repaint();
-//                        parentPanel.revalidate();
-//                        break;
+                    case "Crear Ciudad":
+                        parentPanel.removeAll();
+                        parentPanel.add(altaCiudad);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
                     case "Crear Categoría":
                         parentPanel.removeAll();
                         parentPanel.add(altaCategoría);
@@ -289,55 +322,6 @@ public class EstacionTrabajo {
             }
         });
 
-        /*----- ALTA AEROLINEA -----*/
-        ButtonCrearNuevaAerolinea.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentPanel.removeAll();
-                parentPanel.add(altaAerolinea);
-                parentPanel.repaint();
-                parentPanel.revalidate();
-            }
-        });
-
-        // boton de cancelar
-        altaAerolineaCancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentPanel.removeAll();
-                parentPanel.add(principalVacio);
-                parentPanel.repaint();
-                parentPanel.revalidate();
-            }
-        });
-
-        // boton de aceptar
-        altaAerolineaAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    UsuarioHelper.crearAerolinea(
-                            altaAerolineaNickname.getText().trim(),
-                            altaAerolineaNombre.getText().trim(),
-                            altaAerolineaCorreo.getText().trim(),
-                            altaAerolineaLinkWeb.getText().trim(),
-                            altaAerolineaDescripcion.getText().trim()
-                    );
-
-                    JOptionPane.showMessageDialog(altaAerolinea, "Aerolínea creada con éxito.");
-
-                    // Resetear formulario
-                    UsuarioHelper.resetFormularioAerolinea(
-                            altaAerolineaNickname, altaAerolineaNombre, altaAerolineaCorreo, altaAerolineaLinkWeb, altaAerolineaDescripcion
-                    );
-
-
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(altaAerolinea, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
         /*----- ALTA CLIENTE -----*/
         //Boton de entrada
         ButtonCrearNuevoCliente.addActionListener(new ActionListener() {
@@ -349,6 +333,7 @@ public class EstacionTrabajo {
                 parentPanel.revalidate();
             }
         });
+
         //Boton de cancelar alta cliente
         cancelarAltaClienteButton.addActionListener(new ActionListener() {
             @Override
@@ -417,7 +402,111 @@ public class EstacionTrabajo {
             }
         });
 
+        /*----- ALTA AEROLINEA -----*/
+        ButtonCrearNuevaAerolinea.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(altaAerolinea);
+                parentPanel.repaint();
+                parentPanel.revalidate();
+            }
+        });
 
+        // boton de cancelar
+        altaAerolineaCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
+            }
+        });
+
+        // boton de aceptar
+        altaAerolineaAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    UsuarioHelper.crearAerolinea(
+                            altaAerolineaNickname.getText().trim(),
+                            altaAerolineaNombre.getText().trim(),
+                            altaAerolineaCorreo.getText().trim(),
+                            altaAerolineaLinkWeb.getText().trim(),
+                            altaAerolineaDescripcion.getText().trim()
+                    );
+
+                    JOptionPane.showMessageDialog(altaAerolinea, "Aerolínea creada con éxito.");
+
+                    // Resetear formulario
+                    UsuarioHelper.resetFormularioAerolinea(
+                            altaAerolineaNickname, altaAerolineaNombre, altaAerolineaCorreo, altaAerolineaLinkWeb, altaAerolineaDescripcion
+                    );
+
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaAerolinea, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        /*----- ALTA CATEGORIA -----*/
+        buttonAltaCategoria.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nomCategoria = categoriaAltaText.getText().trim();
+                try {
+                    VueloHelper.crearCategoria(nomCategoria);
+                    JOptionPane.showMessageDialog(parentPanel, "Categoría creada con éxito.");
+
+                    // Limpiar campo
+                    categoriaAltaText.setText("");
+
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(parentPanel, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        
+        /*----- PRECARGA AEROPUERTOS -----*/
+        // Agregar botón de precarga al toolbar principal
+        precargarAeropuertosButton = new JButton("Precargar Aeropuertos");
+        JToolBarPrincipal.add(precargarAeropuertosButton);
+        
+        precargarAeropuertosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VueloHelper.precargarAeropuertos();
+            }
+        });
+
+        /*----- ALTA CIUDAD -----*/
+        buttonAltaCiudad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nombre = ciudadAltaText.getText().trim();
+                String pais = paisAltaCiText.getText().trim();
+                String aeropuerto = aeropuertoAltaText.getText().trim();
+                String descripcion = descripcionAltaCiText.getText().trim();
+                String sitioWeb = sitioWebAltaCiText.getText().trim();
+                DTFecha fecha = new DTFecha(
+                        calendarCiudadAlta.getCalendar().get(Calendar.DAY_OF_MONTH),
+                        calendarCiudadAlta.getCalendar().get(Calendar.MONTH) + 1,
+                        calendarCiudadAlta.getCalendar().get(Calendar.YEAR)
+                );
+
+                VueloHelper.crearCiudad(nombre, pais, aeropuerto, descripcion, sitioWeb, fecha);
+
+                // Limpiar campos
+                ciudadAltaText.setText("");
+                paisAltaCiText.setText("");
+                aeropuertoAltaText.setText("");
+                sitioWebAltaCiText.setText("");
+                descripcionAltaCiText.setText("");
+                calendarCiudadAlta.setCalendar(Calendar.getInstance());
+            }
+        });
 
         /*----- CONSULTA USUARIO -----*/
         ButtonGroup grupoConsultaUsuario = new ButtonGroup();
@@ -534,111 +623,68 @@ public class EstacionTrabajo {
         });
 
         /*----- ALTA RUTA VUELO -----*/
-//        aceptarRuta.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    List<String> categoriasSeleccionadas = listCatAltaRuta.getSelectedValuesList();
-//                    if (categoriasSeleccionadas.isEmpty()) {
-//                        JOptionPane.showMessageDialog(altaRuta,
-//                                  "Seleccione al menos una categoría",
-//                                "Error",
-//                                JOptionPane.ERROR_MESSAGE);
-//                        return;
-//                    }
-//
-//                    // Tomar los datos del formulario
-//                    String nombreRuta = nombreAltRutaText.getText().trim();
-//                    String descripcionRuta = descRutaText.getText().trim();
-//                    String horaStr = horaText.getText().trim();
-//                    String costoTuristaStr = costoTurText.getText().trim();
-//                    String costoEjecutivoStr = costoEjText.getText().trim();
-//                    String costoEquipajeStr = costoEqExText.getText().trim();
-//                    String origen = ciudadOText.getText().trim();
-//                    String destino = ciudadDText.getText().trim();
-//                    Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
-//                    String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
-//
-//                    // Seleccionar aerolínea
-//                    VueloHelper.seleccionarAerolinea(nicknameAerolinea);
-//
-//                    // Ingresar ruta de vuelo (acepto List<String> en categoria, pero no funciona)
-//                    VueloHelper.ingresarRutaVuelo(
-//                            nombreRuta,
-//                            descripcionRuta,
-//                            horaStr,
-//                            costoTuristaStr,
-//                            costoEjecutivoStr,
-//                            costoEquipajeStr,
-//                            origen,
-//                            destino,
-//                            fechaCal,
-//                            categoriasSeleccionadas
-//                    );
-//
-//                    JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
-//                    nombreAltRutaText.setText("");
-//                    descRutaText.setText("");
-//                    horaText.setText("");
-//                    costoTurText.setText("");
-//                    costoEjText.setText("");
-//                    costoEqExText.setText("");
-//                    ciudadOText.setText("");
-//                    ciudadDText.setText("");
-//                    fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
-//
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(altaRuta,
-//                            "Error: " + ex.getMessage(),
-//                            "Error",
-//                            JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
-//
-
-        /*----- ALTA CIUDAD -----*/
-//        buttonAltaCiudad.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String nombre = ciudadAltaText.getText().trim();
-//                String pais = paisAltaCiText.getText().trim();
-//                DTFecha fecha = new DTFecha(
-//                        calendarCiudadAlta.getCalendar().get(Calendar.DAY_OF_MONTH),
-//                        calendarCiudadAlta.getCalendar().get(Calendar.MONTH) + 1,
-//                        calendarCiudadAlta.getCalendar().get(Calendar.YEAR)
-//                );
-
-//                // agrego un aeropuerto vacío por ahora, no quiero romper nada
-//                VueloHelper.crearCiudad(nombre, pais, null, fecha);
-//
-//                // Limpiar campos
-//                ciudadAltaText.setText("");
-//                paisAltaCiText.setText("");
-//                aeropuertoAltaText.setText("");
-//                sitioWebAltaCiText.setText("");
-//                descripcionAltaCiText.setText("");
-//                calendarCiudadAlta.setCalendar(Calendar.getInstance());
-//            }
-//        });
-
-        /*----- ALTA CATEGORIA -----*/
-        buttonAltaCategoria.addActionListener(new ActionListener() {
+        aceptarRuta.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nomCategoria = categoriaAltaText.getText().trim();
                 try {
-                    VueloHelper.crearCategoria(nomCategoria);
-                    JOptionPane.showMessageDialog(parentPanel, "Categoría creada con éxito.");
+                    List<String> categoriasSeleccionadas = listCatAltaRuta.getSelectedValuesList();
+                    if (categoriasSeleccionadas.isEmpty()) {
+                        JOptionPane.showMessageDialog(altaRuta,
+                                  "Seleccione al menos una categoría",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                    // Limpiar campo
-                    categoriaAltaText.setText("");
+                    // Tomar los datos del formulario
+                    String nombreRuta = nombreAltRutaText.getText().trim();
+                    String descripcionRuta = descRutaText.getText().trim();
+                    String horaStr = horaText.getText().trim();
+                    String costoTuristaStr = costoTurText.getText().trim();
+                    String costoEjecutivoStr = costoEjText.getText().trim();
+                    String costoEquipajeStr = costoEqExText.getText().trim();
+                    String origen = ciudadOText.getText().trim();
+                    String destino = ciudadDText.getText().trim();
+                    Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
+                    String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
 
-                } catch (IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(parentPanel, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    // Seleccionar aerolínea
+                    VueloHelper.seleccionarAerolinea(nicknameAerolinea);
+
+                    // Ingresar ruta de vuelo (acepto List<String> en categoria, pero no funciona)
+                    VueloHelper.ingresarRutaVuelo(
+                            nombreRuta,
+                            descripcionRuta,
+                            horaStr,
+                            costoTuristaStr,
+                            costoEjecutivoStr,
+                            costoEquipajeStr,
+                            origen,
+                            destino,
+                            fechaCal,
+                            categoriasSeleccionadas
+                    );
+
+                    JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
+                    nombreAltRutaText.setText("");
+                    descRutaText.setText("");
+                    horaText.setText("");
+                    costoTurText.setText("");
+                    costoEjText.setText("");
+                    costoEqExText.setText("");
+                    ciudadOText.setText("");
+                    ciudadDText.setText("");
+                    fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(altaRuta,
+                            "Error: " + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
 
         /*----- ALTA VUELO -----*/
 //        buttonAltaVuelo.addActionListener(new ActionListener() {
@@ -793,50 +839,6 @@ public class EstacionTrabajo {
 //            comboRutas.setSelectedIndex(-1); // evita disparo inicial
 //        }
 //    }
-//
-//
-//    private void cargarAerolineas(JComboBox<String> combo) {
-//        boolean esConsulta = (combo == comboBoxAeroRVConsulta);
-//        if (esConsulta) cargandoAeroRV = true;
-//        combo.removeAllItems(); // limpiar combo por si ya tiene algo
-//        for (DTAerolinea a : Sistema.getInstance().listarAerolineas()) {
-//            combo.addItem(a.getNickname());
-//        }
-//        if (esConsulta) {
-//            cargandoAeroRV = false;
-//            combo.setSelectedIndex(-1); // evita seleccion al iniciar
-//        }
-//    }
-//    private void cargarCategorias(JList<String> lista) {
-//        DefaultListModel<String> modelo = new DefaultListModel<>();
-//        for (Categoria c : Sistema.getInstance().getCategorias()) {
-//            modelo.addElement(c.getNombre());
-//        }
-//        lista.setModel(modelo);
-//        lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permitir varias selecciones, pero no funciona
-//    }
-//
-
-    }
-
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Principal");
-        frame.setContentPane(new EstacionTrabajo().mainPrincipal);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-    private void createUIComponents() {
-        fechaVuelo = new JCalendar();
-        fechaAltaRutaVuelo = new JCalendar();
-        fechaAltaVuelo = new JCalendar();
-        JCalendarAltaCliente = new JCalendar();
-        calendarCiudadAlta = new JCalendar();
-        listCatAltaRuta = new JList<>();
-        modificarClienteJCalendar = new JCalendar();
-        listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
 

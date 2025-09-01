@@ -128,7 +128,7 @@ public class Sistema implements ISistema {
     }
 
     // CONSULTA DE USUARIO
-    public List<DTUsuario> consultarUsuarios(){
+    public List<DTUsuario> consultarUsuarios() {
         ClienteServicio clienteServicio = new ClienteServicio();
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
 
@@ -217,7 +217,7 @@ public class Sistema implements ISistema {
 //    //usuarios y el administrador elige uno.
 //    // Para esto ya me sirve:
 
-//    // public List<DTUsuario> consultarUsuarios()
+    //    // public List<DTUsuario> consultarUsuarios()
 //
 //    // Luego, el sistema muestra todos
 //    // los datos del usuario.
@@ -260,7 +260,7 @@ public class Sistema implements ISistema {
     //básicos, menos el nickname y el correo electrónico. Cuando termina la
     //edición, el sistema actualiza los datos del usuario.
 
-    public void seleccionarUsuarioAMod (String nickname) {
+    public void seleccionarUsuarioAMod(String nickname) {
         this.nicknameUsuarioAModificar = nickname;
     }
 
@@ -271,7 +271,7 @@ public class Sistema implements ISistema {
         }
         ClienteServicio clienteServicio = new ClienteServicio();
         Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameUsuarioAModificar);
-        if(cliente == null) {
+        if (cliente == null) {
             throw new IllegalArgumentException("Cliente no encontrado");
         }
         cliente.setNombre(nombre);
@@ -291,7 +291,7 @@ public class Sistema implements ISistema {
         }
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
         Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nicknameUsuarioAModificar);
-        if(aerolinea == null) {
+        if (aerolinea == null) {
             throw new IllegalArgumentException("Aerolínea no encontrada");
         }
         aerolinea.setNombre(nombre);
@@ -301,110 +301,143 @@ public class Sistema implements ISistema {
     }
 
 
-//    // ALTA RUTA VUELO
-//    public List<DTAerolinea> listarAerolineas(){
-//        AerolineaServicio aerolineaServicio = new AerolineaServicio();
-//        List<DTAerolinea> listarAerolineas = new ArrayList<>();
-//        for (Aerolinea a : aerolineaServicio.listarAerolineas()) {
-//            listarAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>())); // Le pasé este último parametro de lista vacía porque necesitaba la lista para otro caso
-//        }
-//        return listarAerolineas;
-//    }
-//    public void seleccionarAerolinea(String nickname) {
-//    AerolineaServicio aerolineaServicio = new AerolineaServicio();
-//    Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
-//    if (aerolinea != null) {
-//        // Si tienes una variable interna para la aerolínea seleccionada, asígnala aquí
-//        // aerolineaSeleccionada = aerolinea; // si existe en tu clase
-//        recuerdaAerolinea = aerolinea.getNickname();
-//    } else {
-//        // aerolineaSeleccionada = null; // si existe en tu clase
-//        recuerdaAerolinea = null;
-//    }
-//}
-//    public void ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
-//    if (recuerdaAerolinea == null) {
-//        throw new IllegalStateException("Debe seleccionar una aerolínea antes de ingresar los datos de la ruta.");
-//    }
-//
-//    AerolineaServicio aerolineaServicio = new AerolineaServicio();
-//    CiudadServicio ciudadServicio = new CiudadServicio();
-//    CategoriaServicio categoriaServicio = new CategoriaServicio();
-//
-//    Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(recuerdaAerolinea);
-//    if (aerolinea == null) {
-//        throw new IllegalStateException("La aerolínea seleccionada no existe.");
-//    }
-//
-//    dato.entidades.Ciudad origen = ciudadServicio.buscarCiudadPorNombre(ciudadOrigen);
-//    dato.entidades.Ciudad destino = ciudadServicio.buscarCiudadPorNombre(ciudadDestino);
-//
-//    if (origen == null || destino == null) {
-//        throw new IllegalArgumentException("Una de las ciudades no existe.");
-//    }
-//
-//    dato.entidades.Categoria cat = categoriaServicio.buscarCategoriaPorNombre(categoria);
-//    if (cat == null) {
-//        throw new IllegalArgumentException("La categoría no existe.");
-//    }
-//
-//    DTCostoBase costoBase = new DTCostoBase(costoTurista, costoEjecutivo, costoEquipajeExtra);
-//
-//
-//    dato.entidades.RutaVuelo rutaVuelo = new dato.entidades.RutaVuelo(
-//        nombreRuta,
-//        descripcion,
-//        costoBase,
-//        fechaAlta
-//    );
-//
-//    rutaVuelo.setCiudadDestino(destino);
-//    rutaVuelo.setCiudadOrigen(origen);
-//    rutaVuelo.getCategorias().add(cat);
-//    rutaVuelo.getAerolineas().add(aerolinea);
-//
-//    recordarRutaVuelo = rutaVuelo;
-//}
-//
-//    public void registrarRuta() {
-//    if (recuerdaAerolinea == null) {
-//        throw new IllegalStateException("Debe seleccionar una aerolínea antes de registrar la ruta.");
-//    }
-//    if (recordarRutaVuelo == null) {
-//        throw new IllegalStateException("Debe ingresar los datos de la ruta antes de registrarla.");
-//    }
-//
-//    AerolineaServicio aerolineaServicio = new AerolineaServicio();
-//    CiudadServicio ciudadServicio = new CiudadServicio();
-//    RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
-//
-//    Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(recuerdaAerolinea);
-//    if (aerolinea == null) {
-//        throw new IllegalStateException("La aerolínea seleccionada no existe.");
-//    }
-//
-//    dato.entidades.Ciudad ciudadOrigen = ciudadServicio.buscarCiudadPorNombre(recordarRutaVuelo.getCiudadOrigen().getNombre());
-//    dato.entidades.Ciudad ciudadDestino = ciudadServicio.buscarCiudadPorNombre(recordarRutaVuelo.getCiudadDestino().getNombre());
-//    if (ciudadOrigen == null || ciudadDestino == null) {
-//        throw new IllegalArgumentException("Una de las ciudades no existe.");
-//    }
-//
-//    // Registrar la ruta usando el servicio
-//    rutaVueloServicio.registrarRutaVuelo(
-//        recordarRutaVuelo.getNombre(),
-//        recordarRutaVuelo.getDescripcion(),
-//        recordarRutaVuelo.getCostoBase(),
-//        recordarRutaVuelo.getFechaAlta(),
-//        aerolinea,
-//        ciudadOrigen,
-//        ciudadDestino,
-//        recordarRutaVuelo.getCategorias()
-//    );
-//
-//    // Limpiar las variables de selección
-//    recuerdaAerolinea = null;
-//    recordarRutaVuelo = null;
-//}
+    // ALTA RUTA VUELO
+    public List<DTAerolinea> listarAerolineas() {
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        List<DTAerolinea> listarAerolineas = new ArrayList<>();
+        for (Aerolinea a : aerolineaServicio.listarAerolineas()) {
+            listarAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>())); // Le pasé este último parametro de lista vacía porque necesitaba la lista para otro caso
+        }
+        return listarAerolineas;
+    }
+
+    public void seleccionarAerolinea(String nickname) {
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+        if (aerolinea != null) {
+            // Si tienes una variable interna para la aerolínea seleccionada, asígnala aquí
+            // aerolineaSeleccionada = aerolinea; // si existe en tu clase
+            recuerdaAerolinea = aerolinea.getNickname();
+        } else {
+            // aerolineaSeleccionada = null; // si existe en tu clase
+            recuerdaAerolinea = null;
+        }
+    }
+
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
+        if (recuerdaAerolinea == null) {
+            throw new IllegalStateException("Debe seleccionar una aerolínea antes de ingresar los datos de la ruta.");
+        }
+
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        CiudadServicio ciudadServicio = new CiudadServicio();
+        CategoriaServicio categoriaServicio = new CategoriaServicio();
+
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(recuerdaAerolinea);
+        if (aerolinea == null) {
+            throw new IllegalStateException("La aerolínea seleccionada no existe.");
+        }
+
+        dato.entidades.Ciudad origen = ciudadServicio.buscarCiudadPorNombre(ciudadOrigen);
+        dato.entidades.Ciudad destino = ciudadServicio.buscarCiudadPorNombre(ciudadDestino);
+
+        if (origen == null || destino == null) {
+            throw new IllegalArgumentException("Una de las ciudades no existe.");
+        }
+
+        dato.entidades.Categoria cat = categoriaServicio.obtenerCategoriaPorNombre(categoria);
+        if (cat == null) {
+            throw new IllegalArgumentException("La categoría no existe.");
+        }
+
+        DTCostoBase costoBase = new DTCostoBase(costoTurista, costoEjecutivo, costoEquipajeExtra);
+
+
+        dato.entidades.RutaVuelo rutaVuelo = new dato.entidades.RutaVuelo(
+                nombreRuta,
+                descripcion,
+                costoBase,
+                fechaAlta
+        );
+
+        rutaVuelo.setCiudadDestino(destino);
+        rutaVuelo.setCiudadOrigen(origen);
+        rutaVuelo.getCategorias().add(cat);
+        rutaVuelo.getAerolineas().add(aerolinea);
+
+        recordarRutaVuelo = rutaVuelo;
+    }
+
+    public void registrarRuta() {
+        if (recuerdaAerolinea == null) {
+            throw new IllegalStateException("Debe seleccionar una aerolínea antes de registrar la ruta.");
+        }
+        if (recordarRutaVuelo == null) {
+            throw new IllegalStateException("Debe ingresar los datos de la ruta antes de registrarla.");
+        }
+
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        CiudadServicio ciudadServicio = new CiudadServicio();
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(recuerdaAerolinea);
+        if (aerolinea == null) {
+            throw new IllegalStateException("La aerolínea seleccionada no existe.");
+        }
+
+        dato.entidades.Ciudad ciudadOrigen = ciudadServicio.buscarCiudadPorNombre(recordarRutaVuelo.getCiudadOrigen().getNombre());
+        dato.entidades.Ciudad ciudadDestino = ciudadServicio.buscarCiudadPorNombre(recordarRutaVuelo.getCiudadDestino().getNombre());
+        if (ciudadOrigen == null || ciudadDestino == null) {
+            throw new IllegalArgumentException("Una de las ciudades no existe.");
+        }
+
+        // Registrar la ruta usando el servicio
+        rutaVueloServicio.registrarRutaVuelo(
+                recordarRutaVuelo.getNombre(),
+                recordarRutaVuelo.getDescripcion(),
+                recordarRutaVuelo.getCostoBase(),
+                recordarRutaVuelo.getFechaAlta(),
+                aerolinea,
+                ciudadOrigen,
+                ciudadDestino,
+                recordarRutaVuelo.getCategorias()
+        );
+
+        // Limpiar las variables de selección
+        recuerdaAerolinea = null;
+        recordarRutaVuelo = null;
+    }
+
+    // ALTA CATEGORIA
+    public void altaCategoria(String nombre) {
+        CategoriaServicio categoriaServicio = new CategoriaServicio();
+        categoriaServicio.registrarCategoria(nombre);
+    }
+
+    public List<dato.entidades.Categoria> getCategorias() {
+        CategoriaServicio categoriaServicio = new CategoriaServicio();
+        return categoriaServicio.listarCategorias();
+    }
+
+    // ALTA CIUDAD
+    public void altaCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta){
+        CiudadServicio ciudadServicio = new CiudadServicio();
+
+        // Verificar si la ciudad ya existe usando el servicio
+        dato.entidades.Ciudad ciudadExistente = ciudadServicio.buscarCiudadPorNombreYPais(nombre, pais);
+        if (ciudadExistente != null) {
+            throw new IllegalArgumentException("La ciudad ya existe.");
+        }
+
+        // Crear la ciudad usando el servicio
+        ciudadServicio.registrarCiudad(nombre, pais, aeropuerto, descripcion, sitioWeb, fechaAlta);
+    }
+    
+    // PRECARGA DE AEROPUERTOS
+    public void precargarAeropuertos() {
+        AeropuertoServicio aeropuertoServicio = new AeropuertoServicio();
+        aeropuertoServicio.precargarAeropuertos();
+    }
 
 //    // CONSULTA RUTA VUELO
 //    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea) {
@@ -592,31 +625,6 @@ public class Sistema implements ISistema {
 //        }
 //        return listaReservas;
 //    }
-
-    // ALTA CATEGORIA
-    public void altaCategoria(String nombre) {
-        CategoriaServicio categoriaServicio = new CategoriaServicio();
-        categoriaServicio.registrarCategoria(nombre);
-    }
-    public List<dato.entidades.Categoria> getCategorias() {
-        CategoriaServicio categoriaServicio = new CategoriaServicio();
-        return categoriaServicio.listarCategorias();
-    }
-
-
-    // ALTA CIUDAD
-//    public void altaCiudad(String nombre, String pais, Aeropuerto aeropuerto, DTFecha fechaAlta) {
-//    CiudadServicio ciudadServicio = new CiudadServicio();
-//
-//    // Verificar si la ciudad ya existe usando el servicio
-//    dato.entidades.Ciudad ciudadExistente = ciudadServicio.buscarCiudadPorNombre(nombre);
-//    if (ciudadExistente != null) {
-//        throw new IllegalArgumentException("La ciudad ya existe.");
-//    }
-//
-//    // Crear la ciudad usando el servicio
-//    ciudadServicio.registrarCiudad(nombre, pais, aeropuerto, fechaAlta);
-//}
 
 //    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
 //        if (recordarDatosVuelo == null) {

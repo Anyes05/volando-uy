@@ -7,7 +7,7 @@ import dato.entidades.Pasaje;
 
 public class PasajeDAO {
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("miPU");
+            Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar un pasaje en la Base de Datos
     public void guardar(Pasaje pasaje) {
