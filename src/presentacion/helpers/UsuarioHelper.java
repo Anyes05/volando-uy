@@ -1,7 +1,8 @@
 package presentacion.helpers;
 
 import presentacion.helpers.*;
-import logica.clase.Sistema;
+import logica.clase.Factory;
+import logica.clase.ISistema;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
 import logica.clase.*;
@@ -70,6 +71,12 @@ public class UsuarioHelper {
         parentPanel.revalidate();
     }
 
+    // Método helper para obtener la instancia de ISistema a través del Factory
+    private static ISistema getSistema() {
+        Factory factory = new Factory();
+        return factory.getSistema();
+    }
+
 
     /// SABER SI ES CLIENTE O AEROLINEA///////////
     public static String obtenerTipoUsuario(String nickname) {
@@ -78,7 +85,8 @@ public class UsuarioHelper {
         }
 
         try {
-            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
+            ISistema sistema = getSistema();
+            DTUsuario usuario = sistema.mostrarDatosUsuario(nickname);
 
             if (usuario instanceof DTCliente) {
                 return "cliente";
@@ -108,7 +116,7 @@ public class UsuarioHelper {
         }
 
         // Guardar en Sistema el usuario a modificar
-        Sistema.getInstance().seleccionarUsuarioAMod(nickname);
+        getSistema().seleccionarUsuarioAMod(nickname);
 
         // Cambiar panel según tipo
         switch (tipo) {
@@ -127,7 +135,7 @@ public class UsuarioHelper {
     public static void guardarCambiosCliente(String nombre, String apellido, DTFecha fechaNac,
                                              String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
         try {
-            Sistema.getInstance().modificarDatosCliente(nombre, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
+            getSistema().modificarDatosCliente(nombre, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
             JOptionPane.showMessageDialog(null, "Datos del cliente modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al modificar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -136,7 +144,7 @@ public class UsuarioHelper {
 
     public static void guardarCambiosAerolinea(String nombre, String descripcion, String linkSitioWeb) {
         try {
-            Sistema.getInstance().modificarDatosAerolinea(nombre, descripcion, linkSitioWeb);
+            getSistema().modificarDatosAerolinea(nombre, descripcion, linkSitioWeb);
             JOptionPane.showMessageDialog(null, "Datos de la aerolínea modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al modificar aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -152,7 +160,7 @@ public class UsuarioHelper {
     ) {
         try {
             // Obtener los datos del usuario
-            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
+            DTUsuario usuario = getSistema().mostrarDatosUsuario(nickname);
 
             // Verificar que sea una aerolínea
             if (usuario instanceof DTAerolinea aerolinea) {
@@ -180,7 +188,7 @@ public class UsuarioHelper {
             JCalendar fechaNacimientoCalendar   // <-- ahora JCalendar
     ) {
         try {
-            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
+            DTUsuario usuario = getSistema().mostrarDatosUsuario(nickname);
 
             if (usuario instanceof DTCliente c) {
                 nombreField.setText(c.getNombre());
@@ -236,7 +244,7 @@ public class UsuarioHelper {
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
 
         try {
-            List<DTUsuario> usuarios = Sistema.getInstance().consultarUsuarios();
+            List<DTUsuario> usuarios = getSistema().consultarUsuarios();
             for (DTUsuario u : usuarios) {
                 String tipo;
                 if (u instanceof DTCliente) {
@@ -272,7 +280,7 @@ public class UsuarioHelper {
     // Para mostrar usuarios en consola
     public static void comprobarUsuarios(){
         try {
-            List<DTUsuario> lista = Sistema.getInstance().consultarUsuarios();
+            List<DTUsuario> lista = getSistema().consultarUsuarios();
             for (DTUsuario u : lista) {
                 System.out.println(u.getNickname() + " | " + u.getNombre() + " | " + u.getCorreo());
             }
@@ -384,7 +392,7 @@ public class UsuarioHelper {
         DTFecha fechaNac = new DTFecha(dia, mes, ano);
 
         // Llamar a la función de Sistema
-        Sistema.getInstance().altaCliente(
+        getSistema().altaCliente(
                 nickname,
                 nombre,
                 correo,
@@ -481,7 +489,7 @@ public class UsuarioHelper {
         }
 
         // Llamada al sistema
-        Sistema.getInstance().altaAerolinea(
+        getSistema().altaAerolinea(
                 nickname,
                 nombre,
                 correo,
@@ -513,7 +521,7 @@ public class UsuarioHelper {
             return;
         }
         try {
-            DTUsuario usuario = Sistema.getInstance().mostrarDatosUsuario(nickname);
+            DTUsuario usuario = getSistema().mostrarDatosUsuario(nickname);
 
             String[] columnas = {"Campo", "Valor", "Valor"};
             DefaultTableModel modelo = new DefaultTableModel(columnas, 0);

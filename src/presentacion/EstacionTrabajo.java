@@ -3,6 +3,8 @@ package presentacion;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
+import logica.clase.ISistema;
+
 import com.toedter.calendar.JCalendar;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
@@ -162,6 +164,7 @@ public class EstacionTrabajo {
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
 
+    private ISistema sistema; // Variable para almacenar la instancia de ISistema obtenida a través del Factory
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
@@ -184,14 +187,14 @@ public class EstacionTrabajo {
 
     private void cargarAerolineas(JComboBox<String> combo) {
         combo.removeAllItems(); // limpiar combo por si ya tiene algo
-        for (DTAerolinea a : Sistema.getInstance().listarAerolineas()) {
+        for (DTAerolinea a : sistema.listarAerolineas()) {
             combo.addItem(a.getNickname());
         }
     }
 
     private void cargarCategorias(JList<String> lista) {
         DefaultListModel<String> modelo = new DefaultListModel<>();
-        for (dato.entidades.Categoria c : Sistema.getInstance().getCategorias()) {
+        for (dato.entidades.Categoria c : sistema.getCategorias()) {
             modelo.addElement(c.getNombre());
         }
         lista.setModel(modelo);
@@ -199,6 +202,9 @@ public class EstacionTrabajo {
     }
 
     public EstacionTrabajo() {
+        // Obtener la instancia de ISistema a través del Factory
+        Factory factory = new Factory();
+        this.sistema = factory.getSistema();
 
         /*----- TABLAS -----*/
         // Columnas de la tabla

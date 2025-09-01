@@ -300,7 +300,6 @@ public class Sistema implements ISistema {
         aerolineaServicio.actualizarAerolinea(aerolinea);
     }
 
-
     // ALTA RUTA VUELO
     public List<DTAerolinea> listarAerolineas() {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();

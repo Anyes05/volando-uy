@@ -2,7 +2,8 @@
 package presentacion.helpers;
 
 import presentacion.helpers.*;
-import logica.clase.Sistema;
+import logica.clase.Factory;
+import logica.clase.ISistema;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
 import logica.clase.Aeropuerto;
@@ -27,6 +28,12 @@ import java.awt.*;
 import java.awt.BorderLayout;
 
 public class VueloHelper {
+
+    // Método helper para obtener la instancia de ISistema a través del Factory
+    private static ISistema getSistema() {
+        Factory factory = new Factory();
+        return factory.getSistema();
+    }
 
     // ------------------- RESET FORMULARIO -------------------
     public static void resetFormularioRuta(
@@ -54,7 +61,7 @@ public class VueloHelper {
     // ------------------- AEROLÍNEAS -------------------
     public static List<DTAerolinea> listarAerolineas() {
         try {
-            return Sistema.getInstance().listarAerolineas(); // Llamamos directamente a Sistema
+            return getSistema().listarAerolineas(); // Llamamos directamente a Sistema
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al listar aerolíneas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return List.of();
@@ -63,7 +70,7 @@ public class VueloHelper {
 
     public static void seleccionarAerolinea(String nickname) {
         try {
-            Sistema.getInstance().seleccionarAerolinea(nickname); // Sistema guarda la aerolínea seleccionada
+            getSistema().seleccionarAerolinea(nickname); // Sistema guarda la aerolínea seleccionada
         } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -142,7 +149,7 @@ public class VueloHelper {
         // ------------------- CREAR LA RUTA -------------------
         try {
             for (String categoria : categoriasSeleccionadas) {
-                DTRutaVuelo ruta = Sistema.getInstance().ingresarDatosRuta(
+                getSistema().ingresarDatosRuta(
                         nombre,
                         descripcion,
                         horaVuelo,
@@ -154,7 +161,7 @@ public class VueloHelper {
                         fecha,
                         categoria // un String por vez
                 );
-                Sistema.getInstance().registrarRuta();
+                getSistema().registrarRuta();
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -169,7 +176,7 @@ public class VueloHelper {
         }
 
         try {
-            Sistema.getInstance().altaCiudad(nombre.trim(), pais.trim(), aeropuerto, descripcion, sitioWeb, fechaAlta);
+            getSistema().altaCiudad(nombre.trim(), pais.trim(), aeropuerto, descripcion, sitioWeb, fechaAlta);
             JOptionPane.showMessageDialog(null, "Ciudad creada con éxito.");
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -179,12 +186,12 @@ public class VueloHelper {
     }
 
     public static void crearCategoria(String nombre) {
-        Sistema.getInstance().altaCategoria(nombre);
+        getSistema().altaCategoria(nombre);
     }
     
     public static void precargarAeropuertos() {
         try {
-            Sistema.getInstance().precargarAeropuertos();
+            getSistema().precargarAeropuertos();
             JOptionPane.showMessageDialog(null, "Aeropuertos precargados exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al precargar aeropuertos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

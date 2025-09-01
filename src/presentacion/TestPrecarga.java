@@ -1,19 +1,23 @@
 package presentacion;
 
-import logica.clase.Sistema;
+import logica.clase.Factory;
+import logica.clase.ISistema;
 import logica.DataTypes.DTFecha;
 
 public class TestPrecarga {
     public static void main(String[] args) {
         try {
+            Factory factory = new Factory();
+            ISistema sistema = factory.getSistema();
+            
             System.out.println("Iniciando precarga de aeropuertos...");
-            Sistema.getInstance().precargarAeropuertos();
+            sistema.precargarAeropuertos();
             System.out.println("Precarga completada exitosamente.");
             
             // Probar crear una ciudad
             System.out.println("Probando creación de ciudad...");
             DTFecha fecha = new DTFecha(15, 12, 2024);
-            Sistema.getInstance().altaCiudad("Montevideo", "Uruguay", "Carrasco", fecha);
+            sistema.altaCiudad("Montevideo", "Uruguay", "Carrasco", "Capital de Uruguay", "https://www.montevideo.gub.uy", fecha);
             System.out.println("Ciudad creada exitosamente.");
             
         } catch (Exception e) {

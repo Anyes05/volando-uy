@@ -62,21 +62,15 @@ public interface ISistema {
 //    public List<DTCliente> mostrarClientes();
 //    public void seleccionarCliente(String nombreCliente);
 //    public void realizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimiento, TipoAsiento tipoAsiento);
-    //public void agregarRutaAPaquete(RutaVuelo ruta, int cant);
+//    public void agregarRutaAPaquete(RutaVuelo ruta, int cant);
 //    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
-//
-
-    //
 //    public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea);
 //
 //    // RESERVA VUELO
 //    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
 //
 //    // CONSULTA PAQUETE
-
 //    public DTPaqueteVueloRutaVuelo imprimirPaqueteVuelo(String nombre);
-//
-
 
 }
 
