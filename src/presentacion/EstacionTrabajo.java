@@ -221,7 +221,7 @@ public class EstacionTrabajo {
         boolean esConsulta = (comboRutas == comBoxRutVueloConsultaRV);
         if (esConsulta) cargandoRutasRV = true;
         comboRutas.removeAllItems(); // Limpiar combo
-        List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(nicknameAerolinea);
+        List<DTRutaVuelo> rutas = sistema.seleccionarAerolineaRet(nicknameAerolinea);
         for (DTRutaVuelo ruta : rutas) {
             comboRutas.addItem(ruta);
         }
@@ -301,6 +301,10 @@ public class EstacionTrabajo {
                     case "Crear Vuelo":
                         parentPanel.removeAll();
                         cargarAerolineas(aerolinea);
+                        String nicknameAerolinea = (String) aerolinea.getSelectedItem();
+                        if (nicknameAerolinea != null) {
+                            cargarRutas(rutasVueloAltaVuelo, nicknameAerolinea);
+                        }
                         parentPanel.add(altaVuelo);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -711,6 +715,7 @@ public class EstacionTrabajo {
                     ciudadOText.setText("");
                     ciudadDText.setText("");
                     fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
+                    aerolineaVuelo.setSelectedItem(null);
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(altaRuta,
@@ -729,12 +734,18 @@ public class EstacionTrabajo {
                 try {
                     String nombre = nombreAltaVuelotxt.getText().trim();
                     String duracion = duracionAltaVuelotxt.getText().trim();
-                    Calendar fechaCal = fechaAltaVuelo.getCalendar();
-                    DTFecha fecha = new DTFecha(
-                            fechaCal.get(Calendar.DAY_OF_MONTH),
-                            fechaCal.get(Calendar.MONTH) + 1,
-                            fechaCal.get(Calendar.YEAR)
-                    );
+                    Calendar fechaAltaCal = fechaAltaVuelo.getCalendar();
+                    Calendar fechaVueloCal = fechaVuelo.getCalendar();
+//                    DTFecha fechaAlta = new DTFecha(
+//                            fechaAltaCal.get(Calendar.DAY_OF_MONTH),
+//                            fechaAltaCal.get(Calendar.MONTH) + 1,
+//                            fechaAltaCal.get(Calendar.YEAR)
+//                    );
+//                    DTFecha fechaVue = new DTFecha(
+//                            fechaVueloCal.get(Calendar.DAY_OF_MONTH),
+//                            fechaVueloCal.get(Calendar.MONTH) + 1,
+//                            fechaVueloCal.get(Calendar.YEAR)
+//                    );
                     int maxTurista = Integer.parseInt(asientosMaxTuristatxt.getText().trim());
                     int maxEjecutivo = Integer.parseInt(asientoMaxEjecutivotxt.getText().trim());
                     DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem();
@@ -745,7 +756,7 @@ public class EstacionTrabajo {
                     }
 
                     String hora = horaVuelotxt.getText().trim();
-                    VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaCal, maxTurista, maxEjecutivo, ruta);
+                    VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaAltaCal,fechaVueloCal, maxTurista, maxEjecutivo, ruta);
                     String nicknameAerolinea = (String) aerolinea.getSelectedItem();
                     sistema.seleccionarAerolinea(nicknameAerolinea);
                     sistema.darAltaVuelo();
@@ -755,10 +766,12 @@ public class EstacionTrabajo {
                     nombreAltaVuelotxt.setText("");
                     duracionAltaVuelotxt.setText("");
                     fechaAltaVuelo.setCalendar(Calendar.getInstance());
+                    fechaVuelo.setCalendar(Calendar.getInstance());
                     asientosMaxTuristatxt.setText("");
                     asientoMaxEjecutivotxt.setText("");
                     horaVuelotxt.setText("");
                     rutasVueloAltaVuelo.setSelectedItem(null);
+                    aerolinea.setSelectedItem(null);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(altaVuelo, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }

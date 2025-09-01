@@ -211,7 +211,8 @@ public class VueloHelper {
             String nombre,
             String duracionStr,
             String horaStr,
-            Calendar fechaCal,
+            Calendar fechaAltaCal,
+            Calendar fechaVueloCal,
             int maxTurista,
             int maxEjecutivo,
             DTRutaVuelo ruta
@@ -289,16 +290,22 @@ public class VueloHelper {
 
         // ------------------- CONVERTIR FECHA -------------------
         DTFecha fecha = new DTFecha(
-                fechaCal.get(Calendar.DAY_OF_MONTH),
-                fechaCal.get(Calendar.MONTH) + 1,
-                fechaCal.get(Calendar.YEAR)
+                fechaAltaCal.get(Calendar.DAY_OF_MONTH),
+                fechaAltaCal.get(Calendar.MONTH) + 1,
+                fechaAltaCal.get(Calendar.YEAR)
         );
+        DTFecha fechaVuelo = new DTFecha(
+                fechaVueloCal.get(Calendar.DAY_OF_MONTH),
+                fechaVueloCal.get(Calendar.MONTH) + 1,
+                fechaVueloCal.get(Calendar.YEAR)
+        );
+
 
         // ------------------- CREAR EL VUELO -------------------
         try {
             getSistema().ingresarDatosVuelo(
                     nombre,
-                    fecha,
+                    fechaVuelo,
                     horaVuelo,
                     duracion,
                     maxTurista,
