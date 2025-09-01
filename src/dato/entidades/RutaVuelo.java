@@ -66,12 +66,13 @@ public class RutaVuelo {
     @JoinColumn(name = "cantidad_id")
     private Cantidad cantidad;
 
-    // One to one
-    @OneToOne
+
+    //relacion con ciudad
+    @ManyToOne
     @JoinColumn(name = "ciudad_origen_id")
     private Ciudad ciudadOrigen;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "ciudad_destino_id")
     private Ciudad ciudadDestino;
 
