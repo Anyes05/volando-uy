@@ -7,7 +7,7 @@ import jakarta.persistence.Persistence;
 
 public class CantidadDAO {
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("miPU");
+            Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar una cantidad en la Base de Datos
     public void guardar(Cantidad cantidad) {

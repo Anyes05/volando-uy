@@ -7,7 +7,7 @@ import jakarta.persistence.Persistence;
 
 public class PaqueteVueloDAO {
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("miPU");
+            Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar un paquete de vuelo en la Base de Datos
     public void guardar(PaqueteVuelo paqueteVuelo) {

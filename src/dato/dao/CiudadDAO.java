@@ -4,10 +4,11 @@ import dato.entidades.Ciudad;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 
 public class CiudadDAO {
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("miPU");
+            Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar una ciudad en la Base de Datos
     public void guardar(Ciudad ciudad) {
@@ -28,11 +29,41 @@ public class CiudadDAO {
 
     public Ciudad buscarCiudadPorNombre(String nombre) {
         EntityManager em = emf.createEntityManager();
-        Ciudad c = em.createQuery("SELECT c FROM Ciudad c WHERE c.nombre = :nombre", Ciudad.class)
-                     .setParameter("nombre", nombre)
-                     .getSingleResult();
-        em.close();
-        return c;
+        try {
+            TypedQuery<Ciudad> query = em.createQuery(
+                "SELECT c FROM Ciudad c WHERE c.nombre = :nombre", Ciudad.class);
+            query.setParameter("nombre", nombre);
+            return query.getResultStream().findFirst().orElse(null);
+        } finally {
+            em.close();
+        }
     }
-
+    
+    // Buscar ciudad por nombre y país
+    public Ciudad buscarCiudadPorNombreYPais(String nombre, String pais) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Ciudad> query = em.createQuery(
+                "SELECT c FROM Ciudad c WHERE c.nombre = :nombre AND c.pais = :pais", Ciudad.class);
+            query.setParameter("nombre", nombre);
+            query.setParameter("pais", pais);
+            return query.getResultStream().findFirst().orElse(null);
+        } finally {
+            em.close();
+        }
+    }
+    
+    // Verificar si existe una ciudad por nombre y país
+    public boolean existeCiudadPorNombreYPais(String nombre, String pais) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Ciudad> query = em.createQuery(
+                "SELECT c FROM Ciudad c WHERE c.nombre = :nombre AND c.pais = :pais", Ciudad.class);
+            query.setParameter("nombre", nombre);
+            query.setParameter("pais", pais);
+            return !query.getResultList().isEmpty();
+        } finally {
+            em.close();
+        }
+    }
 }

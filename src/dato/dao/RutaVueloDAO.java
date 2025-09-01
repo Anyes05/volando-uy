@@ -7,7 +7,7 @@ import jakarta.persistence.Persistence;
 
 public class RutaVueloDAO {
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("miPU");
+            Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar una ruta de vuelo en la Base de Datos
     public void guardar(RutaVuelo rutaVuelo) {

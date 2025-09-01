@@ -4,10 +4,12 @@ import dato.entidades.Aeropuerto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
+import java.util.List;
 
 public class AeropuertoDAO {
     private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("miPU");
+            Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar un aeropuerto en la Base de Datos
     public void guardar(Aeropuerto aeropuerto) {
@@ -24,5 +26,43 @@ public class AeropuertoDAO {
         Aeropuerto a = em.find(Aeropuerto.class, id); // SELECT en la Base de Datos, busca el aeropuerto con el id asociado
         em.close(); // cerrar el entity manager
         return a; // retornar el aeropuerto encontrado
+    }
+    
+    // Verificar si existe un aeropuerto por nombre
+    public boolean existeAeropuertoPorNombre(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Aeropuerto> query = em.createQuery(
+                "SELECT a FROM Aeropuerto a WHERE a.nombre = :nombre", Aeropuerto.class);
+            query.setParameter("nombre", nombre);
+            return !query.getResultList().isEmpty();
+        } finally {
+            em.close();
+        }
+    }
+    
+    // Listar todos los aeropuertos
+    public List<Aeropuerto> listarTodos() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Aeropuerto> query = em.createQuery(
+                "SELECT a FROM Aeropuerto a", Aeropuerto.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    // Buscar aeropuerto por nombre
+    public Aeropuerto buscarPorNombre(String nombre) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Aeropuerto> query = em.createQuery(
+                "SELECT a FROM Aeropuerto a WHERE a.nombre = :nombre", Aeropuerto.class);
+            query.setParameter("nombre", nombre);
+            return query.getResultStream().findFirst().orElse(null);
+        } finally {
+            em.close();
+        }
     }
 }

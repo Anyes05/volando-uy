@@ -55,7 +55,12 @@ public class Ciudad {
     public DTFecha getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
 
-    public void setAeropuerto(Aeropuerto aeropuerto) {
+    public void setAeropuerto(String nombreAeropuerto) {
+        // Este método está mal implementado, debería recibir un objeto Aeropuerto
+        // Se mantiene por compatibilidad pero no se usa
+    }
+    
+    public void agregarAeropuerto(Aeropuerto aeropuerto) {
         this.aeropuertos.add(aeropuerto);
         aeropuerto.setCiudad(this); // Asegura la relación bidireccional
     }
