@@ -448,23 +448,23 @@ public class Sistema implements ISistema {
     // CONSULTA RUTA VUELO
     public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea) {
         List<DTRutaVuelo> listaRutas = new ArrayList<>();
-        for (Usuario u : usuarios) {
-            if (u instanceof Aerolinea a && a.getNickname().equalsIgnoreCase(nombreAerolinea)) {
-                for (RutaVuelo r : a.getRutasVuelo()) {
-                    listaRutas.add(new DTRutaVuelo(
-                            r.getNombre(),
-                            r.getDescripcion(),
-                            r.getFechaAlta(),
-                            r.getCostoBase(),
-                            new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
-                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
-                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
-                    ));
-                }
-                return listaRutas;
-            }
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nombreAerolinea);
+        if (aerolinea == null) {
+            throw new IllegalArgumentException("No se encontró una aerolínea con el nickname: " + nombreAerolinea);
         }
-        throw new IllegalArgumentException("No se encontró una aerolínea con el nickname: " + nombreAerolinea);
+        for (RutaVuelo r : aerolinea.getRutasVuelo()) {
+            listaRutas.add(new DTRutaVuelo(
+                    r.getNombre(),
+                    r.getDescripcion(),
+                    r.getFechaAlta(),
+                    r.getCostoBase(),
+                    new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>()),
+                    new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                    new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
+            ));
+        }
+        return listaRutas;
     }
 
     // ALTA DE VUELO
@@ -566,8 +566,8 @@ public class Sistema implements ISistema {
         recordarDatosVuelo = null;
     }
 
-//    //CONSULTA VUELO
-//
+    //CONSULTA VUELO
+
     public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
         listaDTVuelos.clear();
         VueloServicio vueloServicio = new VueloServicio();
@@ -598,34 +598,57 @@ public class Sistema implements ISistema {
         }
         return listaDTVuelos;
     }
-//
-//    public List<DTVueloReserva> seleccionarVuelo(String nombre){
-//        List<DTVueloReserva> listaReservas = new ArrayList<>();
-//        DTVuelo vueloSeleccionado = null;
-//        for (DTVuelo dtVuelo : listaDTVuelos) {
-//            if (dtVuelo.getNombre().equalsIgnoreCase(nombre)) {
-//                vueloSeleccionado = dtVuelo;
-//                break;
-//            }
-//        }
-//        if (vueloSeleccionado == null)
-//            throw new IllegalStateException("No se encontró el vuelo.");
-//
-//        VueloServicio vueloServicio = new VueloServicio();
-//        List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
-//
-//        // Recorremos la lista de vuelos para tomar las reservas
-//        for (dato.entidades.Vuelo v : vuelos) {
-//            if (v.getNombre().equalsIgnoreCase(nombre)) {
-//                for (Reserva r : v.getReserva()) {
-//                    DTReserva dtReserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
-//                    DTVueloReserva dtVueloR = new DTVueloReserva(vueloSeleccionado, dtReserva);
-//                    listaReservas.add(dtVueloR);
-//                }
-//            }
-//        }
-//        return listaReservas;
-//    }
+
+    public List<DTVueloReserva> seleccionarVuelo(String nombre){
+        List<DTVueloReserva> listaReservas = new ArrayList<>();
+        DTVuelo vueloSeleccionado = null;
+        for (DTVuelo dtVuelo : listaDTVuelos) {
+            if (dtVuelo.getNombre().equalsIgnoreCase(nombre)) {
+                vueloSeleccionado = dtVuelo;
+                break;
+            }
+        }
+        if (vueloSeleccionado == null)
+            throw new IllegalStateException("No se encontró el vuelo.");
+
+        VueloServicio vueloServicio = new VueloServicio();
+        List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
+
+        // Recorremos la lista de vuelos para tomar las reservas
+        for (dato.entidades.Vuelo v : vuelos) {
+            if (v.getNombre().equalsIgnoreCase(nombre)) {
+                for (Reserva r : v.getReserva()) {
+                    DTReserva dtReserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
+                    DTVueloReserva dtVueloR = new DTVueloReserva(vueloSeleccionado, dtReserva);
+                    listaReservas.add(dtVueloR);
+                }
+            }
+        }
+        return listaReservas;
+    }
+
+    public List<DTRutaVuelo> listarRutaVueloDeVuelo(){
+        List<DTRutaVuelo> listaRutas = new ArrayList<>();
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
+        for (Aerolinea a : aerolineas) {
+            for (RutaVuelo r : a.getRutasVuelo()) {
+                listaRutas.add(new DTRutaVuelo(
+                        r.getNombre(),
+                        r.getDescripcion(),
+                        r.getFechaAlta(),
+                        r.getCostoBase(),
+                        new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
+                        new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                        new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
+                ));
+            }
+
+        }
+        return listaRutas;
+    }
+
+    // RESERVA
 
 //    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
 //    if (recordarDatosVuelo == null) {
@@ -692,30 +715,12 @@ public class Sistema implements ISistema {
 //    clienteServicio.actualizarCliente(clientePrincipal);
 //    reservaServicio.actualizarReserva(reserva);
 //}
-//
-//
+
+
+
+
+
 /*
-//    public List<DTRutaVuelo> listarRutaVueloDeVuelo(){
-//        List<DTRutaVuelo> listaRutas = new ArrayList<>();
-//        for (Usuario u : usuarios) {
-//            if (u instanceof Aerolinea a) {
-//                for (RutaVuelo r : a.getRutasVuelo()) {
-//                    listaRutas.add(new DTRutaVuelo(
-//                            r.getNombre(),
-//                            r.getDescripcion(),
-//                            r.getFechaAlta(),
-//                            r.getCostoBase(),
-//                            new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
-//                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
-//                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
-//                    ));
-//                }
-//            }
-//        }
-//        return listaRutas;
-//    }
-
-
     // CREAR PAQUETE VUELO
     public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta, TipoAsiento tipoAsiento) {
         for (PaqueteVuelo p : paqueteVuelos) {
