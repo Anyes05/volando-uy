@@ -76,7 +76,7 @@ public class EstacionTrabajo {
     private JCalendar fechaVuelo;
     private JCalendar fechaAltaVuelo;
     private JPanel consultaVuelo;
-    private JComboBox comboBox4;
+    private JComboBox comboBoxRutasVuelosConsultaV;
     private JComboBox aerolineaVuelo;
     private JComboBox<DTRutaVuelo> rutasVueloAltaVuelo;
     private JTextArea descRutaText;
@@ -164,6 +164,20 @@ public class EstacionTrabajo {
     private JCalendar calendarAltaPaquete;
     private JButton buttonCancelarCrearPaquete;
     private JButton buttonCrearPaquete;
+    private JComboBox comboBoxAeroConsultaV;
+    private JTextPane descripcionConsultaVtxt;
+    private JTextArea costoBaseConsultaVtxt;
+    private JComboBox comboBoxVuelosConsultaV;
+    private JTextArea nombVueloConsultaVtxt;
+    private JTextArea fechaVueloConsultaVtxt;
+    private JTextArea horaVueloConsultaVtxt;
+    private JTextArea duracionVueloConsultaVtxt;
+    private JTextArea maxTuristaConsultaVtxt;
+    private JTextArea maxEjecutivoConsultaVtxt;
+    private JTextArea fechaAltaVueloConsultaVtxt;
+    private JTextArea fechaAlta;
+    private JTextArea fechaAltaConsultaVtxt;
+
     private JButton precargarAeropuertosButton;
 
 
@@ -323,6 +337,11 @@ public class EstacionTrabajo {
                         break;
                     case "Consultar Vuelo":
                         parentPanel.removeAll();
+                        cargarAerolineas(comboBoxAeroConsultaV);
+                        nicknameAerolinea = (String) comboBoxAeroConsultaV.getSelectedItem();
+                        if (nicknameAerolinea != null) {
+                            cargarRutas(comboBoxRutasVuelosConsultaV, nicknameAerolinea);
+                        }
                         parentPanel.add(consultaVuelo);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -905,7 +924,13 @@ public class EstacionTrabajo {
 //            }
 //        });
 
+        //------------CONSULTA VUELO-------------------
+        comboBoxAeroConsultaV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+            }
+        });
     }
 
 
