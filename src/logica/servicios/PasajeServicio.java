@@ -7,9 +7,12 @@ import logica.DataTypes.TipoAsiento;
 public class PasajeServicio {
     private PasajeDAO pasajeDAO = new PasajeDAO();
 
-    public void registrarPasaje(Cliente pasajero, Reserva reserva, TipoAsiento tipoAsiento, int costoPasaje) {
-        Pasaje p = new Pasaje(pasajero, reserva, tipoAsiento, costoPasaje);
+    public void registrarPasaje(Pasaje p) {
         pasajeDAO.guardar(p);  // Se guarda en la BD
+    }
+
+    public Pasaje crearPasaje (Cliente pasajero, Reserva reserva, TipoAsiento tipoAsiento) throws Exception {
+        return pasajeDAO.crear(pasajero, reserva, tipoAsiento);
     }
 
     public Pasaje obtenerPasaje(Long id) {

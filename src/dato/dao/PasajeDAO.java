@@ -25,4 +25,18 @@ public class PasajeDAO {
         em.close();
         return p;
     }
+
+    public Pasaje crear(dato.entidades.Cliente pasajero, dato.entidades.Reserva reserva, logica.DataTypes.TipoAsiento tipoAsiento) throws Exception {
+        Pasaje pasaje = new Pasaje();
+        pasaje.setPasajero(pasajero);
+        pasaje.setReserva(reserva);
+        pasaje.setTipoAsiento(tipoAsiento);
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(pasaje);
+        em.getTransaction().commit();
+        em.close();
+        return pasaje;
+    }
 }
