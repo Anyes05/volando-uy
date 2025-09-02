@@ -627,71 +627,71 @@ public class Sistema implements ISistema {
 //        return listaReservas;
 //    }
 
-    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
-    if (recordarDatosVuelo == null) {
-        throw new IllegalStateException("Debe seleccionar un vuelo antes de reservar.");
-    }
-
-    VueloServicio vueloServicio = new VueloServicio();
-    ClienteServicio clienteServicio = new ClienteServicio();
-    ReservaServicio reservaServicio = new ReservaServicio();
-    PasajeServicio pasajeServicio = new PasajeServicio();
-
-    dato.entidades.Vuelo vueloSeleccionado = vueloServicio.buscarVueloPorNombre(recordarDatosVuelo.getNombre());
-    if (vueloSeleccionado == null) {
-        throw new IllegalStateException("No se encontró el vuelo seleccionado.");
-    }
-
-    Cliente clientePrincipal = clienteServicio.buscarClientePorNickname(nombresPasajeros.get(0));
-    if (clientePrincipal == null) {
-        throw new IllegalArgumentException("No se encontró el cliente principal.");
-    }
-
-    if (tipoAsiento == TipoAsiento.Ejecutivo && vueloSeleccionado.getAsientosMaxEjecutivo() < cantidadPasaje) {
-        throw new IllegalStateException("No hay suficientes asientos ejecutivos disponibles.");
-    }
-    if (tipoAsiento == TipoAsiento.Turista && vueloSeleccionado.getAsientosMaxTurista() < cantidadPasaje) {
-        throw new IllegalStateException("No hay suficientes asientos turista disponibles.");
-    }
-
-    CompraComunServicio compraComunServicio = new CompraComunServicio();
-    dato.entidades.CompraComun reserva;
-    try {
-        reserva = compraComunServicio.crearCompraComun(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra, vueloSeleccionado);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error al crear la reserva: " + e.getMessage(), e);
-        }
-
-    for (String nombrePasajero : nombresPasajeros) {
-        Cliente pasajero = clienteServicio.buscarClientePorNickname(nombrePasajero);
-        if (pasajero == null) {
-            throw new IllegalArgumentException("No se encontró el pasajero: " + nombrePasajero);
-        }
-        try {
-            Pasaje pasaje = pasajeServicio.crearPasaje(pasajero, reserva, tipoAsiento);
-            reserva.getPasajeros().add(pasaje);
-            pasajero.getReservas().add(reserva);
-            clienteServicio.actualizarCliente(pasajero);
-        } catch (Exception e) {
-            throw new IllegalStateException("Error al crear el pasaje para el pasajero " + nombrePasajero + ": " + e.getMessage(), e);
-        }
-
-    }
-    DTCostoBase costoBase = vueloSeleccionado.getRutaVuelo().getCostoBase();
-    float costoTotal;
-    if (tipoAsiento == TipoAsiento.Ejecutivo) {
-        costoTotal = (costoBase.getCostoEjecutivo() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
-    } else {
-        costoTotal = (costoBase.getCostoTurista() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
-    }
-    reserva.setCostoReserva(costoBase);
-    reserva.setCostoTotal(costoTotal);
-
-    vueloSeleccionado.getReserva().add(reserva);
-    vueloServicio.actualizarVuelo(vueloSeleccionado);
-    clienteServicio.actualizarCliente(clientePrincipal);
-    reservaServicio.actualizarReserva(reserva);
-}
+//    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
+//    if (recordarDatosVuelo == null) {
+//        throw new IllegalStateException("Debe seleccionar un vuelo antes de reservar.");
+//    }
+//
+//    VueloServicio vueloServicio = new VueloServicio();
+//    ClienteServicio clienteServicio = new ClienteServicio();
+//    ReservaServicio reservaServicio = new ReservaServicio();
+//    PasajeServicio pasajeServicio = new PasajeServicio();
+//
+//    dato.entidades.Vuelo vueloSeleccionado = vueloServicio.buscarVueloPorNombre(recordarDatosVuelo.getNombre());
+//    if (vueloSeleccionado == null) {
+//        throw new IllegalStateException("No se encontró el vuelo seleccionado.");
+//    }
+//
+//    Cliente clientePrincipal = clienteServicio.buscarClientePorNickname(nombresPasajeros.get(0));
+//    if (clientePrincipal == null) {
+//        throw new IllegalArgumentException("No se encontró el cliente principal.");
+//    }
+//
+//    if (tipoAsiento == TipoAsiento.Ejecutivo && vueloSeleccionado.getAsientosMaxEjecutivo() < cantidadPasaje) {
+//        throw new IllegalStateException("No hay suficientes asientos ejecutivos disponibles.");
+//    }
+//    if (tipoAsiento == TipoAsiento.Turista && vueloSeleccionado.getAsientosMaxTurista() < cantidadPasaje) {
+//        throw new IllegalStateException("No hay suficientes asientos turista disponibles.");
+//    }
+//
+//    CompraComunServicio compraComunServicio = new CompraComunServicio();
+//    dato.entidades.CompraComun reserva;
+//    try {
+//        reserva = compraComunServicio.crearCompraComun(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra, vueloSeleccionado);
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Error al crear la reserva: " + e.getMessage(), e);
+//        }
+//
+//    for (String nombrePasajero : nombresPasajeros) {
+//        Cliente pasajero = clienteServicio.buscarClientePorNickname(nombrePasajero);
+//        if (pasajero == null) {
+//            throw new IllegalArgumentException("No se encontró el pasajero: " + nombrePasajero);
+//        }
+//        try {
+//            Pasaje pasaje = pasajeServicio.crearPasaje(pasajero, reserva, tipoAsiento);
+//            reserva.getPasajeros().add(pasaje);
+//            pasajero.getReservas().add(reserva);
+//            clienteServicio.actualizarCliente(pasajero);
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Error al crear el pasaje para el pasajero " + nombrePasajero + ": " + e.getMessage(), e);
+//        }
+//
+//    }
+//    DTCostoBase costoBase = vueloSeleccionado.getRutaVuelo().getCostoBase();
+//    float costoTotal;
+//    if (tipoAsiento == TipoAsiento.Ejecutivo) {
+//        costoTotal = (costoBase.getCostoEjecutivo() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
+//    } else {
+//        costoTotal = (costoBase.getCostoTurista() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
+//    }
+//    reserva.setCostoReserva(costoBase);
+//    reserva.setCostoTotal(costoTotal);
+//
+//    vueloSeleccionado.getReserva().add(reserva);
+//    vueloServicio.actualizarVuelo(vueloSeleccionado);
+//    clienteServicio.actualizarCliente(clientePrincipal);
+//    reservaServicio.actualizarReserva(reserva);
+//}
 //
 //
 /*
