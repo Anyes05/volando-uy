@@ -68,7 +68,7 @@ public class EstacionTrabajo {
     private JButton aceptarButton1;
     private JRadioButton rutaDeVueloRadioButton;
     private JRadioButton reservaDeVueloRadioButton;
-    private JTextField textField4;
+    private JTextField descuentoAltaPaqtxt;
     private JRadioButton paqueteVueloRadioButton;
     private JRadioButton usuarioRadioButton;
     private JPanel principalVacio;
@@ -157,6 +157,13 @@ public class EstacionTrabajo {
     private JButton cancelarButton;
     private JButton cancelarButton1;
     private JComboBox comboBoxPaquetes;
+    private JPanel crearPaquete;
+    private JTextField nombreAltaPaqtxt;
+    private JTextField descripcionAltaPaqtxt;
+    private JTextField períodoAltaPaqtxt;
+    private JCalendar calendarAltaPaquete;
+    private JButton buttonCancelarCrearPaquete;
+    private JButton buttonCrearPaquete;
     private JButton precargarAeropuertosButton;
 
 
@@ -180,6 +187,7 @@ public class EstacionTrabajo {
         fechaAltaVuelo = new JCalendar();
         JCalendarAltaCliente = new JCalendar();
         calendarCiudadAlta = new JCalendar();
+        calendarAltaPaquete = new JCalendar();
         listCatAltaRuta = new JList<>();
         modificarClienteJCalendar = new JCalendar();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -309,12 +317,12 @@ public class EstacionTrabajo {
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
-//                    case "Consultar Vuelo":
-//                        parentPanel.removeAll();
-//                        parentPanel.add(consultaVuelo);
-//                        parentPanel.repaint();
-//                        parentPanel.revalidate();
-//                        break;
+                    case "Consultar Vuelo":
+                        parentPanel.removeAll();
+                        parentPanel.add(consultaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
                     case "Crear Ciudad":
                         parentPanel.removeAll();
                         parentPanel.add(altaCiudad);
@@ -340,7 +348,7 @@ public class EstacionTrabajo {
                 switch (seleccionado) {
                     case "Crear paquete":
                         parentPanel.removeAll();
-                        //parentPanel.add();
+                        parentPanel.add(crearPaquete);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
