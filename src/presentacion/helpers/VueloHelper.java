@@ -199,7 +199,7 @@ public class VueloHelper {
     }
 
     public static DTRutaVuelo getRutasDeAerolinea(String nicknameAerolinea, String nombreRuta) {
-        for (DTRutaVuelo ruta : getSistema().listarRutaVuelo(nicknameAerolinea)) {
+        for (DTRutaVuelo ruta : getSistema().seleccionarAerolineaRet(nicknameAerolinea)) {
             if (ruta.getNombre().equals(nombreRuta)) return ruta;
         }
         return null;

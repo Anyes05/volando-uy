@@ -53,9 +53,9 @@ public interface ISistema {
     public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea);
 
     //CONSULTA VUELO
-//    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
-//    public List<DTVueloReserva> seleccionarVuelo(String nombre);
-//    public List<DTRutaVuelo> listarRutaVueloDeVuelo();
+    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
+   // public List<DTVueloReserva> seleccionarVuelo(String nombre);
+    //public List<DTRutaVuelo> listarRutaVueloDeVuelo();
 
     // PAQUETES DE VUELO
 //    public List<DTPaqueteVuelos> mostrarPaquete();

@@ -1,5 +1,6 @@
 package dato.dao;
 
+import dato.entidades.RutaVuelo;
 import dato.entidades.Vuelo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -16,6 +17,11 @@ public class VueloDAO {
     public void guardar(Vuelo vuelo) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
+        // Traer la ruta desde la BD para que JPA la maneje
+        if (vuelo.getRutaVuelo() != null) {
+            RutaVuelo ruta = em.find(RutaVuelo.class, vuelo.getRutaVuelo().getId());
+            vuelo.setRutaVuelo(ruta);
+        }
         em.persist(vuelo);
         em.getTransaction().commit();
         em.close();
