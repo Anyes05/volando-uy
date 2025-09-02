@@ -562,36 +562,36 @@ public class Sistema implements ISistema {
 
 //    //CONSULTA VUELO
 //
-    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
-        listaDTVuelos.clear();
-        VueloServicio vueloServicio = new VueloServicio();
-        AerolineaServicio aerolineaServicio = new AerolineaServicio();
-
-        List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
-
-        for (dato.entidades.Vuelo v : vuelos) {
-            dato.entidades.RutaVuelo r = v.getRutaVuelo();
-                if (r!= null && r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
-                    Aerolinea aerolinea = r.getAerolineas().isEmpty() ? null : r.getAerolineas().get(0);
-                    DTAerolinea dtAerolinea = aerolinea != null
-                            ? new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>())
-                            : null;
-                    DTRutaVuelo dtRuta = new DTRutaVuelo(
-                            r.getNombre(),
-                            r.getDescripcion(),
-                            r.getFechaAlta(),
-                            r.getCostoBase(),
-                            dtAerolinea,
-                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
-                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
-                    );
-                    DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta);
-                    listaDTVuelos.add(dtVuelo);
-                }
-
-        }
-        return listaDTVuelos;
-    }
+//    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
+//        listaDTVuelos.clear();
+//        VueloServicio vueloServicio = new VueloServicio();
+//        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+//
+//        List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
+//
+//        for (dato.entidades.Vuelo v : vuelos) {
+//            dato.entidades.RutaVuelo r = v.getRutaVuelo();
+//                if (r!= null && r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
+//                    Aerolinea aerolinea = r.getAerolineas().isEmpty() ? null : r.getAerolineas().get(0);
+//                    DTAerolinea dtAerolinea = aerolinea != null
+//                            ? new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>())
+//                            : null;
+//                    DTRutaVuelo dtRuta = new DTRutaVuelo(
+//                            r.getNombre(),
+//                            r.getDescripcion(),
+//                            r.getFechaAlta(),
+//                            r.getCostoBase(),
+//                            dtAerolinea,
+//                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+//                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
+//                    );
+//                    DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta);
+//                    listaDTVuelos.add(dtVuelo);
+//                }
+//
+//        }
+//        return listaDTVuelos;
+//    }
 //
 //    public List<DTVueloReserva> seleccionarVuelo(String nombre){
 //        List<DTVueloReserva> listaReservas = new ArrayList<>();

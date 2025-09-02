@@ -286,34 +286,34 @@ public class EstacionTrabajo {
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
-                    case "Consultar ruta de vuelo":
-                        parentPanel.removeAll();
-                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
-                        nombreRVConsulta.setText("");
-                        descripcionRVConsulta.setText("");
-                        ciudadORVConsulta.setText("");
-                        ciudadDRVConsulta.setText("");
-                        costoBaseTuRVConsulta.setText("");
-                        costoBaseEjRVConsulta.setText("");
-                        costoUnEquipajeExRVConsulta.setText("");;
-                        fechaAltaRVConsulta.setText("");
-                        comboBoxAeroRVConsulta.removeAllItems();
-                        comBoxRutVueloConsultaRV.removeAllItems();
-                        vuelosConsultaRV.removeAllItems();
-                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = false;
-                        cargarAerolineas(comboBoxAeroRVConsulta);
-                        String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
-                        if (nicknameAerolinea != null) {
-                            cargarRutas(comBoxRutVueloConsultaRV, nicknameAerolinea);
-                        }
-                        parentPanel.add(consultaRutaVuelo);
-                        parentPanel.repaint();
-                        parentPanel.revalidate();
-                        break;
+//                    case "Consultar ruta de vuelo":
+//                        parentPanel.removeAll();
+//                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
+//                        nombreRVConsulta.setText("");
+//                        descripcionRVConsulta.setText("");
+//                        ciudadORVConsulta.setText("");
+//                        ciudadDRVConsulta.setText("");
+//                        costoBaseTuRVConsulta.setText("");
+//                        costoBaseEjRVConsulta.setText("");
+//                        costoUnEquipajeExRVConsulta.setText("");;
+//                        fechaAltaRVConsulta.setText("");
+//                        comboBoxAeroRVConsulta.removeAllItems();
+//                        comBoxRutVueloConsultaRV.removeAllItems();
+//                        vuelosConsultaRV.removeAllItems();
+//                        cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = false;
+//                        cargarAerolineas(comboBoxAeroRVConsulta);
+//                        String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
+//                        if (nicknameAerolinea != null) {
+//                            cargarRutas(comBoxRutVueloConsultaRV, nicknameAerolinea);
+//                        }
+//                        parentPanel.add(consultaRutaVuelo);
+//                        parentPanel.repaint();
+//                        parentPanel.revalidate();
+//                        break;
                     case "Crear Vuelo":
                         parentPanel.removeAll();
                         cargarAerolineas(aerolinea);
-                        nicknameAerolinea = (String) aerolinea.getSelectedItem();
+                        String nicknameAerolinea = (String) aerolinea.getSelectedItem();
                         if (nicknameAerolinea != null) {
                             cargarRutas(rutasVueloAltaVuelo, nicknameAerolinea);
                         }
@@ -827,83 +827,83 @@ public class EstacionTrabajo {
         });
 
 
-        /*----- CONSULTA RUTA VUELO -----*/
-        comBoxRutVueloConsultaRV.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (cargandoRutasRV) return; // los booleanos son porque se llama a otras cargas de comboBox y no andaba
-                DTRutaVuelo nombreRuta = (DTRutaVuelo) comBoxRutVueloConsultaRV.getSelectedItem();
-                String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
-                if (nombreRuta != null && nicknameAerolinea != null) {
-                    mostrarDatosRuta(nicknameAerolinea, nombreRuta.getNombre());
-                    // Llenar combo de vuelos asociados a esta ruta
-                    List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(nombreRuta.getNombre());
-                    cargandoVuelosRV = true;
-                    vuelosConsultaRV.removeAllItems(); // limpiar lista previa
-                    for (DTVuelo v : vuelos) {
-                        vuelosConsultaRV.addItem(v); // cargar vuelos
-                    }
-                    cargandoVuelosRV = false;
-                    vuelosConsultaRV.setSelectedIndex(-1);
-                }
-            }
-        });
-
-
-        comboBoxAeroRVConsulta.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (cargandoAeroRV) return;
-                String nickname = (String) comboBoxAeroRVConsulta.getSelectedItem();
-                if (nickname != null) {
-                    cargarRutas(comBoxRutVueloConsultaRV,nickname);
-                    cargandoVuelosRV = true;
-                    vuelosConsultaRV.removeAllItems();
-                    cargandoVuelosRV = false;
-                }
-            }
-        });
-
-
-        //es un comboBox, le tengo que cambiar el nombre
-        aerolinea.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String nickname = (String) aerolinea.getSelectedItem();
-                if (nickname != null) {
-                    cargarRutas(rutasVueloAltaVuelo, nickname);
-                }
-            }
-        });
-
-
-        vuelosConsultaRV.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (cargandoVuelosRV) return;
-                Object seleccionado = vuelosConsultaRV.getSelectedItem();
-                if (seleccionado instanceof DTVuelo) {
-                    DTVuelo vueloSeleccionado = (DTVuelo) seleccionado;
-
-                    JPanel panelDetalles = new JPanel();
-                    panelDetalles.setLayout(new GridLayout(5, 1));
-                    panelDetalles.add(new JLabel("Nombre: " + vueloSeleccionado.getNombre()));
-                    panelDetalles.add(new JLabel("Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
-                    panelDetalles.add(new JLabel("Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
-                    panelDetalles.add(new JLabel("Duración: " + vueloSeleccionado.getDuracion().toString()));
-                    panelDetalles.add(new JLabel("Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
-                    panelDetalles.add(new JLabel("Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
-                    panelDetalles.add(new JLabel("Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
-                    panelDetalles.add(new JLabel("Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
-                    JOptionPane.showMessageDialog(
-                            null,
-                            panelDetalles,
-                            "Detalles del Vuelo",
-                            JOptionPane.PLAIN_MESSAGE
-                    );
-                }
-            }
-        });
+//        /*----- CONSULTA RUTA VUELO -----*/
+//        comBoxRutVueloConsultaRV.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (cargandoRutasRV) return; // los booleanos son porque se llama a otras cargas de comboBox y no andaba
+//                DTRutaVuelo nombreRuta = (DTRutaVuelo) comBoxRutVueloConsultaRV.getSelectedItem();
+//                String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
+//                if (nombreRuta != null && nicknameAerolinea != null) {
+//                    mostrarDatosRuta(nicknameAerolinea, nombreRuta.getNombre());
+//                    // Llenar combo de vuelos asociados a esta ruta
+//                    List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(nombreRuta.getNombre());
+//                    cargandoVuelosRV = true;
+//                    vuelosConsultaRV.removeAllItems(); // limpiar lista previa
+//                    for (DTVuelo v : vuelos) {
+//                        vuelosConsultaRV.addItem(v); // cargar vuelos
+//                    }
+//                    cargandoVuelosRV = false;
+//                    vuelosConsultaRV.setSelectedIndex(-1);
+//                }
+//            }
+//        });
+//
+//
+//        comboBoxAeroRVConsulta.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (cargandoAeroRV) return;
+//                String nickname = (String) comboBoxAeroRVConsulta.getSelectedItem();
+//                if (nickname != null) {
+//                    cargarRutas(comBoxRutVueloConsultaRV,nickname);
+//                    cargandoVuelosRV = true;
+//                    vuelosConsultaRV.removeAllItems();
+//                    cargandoVuelosRV = false;
+//                }
+//            }
+//        });
+//
+//
+//        //es un comboBox, le tengo que cambiar el nombre
+//        aerolinea.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String nickname = (String) aerolinea.getSelectedItem();
+//                if (nickname != null) {
+//                    cargarRutas(rutasVueloAltaVuelo, nickname);
+//                }
+//            }
+//        });
+//
+//
+//        vuelosConsultaRV.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (cargandoVuelosRV) return;
+//                Object seleccionado = vuelosConsultaRV.getSelectedItem();
+//                if (seleccionado instanceof DTVuelo) {
+//                    DTVuelo vueloSeleccionado = (DTVuelo) seleccionado;
+//
+//                    JPanel panelDetalles = new JPanel();
+//                    panelDetalles.setLayout(new GridLayout(5, 1));
+//                    panelDetalles.add(new JLabel("Nombre: " + vueloSeleccionado.getNombre()));
+//                    panelDetalles.add(new JLabel("Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Duración: " + vueloSeleccionado.getDuracion().toString()));
+//                    panelDetalles.add(new JLabel("Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
+//                    panelDetalles.add(new JLabel("Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
+//                    panelDetalles.add(new JLabel("Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
+//                    panelDetalles.add(new JLabel("Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
+//                    JOptionPane.showMessageDialog(
+//                            null,
+//                            panelDetalles,
+//                            "Detalles del Vuelo",
+//                            JOptionPane.PLAIN_MESSAGE
+//                    );
+//                }
+//            }
+//        });
 
 
     }
