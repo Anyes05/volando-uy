@@ -1,7 +1,12 @@
 package dato.dao;
 
+import dato.entidades.Cliente;
 import dato.entidades.CompraComun;
+import dato.entidades.Vuelo;
 import jakarta.persistence.TypedQuery;
+import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoAsiento;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,4 +27,19 @@ public class CompraComunDAO extends GenericDAO<CompraComun> {
         query.setParameter("tipoAsiento", tipoAsiento);
         return query.getResultList();
     }
+
+    public CompraComun crear(Cliente clientePrincipal, DTFecha fechaReserva, TipoAsiento tipoAsiento, int equipajeExtra, Vuelo vueloSeleccionado) throws Exception {
+        CompraComun compraComun = new CompraComun();
+        compraComun.setCliente(clientePrincipal);
+        compraComun.setFechaReserva(fechaReserva);
+        compraComun.setTipoAsiento(tipoAsiento);
+        compraComun.setEquipajeExtra(equipajeExtra);
+        compraComun.setVuelo(vueloSeleccionado);
+
+        em.getTransaction().begin();
+        em.persist(compraComun);
+        em.getTransaction().commit();
+        return compraComun;
+    }
 }
+

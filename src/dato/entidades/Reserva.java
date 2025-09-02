@@ -59,6 +59,10 @@ public class Reserva {
     public Vuelo getVuelo() { return vuelo; }
     public void setVuelo(Vuelo vuelo) { this.vuelo = vuelo; }
 
+    public void setCostoTotal(float costoTotal) {
+        this.costoReserva.setCostoTotal(costoTotal);
+    }
+
 
     // esto seria para la relacion con cliente que me vueleve LOCA, primero hay que crear el atributo privado, despues hay que
     // descomentar la parte que esta en Cliente que sirve como para "controlar" que la relacion estable jaja

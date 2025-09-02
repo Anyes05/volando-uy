@@ -2,6 +2,10 @@ package logica.servicios;
 
 import dato.dao.CompraComunDAO;
 import dato.entidades.CompraComun;
+import dato.entidades.Cliente;
+import dato.entidades.Vuelo;
+import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoAsiento;
 
 public class CompraComunServicio {
     private CompraComunDAO compraComunDAO;
@@ -10,9 +14,9 @@ public class CompraComunServicio {
         this.compraComunDAO = new CompraComunDAO();
     }
 
-    //public void crearCompraComun(CompraComun compraComun) throws Exception {
-    //    compraComunDAO.crear(compraComun);
-    //}
+    public CompraComun crearCompraComun(Cliente clientePrincipal, DTFecha fechaReserva, TipoAsiento tipoAsiento, int equipajeExtra, Vuelo vueloSeleccionado) throws Exception {
+        return compraComunDAO.crear(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra, vueloSeleccionado);
+    }
 
     public CompraComun buscarPorId(Long id) {
         return compraComunDAO.buscarPorId(id);

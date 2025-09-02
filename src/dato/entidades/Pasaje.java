@@ -29,11 +29,10 @@ public class Pasaje {
     public Pasaje() { // Constuctor vacío
     }
 
-    public Pasaje(Cliente pasajero, Reserva reserva, TipoAsiento tipoAsiento, int costoPasaje) {
+    public Pasaje(Cliente pasajero, Reserva reserva, TipoAsiento tipoAsiento) {
         this.pasajero = pasajero;
         this.reserva = reserva;
         this.tipoAsiento = tipoAsiento;
-        this.costoPasaje = costoPasaje;
     }
 
     // Getter y Setter

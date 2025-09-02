@@ -26,4 +26,9 @@ public class VueloServicio {
     public List<Vuelo> listarVuelos() {
         return vueloDAO.listarVuelos();
     }
+
+    public void actualizarVuelo(Vuelo vuelo) {
+        vueloDAO.actualizar(vuelo);
+    }
+
 }
