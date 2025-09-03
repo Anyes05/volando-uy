@@ -135,7 +135,7 @@ public class EstacionTrabajo {
     private JButton consultaUsuarioAceptar;
     private JTextField consultaUsuarioText;
 
-   // MODIFICAR USUARIO - CLIENTE AEROLINEA
+    // MODIFICAR USUARIO - CLIENTE AEROLINEA
     private JPanel modificarUsuarioJPanel1;
     private JTable modificarUsuariotable1;
     private JPanel modificarAerolinea;
@@ -193,7 +193,7 @@ public class EstacionTrabajo {
     private JRadioButton tipoEjecutivoAgrRutaaPaquete;
     private JRadioButton tipoTuristaAgrRutaaPaquete;
 
-  //  private JButton precargarAeropuertosButton;
+    //  private JButton precargarAeropuertosButton;
 
 
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
@@ -240,7 +240,7 @@ public class EstacionTrabajo {
         lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
-        private void mostrarDatosRuta(String nicknameAerolinea,String nombreRuta) {
+    private void mostrarDatosRuta(String nicknameAerolinea, String nombreRuta) {
         DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
         if (ruta != null) {
             nombreRVConsulta.setText(ruta.getNombre());
@@ -256,7 +256,7 @@ public class EstacionTrabajo {
         }
     }
 
-    private void cargarRutas(JComboBox<DTRutaVuelo>comboRutas, String nicknameAerolinea) {
+    private void cargarRutas(JComboBox<DTRutaVuelo> comboRutas, String nicknameAerolinea) {
         boolean esConsulta = (comboRutas == comBoxRutVueloConsultaRV);
         if (esConsulta) cargandoRutasRV = true;
         comboRutas.removeAllItems(); // Limpiar combo
@@ -285,6 +285,7 @@ public class EstacionTrabajo {
             comboVuelos.setSelectedIndex(-1); // evitar disparo inicial
         }
     }
+
     //----------Boton cancelar Alta vuelo------
     private void limpiarCamposAltaVuelo() {
         nombreAltaVuelotxt.setText("");
@@ -297,6 +298,7 @@ public class EstacionTrabajo {
         rutasVueloAltaVuelo.setSelectedItem(null);
         aerolinea.setSelectedItem(null);
     }
+
     //----------Boton cancelar Alta ruta vuelo------
     private void limpiarCamposAltaRutaVuelo() {
         nombreAltRutaText.setText("");
@@ -367,7 +369,8 @@ public class EstacionTrabajo {
                         ciudadDRVConsulta.setText("");
                         costoBaseTuRVConsulta.setText("");
                         costoBaseEjRVConsulta.setText("");
-                        costoUnEquipajeExRVConsulta.setText("");;
+                        costoUnEquipajeExRVConsulta.setText("");
+                        ;
                         fechaAltaRVConsulta.setText("");
                         comboBoxAeroRVConsulta.removeAllItems();
                         comBoxRutVueloConsultaRV.removeAllItems();
@@ -925,8 +928,7 @@ public class EstacionTrabajo {
                             "Error: " + ex.getMessage(),
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
-                }
-                  catch (Exception ex) {
+                } catch (Exception ex) {
                     JOptionPane.showMessageDialog(altaRuta,
                             "Error: " + ex.getMessage(),
                             "Error",
@@ -1039,7 +1041,7 @@ public class EstacionTrabajo {
                 if (cargandoAeroRV) return;
                 String nickname = (String) comboBoxAeroRVConsulta.getSelectedItem();
                 if (nickname != null) {
-                    cargarRutas(comBoxRutVueloConsultaRV,nickname);
+                    cargarRutas(comBoxRutVueloConsultaRV, nickname);
                     cargandoVuelosRV = true;
                     vuelosConsultaRV.removeAllItems();
                     cargandoVuelosRV = false;
@@ -1108,7 +1110,33 @@ public class EstacionTrabajo {
             }
         });
 
+        //--------- CREAR PAQUETE ---------------
+        buttonCrearPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String nomPaq = nombreAltaPaqtxt.getText().trim();
+                    String descripcion = descripcionAltaPaqtxt.getText().trim();
+                    String periodoVal = períodoAltaPaqtxt.getText().trim();
+                    String descuento = descuentoAltaPaqtxt.getText().trim();
+                    Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
 
+                    PaqueteHelper.ingresarPaquete(nomPaq, descripcion, periodoVal, descuento, fechaCal);
+                    int diasValidosInt = Integer.parseInt(periodoVal);
+                    float descuentoFloat = Float.parseFloat(descuento);
 
+                    DTFecha fechaAlta = new DTFecha(
+                            fechaCal.get(Calendar.DAY_OF_MONTH),
+                            fechaCal.get(Calendar.MONTH) + 1,
+                            fechaCal.get(Calendar.YEAR)
+                    );
+                    sistema.crearPaquete(nomPaq, descripcion, diasValidosInt, descuentoFloat, fechaAlta);
+                    JOptionPane.showMessageDialog(crearPaquete, "Paquete creado correctamente.");
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(crearPaquete, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 }
+

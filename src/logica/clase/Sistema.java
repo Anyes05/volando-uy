@@ -719,26 +719,26 @@ public class Sistema implements ISistema {
 
     // PAQUETES DE VUELO
 //
-//    // CREAR PAQUETE VUELO
-//    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta, TipoAsiento tipoAsiento) {
-//        for (PaqueteVuelo p : paqueteVuelos) {
-//            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
-//                throw new IllegalArgumentException("El nombre del paquete ya existe.");
-//            }
-//        }
-//        if (descuento < 0 || descuento > 100) {
-//            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
-//        }
-//        if (diasValidos <= 0) {
-//            throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
-//        }
-//
-//        try {
-//            PaqueteVuelo paqueteVuelo = new PaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta, tipoAsiento);
-//        } catch (Exception e) {
-//            throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
-//        }
-//    }
+    // CREAR PAQUETE VUELO
+    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
+        for (PaqueteVuelo p : paqueteVuelos) {
+            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
+                throw new IllegalArgumentException("El nombre del paquete ya existe.");
+            }
+        }
+        if (descuento < 0 || descuento > 100) {
+            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
+        }
+        if (diasValidos <= 0) {
+            throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
+        }
+
+        try {
+            PaqueteVuelo paqueteVuelo = new PaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
+        }
+    }
 
     // AGREGAR RUTAS DE VUELO A PAQUETE
 //

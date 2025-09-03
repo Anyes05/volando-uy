@@ -16,7 +16,10 @@ public class CompraPaquete extends Reserva{
     @OneToOne (mappedBy = "compraPaquete")
     private PaqueteVuelo paqueteVuelo;
 
-    @OneToOne (mappedBy = "tipoAsiento")
+    //@OneToOne (mappedBy = "tipoAsiento")
+
+    @Enumerated(EnumType.STRING) // guarda "Turista" o "Ejecutivo" en la BD
+    @Column(nullable = false)
     private TipoAsiento tipoAsiento;
 
 
