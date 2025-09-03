@@ -4,6 +4,8 @@ import dato.entidades.PaqueteVuelo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PaqueteVueloDAO {
     private static final EntityManagerFactory emf =
@@ -24,5 +26,12 @@ public class PaqueteVueloDAO {
         PaqueteVuelo p = em.find(PaqueteVuelo.class, id);
         em.close();
         return p;
+    }
+
+    public List<PaqueteVuelo> listarPaquetes() {
+        EntityManager em = emf.createEntityManager();
+        List<PaqueteVuelo> paquetes = em.createQuery("SELECT p FROM PaqueteVuelo p", PaqueteVuelo.class).getResultList();
+        em.close();
+        return paquetes;
     }
 }

@@ -1,7 +1,9 @@
 package dato.entidades;
 
+import dato.converter.DTFechaConverter;
 import jakarta.persistence.*;
 import logica.DataTypes.DTCostoBase;
+import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
 
 @Entity
@@ -33,6 +35,9 @@ public class PaqueteVuelo {
     @Column(nullable = false)
     private float costoTotal; // Lo dejé porque lo teníamos en la clase, pero costoTotal sería un calculado que no va en el constructor(?
 
+    @Convert(converter = DTFechaConverter.class)
+    private DTFecha fechaAlta;
+
     // Relacion con cantidad
     @ManyToOne
     private Cantidad cantidad;
@@ -49,7 +54,7 @@ public class PaqueteVuelo {
     }
 
     public PaqueteVuelo(String nombre, String descripcion, TipoAsiento tipoAsiento,
-                        int diasValidos, float descuento, DTCostoBase DTCostoBase, float costoTotal) {
+                        int diasValidos, float descuento, DTCostoBase DTCostoBase, float costoTotal, DTFecha fechaAlta) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.tipoAsiento = tipoAsiento;
@@ -57,6 +62,7 @@ public class PaqueteVuelo {
         this.descuento = descuento;
         this.DTCostoBase = DTCostoBase;
         this.costoTotal = costoTotal;
+        this.fechaAlta = fechaAlta;
         this.cantidad = null;
     }
 
@@ -73,6 +79,10 @@ public class PaqueteVuelo {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public DTFecha getFechaAlta() { return fechaAlta; }
+    public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
+
     public TipoAsiento getTipoAsiento() {
         return tipoAsiento;
     }
@@ -94,4 +104,7 @@ public class PaqueteVuelo {
     public void setCostoBase(DTCostoBase DTCostoBase) { this.DTCostoBase = DTCostoBase; }
     public float getCostoTotal() { return costoTotal; }
     public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal;}
+
+    public Cantidad getCantidad() { return cantidad; }
+    public void setCantidad(Cantidad cantidad) { this.cantidad = cantidad;  }
 }

@@ -2,6 +2,7 @@ package logica.clase;
 
 
 import dato.entidades.Aeropuerto;
+import dato.entidades.Cantidad;
 import dato.entidades.Cliente;
 import dato.entidades.CompraPaquete;
 import dato.entidades.Pasaje;
@@ -33,7 +34,7 @@ public class Sistema implements ISistema {
     private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
     private Cliente clienteSeleccionado;
-    private PaqueteVuelo paqueteSeleccionado;
+    private dato.entidades.PaqueteVuelo paqueteSeleccionado;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
 
@@ -716,9 +717,7 @@ public class Sistema implements ISistema {
 //    reservaServicio.actualizarReserva(reserva);
 //}
 
-
-
-
+    // PAQUETES DE VUELO
 
 /*
     // CREAR PAQUETE VUELO
@@ -741,32 +740,113 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
         }
     }
+*/
+    // AGREGAR RUTAS DE VUELO A PAQUETE
+//
+//    public List<DTPaqueteVuelos> mostrarPaquete() {
+//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+//        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
+//        List <dato.entidades.PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
+//        for (dato.entidades.PaqueteVuelo p : paquetes) {
+//            DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+//                    p.getNombre(),
+//                    p.getDescripcion(),
+//                    p.getTipoAsiento(),
+//                    p.getDiasValidos(),
+//                    p.getDescuento(),
+//                    p.getFechaAlta()
+//            );
+//            listaPaquetes.add(dtPaquete); // Add the created object to the list
+//        }
+//        return listaPaquetes;
+//    }
+//
+//    public void seleccionarPaquete(String nombrePaquete) {
+//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+//        dato.entidades.PaqueteVuelo paquete = paqueteVueloServicio.obtenerPaquetePorNombre(nombrePaquete);
+//        if (paquete != null) {
+//            paqueteSeleccionado = paquete;
+//            return;
+//        }
+//        throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
+//    }
+//
+//    // seleccionarAerolinea (ya está mas arriba)
+//    // seleccionarRutaVuelo (ya está mas arriba)
+//
+//    public void agregarRutaAPaquete (RutaVuelo rutaSeleccionada, int cant) {
+//        if (paqueteSeleccionado == null) {
+//            throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
+//        }
+//        if (rutaSeleccionada == null) {
+//            throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
+//        }
+//        Cantidad cantidadExistente = paqueteSeleccionado.getCantidad();
+//        if (cantidadExistente != null && cantidadExistente.getRutasVuelos() != null) {
+//               if (cantidadExistente.getRutasVuelos().getNombre().equalsIgnoreCase(rutaSeleccionada.getNombre())) {
+//                   throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
+//               }
+//
+//        }
+//        Cantidad nuevaCantidad = new Cantidad();
+//        nuevaCantidad.setCant(cant);
+//        nuevaCantidad.setRutasVuelos(rutaSeleccionada);
+//
+//        CantidadServicio cantidadServicio = new CantidadServicio();
+//        cantidadServicio.registrarCantidad(nuevaCantidad);
+//
+//        paqueteSeleccionado.setCantidad(nuevaCantidad);
+//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+//    }
+//
+//    // CONSULTA PAQUETE RUTAS DE VUELO
+//
+//    public DTPaqueteVuelos consultaPaqueteVuelo (dato.entidades.PaqueteVuelo paqueteSeleccionado) {
+//        if (paqueteSeleccionado == null) {
+//            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
+//        }
+//
+//        VueloServicio vueloServicio = new VueloServicio();
+//        List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
+//        if (recordarDatosVuelo != null) {
+//            for (dato.entidades.Vuelo v : vuelos) {
+//                if (v.getNombre().equalsIgnoreCase(recordarDatosVuelo.getNombre())) {
+//                    throw new IllegalStateException("Ya existe un vuelo con ese nombre.");
+//                }
+//            }
+//        }
+//        DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+//                paqueteSeleccionado.getNombre(),
+//                paqueteSeleccionado.getDescripcion(),
+//                paqueteSeleccionado.getTipoAsiento(),
+//                paqueteSeleccionado.getDiasValidos(),
+//                paqueteSeleccionado.getDescuento(),
+//                paqueteSeleccionado.getFechaAlta()
+//        );
+//
+//        List<dato.entidades.Cantidad> listaCantidad = new ArrayList<>();
+//        List<dato.entidades.RutaVuelo> listaRutas = new ArrayList<>();
+//        if (paqueteSeleccionado.getCantidad() != null) {
+//            // Convertir entidad Cantidad a clase lógica Cantidad
+//            dato.entidades.Cantidad cantidadEntidad = paqueteSeleccionado.getCantidad();
+//            listaCantidad.add(cantidadEntidad);
+//            if(cantidadEntidad.getRutasVuelos() != null) {
+//                listaRutas.addAll(cantidadEntidad.getRutasVuelos());
+//            }
+//        }
+//        dtPaquete.setCantidad(listaCantidad);
+//        dtPaquete.setRutas(listaRutas);
+//
+//        dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
+//        dtPaquete.setDTCostoBase(paqueteSeleccionado.getCostoBase());
+//
+//        return dtPaquete;
+//    }
+/*
+    // COMPRA PAQUETE
 
-    public List<DTPaqueteVuelos> mostrarPaquete() {
-        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
-        for (PaqueteVuelo p : paqueteVuelos) {
-            DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-                    p.getNombre(),
-                    p.getDescripcion(),
-                    p.getTipoAsiento(),
-                    p.getDiasValidos(),
-                    p.getDescuento(),
-                    p.getFechaAlta()
-            );
-            listaPaquetes.add(dtPaquete); // Add the created object to the list
-        }
-        return listaPaquetes;
-    }
-
-    public void seleccionarPaquete(String nombrePaquete) {
-        for (PaqueteVuelo p : paqueteVuelos) {
-            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
-                paqueteSeleccionado = p;
-                return;
-            }
-        }
-        throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
-    }
+    //mostrarPaquete (repetida)
+    //seleccionarPaquete (repetida)
 
     public List<DTCliente> mostrarClientes() {
         List<DTCliente> listaClientes = new ArrayList<>();
@@ -787,8 +867,6 @@ public class Sistema implements ISistema {
         }
         return listaClientes;
     }
-
-
 
     public void seleccionarCliente(String nombreCliente) {
         for (Usuario u : usuarios) {
@@ -820,68 +898,8 @@ public class Sistema implements ISistema {
 
     }
 
-    public void agregarRutaAPaquete (RutaVuelo rutaSeleccionada, int cant) {
-        if (paqueteSeleccionado == null) {
-            throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
-        }
-        if (rutaSeleccionada == null) {
-            throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
-        }
-        if (paqueteSeleccionado.getRutas().contains(rutaSeleccionada)) {
-            throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
-        }
-        paqueteSeleccionado.getRutas().add(rutaSeleccionada);
-        paqueteSeleccionado.sumarCantidad(rutaSeleccionada, cant);
-    }
 
-    // consulta paquete vuelo
-
-    public DTPaqueteVuelos consultaPaqueteVuelo (PaqueteVuelo paqueteSeleccionado) {
-        if (paqueteSeleccionado == null) {
-            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
-        }
-
-        // Verificar que no exista un vuelo con el mismo nombre
-        for (Vuelo v : vuelos) {
-            if (v.getNombre().equalsIgnoreCase(recordarDatosVuelo.getNombre())) {
-                throw new IllegalStateException("Ya existe un vuelo con ese nombre.");
-            }
-        }
-        RutaVuelo ruta = null;
-        for (RutaVuelo r : aerolineaSeleccionada.getRutasVuelo()) {
-            if (r.getNombre().equalsIgnoreCase(recordarDatosVuelo.getRuta().getNombre())) {
-                ruta = r;
-                break;
-            }
-        }
-        if (ruta == null) {
-            throw new IllegalStateException("No se encontró la ruta asociada al vuelo.");
-        }
-        Vuelo nuevoVuelo = new Vuelo(
-                recordarDatosVuelo.getNombre(),
-                recordarDatosVuelo.getFechaVuelo(),
-                recordarDatosVuelo.getHoraVuelo(),
-                recordarDatosVuelo.getDuracion(),
-                recordarDatosVuelo.getAsientosMaxTurista(),
-                recordarDatosVuelo.getAsientosMaxEjecutivo(),
-                recordarDatosVuelo.getFechaAlta()
-        DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-                paqueteSeleccionado.getNombre(),
-                paqueteSeleccionado.getDescripcion(),
-                paqueteSeleccionado.getTipoAsiento(),
-                paqueteSeleccionado.getDiasValidos(),
-                paqueteSeleccionado.getDescuento(),
-                paqueteSeleccionado.getFechaAlta()
-        );
-        dtPaquete.setCantidad(paqueteSeleccionado.getCantidad());
-        dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
-        dtPaquete.setRutas(paqueteSeleccionado.getRutas());
-        dtPaquete.setDTCostoBase(paqueteSeleccionado.getCostoBase());
-        return dtPaquete;
-    }
-
-
-}
 */
+
 }
 

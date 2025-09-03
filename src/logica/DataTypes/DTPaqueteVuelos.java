@@ -1,7 +1,7 @@
 package logica.DataTypes;
 
-import logica.clase.Cantidad;
-import logica.clase.RutaVuelo;
+import dato.entidades.Cantidad;
+import dato.entidades.RutaVuelo;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ public class DTPaqueteVuelos {
     private float costoTotal;
     private DTFecha fechaAlta;
 
-    private List<Cantidad> cantidad;
+    private List<dato.entidades.Cantidad> cantidad;
 
-    private List<RutaVuelo> rutas;
+    private List<dato.entidades.RutaVuelo> rutas;
 
 
     public DTPaqueteVuelos(String nombre, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
@@ -93,7 +93,7 @@ public class DTPaqueteVuelos {
         this.fechaAlta = fechaAlta;
     }
 
-    public List<Cantidad> getCantidad() {
+    public List<dato.entidades.Cantidad> getCantidad() {
         return cantidad;
     }
 
@@ -101,7 +101,7 @@ public class DTPaqueteVuelos {
         this.cantidad = cantidad;
     }
 
-    public List<RutaVuelo> getRutas() {
+    public List<dato.entidades.RutaVuelo> getRutas() {
         return rutas;
     }
 
