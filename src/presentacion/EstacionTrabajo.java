@@ -462,11 +462,11 @@ public class EstacionTrabajo {
                         parentPanel.revalidate();
                         break;
                     case "Modificar usuario":
-                        parentPanel.removeAll();
                         UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
+                        UsuarioHelper.limpiarCampos(modificarUsuarioTextInput);
                         parentPanel.add(modificarUsuario);
-                        parentPanel.repaint();
-                        parentPanel.revalidate();
+                        UsuarioHelper.cambiarPanel(parentPanel, modificarUsuario);
+                        modificarUsuarioTextInput.requestFocus();
                         break;
                     case "Consultar usuario":
                         parentPanel.removeAll();
@@ -697,7 +697,6 @@ public class EstacionTrabajo {
         });
 
         /*----- MODIFICAR USUARIO -----*/
-
         modificarUsuarioAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
