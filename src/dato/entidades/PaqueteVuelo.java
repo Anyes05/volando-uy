@@ -53,15 +53,11 @@ public class PaqueteVuelo {
         this.cantidad = null;
     }
 
-    public PaqueteVuelo(String nombre, String descripcion, TipoAsiento tipoAsiento,
-                        int diasValidos, float descuento, DTCostoBase DTCostoBase, float costoTotal, DTFecha fechaAlta) {
-        this.nombre = nombre;
+    public PaqueteVuelo(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
+        this.nombre = nombrePaquete;
         this.descripcion = descripcion;
-        this.tipoAsiento = tipoAsiento;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
-        this.DTCostoBase = DTCostoBase;
-        this.costoTotal = costoTotal;
         this.fechaAlta = fechaAlta;
         this.cantidad = null;
     }
