@@ -1,7 +1,13 @@
 package logica.servicios;
 
 import dato.dao.CompraPaqueteDAO;
+import dato.entidades.Cliente;
 import dato.entidades.CompraPaquete;
+import dato.entidades.PaqueteVuelo;
+import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoAsiento;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompraPaqueteServicio {
     private CompraPaqueteDAO compraPaqueteDAO;
@@ -24,5 +30,9 @@ public class CompraPaqueteServicio {
 
     public void eliminarCompraPaquete(Long id) {
         compraPaqueteDAO.eliminar(id);
+    }
+
+    public CompraPaquete registrarCompraPaquete(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, TipoAsiento tipoAsiento, PaqueteVuelo paqueteSeleccionado) throws Exception {
+        return compraPaqueteDAO.registrarCompra(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento, paqueteSeleccionado); // Se guarda en la BD
     }
 }

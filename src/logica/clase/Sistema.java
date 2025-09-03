@@ -33,7 +33,7 @@ public class Sistema implements ISistema {
     private dato.entidades.RutaVuelo recordarRutaVuelo; // Para recordar la ruta de vuelo seleccionada
     private Aerolinea aerolineaSeleccionada;
     private DTVuelo recordarDatosVuelo;
-    private Cliente clienteSeleccionado;
+    private dato.entidades.Cliente clienteSeleccionado;
     private dato.entidades.PaqueteVuelo paqueteSeleccionado;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
@@ -718,29 +718,28 @@ public class Sistema implements ISistema {
 //}
 
     // PAQUETES DE VUELO
+//
+//    // CREAR PAQUETE VUELO
+//    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta, TipoAsiento tipoAsiento) {
+//        for (PaqueteVuelo p : paqueteVuelos) {
+//            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
+//                throw new IllegalArgumentException("El nombre del paquete ya existe.");
+//            }
+//        }
+//        if (descuento < 0 || descuento > 100) {
+//            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
+//        }
+//        if (diasValidos <= 0) {
+//            throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
+//        }
+//
+//        try {
+//            PaqueteVuelo paqueteVuelo = new PaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta, tipoAsiento);
+//        } catch (Exception e) {
+//            throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
+//        }
+//    }
 
-/*
-    // CREAR PAQUETE VUELO
-    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta, TipoAsiento tipoAsiento) {
-        for (PaqueteVuelo p : paqueteVuelos) {
-            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
-                throw new IllegalArgumentException("El nombre del paquete ya existe.");
-            }
-        }
-        if (descuento < 0 || descuento > 100) {
-            throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
-        }
-        if (diasValidos <= 0) {
-            throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
-        }
-
-        try {
-            PaqueteVuelo paqueteVuelo = new PaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta, tipoAsiento);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
-        }
-    }
-*/
     // AGREGAR RUTAS DE VUELO A PAQUETE
 //
 //    public List<DTPaqueteVuelos> mostrarPaquete() {
@@ -756,9 +755,8 @@ public class Sistema implements ISistema {
 //                    p.getDescuento(),
 //                    p.getFechaAlta()
 //            );
-//            listaPaquetes.add(dtPaquete); // Add the created object to the list
-//        }
-//        return listaPaquetes;
+//            listaPaquetes.add(dtPaquete);
+//            return listaPaquetes;
 //    }
 //
 //    public void seleccionarPaquete(String nombrePaquete) {
@@ -842,64 +840,67 @@ public class Sistema implements ISistema {
 //
 //        return dtPaquete;
 //    }
-/*
+
     // COMPRA PAQUETE
 
     //mostrarPaquete (repetida)
     //seleccionarPaquete (repetida)
 
-    public List<DTCliente> mostrarClientes() {
-        List<DTCliente> listaClientes = new ArrayList<>();
-        for (Usuario u : usuarios) {
-            if (u instanceof Cliente c) {
-                listaClientes.add(new DTCliente(
-                        c.getNickname(),
-                        c.getNombre(),
-                        c.getCorreo(),
-                        c.getApellido(),
-                        c.getTipoDoc(),
-                        c.getNumeroDocumento(),
-                        c.getFechaNacimiento(),
-                        c.getNacionalidad(),
-                        new ArrayList<>()
-                ));
-            }
-        }
-        return listaClientes;
-    }
-
-    public void seleccionarCliente(String nombreCliente) {
-        for (Usuario u : usuarios) {
-            if (u instanceof Cliente c && c.getNombre().equalsIgnoreCase(nombreCliente)) {
-                clienteSeleccionado = c;
-                return;
-            }
-        }
-        throw new IllegalArgumentException("No se encontró un cliente con el nombre: " + nombreCliente);
-    }
-
-    public void realizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimiento, TipoAsiento tipoAsiento) {
-        if (paqueteSeleccionado == null) {
-            throw new IllegalStateException("Debe seleccionar un paquete antes de realizar la compra.");
-        }
-        if (clienteSeleccionado == null) {
-            throw new IllegalStateException("Debe seleccionar un cliente antes de realizar la compra.");
-        }
-        if (costo < 0) {
-            throw new IllegalArgumentException("El costo no puede ser negativo.");
-        }
-        CompraPaquete compraPaquete = new CompraPaquete(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento);
-        // crear costo base
-        DTCostoBase costoBase = new DTCostoBase(0, 0, 0);
-        compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
-        clienteSeleccionado.agregarReserva(compraPaquete);
-        clienteSeleccionado.incrementarCantidadPaquetes();
+//    public List<DTCliente> mostrarClientes() {
+//        ClienteServicio clienteServicio = new ClienteServicio();
+//        List<DTCliente> listaClientes = new ArrayList<>();
+//        List<dato.entidades.Cliente> cliente = clienteServicio.listarClientes();
+//        for (Usuario u : usuarios) {
+//            if (u instanceof Cliente c) {
+//                listaClientes.add(new DTCliente(
+//                        c.getNickname(),
+//                        c.getNombre(),
+//                        c.getCorreo(),
+//                        c.getApellido(),
+//                        c.getTipoDoc(),
+//                        c.getNumeroDocumento(),
+//                        c.getFechaNacimiento(),
+//                        c.getNacionalidad(),
+//                        new ArrayList<>()
+//                ));
+//            }
+//        }
+//        return listaClientes;
+//    }
 
 
-    }
+//    public void seleccionarCliente(String nombreCliente){
+//        ClienteServicio clienteServicio = new ClienteServicio();
+//        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nombreCliente);
+//        if (cliente != null) {
+//            clienteSeleccionado = cliente;
+//            return;
+//        }
+//        throw new IllegalArgumentException("No se encontró un cliente con el nombre: " + nombreCliente);
+//    }
 
-
-*/
+//    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento, TipoAsiento tipoAsiento){
+//        if (paqueteSeleccionado == null) {
+//            throw new IllegalStateException("Debe seleccionar un paquete antes de realizar la compra.");
+//        }
+//        if (clienteSeleccionado == null) {
+//            throw new IllegalStateException("Debe seleccionar un cliente antes de realizar la compra.");
+//        }
+//        if (costo < 0) {
+//            throw new IllegalArgumentException("El costo no puede ser negativo.");
+//        }
+//        CompraPaqueteServicio servicioCompraPaquete = new CompraPaqueteServicio();
+//        try {
+//            dato.entidades.CompraPaquete compraPaquete = servicioCompraPaquete.registrarCompraPaquete(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento, paqueteSeleccionado);
+//            DTCostoBase costoBase = new DTCostoBase(0, 0, 0);
+//            compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
+//            clienteSeleccionado.addReserva(compraPaquete);
+//            clienteSeleccionado.incrementarCantidadPaquetes();
+//        } catch (Exception e) {
+//            throw new IllegalArgumentException("Error");
+//        }
+//        }
+//
 
 }
 
