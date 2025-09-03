@@ -1,5 +1,6 @@
 package presentacion.helpers;
 
+import dato.entidades.Cliente;
 import presentacion.helpers.*;
 import logica.clase.Factory;
 import logica.clase.ISistema;
@@ -11,7 +12,7 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
-
+import logica.servicios.*;
 import javax.swing.*;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
@@ -29,7 +30,7 @@ import java.awt.BorderLayout;
 
 public class UsuarioHelper {
 
-    //Formatear fecha a string
+    //Formatear fecha
     public static String formatearFecha(DTFecha fecha) {
         if (fecha == null) return "";
         return String.format("%02d/%02d/%04d",
@@ -37,8 +38,34 @@ public class UsuarioHelper {
                 fecha.getMes(),
                 fecha.getAno());
     }
-    //Formatear reserva
 
+    public static Calendar convertirCalendarDesdeDTFecha(DTFecha fecha) {
+        if (fecha == null) return null;
+
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(fecha.getAno(), fecha.getMes() - 1, fecha.getDia());
+        return cal;
+    }
+
+    public static DTFecha convertirDTfecha(JCalendar jcalendar) {
+        if (jcalendar == null || jcalendar.getDate() == null) {
+            return null;
+        }
+
+        Date fecha = jcalendar.getDate(); // Obtenemos el Date del JCalendar
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fecha);
+
+        int dia = cal.get(Calendar.DAY_OF_MONTH);
+        int mes = cal.get(Calendar.MONTH) + 1; // ¡Ojo! Enero = 0
+        int anio = cal.get(Calendar.YEAR);
+
+        return new DTFecha(dia, mes, anio);
+    }
+
+
+    //Formatear reserva
     public static String formatearReserva(DTReserva r) {
         if (r == null) return "";
 
@@ -63,7 +90,7 @@ public class UsuarioHelper {
         this.sistema = sistema;
     }
 
-    /// // CAMBIAR PANEL VERLO
+    // CAMBIAR PANEL
     public static void cambiarPanel(JPanel parentPanel, JPanel panelNuevo) {
         parentPanel.removeAll();
         parentPanel.add(panelNuevo);
@@ -78,74 +105,105 @@ public class UsuarioHelper {
     }
 
 
-    /// SABER SI ES CLIENTE O AEROLINEA///////////
+    // SABER SI ES CLIENTE O AEROLINEA
     public static String obtenerTipoUsuario(String nickname) {
         if (nickname == null || nickname.isEmpty()) {
-            return null;
+            return "---";
         }
 
         try {
-            ISistema sistema = getSistema();
-            DTUsuario usuario = sistema.mostrarDatosUsuario(nickname);
+            AerolineaServicio aerolineaServicio = new AerolineaServicio();
+            ClienteServicio clienteServicio = new ClienteServicio();
 
-            if (usuario instanceof DTCliente) {
-                return "cliente";
-            } else if (usuario instanceof DTAerolinea) {
-                return "aerolinea";
-            } else {
-                return "otro";
+            if (aerolineaServicio.buscarAerolineaPorNickname(nickname) != null) {
+                return "Aerolinea";
             }
 
+            if (clienteServicio.buscarClientePorNickname(nickname) != null) {
+                return "Cliente";
+            }
+
+            // Si no se encuentra en ninguno, devolvemos "---"
+            return "---";
+
         } catch (Exception e) {
-            return null; // No encontrado o error
+            return "---";
         }
     }
 
     //MODIFICAR USUARIO
-    public static void abrirPanelModificacionUsuario(JPanel parentPanel,JPanel modificarCliente,JPanel modificarAerolinea, String nickname) {
-        if (nickname == null || nickname.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe seleccionar un usuario", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String tipo = obtenerTipoUsuario(nickname);
-
-        if (tipo == null) {
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Guardar en Sistema el usuario a modificar
+    public static void abrirPanelModificacionUsuario(
+            JPanel parentPanel,
+            JPanel modificarCliente,
+            JPanel modificarAerolinea,
+            String tipo,
+            String nickname
+    ) {
         getSistema().seleccionarUsuarioAMod(nickname);
 
-        // Cambiar panel según tipo
-        switch (tipo) {
-            case "Cliente" -> {
-                cambiarPanel(parentPanel, modificarCliente);
-            }
-            case "Aerolinea" -> {
-                cambiarPanel(parentPanel, modificarAerolinea);
-            }
-            default -> {
-                JOptionPane.showMessageDialog(null, "Tipo de usuario no soportado para modificación", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+        if (tipo.equals("Cliente")) {
+            cambiarPanel(parentPanel, modificarCliente);
+        } else if (tipo.equals("Aerolinea")) {
+            cambiarPanel(parentPanel, modificarAerolinea);
         }
     }
 
-    public static void guardarCambiosCliente(String nombre, String apellido, DTFecha fechaNac,
-                                             String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
+    public static void guardarCambiosCliente(
+            String nickname,
+            String nombre,
+            String apellido,
+            DTFecha fechaNac,
+            String nacionalidad,
+            TipoDoc tipoDocumento,
+            String numeroDocumento
+    ) {
         try {
-            getSistema().modificarDatosCliente(nombre, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
+            ClienteServicio clienteServicio = new ClienteServicio();
+            Cliente cliente = clienteServicio.buscarClientePorNickname(nickname);
+
+            if (cliente == null) {
+                JOptionPane.showMessageDialog(null, "No se encontró el cliente con ese nickname.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Actualizar los campos
+            cliente.setNombre(nombre);
+            cliente.setApellido(apellido);
+            cliente.setFechaNacimiento(fechaNac);
+            cliente.setNacionalidad(nacionalidad);
+            cliente.setTipoDoc(tipoDocumento);
+            cliente.setNumeroDocumento(numeroDocumento);
+
+            // Persistir los cambios
+            clienteServicio.actualizarCliente(cliente);
+
             JOptionPane.showMessageDialog(null, "Datos del cliente modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al modificar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public static void guardarCambiosAerolinea(String nombre, String descripcion, String linkSitioWeb) {
+    public static void guardarCambiosAerolinea(String nickname, String nombre, String descripcion, String linkSitioWeb) {
         try {
-            getSistema().modificarDatosAerolinea(nombre, descripcion, linkSitioWeb);
+            AerolineaServicio aerolineaServicio = new AerolineaServicio();
+            dato.entidades.Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+
+            if (aerolinea == null) {
+                JOptionPane.showMessageDialog(null, "No se encontró la aerolínea con ese nickname.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Actualizar los campos
+            aerolinea.setNombre(nombre);
+            aerolinea.setDescripcion(descripcion);
+            aerolinea.setLinkSitioWeb(linkSitioWeb);
+
+            // Persistir los cambios
+            aerolineaServicio.actualizarAerolinea(aerolinea);
+
             JOptionPane.showMessageDialog(null, "Datos de la aerolínea modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al modificar aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -155,22 +213,20 @@ public class UsuarioHelper {
             String nickname,
             JTextField nombreField,
             JTextArea descripcionField,
-            JTextField sitioWebField,
-            JTextField correoField
+            JTextField sitioWebField
     ) {
         try {
-            // Obtener los datos del usuario
-            DTUsuario usuario = getSistema().mostrarDatosUsuario(nickname);
+            AerolineaServicio aerolineaServicio = new AerolineaServicio();
+            dato.entidades.Aerolinea aero = aerolineaServicio.buscarAerolineaPorNickname(nickname);
 
-            // Verificar que sea una aerolínea
-            if (usuario instanceof DTAerolinea aerolinea) {
-                nombreField.setText(aerolinea.getNombre());
-                descripcionField.setText(aerolinea.getDescripcion());
-                sitioWebField.setText(aerolinea.getLinkSitioWeb());
-                correoField.setText(aerolinea.getCorreo());
-            } else {
-                JOptionPane.showMessageDialog(null, "El usuario seleccionado no es una aerolínea.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (aero == null) {
+                JOptionPane.showMessageDialog(null, "No se encontró la aerolínea con ese nickname.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            nombreField.setText(aero.getNombre());
+            descripcionField.setText(aero.getDescripcion());
+            sitioWebField.setText(aero.getLinkSitioWeb());
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al cargar datos de la aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -184,75 +240,61 @@ public class UsuarioHelper {
             JTextField nacionalidadField,
             JComboBox<TipoDoc> tipoDocCombo,
             JTextField documentoField,
-            JTextField correoField,
-            JCalendar fechaNacimientoCalendar   // <-- ahora JCalendar
+            JCalendar fechaNacimientoCalendar
     ) {
         try {
-            DTUsuario usuario = getSistema().mostrarDatosUsuario(nickname);
+            ClienteServicio clienteServicio = new ClienteServicio();
+            dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nickname);
 
-            if (usuario instanceof DTCliente c) {
-                nombreField.setText(c.getNombre());
-                apellidoField.setText(c.getApellido());
-                nacionalidadField.setText(c.getNacionalidad());
-                tipoDocCombo.setSelectedItem(c.getTipoDocumento());
-                documentoField.setText(c.getNumeroDocumento());
-                correoField.setText(c.getCorreo());
-
-                // Setear fecha en JCalendar (no soporta null)
-                DTFecha fn = c.getFechaNacimiento();
-                if (fn != null) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.clear(); // evita arrastrar hora/minutos
-                    cal.set(fn.getAno(), fn.getMes() - 1, fn.getDia());
-                    fechaNacimientoCalendar.setCalendar(cal);
-                } else {
-                    fechaNacimientoCalendar.setDate(new Date());
-                }
-            } else {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "El usuario seleccionado no es un cliente",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
+            if (cliente == null) {
+                JOptionPane.showMessageDialog(null, "No se encontró el cliente con ese nickname.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            nombreField.setText(cliente.getNombre());
+            apellidoField.setText(cliente.getApellido());
+            nacionalidadField.setText(cliente.getNacionalidad());
+            tipoDocCombo.setSelectedItem(cliente.getTipoDoc());
+            documentoField.setText(cliente.getNumeroDocumento());
+
+            // Setear fecha
+            DTFecha fn = cliente.getFechaNacimiento();
+            Calendar cal = convertirCalendarDesdeDTFecha(fn);
+            if (cal != null) {
+                fechaNacimientoCalendar.setCalendar(cal);
+            } else {
+                fechaNacimientoCalendar.setDate(new Date());
+            }
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error al cargar datos del cliente: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            JOptionPane.showMessageDialog(null, "Error al cargar datos del cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-
-
-    // Método para limpiar campos de texto de un formulario
+    // LIMPIEZA
     public static void limpiarCampos(JTextField... campos) {
         for (JTextField campo : campos) {
             campo.setText("");
         }
     }
 
-    // Método para actualizar un JTable con la lista de usuarios
+    // ACTUALIZAR TABLA DE LISTADO DE USUARIOS
     public static void actualizarTablaUsuarios(JTable tablaUsuarios) {
         if (tablaUsuarios == null) return;
 
-        // Definir las columnas
         String[] columnas = {"Tipo", "Nickname", "Nombre", "Correo"};
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
 
         try {
             List<DTUsuario> usuarios = getSistema().consultarUsuarios();
+
+            AerolineaServicio aerolineaServicio = new AerolineaServicio();
+
             for (DTUsuario u : usuarios) {
-                String tipo;
-                if (u instanceof DTCliente) {
-                    tipo = "Cliente";
-                } else if (u instanceof DTAerolinea) {
+                String tipo = "Cliente"; // Asumimos cliente por defecto
+
+                if (aerolineaServicio.buscarAerolineaPorNickname(u.getNickname()) != null) {
                     tipo = "Aerolínea";
-                } else {
-                    tipo = "Desconocido";
                 }
 
                 Object[] fila = {
@@ -263,34 +305,111 @@ public class UsuarioHelper {
                 };
                 modeloTabla.addRow(fila);
             }
-        } catch (IllegalStateException ex) {
+
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                     tablaUsuarios,
-                    ex.getMessage(),
+                    "Error al consultar usuarios: " + ex.getMessage(),
                     "Información",
                     JOptionPane.INFORMATION_MESSAGE
             );
         }
 
-        // Aplicar el modelo nuevo a la tabla
         tablaUsuarios.setModel(modeloTabla);
     }
 
 
-    // Para mostrar usuarios en consola
-    public static void comprobarUsuarios(){
-        try {
-            List<DTUsuario> lista = getSistema().consultarUsuarios();
-            for (DTUsuario u : lista) {
-                System.out.println(u.getNickname() + " | " + u.getNombre() + " | " + u.getCorreo());
-            }
-            JOptionPane.showMessageDialog(null, "Usuarios listados en consola.");
-        } catch (IllegalStateException ex) {
-            JOptionPane.showMessageDialog(null, "No hay usuarios cargados.");
+
+    // VALIDACION
+    public static boolean modificarAerolineaValidar(
+            JTextField nombre,
+            JTextField sitioWeb,
+            JTextArea descripcion
+    ) {
+
+        // Validar nombre
+        if (nombre.getText().trim().length() < 4) {
+            JOptionPane.showMessageDialog(null, "El nombre debe tener al menos 4 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+
+
+        // Validar sitio web
+        String sitioText = sitioWeb.getText().trim();
+        if (!sitioText.matches("^[^\\s]+\\.[^\\s]+$")){
+            JOptionPane.showMessageDialog(null, "El sitio web debe comenzar con http:// o https:// y ser válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Validar descripción
+        if (descripcion.getText().trim().length() < 10) {
+            JOptionPane.showMessageDialog(null, "La descripción debe tener al menos 10 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
     }
 
-    // para validar campos de usuario antes de crearlo
+    public static boolean modificarClienteValidar(
+            JTextField nombre,
+            JTextField apellido,
+            JTextField nacionalidad,
+            TipoDoc tipoDocumento,
+            JTextField numeroDocumento
+    ) {
+        String nom = nombre.getText().trim();
+        String ape = apellido.getText().trim();
+        String nac = nacionalidad.getText().trim();
+        String doc = numeroDocumento.getText().trim();
+
+
+        // Nombre y apellido solo letras
+        if (!nom.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+            JOptionPane.showMessageDialog(null, "El nombre solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (!ape.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+            JOptionPane.showMessageDialog(null, "El apellido solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Nacionalidad
+        if (!nac.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+            JOptionPane.showMessageDialog(null, "La nacionalidad solo puede contener letras.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // --- Validar documento según tipo ---
+        switch (tipoDocumento) {
+            case CI: // Cédula uruguaya
+                // Formato: 12345678 o 1.234.567-8
+                if (!doc.matches("^[0-9]{7,8}$") && !doc.matches("^[0-9]{1,2}\\.[0-9]{3}\\.[0-9]{3}-[0-9]$")) {
+                    JOptionPane.showMessageDialog(null, "Ingrese una CI uruguaya válida (ej: 12345678 o 1.234.567-8).", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                break;
+            case Pasaporte:
+                // Letras + números, entre 6 y 9 caracteres
+                if (!doc.matches("^[A-Z0-9]{6,9}$")) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un pasaporte válido (ej: A1234567).", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                break;
+            case DNI:
+                // 7-8 dígitos + opcional una letra
+                if (!doc.matches("^[0-9]{7,8}[A-Za-z]?$")) {
+                    JOptionPane.showMessageDialog(null, "Ingrese un DNI válido (ej: 12345678 o 12345678A).", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Seleccione un tipo de documento válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+        }
+
+        return true;
+    }
+
     public static boolean validarCliente(
             JTextField nickname,
             JTextField nombre,
@@ -372,8 +491,49 @@ public class UsuarioHelper {
         return true;
     }
 
+    public static boolean validarAerolinea(
+            JTextField nickname,
+            JTextField nombre,
+            JTextField correo,
+            JTextField sitioWeb,
+            JTextArea descripcion
+    ) {
+        // Validar nickname
+        if (nickname.getText().trim().length() < 4) {
+            JOptionPane.showMessageDialog(null, "El nickname debe tener al menos 4 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
+        // Validar nombre
+        if (nombre.getText().trim().length() < 2) {
+            JOptionPane.showMessageDialog(null, "El nombre debe tener al menos 2 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
+        // Validar correo
+        String correoText = correo.getText().trim();
+        if (!correoText.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            JOptionPane.showMessageDialog(null, "El correo electrónico no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Validar sitio web
+        String sitioText = sitioWeb.getText().trim();
+        if (!sitioText.matches("^[^\\s]+\\.[^\\s]+$")){
+            JOptionPane.showMessageDialog(null, "El sitio web debe comenzar con http:// o https:// y ser válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Validar descripción
+        if (descripcion.getText().trim().length() < 10) {
+            JOptionPane.showMessageDialog(null, "La descripción debe tener al menos 10 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    // ver que zona es
     public static void crearCliente(String nickname,
                                     String nombre,
                                     String correo,
@@ -427,47 +587,7 @@ public class UsuarioHelper {
     }
 
     /// ////// Aerolinea ///////////
-    public static boolean validarAerolinea(
-            JTextField nickname,
-            JTextField nombre,
-            JTextField correo,
-            JTextField sitioWeb,
-            JTextArea descripcion
-    ) {
-        // Validar nickname
-        if (nickname.getText().trim().length() < 4) {
-            JOptionPane.showMessageDialog(null, "El nickname debe tener al menos 4 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
 
-        // Validar nombre
-        if (nombre.getText().trim().length() < 2) {
-            JOptionPane.showMessageDialog(null, "El nombre debe tener al menos 2 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        // Validar correo
-        String correoText = correo.getText().trim();
-        if (!correoText.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            JOptionPane.showMessageDialog(null, "El correo electrónico no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        // Validar sitio web
-        String sitioText = sitioWeb.getText().trim();
-        if (!sitioText.matches("^[^\\s]+\\.[^\\s]+$")){
-            JOptionPane.showMessageDialog(null, "El sitio web debe comenzar con http:// o https:// y ser válido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        // Validar descripción
-        if (descripcion.getText().trim().length() < 10) {
-            JOptionPane.showMessageDialog(null, "La descripción debe tener al menos 10 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        return true;
-    }
 
 
     public static void crearAerolinea(
