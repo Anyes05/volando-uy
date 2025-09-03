@@ -137,6 +137,19 @@ public class VueloHelper {
             return;
         }
 
+        // Validación de ruta existente
+        List<DTRutaVuelo> rutasExistentes = getSistema().listarRutaVueloDeVuelo();
+        for (DTRutaVuelo r : rutasExistentes) {
+            if (r.getNombre().equalsIgnoreCase(nombre)) {
+                throw new IllegalArgumentException("Ya existe una ruta con ese nombre.");
+            }
+        }
+
+        Date fechaDate = fechaCal.getTime();
+        if (fechaDate.before(new Date())) {
+            throw new IllegalArgumentException("La fecha de alta no puede ser pasada.");
+        }
+
         // ------------------- CONVERSIONES -------------------
         DTFecha fecha = new DTFecha(
                 fechaCal.get(Calendar.DAY_OF_MONTH),
@@ -146,9 +159,11 @@ public class VueloHelper {
 
         DTHora horaVuelo = new DTHora(hora, minutos);
 
+
         // ------------------- CREAR LA RUTA -------------------
-        try {
-            for (String categoria : categoriasSeleccionadas) {
+
+        for (String categoria : categoriasSeleccionadas) {
+            try {
                 getSistema().ingresarDatosRuta(
                         nombre,
                         descripcion,
@@ -162,9 +177,11 @@ public class VueloHelper {
                         categoria // un String por vez
                 );
                 getSistema().registrarRuta();
+            } catch (IllegalArgumentException e) {
+                throw e; // re-lanzar tal cual
+            } catch (Exception e) {
+                throw new RuntimeException(e); // otras excepciones se envuelven
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
     }
@@ -220,30 +237,47 @@ public class VueloHelper {
 
         // ------------------- VALIDACIONES -------------------
         if (nombre == null || nombre.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "El nombre del vuelo es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new IllegalArgumentException("El nombre del vuelo es obligatorio.");
         }
 
         if (duracionStr == null || duracionStr.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "La duración es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new IllegalArgumentException("La duración es obligatoria.");
         }
 
         if (horaStr == null || horaStr.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "La hora de salida es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new IllegalArgumentException("La hora de salida es obligatoria.");
         }
 
         if (ruta == null) {
-            JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta primero.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new IllegalArgumentException("Debe seleccionar una ruta primero.");
         }
 
-        if (maxTurista < 0 || maxEjecutivo < 0) {
-            JOptionPane.showMessageDialog(null, "La cantidad de asientos no puede ser negativa.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        int maxAsientos = 200;
+        if (maxTurista < 0 || maxTurista > maxAsientos || maxEjecutivo < 0 || maxEjecutivo > maxAsientos) {
+            throw new IllegalArgumentException(
+                    "La cantidad de asientos debe estar entre 0 y " + maxAsientos + "."
+            );
+        }
+        if ((maxTurista + maxEjecutivo) > maxAsientos) {
+            throw new IllegalArgumentException(
+                    "La suma de asientos turista y ejecutivo no puede superar " + maxAsientos + "."
+            );
+        }
+        //chequeamos que las fechas sean coherentes
+        Date fechaAltaDate = fechaAltaCal.getTime();
+        Date fechaVueloDate = fechaVueloCal.getTime();
+        if (fechaAltaDate.after(new Date())) {
+            throw new IllegalArgumentException("La fecha de alta no puede ser futura.");
         }
 
+        if (fechaVueloDate.before(fechaAltaDate)) {
+            throw new IllegalArgumentException("La fecha del vuelo no puede ser anterior a la fecha de alta.");
+        }
+
+
+        //------------CHEQUEO QUE EL VUELO NO EXISTA---------------
+
+        //---------------------------------------------------------
         // ------------------- PARSEAR DURACIÓN -------------------
         int durHoras, durMinutos;
         try {
