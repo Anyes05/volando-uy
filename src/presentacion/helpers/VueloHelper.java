@@ -280,44 +280,56 @@ public class VueloHelper {
         //---------------------------------------------------------
         // ------------------- PARSEAR DURACIÓN -------------------
         int durHoras, durMinutos;
-        try {
-            String[] partesDur = duracionStr.split(":");
-            if (partesDur.length != 2) {
-                JOptionPane.showMessageDialog(null, "Formato de duración inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            durHoras = Integer.parseInt(partesDur[0]);
-            durMinutos = Integer.parseInt(partesDur[1]);
+        String[] partesDur = duracionStr.split(":");
+        if (partesDur.length != 2) {
+            throw new IllegalArgumentException("Formato de duración inválido. Use HH:mm");
+        }
 
-            if (durHoras < 0 || durHoras > 23 || durMinutos < 0 || durMinutos > 59) {
-                JOptionPane.showMessageDialog(null, "Ingrese una duración válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        String durHorasStr = partesDur[0];
+        String durMinutosStr = partesDur[1];
+
+// Validar que tengan exactamente 2 dígitos cada uno
+        if (durHorasStr.length() != 2 || durMinutosStr.length() != 2) {
+            throw new IllegalArgumentException("Formato de duración inválido. Use HH:mm (dos dígitos por componente)");
+        }
+
+        try {
+            durHoras = Integer.parseInt(durHorasStr);
+            durMinutos = Integer.parseInt(durMinutosStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Formato de duración inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new IllegalArgumentException("Formato de duración inválido. Use HH:mm");
+        }
+
+        if (durHoras < 0 || durHoras > 23 || durMinutos < 0 || durMinutos > 59) {
+            throw new IllegalArgumentException("Ingrese una duración válida en formato HH:mm");
         }
 
         DTHora duracion = new DTHora(durHoras, durMinutos);
 
         // ------------------- PARSEAR HORA DE SALIDA -------------------
         int horaSalida, minSalida;
-        try {
-            String[] partesHora = horaStr.split(":");
-            if (partesHora.length != 2) {
-                JOptionPane.showMessageDialog(null, "Formato de hora inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            horaSalida = Integer.parseInt(partesHora[0]);
-            minSalida = Integer.parseInt(partesHora[1]);
+        String[] partesHora = horaStr.split(":");
+        if (partesHora.length != 2) {
+            throw new IllegalArgumentException("Formato de hora inválido. Use HH:mm");
+        }
 
-            if (horaSalida < 0 || horaSalida > 23 || minSalida < 0 || minSalida > 59) {
-                JOptionPane.showMessageDialog(null, "Ingrese una hora válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        String horaStrH = partesHora[0];
+        String horaStrM = partesHora[1];
+
+// Validar dos dígitos también para la hora de salida
+        if (horaStrH.length() != 2 || horaStrM.length() != 2) {
+            throw new IllegalArgumentException("Formato de hora inválido. Use HH:mm (dos dígitos por componente)");
+        }
+
+        try {
+            horaSalida = Integer.parseInt(horaStrH);
+            minSalida = Integer.parseInt(horaStrM);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Formato de hora inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new IllegalArgumentException("Formato de hora inválido. Use HH:mm");
+        }
+
+        if (horaSalida < 0 || horaSalida > 23 || minSalida < 0 || minSalida > 59) {
+            throw new IllegalArgumentException("Ingrese una hora válida en formato HH:mm");
         }
 
         DTHora horaVuelo = new DTHora(horaSalida, minSalida);
