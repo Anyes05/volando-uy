@@ -919,8 +919,14 @@ public class EstacionTrabajo {
                     ciudadDText.setText("");
                     fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
                     aerolineaVuelo.setSelectedItem(null);
-
-                } catch (Exception ex) {
+                } catch (IllegalArgumentException ex) {
+                    // Mostrar solo el mensaje de la excepción
+                    JOptionPane.showMessageDialog(altaRuta,
+                            "Error: " + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                  catch (Exception ex) {
                     JOptionPane.showMessageDialog(altaRuta,
                             "Error: " + ex.getMessage(),
                             "Error",
