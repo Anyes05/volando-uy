@@ -28,8 +28,8 @@ public class PaqueteVuelo {
 //    @Column(nullable = false)
 //    private DTCostoBase DTCostoBase;
 
-    @Column(nullable = false)
-    private float costoTotal; // Lo dejé porque lo teníamos en la clase, pero costoTotal sería un calculado que no va en el constructor(?
+//    @Column(nullable = false)
+//    private float costoTotal; // Lo dejé porque lo teníamos en la clase, pero costoTotal sería un calculado que no va en el constructor(?
 
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
@@ -94,8 +94,8 @@ public class PaqueteVuelo {
 
 //    public DTCostoBase getCostoBase() { return DTCostoBase; }
 //    public void setCostoBase(DTCostoBase DTCostoBase) { this.DTCostoBase = DTCostoBase; }
-    public float getCostoTotal() { return costoTotal; }
-    public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal;}
+//    public float getCostoTotal() { return costoTotal; }
+//    public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal;}
 
     public Cantidad getCantidad() { return cantidad; }
     public void setCantidad(Cantidad cantidad) { this.cantidad = cantidad;  }

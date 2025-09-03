@@ -1119,7 +1119,7 @@ public class EstacionTrabajo {
                     String descripcion = descripcionAltaPaqtxt.getText().trim();
                     String periodoVal = períodoAltaPaqtxt.getText().trim();
                     String descuento = descuentoAltaPaqtxt.getText().trim();
-                    Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
+                    Calendar fechaCal = calendarAltaPaquete.getCalendar();
 
                     PaqueteHelper.ingresarPaquete(nomPaq, descripcion, periodoVal, descuento, fechaCal);
                     int diasValidosInt = Integer.parseInt(periodoVal);
@@ -1132,9 +1132,31 @@ public class EstacionTrabajo {
                     );
                     sistema.crearPaquete(nomPaq, descripcion, diasValidosInt, descuentoFloat, fechaAlta);
                     JOptionPane.showMessageDialog(crearPaquete, "Paquete creado correctamente.");
+
+                    nombreAltaPaqtxt.setText("");
+                    descripcionAltaPaqtxt.setText("");
+                    períodoAltaPaqtxt.setText("");
+                    descripcionAltaPaqtxt.setText("");
+                    descuentoAltaPaqtxt.setText("");
+                    calendarAltaPaquete.setCalendar(Calendar.getInstance());
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(crearPaquete, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        });
+        buttonCancelarCrearPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nombreAltaPaqtxt.setText("");
+                descripcionAltaPaqtxt.setText("");
+                períodoAltaPaqtxt.setText("");
+                descripcionAltaPaqtxt.setText("");
+                descuentoAltaPaqtxt.setText("");
+                calendarAltaPaquete.setCalendar(Calendar.getInstance());
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
             }
         });
     }

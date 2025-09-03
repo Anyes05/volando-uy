@@ -721,10 +721,16 @@ public class Sistema implements ISistema {
 //
     // CREAR PAQUETE VUELO
     public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
-        for (PaqueteVuelo p : paqueteVuelos) {
-            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
-                throw new IllegalArgumentException("El nombre del paquete ya existe.");
-            }
+//        for (PaqueteVuelo p : paqueteVuelos) {
+//            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
+//                throw new IllegalArgumentException("El nombre del paquete ya existe.");
+//            }
+//        }
+        logica.servicios.PaqueteVueloServicio Servicio = new PaqueteVueloServicio();
+
+        dato.entidades.PaqueteVuelo paqueteVueloexistente = Servicio.obtenerPaquetePorNombre(nombrePaquete);
+        if (paqueteVueloexistente != null) {
+            throw new IllegalArgumentException("El nombre del paquete ya existe.");
         }
         if (descuento < 0 || descuento > 100) {
             throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
@@ -732,9 +738,9 @@ public class Sistema implements ISistema {
         if (diasValidos <= 0) {
             throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
         }
-        logica.servicios.PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+
         try {
-            dato.entidades.PaqueteVuelo paqueteVuelo = paqueteVueloServicio.registrarPaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta);
+            dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
         }
