@@ -19,7 +19,6 @@ public class Reserva {
     @JoinColumn(name = "cliente_id") // columna FK en la tabla actual
     private Cliente cliente;
 
-
     @Column(nullable = false)
     private DTFecha fechaReserva;
 

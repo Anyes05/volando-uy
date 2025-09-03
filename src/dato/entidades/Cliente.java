@@ -21,6 +21,8 @@ public class Cliente extends Usuario {
     @Column(nullable = true)
     private String nacionalidad;
 
+    private int cantidadPaquetes;
+
     @Enumerated(EnumType.STRING)
     private TipoDoc tipoDoc;
 
@@ -63,13 +65,16 @@ public class Cliente extends Usuario {
     public void setReservas(List<Reserva> reservas) { this.reservas = reservas; }
 
     // Helper methods para mantener sincronía en la relación
-//    public void addReserva(Reserva reserva) {
-//        reservas.add(reserva);
-//        reserva.setCliente(this);
-//    }
-//
+    public void addReserva(Reserva reserva) {
+        reservas.add(reserva);
+        reserva.setCliente(this);
+    }
+
 //    public void removeReserva(Reserva reserva) {
 //        reservas.remove(reserva);
 //        reserva.setCliente(null);
 //    }
+    public void incrementarCantidadPaquetes() {
+        this.cantidadPaquetes++;
+    }
 }

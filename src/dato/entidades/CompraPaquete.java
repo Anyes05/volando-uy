@@ -2,6 +2,7 @@ package dato.entidades;
 
 import jakarta.persistence.*;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoAsiento;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +13,12 @@ public class CompraPaquete extends Reserva{
     @Column(nullable = false)
     private DTFecha vencimiento;
 
-    @OneToMany (mappedBy = "compraPaquete")
-    private List<PaqueteVuelo> paquetesVuelo =new ArrayList<>();
-    // private PaqueteVuelo paqueteVuelo; Asi esta en clase/compraPaquete, pero segun el dcd seria uno a muchos y deberia de haber una lista(?
+    @OneToOne (mappedBy = "compraPaquete")
+    private PaqueteVuelo paqueteVuelo;
+
+    @OneToOne (mappedBy = "tipoAsiento")
+    private TipoAsiento tipoAsiento;
+
 
     public CompraPaquete() {}
 
@@ -27,9 +31,13 @@ public class CompraPaquete extends Reserva{
 
     public void setVencimiento(DTFecha vencimiento) {this.vencimiento = vencimiento;}
 
-    public List<PaqueteVuelo> getPaquetesVuelo() {return paquetesVuelo;}
+    public PaqueteVuelo getPaquetesVuelo() {return this.paqueteVuelo;}
 
-    public void setPaqueteVuelo(List <PaqueteVuelo> paquetesVuelo) {this.paquetesVuelo = paquetesVuelo;}
+    public void setPaqueteVuelo(PaqueteVuelo paqueteVuelo) {this.paqueteVuelo = paqueteVuelo;}
+
+    public TipoAsiento getTipoAsiento() {return tipoAsiento;}
+
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {this.tipoAsiento = tipoAsiento;}
 
     // No se bien que pasa con el otro metodo
     // @Override
