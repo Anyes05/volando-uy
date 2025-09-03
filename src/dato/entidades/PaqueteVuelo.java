@@ -29,8 +29,8 @@ public class PaqueteVuelo {
     @Column(nullable = false)
     private float descuento;
 
-    @Column(nullable = false)
-    private DTCostoBase DTCostoBase;
+//    @Column(nullable = false)
+//    private DTCostoBase DTCostoBase;
 
     @Column(nullable = false)
     private float costoTotal; // Lo dejé porque lo teníamos en la clase, pero costoTotal sería un calculado que no va en el constructor(?
@@ -96,8 +96,8 @@ public class PaqueteVuelo {
     public void setDescuento(float descuento) {
         this.descuento = descuento; }
 
-    public DTCostoBase getCostoBase() { return DTCostoBase; }
-    public void setCostoBase(DTCostoBase DTCostoBase) { this.DTCostoBase = DTCostoBase; }
+//    public DTCostoBase getCostoBase() { return DTCostoBase; }
+//    public void setCostoBase(DTCostoBase DTCostoBase) { this.DTCostoBase = DTCostoBase; }
     public float getCostoTotal() { return costoTotal; }
     public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal;}
 
