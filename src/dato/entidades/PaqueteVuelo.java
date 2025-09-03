@@ -19,10 +19,6 @@ public class PaqueteVuelo {
     @Column(nullable = false)
     private String descripcion;
 
-    @Enumerated(EnumType.STRING) // me dice que el enum es string para guardar correctamente en la base de datos
-    @Column(nullable = false)
-    private TipoAsiento tipoAsiento;
-
     @Column(nullable = false)
     private int diasValidos;
 
@@ -79,12 +75,12 @@ public class PaqueteVuelo {
     public DTFecha getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
 
-    public TipoAsiento getTipoAsiento() {
-        return tipoAsiento;
-    }
-    public void setTipoAsiento(TipoAsiento tipoAsiento) {
-        this.tipoAsiento = tipoAsiento;
-    }
+//    public TipoAsiento getTipoAsiento() {
+//        return tipoAsiento;
+//    }
+//    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+//        this.tipoAsiento = tipoAsiento;
+//    }
     public int getDiasValidos() {
         return diasValidos;
     }
