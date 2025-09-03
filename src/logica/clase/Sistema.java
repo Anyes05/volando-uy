@@ -732,9 +732,9 @@ public class Sistema implements ISistema {
         if (diasValidos <= 0) {
             throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
         }
-
+        logica.servicios.PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
         try {
-            PaqueteVuelo paqueteVuelo = new PaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta);
+            dato.entidades.PaqueteVuelo paqueteVuelo = paqueteVueloServicio.registrarPaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
         }
@@ -899,8 +899,6 @@ public class Sistema implements ISistema {
 //        } catch (Exception e) {
 //            throw new IllegalArgumentException("Error");
 //        }
-//        }
-//
-
+//    }
 }
 

@@ -11,10 +11,10 @@ import java.util.List;
 public class PaqueteVueloServicio {
     private PaqueteVueloDAO paqueteVueloDAO = new PaqueteVueloDAO();
 
-    public void registrarPaqueteVuelo(String nombre, String descripcion, TipoAsiento tipoAsiento,
-                                      int diasValidos, float descuento, DTCostoBase DTCostoBase, float costoTotal, DTFecha fechaAlta) {
-        PaqueteVuelo p = new PaqueteVuelo(nombre, descripcion, tipoAsiento, diasValidos, descuento, DTCostoBase, costoTotal, fechaAlta);
+    public PaqueteVuelo registrarPaqueteVuelo(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
+        PaqueteVuelo p = new PaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta);
         paqueteVueloDAO.guardar(p);  // Se guarda en la BD
+        return p;
     }
 
     public PaqueteVuelo obtenerPaqueteVuelo(Long id) {
@@ -34,4 +34,6 @@ public class PaqueteVueloServicio {
         }
         return null; // Si no se encuentra el paquete
     }
+
+
 }
