@@ -580,8 +580,7 @@ public class Sistema implements ISistema {
         for (dato.entidades.Vuelo v : vuelos) {
             dato.entidades.RutaVuelo r = v.getRutaVuelo();
                 if (r!= null && r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
-                    Aerolinea aerolinea = r.getAerolineas().isEmpty() ? null : r.getAerolineas().get(0);
-                    DTAerolinea dtAerolinea = aerolinea != null ? new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>()) : null;
+                    DTAerolinea dtAerolinea = r.getAerolineas() != null ? new DTAerolinea(r.getAerolineas().get(0).getNickname(), r.getAerolineas().get(0).getNombre(), r.getAerolineas().get(0).getCorreo(), r.getAerolineas().get(0).getDescripcion(), r.getAerolineas().get(0).getLinkSitioWeb(), new ArrayList<>()) : null;
                     DTRutaVuelo dtRuta = new DTRutaVuelo(
                             r.getNombre(),
                             r.getDescripcion(),

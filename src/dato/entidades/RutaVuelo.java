@@ -53,7 +53,7 @@ public class RutaVuelo {
     private List<Vuelo> vuelos;
 
     // Relación con aerolínea
-    @ManyToMany
+    @ManyToMany (fetch = FetchType.EAGER)
     @JoinTable(
             name = "ruta_aerolinea",
             joinColumns = @JoinColumn(name = "ruta_id"),
