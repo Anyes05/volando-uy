@@ -561,7 +561,8 @@ public class Sistema implements ISistema {
                 nuevoVuelo.getDuracion(),
                 nuevoVuelo.getAsientosMaxTurista(),
                 nuevoVuelo.getAsientosMaxEjecutivo(),
-                nuevoVuelo.getFechaAlta()
+                nuevoVuelo.getFechaAlta(),
+                nuevoVuelo.getRutaVuelo()
         );
 
         recordarDatosVuelo = null;
@@ -580,9 +581,7 @@ public class Sistema implements ISistema {
             dato.entidades.RutaVuelo r = v.getRutaVuelo();
                 if (r!= null && r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
                     Aerolinea aerolinea = r.getAerolineas().isEmpty() ? null : r.getAerolineas().get(0);
-                    DTAerolinea dtAerolinea = aerolinea != null
-                            ? new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>())
-                            : null;
+                    DTAerolinea dtAerolinea = aerolinea != null ? new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>()) : null;
                     DTRutaVuelo dtRuta = new DTRutaVuelo(
                             r.getNombre(),
                             r.getDescripcion(),

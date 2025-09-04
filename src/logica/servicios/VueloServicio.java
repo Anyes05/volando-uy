@@ -1,6 +1,7 @@
 package logica.servicios;
 
 import dato.dao.VueloDAO;
+import dato.entidades.RutaVuelo;
 import dato.entidades.Vuelo;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTHora;
@@ -10,8 +11,9 @@ import java.util.ArrayList;
 public class VueloServicio {
     private VueloDAO vueloDAO = new VueloDAO();
 
-    public void registrarVuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta) {
+    public void registrarVuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta, RutaVuelo rutaVuelo) {
         Vuelo v = new Vuelo(nombre, fechaVuelo, horaVuelo, duracion, asientosMaxTurista, asientosMaxEjecutivo, fechaAlta);
+        v.setRutaVuelo(rutaVuelo);
         vueloDAO.guardar(v);  // Se guarda en la BD
     }
 
