@@ -183,7 +183,9 @@
                     <preferred-size width="150" height="50"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <editable value="false"/>
+                </properties>
               </component>
               <component id="6bfe9" class="javax.swing.JLabel">
                 <constraints>
@@ -199,7 +201,9 @@
                     <preferred-size width="150" height="50"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <editable value="false"/>
+                </properties>
               </component>
               <component id="85d3d" class="javax.swing.JLabel">
                 <constraints>
@@ -259,7 +263,9 @@
                     <preferred-size width="150" height="50"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <editable value="false"/>
+                </properties>
               </component>
               <component id="4f6f1" class="javax.swing.JLabel">
                 <constraints>
@@ -283,7 +289,9 @@
                     <preferred-size width="150" height="50"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <editable value="false"/>
+                </properties>
               </component>
               <component id="3df30" class="javax.swing.JComboBox" binding="vuelosConsultaRV">
                 <constraints>

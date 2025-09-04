@@ -90,36 +90,30 @@ public class VueloHelper {
 
         // ------------------- VALIDACIONES -------------------
         if (nombre.trim().isEmpty() || descripcion.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Nombre y descripción son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new Exception("Nombre y descripción son obligatorios.");
         }
         if (origen.trim().isEmpty() || destino.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Debe indicar ciudad de origen y destino.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new Exception("Debe indicar ciudad de origen y destino.");
         }
         if (origen.equalsIgnoreCase(destino)) {
-            JOptionPane.showMessageDialog(null, "El origen y destino no pueden ser iguales.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new Exception("El origen y destino no pueden ser iguales.");
         }
 
         int hora, minutos;
         try {
             String[] partes = horaStr.split(":");
             if (partes.length != 2) {
-                JOptionPane.showMessageDialog(null, "Formato inválido. Use HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                throw new Exception("Formato inválido. Use HH:mm");
             }
 
             hora = Integer.parseInt(partes[0]);
             minutos = Integer.parseInt(partes[1]);
 
             if (hora < 0 || hora > 23 || minutos < 0 || minutos > 59) {
-                JOptionPane.showMessageDialog(null, "Ingrese una hora válida en formato HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                throw new Exception("Ingrese una hora válida en formato HH:mm");
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Formato inválido. Use HH:mm (ejemplo: 14:30)", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new Exception("Formato inválido. Use HH:mm (ejemplo: 14:30)");
         }
 
         float costoTurista, costoEjecutivo, costoEquipaje;
@@ -129,12 +123,10 @@ public class VueloHelper {
             costoEquipaje = Float.parseFloat(costoEquipajeStr);
 
             if (costoTurista < 0 || costoEjecutivo < 0 || costoEquipaje < 0) {
-                JOptionPane.showMessageDialog(null, "Los costos no pueden ser negativos.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                throw new Exception("Los costos no pueden ser negativos.");
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Los costos deben ser números válidos.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            throw new Exception("Los costos deben ser números válidos.");
         }
 
         // Validación de ruta existente
@@ -146,8 +138,24 @@ public class VueloHelper {
         }
 
         Date fechaDate = fechaCal.getTime();
-        if (fechaDate.before(new Date())) {
-            throw new IllegalArgumentException("La fecha de alta no puede ser pasada.");
+
+// Obtener fecha de hoy sin hora
+        Calendar hoy = Calendar.getInstance();
+        hoy.set(Calendar.HOUR_OF_DAY, 0);
+        hoy.set(Calendar.MINUTE, 0);
+        hoy.set(Calendar.SECOND, 0);
+        hoy.set(Calendar.MILLISECOND, 0);
+
+// Fecha a validar sin hora
+        Calendar fechaVal = (Calendar) fechaCal.clone();
+        fechaVal.set(Calendar.HOUR_OF_DAY, 0);
+        fechaVal.set(Calendar.MINUTE, 0);
+        fechaVal.set(Calendar.SECOND, 0);
+        fechaVal.set(Calendar.MILLISECOND, 0);
+
+// Comparar
+        if (!fechaVal.equals(hoy)) {
+            throw new IllegalArgumentException("La fecha de alta debe ser el día de hoy.");
         }
 
         // ------------------- CONVERSIONES -------------------
@@ -230,8 +238,8 @@ public class VueloHelper {
             String horaStr,
             Calendar fechaAltaCal,
             Calendar fechaVueloCal,
-            int maxTurista,
-            int maxEjecutivo,
+            String maxTurista,
+            String maxEjecutivo,
             DTRutaVuelo ruta
     ) throws Exception {
 
@@ -247,31 +255,63 @@ public class VueloHelper {
         if (horaStr == null || horaStr.trim().isEmpty()) {
             throw new IllegalArgumentException("La hora de salida es obligatoria.");
         }
+        // Validamos que no estén vacíos
+        if (maxTurista.trim().isEmpty()) {
+            throw new IllegalArgumentException("La cantidad de asientos turista es obligatoria.");
+        }
+        if (maxEjecutivo.trim().isEmpty()) {
+            throw new IllegalArgumentException("La cantidad de asientos ejecutivo es obligatoria.");
+        }
 
         if (ruta == null) {
             throw new IllegalArgumentException("Debe seleccionar una ruta primero.");
         }
 
+
+        // Parseo a int
+        int maxTuristaInt;
+        int maxEjecutivoInt;
+        try {
+            maxTuristaInt = Integer.parseInt(maxTurista.trim());
+            maxEjecutivoInt = Integer.parseInt(maxEjecutivo.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("La cantidad de asientos debe ser un número válido.");
+        }
+
+// Validaciones de rango
         int maxAsientos = 200;
-        if (maxTurista < 0 || maxTurista > maxAsientos || maxEjecutivo < 0 || maxEjecutivo > maxAsientos) {
+        if (maxTuristaInt < 0 || maxTuristaInt > maxAsientos || maxEjecutivoInt < 0 || maxEjecutivoInt > maxAsientos) {
             throw new IllegalArgumentException(
                     "La cantidad de asientos debe estar entre 0 y " + maxAsientos + "."
             );
         }
-        if ((maxTurista + maxEjecutivo) > maxAsientos) {
+        if ((maxTuristaInt + maxEjecutivoInt) > maxAsientos) {
             throw new IllegalArgumentException(
                     "La suma de asientos turista y ejecutivo no puede superar " + maxAsientos + "."
             );
         }
         //chequeamos que las fechas sean coherentes
-        Date fechaAltaDate = fechaAltaCal.getTime();
-        Date fechaVueloDate = fechaVueloCal.getTime();
-        if (fechaAltaDate.after(new Date())) {
-            throw new IllegalArgumentException("La fecha de alta no puede ser futura.");
+        // Fecha de alta: solo hoy
+        Calendar hoy = Calendar.getInstance();
+        hoy.set(Calendar.HOUR_OF_DAY, 0);
+        hoy.set(Calendar.MINUTE, 0);
+        hoy.set(Calendar.SECOND, 0);
+        hoy.set(Calendar.MILLISECOND, 0);
+
+        Calendar fechaAltaVal = (Calendar) fechaAltaCal.clone();
+        fechaAltaVal.set(Calendar.HOUR_OF_DAY, 0);
+        fechaAltaVal.set(Calendar.MINUTE, 0);
+        fechaAltaVal.set(Calendar.SECOND, 0);
+        fechaAltaVal.set(Calendar.MILLISECOND, 0);
+
+        if (!fechaAltaVal.equals(hoy)) {
+            throw new IllegalArgumentException("La fecha de alta debe ser el día de hoy.");
         }
 
-        if (fechaVueloDate.before(fechaAltaDate)) {
-            throw new IllegalArgumentException("La fecha del vuelo no puede ser anterior a la fecha de alta.");
+        // Fecha del vuelo: hoy o futuro
+        Date fechaVueloDate = fechaVueloCal.getTime();
+        if (fechaVueloDate.before(hoy.getTime())) {
+            throw new IllegalArgumentException("La fecha del vuelo no puede ser anterior al día de hoy.");
         }
 
 
@@ -354,8 +394,8 @@ public class VueloHelper {
                     fechaVuelo,
                     horaVuelo,
                     duracion,
-                    maxTurista,
-                    maxEjecutivo,
+                    maxTuristaInt,
+                    maxEjecutivoInt,
                     fecha,
                     ruta
             );

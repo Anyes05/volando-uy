@@ -1009,6 +1009,8 @@ public class EstacionTrabajo {
                 try {
                     String nombre = nombreAltaVuelotxt.getText().trim();
                     String duracion = duracionAltaVuelotxt.getText().trim();
+                    String maxTurista = asientosMaxTuristatxt.getText().trim();
+                    String maxEjecutivo = asientoMaxEjecutivotxt.getText().trim();
                     Calendar fechaAltaCal = fechaAltaVuelo.getCalendar();
                     Calendar fechaVueloCal = fechaVuelo.getCalendar();
 //                    DTFecha fechaAlta = new DTFecha(
@@ -1021,8 +1023,8 @@ public class EstacionTrabajo {
 //                            fechaVueloCal.get(Calendar.MONTH) + 1,
 //                            fechaVueloCal.get(Calendar.YEAR)
 //                    );
-                    int maxTurista = Integer.parseInt(asientosMaxTuristatxt.getText().trim());
-                    int maxEjecutivo = Integer.parseInt(asientoMaxEjecutivotxt.getText().trim());
+
+
                     DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem();
 
                     if (ruta == null) {
