@@ -1,6 +1,5 @@
 package presentacion;
 
-import logica.clase.Usuario;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -66,7 +65,6 @@ public class EstacionTrabajo {
     private JTextPane nombreRVConsulta;
     private JTextArea costoBaseRVConsulta;
     private JTextArea fechaAltaRVConsulta;
-    private JButton aceptarButton1;
     private JRadioButton rutaDeVueloRadioButton;
     private JRadioButton reservaDeVueloRadioButton;
     private JTextField descuentoAltaPaqtxt;
@@ -229,6 +227,15 @@ public class EstacionTrabajo {
     private JButton aceptarButton;
     private JButton cancelarButton;
 
+    //CONSULTA PAQUETE DE RUTA DE VUELO
+    private JPanel consultaPaqueteRutaVuelo;
+    private JPanel consultaPaqueteRutaVueloJPanelTable;
+    private JTable consultaPaqueteRutaVueloTablaPrincipal;
+    private JPanel consultaPaqueteRutaVueloParentPanel;
+    private JPanel consultaPaqueteRutaVueloSeleccionarPaquete;
+    private JTextField consultaPaqueteRutaVueloSeleccionarPaqueteInput;
+    private JButton consultaPaqueteRutaVueloSeleccionarPaqueteCancelar;
+    private JButton consultaPaqueteRutaVueloSeleccionarPaqueteAceptar;
 
     //  private JButton precargarAeropuertosButton;
 
@@ -478,10 +485,8 @@ public class EstacionTrabajo {
                         parentPanel.revalidate();
                         break;
                     case "Consulta de paquete":
-                        parentPanel.removeAll();
-                        //parentPanel.add();
-                        parentPanel.repaint();
-                        parentPanel.revalidate();
+                        UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel,consultaPaqueteRutaVueloSeleccionarPaquete);
+                        UsuarioHelper.cambiarPanel(parentPanel,consultaPaqueteRutaVuelo);
                         break;
                     case "Comprar paquete":
                         parentPanel.removeAll();
@@ -1239,6 +1244,15 @@ public class EstacionTrabajo {
                 UsuarioHelper.cambiarPanel(parentPanel,principalVacio);
             }
         });
+
+        // CONSULTA PAQUETE DE RUTA DE VUELO
+        consultaPaqueteRutaVueloSeleccionarPaqueteAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel,consultaRutaVuelo);
+            }
+        });
+
     }
 }
 
