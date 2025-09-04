@@ -236,6 +236,11 @@ public class EstacionTrabajo {
     private JTextField consultaPaqueteRutaVueloSeleccionarPaqueteInput;
     private JButton consultaPaqueteRutaVueloSeleccionarPaqueteCancelar;
     private JButton consultaPaqueteRutaVueloSeleccionarPaqueteAceptar;
+    private JPanel ComprarPaquete;
+    private JComboBox comboBoxPaquetesComprarPaquete;
+    private JComboBox comboBoxClientesComprarPaquete;
+    private JButton aceptarComprarPaquete;
+    private JButton cancelarButtonComprarPaquete;
 
     //  private JButton precargarAeropuertosButton;
 
@@ -490,7 +495,7 @@ public class EstacionTrabajo {
                         break;
                     case "Comprar paquete":
                         parentPanel.removeAll();
-                        //parentPanel.add();
+                        parentPanel.add(ComprarPaquete);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
