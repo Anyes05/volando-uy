@@ -1,5 +1,6 @@
 package presentacion;
 
+import logica.clase.Usuario;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -116,7 +117,7 @@ public class EstacionTrabajo {
     private JButton buttonAltaCategoria;
     private JTextField nombreAltRutaText;
     private JTextField duracionAltaVuelotxt;
-    private JButton button2;
+    private JButton reservaVueloSeleccionarRutaVueloCancelar;
     private JList<String> listCatAltaRuta;
     private JComboBox<DTRutaVuelo> comBoxRutVueloConsultaRV;
     private JComboBox vuelosConsultaRV;
@@ -193,6 +194,42 @@ public class EstacionTrabajo {
     private JRadioButton tipoEjecutivoAgrRutaaPaquete;
     private JRadioButton tipoTuristaAgrRutaaPaquete;
 
+    //RESERVA VUELO
+    private JPanel reservaVuelo;
+    private JPanel reservaVueloListarAerolineasJPanelTable;
+    private JTable reservaVueloTablePrincipal;
+    private JPanel reservaVueloParentPanel;
+    private JPanel reservaVueloSeleccionarAerolinea;
+    private JTextField reservaVueloSeleccionarAerolineaInput;
+    private JButton reservaVueloSeleccionarAerolineaAceptar;
+    private JButton reservaVueloSeleccionarAerolineaCancelar;
+    private JPanel reservaVueloSeleccionarRutaVuelo;
+    private JButton reservaVueloSeleccionarRutaVueloAceptar;
+    private JTextField reservaVueloSeleccionarRutaVueloInput;
+    private JPanel reservaVueloSeleccionarVuelo;
+    private JTextField reservaVueloSeleccionarVueloInput;
+    private JButton reservaVueloSeleccionarVueloAceptar;
+    private JButton reservaVueloSeleccionarVueloCancelar;
+    private JPanel reservaVueloSeleccionarUsuario;
+    private JPanel reservaVueloListarUsuariosJPanelTable;
+    private JTable reservaVueloListarUsuariosTable;
+    private JTextField reservaVueloSeleccionarUsuarioCliente;
+    private JPanel reservaVueloSeleccionarUsuarioJPanel;
+    private JComboBox reservaVueloSeleccionarUsuarioTipoAsiento;
+    private JButton reservaVueloSeleccionarUsuarioAceptar;
+    private JButton reservaVueloSeleccionarUsuarioCancelar;
+    private JSpinner reservaVueloSeleccionarUsuarioCantidadPasajes;
+    private JSpinner reservaVueloSeleccionarUsuarioCantidadEquipajeExtra;
+    private JCalendar reservaVueloSeleccionarUsuarioJCalendar;
+    private JPanel reservaVueloPasajes;
+    private JTextField apellidoTextField;
+    private JLabel reservaVueloPasajesNombre;
+    private JTextField reservaVueloPasajesApellido;
+    private JSpinner reservaVueloPasajesCantidadEquipajeExtra;
+    private JButton aceptarButton;
+    private JButton cancelarButton;
+
+
     //  private JButton precargarAeropuertosButton;
 
 
@@ -218,6 +255,7 @@ public class EstacionTrabajo {
         JCalendarAltaCliente = new JCalendar();
         calendarCiudadAlta = new JCalendar();
         calendarAltaPaquete = new JCalendar();
+        reservaVueloSeleccionarUsuarioJCalendar = new JCalendar();
         listCatAltaRuta = new JList<>();
         modificarClienteJCalendar = new JCalendar();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -410,6 +448,11 @@ public class EstacionTrabajo {
                         parentPanel.add(altaCategoría);
                         parentPanel.repaint();
                         parentPanel.revalidate();
+                        break;
+
+                    case "Reservar vuelo":
+                        UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarAerolinea);
+                        UsuarioHelper.cambiarPanel(parentPanel,reservaVuelo);
                         break;
                 }
             }
@@ -1157,6 +1200,43 @@ public class EstacionTrabajo {
                 parentPanel.add(principalVacio);
                 parentPanel.repaint();
                 parentPanel.revalidate();
+            }
+        });
+
+        // RESERVA VUELO
+        reservaVueloSeleccionarAerolineaAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarRutaVuelo);
+            }
+        });
+
+        reservaVueloSeleccionarRutaVueloAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarVuelo);
+            }
+        });
+
+
+        reservaVueloSeleccionarVueloAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarUsuarioJPanel);
+            }
+        });
+
+
+        reservaVueloSeleccionarUsuarioAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.cambiarPanel(reservaVueloParentPanel, reservaVueloPasajes);
+            }
+        });
+        aceptarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.cambiarPanel(parentPanel,principalVacio);
             }
         });
     }
