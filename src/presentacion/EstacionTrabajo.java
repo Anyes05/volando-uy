@@ -1162,8 +1162,36 @@ public class EstacionTrabajo {
                 if (rutaSeleccionada != null) {
                     cargarVuelos(comboBoxVuelosConsultaV, rutaSeleccionada.getNombre());
                 }
+
             }
         });
+
+        comboBoxVuelosConsultaV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DTVuelo v = (DTVuelo) comboBoxVuelosConsultaV.getSelectedItem();
+                if (v != null) {
+                    nombVueloConsultaVtxt.setText(v.getNombre());
+                    fechaVueloConsultaVtxt.setText(v.getFechaVuelo().toString());
+                    horaVueloConsultaVtxt.setText(v.getHoraVuelo().toString());
+                    duracionVueloConsultaVtxt.setText(v.getDuracion().toString());
+                    maxTuristaConsultaVtxt.setText(String.valueOf(v.getAsientosMaxTurista()));
+                    maxEjecutivoConsultaVtxt.setText(String.valueOf(v.getAsientosMaxEjecutivo()));
+                    fechaAltaVueloConsultaVtxt.setText(v.getFechaAlta().toString());
+                } else {
+                    nombVueloConsultaVtxt.setText("");
+                    fechaVueloConsultaVtxt.setText("");
+                    horaVueloConsultaVtxt.setText("");
+                    duracionVueloConsultaVtxt.setText("");
+                    maxTuristaConsultaVtxt.setText("");
+                    maxEjecutivoConsultaVtxt.setText("");
+                    fechaAltaVueloConsultaVtxt.setText("");
+                }
+
+            }
+        });
+
+
 
         //--------- CREAR PAQUETE ---------------
         buttonCrearPaquete.addActionListener(new ActionListener() {

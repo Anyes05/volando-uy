@@ -1369,7 +1369,9 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="713af" class="javax.swing.JLabel">
                     <constraints>
@@ -1386,6 +1388,7 @@
                       </grid>
                     </constraints>
                     <properties>
+                      <editable value="false"/>
                       <text value=""/>
                     </properties>
                   </component>
@@ -1403,7 +1406,9 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="ae7c6" class="javax.swing.JLabel">
                     <constraints>
@@ -1419,7 +1424,9 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="f17bf" class="javax.swing.JLabel">
                     <constraints>
@@ -1435,7 +1442,9 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="a8792" class="javax.swing.JTextArea" binding="maxEjecutivoConsultaVtxt">
                     <constraints>
@@ -1443,7 +1452,9 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="692fc" class="javax.swing.JLabel">
                     <constraints>
@@ -1459,7 +1470,9 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="2a3f3" class="javax.swing.JLabel">
                     <constraints>
