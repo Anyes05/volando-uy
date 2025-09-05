@@ -166,6 +166,8 @@ public class EstacionTrabajo {
     private JButton buttonCancelarCrearPaquete;
     private JButton buttonCrearPaquete;
     private JComboBox comboBoxAeroConsultaV;
+    private JTextPane descripcionConsultaVtxt;
+    private JTextArea costoBaseConsultaVtxt;
     private JComboBox<DTVuelo> comboBoxVuelosConsultaV;
     private JTextArea nombVueloConsultaVtxt;
     private JTextArea fechaVueloConsultaVtxt;
@@ -175,6 +177,7 @@ public class EstacionTrabajo {
     private JTextArea maxEjecutivoConsultaVtxt;
     private JTextArea fechaAltaVueloConsultaVtxt;
     private JTextArea fechaAlta;
+    private JTextArea fechaAltaConsultaVtxt;
     private JButton buttonCancelarCiudad;
     private JButton buttonCancelarCrearRutaV;
     private JButton buttonCancelarVuelo;
@@ -721,34 +724,40 @@ public class EstacionTrabajo {
         });
 
         /*----- CONSULTA USUARIO -----*/
-        ButtonGroup grupoConsultaUsuario = new ButtonGroup();
-        grupoConsultaUsuario.add(paqueteVueloRadioButton);
-        grupoConsultaUsuario.add(usuarioRadioButton);
-        grupoConsultaUsuario.add(reservaDeVueloRadioButton);
-        grupoConsultaUsuario.add(rutaDeVueloRadioButton);
+        ButtonGroup grupo = new ButtonGroup();
+        grupo.add(paqueteVueloRadioButton);
+        grupo.add(reservaDeVueloRadioButton);
+        grupo.add(rutaDeVueloRadioButton);
+
+// Si querés empezar con ninguno seleccionado
+        grupo.clearSelection();
 
         consultaUsuarioAceptar.addActionListener(e -> {
             String consulta = consultaUsuarioText.getText().trim();
-            if (paqueteVueloRadioButton.isSelected()) {
-                // lógica para opción 1
-                //  UsuarioHelper.mostrarPaquetes(consultaUsuarioTable2);
-            } else if (usuarioRadioButton.isSelected()) {
-                if (consulta.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable2, consulta);
-                }
-
-            } else if (reservaDeVueloRadioButton.isSelected()) {
-                // lógica para opción 3
-                // UsuarioHelper.mostrarReservasPorVuelo(consultaUsuarioTable2,consulta);
-            } else if (rutaDeVueloRadioButton.isSelected()) {
-                // lógica para opción 4
-                // UsuarioHelper.mostrarRutaVuelo(consultaUsuarioTable2, consulta);
-            } else {
-                JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable1, consulta);
         });
+
+//        ActionListener listener = e -> {
+//            if (paqueteVueloRadioButton.isSelected()) {
+//                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaPaqueteRutaVuelo);
+//            } else if (reservaDeVueloRadioButton.isSelected()) {
+//                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaVuelo);
+//            } else if (rutaDeVueloRadioButton.isSelected()) {
+//                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaRutaVuelo);
+//            }
+//        };
+//
+//        paqueteVueloRadioButton.addActionListener(listener);
+//        reservaDeVueloRadioButton.addActionListener(listener);
+//        rutaDeVueloRadioButton.addActionListener(listener);
+//
+//
+//        listarUsuariosButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
+//            }
+//        });
 
         /*----- MODIFICAR USUARIO -----*/
         modificarUsuarioAceptar.addActionListener(new ActionListener() {
