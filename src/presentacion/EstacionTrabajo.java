@@ -17,7 +17,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JTable;
 import java.util.Calendar;
 import java.util.List;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class EstacionTrabajo {
     private JPanel mainPrincipal;
@@ -127,7 +128,9 @@ public class EstacionTrabajo {
     private JLabel costoEquipajeExRVConsulta;
     private JTextArea costoUnEquipajeExRVConsulta;
     private JTextField horaVuelotxt;
-    private JPanel consultaUsuarioJpanel2;
+
+    //CONSULTA USUARIO
+    private JPanel consultaUsuarioParentPanel;
     private JPanel consultaUsuarioJpanel1;
     private JTable consultaUsuarioTable1;
     private JTable consultaUsuarioTable2;
@@ -241,6 +244,7 @@ public class EstacionTrabajo {
     private JComboBox comboBoxClientesComprarPaquete;
     private JButton aceptarComprarPaquete;
     private JButton cancelarButtonComprarPaquete;
+    private JButton listarUsuariosButton;
 
     //  private JButton precargarAeropuertosButton;
 
@@ -258,6 +262,7 @@ public class EstacionTrabajo {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+
     }
 
     private void createUIComponents() {
@@ -271,6 +276,8 @@ public class EstacionTrabajo {
         listCatAltaRuta = new JList<>();
         modificarClienteJCalendar = new JCalendar();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+
     }
 
 
@@ -375,9 +382,6 @@ public class EstacionTrabajo {
         consultaUsuarioJpanel1.setLayout(new BorderLayout());
         consultaUsuarioJpanel1.add(scroll, BorderLayout.CENTER);
 
-        JScrollPane scroll2 = new JScrollPane(consultaUsuarioTable2);
-        consultaUsuarioJpanel2.setLayout(new BorderLayout());
-        consultaUsuarioJpanel2.add(scroll2, BorderLayout.CENTER);
 
         JScrollPane scroll3 = new JScrollPane(modificarUsuariotable1);
         modificarUsuarioJPanel1.setLayout(new BorderLayout());
@@ -723,32 +727,38 @@ public class EstacionTrabajo {
         });
 
         /*----- CONSULTA USUARIO -----*/
-        ButtonGroup grupoConsultaUsuario = new ButtonGroup();
-        grupoConsultaUsuario.add(paqueteVueloRadioButton);
-        grupoConsultaUsuario.add(usuarioRadioButton);
-        grupoConsultaUsuario.add(reservaDeVueloRadioButton);
-        grupoConsultaUsuario.add(rutaDeVueloRadioButton);
+        ButtonGroup grupo = new ButtonGroup();
+        grupo.add(paqueteVueloRadioButton);
+        grupo.add(reservaDeVueloRadioButton);
+        grupo.add(rutaDeVueloRadioButton);
+
+// Si querés empezar con ninguno seleccionado
+        grupo.clearSelection();
 
         consultaUsuarioAceptar.addActionListener(e -> {
             String consulta = consultaUsuarioText.getText().trim();
-            if (paqueteVueloRadioButton.isSelected()) {
-                // lógica para opción 1
-                //  UsuarioHelper.mostrarPaquetes(consultaUsuarioTable2);
-            } else if (usuarioRadioButton.isSelected()) {
-                if (consulta.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Ingrese un nickname", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable2, consulta);
-                }
+            UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable1, consulta);
+        });
 
+        ActionListener listener = e -> {
+            if (paqueteVueloRadioButton.isSelected()) {
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaPaqueteRutaVuelo);
             } else if (reservaDeVueloRadioButton.isSelected()) {
-                // lógica para opción 3
-                // UsuarioHelper.mostrarReservasPorVuelo(consultaUsuarioTable2,consulta);
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaVuelo);
             } else if (rutaDeVueloRadioButton.isSelected()) {
-                // lógica para opción 4
-                // UsuarioHelper.mostrarRutaVuelo(consultaUsuarioTable2, consulta);
-            } else {
-                JOptionPane.showMessageDialog(null, "Debe seleccionar una opción.", "Error", JOptionPane.ERROR_MESSAGE);
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaRutaVuelo);
+            }
+        };
+
+        paqueteVueloRadioButton.addActionListener(listener);
+        reservaDeVueloRadioButton.addActionListener(listener);
+        rutaDeVueloRadioButton.addActionListener(listener);
+
+
+        listarUsuariosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
             }
         });
 
@@ -1287,6 +1297,7 @@ public class EstacionTrabajo {
                 UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel,consultaRutaVuelo);
             }
         });
+
 
     }
 }
