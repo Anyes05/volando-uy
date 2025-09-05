@@ -166,8 +166,6 @@ public class EstacionTrabajo {
     private JButton buttonCancelarCrearPaquete;
     private JButton buttonCrearPaquete;
     private JComboBox comboBoxAeroConsultaV;
-    private JTextPane descripcionConsultaVtxt;
-    private JTextArea costoBaseConsultaVtxt;
     private JComboBox<DTVuelo> comboBoxVuelosConsultaV;
     private JTextArea nombVueloConsultaVtxt;
     private JTextArea fechaVueloConsultaVtxt;
@@ -177,7 +175,6 @@ public class EstacionTrabajo {
     private JTextArea maxEjecutivoConsultaVtxt;
     private JTextArea fechaAltaVueloConsultaVtxt;
     private JTextArea fechaAlta;
-    private JTextArea fechaAltaConsultaVtxt;
     private JButton buttonCancelarCiudad;
     private JButton buttonCancelarCrearRutaV;
     private JButton buttonCancelarVuelo;
@@ -279,6 +276,7 @@ public class EstacionTrabajo {
         for (DTAerolinea a : sistema.listarAerolineas()) {
             combo.addItem(a.getNickname());
         }
+        combo.setSelectedIndex(-1);
     }
 
     private void cargarCategorias(JList<String> lista) {
@@ -1288,6 +1286,13 @@ public class EstacionTrabajo {
             }
         });
 
+            //------------COMPRAR PAQUETE --------------
+        comboBoxPaquetesComprarPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 }
 
