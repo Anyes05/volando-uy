@@ -1,31 +1,26 @@
 package presentacion.helpers;
 
+import dato.entidades.Aerolinea;
 import dato.entidades.Cliente;
-import presentacion.helpers.*;
+import dato.entidades.Reserva;
+import dato.entidades.RutaVuelo;
+import dato.entidades.CompraComun;
+import dato.entidades.CompraPaquete;
+import dato.entidades.Usuario;
 import logica.clase.Factory;
 import logica.clase.ISistema;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
 import logica.clase.*;
-import java.awt.event.ComponentEvent;
+
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
-import java.util.ArrayList;
+
 import logica.servicios.*;
 import javax.swing.*;
-import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
-import javax.swing.JScrollPane;
-import java.awt.*;
-import java.awt.BorderLayout;
-
 
 
 public class UsuarioHelper {
@@ -66,14 +61,14 @@ public class UsuarioHelper {
 
 
     //Formatear reserva
-    public static String formatearReserva(DTReserva r) {
+    public static String formatearReserva(Reserva r) {
         if (r == null) return "";
 
         String tipo;
 
-        if (r instanceof DTCompraPaquete) {
+        if (r instanceof CompraPaquete) {
             tipo = "Paquete";
-        } else if (r instanceof DTCompraComun) {
+        } else if (r instanceof CompraComun) {
             tipo = "Común";
         } else {
             tipo = "Desconocido";
@@ -91,6 +86,7 @@ public class UsuarioHelper {
     }
 
     // CAMBIAR PANEL
+
     public static void cambiarPanel(JPanel parentPanel, JPanel panelNuevo) {
         parentPanel.removeAll();
         parentPanel.add(panelNuevo);
@@ -286,24 +282,27 @@ public class UsuarioHelper {
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0);
 
         try {
-            List<DTUsuario> usuarios = getSistema().consultarUsuarios();
+            UsuarioServicio usuarioServicio = new UsuarioServicio();
 
-            AerolineaServicio aerolineaServicio = new AerolineaServicio();
+            // Trae todos los usuarios de una sola vez
+            List<dato.entidades.Usuario> usuarios = usuarioServicio.listarUsuarios();
 
-            for (DTUsuario u : usuarios) {
-                String tipo = "Cliente"; // Asumimos cliente por defecto
-
-                if (aerolineaServicio.buscarAerolineaPorNickname(u.getNickname()) != null) {
+            for (Usuario u : usuarios) {
+                String tipo;
+                if (u instanceof Cliente) {
+                    tipo = "Cliente";
+                } else if (u instanceof Aerolinea) {
                     tipo = "Aerolínea";
+                } else {
+                    tipo = "Desconocido";
                 }
 
-                Object[] fila = {
+                modeloTabla.addRow(new Object[]{
                         tipo,
                         u.getNickname(),
                         u.getNombre(),
                         u.getCorreo()
-                };
-                modeloTabla.addRow(fila);
+                });
             }
 
         } catch (Exception ex) {
@@ -640,6 +639,81 @@ public class UsuarioHelper {
             );
             return;
         }
+
+        try {
+            ClienteServicio clienteServicio = new ClienteServicio();
+            AerolineaServicio aerolineaServicio = new AerolineaServicio();
+
+            String[] columnas = {"Campo", "Valor", "Valor"};
+            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
+
+            // Buscar cliente
+            Cliente c = clienteServicio.buscarClientePorNickname(nickname);
+            if (c != null) {
+                modelo.addRow(new Object[]{"Nickname", c.getNickname(), ""});
+                modelo.addRow(new Object[]{"Nombre", c.getNombre(), ""});
+                modelo.addRow(new Object[]{"Correo", c.getCorreo(), ""});
+                modelo.addRow(new Object[]{"Apellido", c.getApellido(), ""});
+                modelo.addRow(new Object[]{"Tipo Doc", c.getTipoDoc(), ""});
+                modelo.addRow(new Object[]{"Documento", c.getNumeroDocumento(), ""});
+                modelo.addRow(new Object[]{"Fecha Nac", c.getFechaNacimiento(), ""});
+                modelo.addRow(new Object[]{"Nacionalidad", c.getNacionalidad(), ""});
+
+                if (c.getReservas() != null) {
+                    for (Reserva r : c.getReservas()) {
+                        modelo.addRow(new Object[]{"Reserva", formatearReserva(r), ""});
+                    }
+                }
+
+                tabla.setModel(modelo);
+                tabla.setAutoCreateRowSorter(true);
+                return;
+            }
+
+            // Buscar aerolínea
+            Aerolinea a = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+            if (a != null) {
+                modelo.addRow(new Object[]{"Nickname", a.getNickname(), ""});
+                modelo.addRow(new Object[]{"Nombre", a.getNombre(), ""});
+                modelo.addRow(new Object[]{"Correo", a.getCorreo(), ""});
+                modelo.addRow(new Object[]{"Descripción", a.getDescripcion(), ""});
+                modelo.addRow(new Object[]{"Sitio Web", a.getLinkSitioWeb(), ""});
+
+                if (a.getRutasVuelo() != null) {
+                    for (RutaVuelo ruta : a.getRutasVuelo()) {
+                        modelo.addRow(new Object[]{
+                                "Ruta",
+                                ruta.getNombre() + " - " + ruta.getDescripcion(),
+                                ruta.getCostoBase()
+                        });
+                    }
+                }
+
+                tabla.setModel(modelo);
+                tabla.setAutoCreateRowSorter(true);
+                return;
+            }
+
+            // Si no se encontró en ninguno
+            JOptionPane.showMessageDialog(null, "Usuario no encontrado: " + nickname, "Error", JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error al mostrar datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+/*
+    public static void mostrarDatosUsuario(JTable tabla, String nickname) {
+        if (nickname == null || nickname.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Debe proporcionar un Nickname",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
         try {
             DTUsuario usuario = getSistema().mostrarDatosUsuario(nickname);
 
@@ -689,7 +763,7 @@ public class UsuarioHelper {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Error al mostrar datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
+    }*/
 
    /* ////////PAQUETES DE VUELO/////////// ESTE NO RECIBE PARAMETROS POR QUE TODAVIA NO ESTA IMPLEMENTADO EN SISTEMA
     public static void mostrarPaquetes(JTable tabla) {
