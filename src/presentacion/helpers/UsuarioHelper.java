@@ -13,6 +13,7 @@ import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
 import logica.clase.*;
 
+import java.awt.*;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -93,7 +94,42 @@ public class UsuarioHelper {
         parentPanel.repaint();
         parentPanel.revalidate();
     }
+   /* public static void cambiarPanel(JPanel parentPanel, JPanel panelNuevo) {
+        if (parentPanel.getLayout() instanceof CardLayout) {
+            CardLayout cl = (CardLayout) parentPanel.getLayout();
 
+            // Si el panel no tiene nombre, le damos uno único
+            if (panelNuevo.getName() == null || panelNuevo.getName().isBlank()) {
+                panelNuevo.setName(panelNuevo.getClass().getSimpleName());
+            }
+
+            // Verificar si ya está agregado
+            boolean yaAgregado = false;
+            for (Component comp : parentPanel.getComponents()) {
+                if (comp.getName() != null && comp.getName().equals(panelNuevo.getName())) {
+                    yaAgregado = true;
+                    break;
+                }
+            }
+
+            // Si no está agregado, lo agregamos con su nombre
+            if (!yaAgregado) {
+                parentPanel.add(panelNuevo, panelNuevo.getName());
+            }
+
+            // Mostrar la carta
+            cl.show(parentPanel, panelNuevo.getName());
+            parentPanel.revalidate();
+            parentPanel.repaint();
+        } else {
+            // Comportamiento original
+            parentPanel.removeAll();
+            parentPanel.add(panelNuevo);
+            parentPanel.revalidate();
+            parentPanel.repaint();
+        }
+    }
+*/
     // Método helper para obtener la instancia de ISistema a través del Factory
     private static ISistema getSistema() {
         Factory factory = new Factory();
