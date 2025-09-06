@@ -66,7 +66,7 @@ public class EstacionTrabajo {
     private JToolBar JToolBarPrincipal;
     //private JList list1;
     private JComboBox comboBoxAeroRVConsulta;
-    private JTextPane nombreRVConsulta;
+    private JTextArea nombreRVConsulta;
     private JTextArea costoBaseRVConsulta;
     private JTextArea fechaAltaRVConsulta;
     private JRadioButton rutaDeVueloRadioButton;
@@ -123,7 +123,7 @@ public class EstacionTrabajo {
     private JList<String> listCatAltaRuta;
     private JComboBox<DTRutaVuelo> comBoxRutVueloConsultaRV;
     private JComboBox vuelosConsultaRV;
-    private JTextPane descripcionRVConsulta;
+    private JTextArea descripcionRVConsulta;
     private JTextArea costoBaseEjRVConsulta;
     private JTextArea ciudadORVConsulta;
     private JTextArea ciudadDRVConsulta;
@@ -347,6 +347,16 @@ public class EstacionTrabajo {
             costoUnEquipajeExRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoEquipajeExtra()));
             fechaAltaRVConsulta.setText(ruta.getFechaAlta().toString());
         } else {
+            VueloHelper.limpiarCampos(
+                    nombreRVConsulta,
+                    descripcionRVConsulta,
+                    ciudadORVConsulta,
+                    ciudadDRVConsulta,
+                    costoBaseTuRVConsulta,
+                    costoBaseEjRVConsulta,
+                    costoUnEquipajeExRVConsulta,
+                    fechaAltaRVConsulta
+            );
             JOptionPane.showMessageDialog(parentPanel, "No se encontró la ruta.");
         }
     }
@@ -363,6 +373,7 @@ public class EstacionTrabajo {
             cargandoRutasRV = false;
             comboRutas.setSelectedIndex(-1); // evita disparo inicial
         }
+        comboRutas.setSelectedIndex(-1);
     }
 
     private void cargarVuelos(JComboBox<DTVuelo> comboVuelos, String nombreRuta) {
@@ -1214,6 +1225,17 @@ public class EstacionTrabajo {
                     }
                     cargandoVuelosRV = false;
                     vuelosConsultaRV.setSelectedIndex(-1);
+                }else{
+                    VueloHelper.limpiarCampos(
+                            nombreRVConsulta,
+                            descripcionRVConsulta,
+                            ciudadORVConsulta,
+                            ciudadDRVConsulta,
+                            costoBaseTuRVConsulta,
+                            costoBaseEjRVConsulta,
+                            costoUnEquipajeExRVConsulta,
+                            fechaAltaRVConsulta
+                    );
                 }
             }
         });
@@ -1279,6 +1301,10 @@ public class EstacionTrabajo {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String nickname = (String) comboBoxAeroConsultaV.getSelectedItem();
+                comboBoxRutasVuelosConsultaV.removeAllItems();
+                comboBoxVuelosConsultaV.removeAllItems();
+                VueloHelper.limpiarCampos(nombVueloConsultaVtxt,fechaVueloConsultaVtxt,horaVueloConsultaVtxt,duracionVueloConsultaVtxt,maxTuristaConsultaVtxt,
+                        maxEjecutivoConsultaVtxt,fechaAltaVueloConsultaVtxt);
                 if (nickname != null) {
                     cargarRutas(comboBoxRutasVuelosConsultaV, nickname);
                 }
@@ -1288,6 +1314,9 @@ public class EstacionTrabajo {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DTRutaVuelo rutaSeleccionada = (DTRutaVuelo) comboBoxRutasVuelosConsultaV.getSelectedItem();
+                comboBoxVuelosConsultaV.removeAllItems();
+                VueloHelper.limpiarCampos(nombVueloConsultaVtxt,fechaVueloConsultaVtxt,horaVueloConsultaVtxt,duracionVueloConsultaVtxt,maxTuristaConsultaVtxt,
+                maxEjecutivoConsultaVtxt,fechaAltaVueloConsultaVtxt);
                 if (rutaSeleccionada != null) {
                     cargarVuelos(comboBoxVuelosConsultaV, rutaSeleccionada.getNombre());
                 }
@@ -1308,17 +1337,14 @@ public class EstacionTrabajo {
                     maxEjecutivoConsultaVtxt.setText(String.valueOf(v.getAsientosMaxEjecutivo()));
                     fechaAltaVueloConsultaVtxt.setText(v.getFechaAlta().toString());
                 } else {
-                    nombVueloConsultaVtxt.setText("");
-                    fechaVueloConsultaVtxt.setText("");
-                    horaVueloConsultaVtxt.setText("");
-                    duracionVueloConsultaVtxt.setText("");
-                    maxTuristaConsultaVtxt.setText("");
-                    maxEjecutivoConsultaVtxt.setText("");
-                    fechaAltaVueloConsultaVtxt.setText("");
+                    VueloHelper.limpiarCampos(nombVueloConsultaVtxt,fechaVueloConsultaVtxt,horaVueloConsultaVtxt,duracionVueloConsultaVtxt,maxTuristaConsultaVtxt,
+                            maxEjecutivoConsultaVtxt,fechaAltaVueloConsultaVtxt);
                 }
 
             }
         });
+
+
 
 
 
