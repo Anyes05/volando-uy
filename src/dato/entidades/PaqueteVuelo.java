@@ -25,6 +25,9 @@ public class PaqueteVuelo {
     @Column(nullable = false)
     private float descuento;
 
+    @Column(nullable = true)
+    private TipoAsiento tipoAsiento;
+
 //    @Column(nullable = false)
 //    private DTCostoBase DTCostoBase;
 
@@ -49,9 +52,10 @@ public class PaqueteVuelo {
         this.cantidad = null;
     }
 
-    public PaqueteVuelo(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
+    public PaqueteVuelo(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
         this.nombre = nombrePaquete;
         this.descripcion = descripcion;
+        this.tipoAsiento = tipoAsiento;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.fechaAlta = fechaAlta;
@@ -75,12 +79,12 @@ public class PaqueteVuelo {
     public DTFecha getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
 
-//    public TipoAsiento getTipoAsiento() {
-//        return tipoAsiento;
-//    }
-//    public void setTipoAsiento(TipoAsiento tipoAsiento) {
-//        this.tipoAsiento = tipoAsiento;
-//    }
+    public TipoAsiento getTipoAsiento() {
+        return tipoAsiento;
+    }
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+        this.tipoAsiento = tipoAsiento;
+    }
     public int getDiasValidos() {
         return diasValidos;
     }

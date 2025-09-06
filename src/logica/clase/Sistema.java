@@ -718,7 +718,7 @@ public class Sistema implements ISistema {
     // PAQUETES DE VUELO
 //
     // CREAR PAQUETE VUELO
-    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
+    public void crearPaquete(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
 //        for (PaqueteVuelo p : paqueteVuelos) {
 //            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
 //                throw new IllegalArgumentException("El nombre del paquete ya existe.");
@@ -738,7 +738,7 @@ public class Sistema implements ISistema {
         }
 
         try {
-            dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion, diasValidos, descuento, fechaAlta);
+            dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion,tipoAsiento, diasValidos, descuento, fechaAlta);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
         }
@@ -746,32 +746,33 @@ public class Sistema implements ISistema {
 
     // AGREGAR RUTAS DE VUELO A PAQUETE
 //
-//    public List<DTPaqueteVuelos> mostrarPaquete() {
-//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
-//        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
-//        List <dato.entidades.PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
-//        for (dato.entidades.PaqueteVuelo p : paquetes) {
-//            DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-//                    p.getNombre(),
-//                    p.getDescripcion(),
-//                    p.getTipoAsiento(),
-//                    p.getDiasValidos(),
-//                    p.getDescuento(),
-//                    p.getFechaAlta()
-//            );
-//            listaPaquetes.add(dtPaquete);
-//            return listaPaquetes;
-//    }
+    public List<DTPaqueteVuelos> mostrarPaquete() {
+        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
+        List<dato.entidades.PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
+        for (dato.entidades.PaqueteVuelo p : paquetes) {
+            DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                    p.getNombre(),
+                    p.getDescripcion(),
+                    p.getTipoAsiento(),
+                    p.getDiasValidos(),
+                    p.getDescuento(),
+                    p.getFechaAlta()
+            );
+            listaPaquetes.add(dtPaquete);
+        }
+        return listaPaquetes;
+    }
 //
-//    public void seleccionarPaquete(String nombrePaquete) {
-//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
-//        dato.entidades.PaqueteVuelo paquete = paqueteVueloServicio.obtenerPaquetePorNombre(nombrePaquete);
-//        if (paquete != null) {
-//            paqueteSeleccionado = paquete;
-//            return;
-//        }
-//        throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
-//    }
+    public void seleccionarPaquete(String nombrePaquete) {
+        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+        dato.entidades.PaqueteVuelo paquete = paqueteVueloServicio.obtenerPaquetePorNombre(nombrePaquete);
+        if (paquete != null) {
+            paqueteSeleccionado = paquete;
+            return;
+        }
+        throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
+    }
 //
 //    // seleccionarAerolinea (ya está mas arriba)
 //    // seleccionarRutaVuelo (ya está mas arriba)
@@ -850,59 +851,59 @@ public class Sistema implements ISistema {
     //mostrarPaquete (repetida)
     //seleccionarPaquete (repetida)
 
-//    public List<DTCliente> mostrarClientes() {
-//        ClienteServicio clienteServicio = new ClienteServicio();
-//        List<DTCliente> listaClientes = new ArrayList<>();
-//        List<dato.entidades.Cliente> cliente = clienteServicio.listarClientes();
-//        for (Usuario u : usuarios) {
-//            if (u instanceof Cliente c) {
-//                listaClientes.add(new DTCliente(
-//                        c.getNickname(),
-//                        c.getNombre(),
-//                        c.getCorreo(),
-//                        c.getApellido(),
-//                        c.getTipoDoc(),
-//                        c.getNumeroDocumento(),
-//                        c.getFechaNacimiento(),
-//                        c.getNacionalidad(),
-//                        new ArrayList<>()
-//                ));
-//            }
-//        }
-//        return listaClientes;
-//    }
+    public List<DTCliente> mostrarClientes() {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        List<DTCliente> listaClientes = new ArrayList<>();
+        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+        for (Usuario u : clientes) {
+            if (u instanceof Cliente c) {
+                listaClientes.add(new DTCliente(
+                        c.getNickname(),
+                        c.getNombre(),
+                        c.getCorreo(),
+                        c.getApellido(),
+                        c.getTipoDoc(),
+                        c.getNumeroDocumento(),
+                        c.getFechaNacimiento(),
+                        c.getNacionalidad(),
+                        new ArrayList<>()
+                ));
+            }
+        }
+        return listaClientes;
+    }
 
 
-//    public void seleccionarCliente(String nombreCliente){
-//        ClienteServicio clienteServicio = new ClienteServicio();
-//        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nombreCliente);
-//        if (cliente != null) {
-//            clienteSeleccionado = cliente;
-//            return;
-//        }
-//        throw new IllegalArgumentException("No se encontró un cliente con el nombre: " + nombreCliente);
-//    }
+    public void seleccionarCliente(String nombreCliente){
+        ClienteServicio clienteServicio = new ClienteServicio();
+        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nombreCliente);
+        if (cliente != null) {
+            clienteSeleccionado = cliente;
+            return;
+        }
+        throw new IllegalArgumentException("No se encontró un cliente con el nombre: " + nombreCliente);
+    }
 
-//    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento, TipoAsiento tipoAsiento){
-//        if (paqueteSeleccionado == null) {
-//            throw new IllegalStateException("Debe seleccionar un paquete antes de realizar la compra.");
-//        }
-//        if (clienteSeleccionado == null) {
-//            throw new IllegalStateException("Debe seleccionar un cliente antes de realizar la compra.");
-//        }
-//        if (costo < 0) {
-//            throw new IllegalArgumentException("El costo no puede ser negativo.");
-//        }
-//        CompraPaqueteServicio servicioCompraPaquete = new CompraPaqueteServicio();
-//        try {
-//            dato.entidades.CompraPaquete compraPaquete = servicioCompraPaquete.registrarCompraPaquete(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento, paqueteSeleccionado);
-//            DTCostoBase costoBase = new DTCostoBase(0, 0, 0);
-//            compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
-//            clienteSeleccionado.addReserva(compraPaquete);
-//            clienteSeleccionado.incrementarCantidadPaquetes();
-//        } catch (Exception e) {
-//            throw new IllegalArgumentException("Error");
-//        }
-//    }
+    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento, TipoAsiento tipoAsiento){
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de realizar la compra.");
+        }
+        if (clienteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un cliente antes de realizar la compra.");
+        }
+        if (costo < 0) {
+            throw new IllegalArgumentException("El costo no puede ser negativo.");
+        }
+        CompraPaqueteServicio servicioCompraPaquete = new CompraPaqueteServicio();
+        try {
+            dato.entidades.CompraPaquete compraPaquete = servicioCompraPaquete.registrarCompraPaquete(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento, paqueteSeleccionado);
+            DTCostoBase costoBase = new DTCostoBase(0, 0, 0);
+            compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
+            clienteSeleccionado.addReserva(compraPaquete);
+            clienteSeleccionado.incrementarCantidadPaquetes();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error");
+        }
+    }
 }
 

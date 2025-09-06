@@ -47,14 +47,18 @@ public class DTCliente extends DTUsuario{
         return this.reserva;
     }
     // MÉTODOS
-    @Override
-    public String toString() {
-        return super.toString() +
-                ", Apellido: " + apellido +
-                ", Fecha Nac: " + fechaNacimiento +
-                ", Nacionalidad: " + nacionalidad +
-                ", TipoDoc: " + tipoDocumento +
-                ", NumDoc: " + numeroDocumento;
+
+    public String toString (){
+        return numeroDocumento;
     }
+//    @Override
+//    public String toString() {
+//        return super.toString() +
+//                ", Apellido: " + apellido +
+//                ", Fecha Nac: " + fechaNacimiento +
+//                ", Nacionalidad: " + nacionalidad +
+//                ", TipoDoc: " + tipoDocumento +
+//                ", NumDoc: " + numeroDocumento;
+//    }
 
 }

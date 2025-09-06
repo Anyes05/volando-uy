@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JTable;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
@@ -127,7 +128,10 @@ public class EstacionTrabajo {
     private JLabel costoEquipajeExRVConsulta;
     private JTextArea costoUnEquipajeExRVConsulta;
     private JTextField horaVuelotxt;
-    private JPanel consultaUsuarioJpanel2;
+
+
+    //CONSULTA USUARIO
+    private JPanel consultaUsuarioParentPanel;
     private JPanel consultaUsuarioJpanel1;
     private JTable consultaUsuarioTable1;
     private JTable consultaUsuarioTable2;
@@ -241,9 +245,10 @@ public class EstacionTrabajo {
     private JComboBox comboBoxClientesComprarPaquete;
     private JButton aceptarComprarPaquete;
     private JButton cancelarButtonComprarPaquete;
+    private JButton listarUsuariosButton;
+
 
     //  private JButton precargarAeropuertosButton;
-
 
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
@@ -337,6 +342,31 @@ public class EstacionTrabajo {
         }
     }
 
+    //---PAQUETES------
+    private void cargarPaquetes(JComboBox<DTPaqueteVuelos> combo){
+        combo.removeAllItems();
+        for (DTPaqueteVuelos p : sistema.mostrarPaquete()){
+            combo.addItem(p);
+        }
+        combo.setSelectedIndex(-1);
+    }
+    //----CLIENTES------
+    private void cargarClientes(JComboBox<DTCliente> combo){
+        combo.removeAllItems();
+        for (DTCliente c : sistema.mostrarClientes()){
+            combo.addItem(c);
+        }
+        combo.setSelectedIndex(-1);
+    }
+
+
+//    private void cargarAerolineas(JComboBox<String> combo) {
+//        combo.removeAllItems(); // limpiar combo por si ya tiene algo
+//        for (DTAerolinea a : sistema.listarAerolineas()) {
+//            combo.addItem(a.getNickname());
+//        }
+//        combo.setSelectedIndex(-1);
+//    }
     //----------Boton cancelar Alta vuelo------
     private void limpiarCamposAltaVuelo() {
         nombreAltaVuelotxt.setText("");
@@ -376,9 +406,6 @@ public class EstacionTrabajo {
         consultaUsuarioJpanel1.setLayout(new BorderLayout());
         consultaUsuarioJpanel1.add(scroll, BorderLayout.CENTER);
 
-        JScrollPane scroll2 = new JScrollPane(consultaUsuarioTable2);
-        consultaUsuarioJpanel2.setLayout(new BorderLayout());
-        consultaUsuarioJpanel2.add(scroll2, BorderLayout.CENTER);
 
         JScrollPane scroll3 = new JScrollPane(modificarUsuariotable1);
         modificarUsuarioJPanel1.setLayout(new BorderLayout());
@@ -496,6 +523,8 @@ public class EstacionTrabajo {
                         break;
                     case "Comprar paquete":
                         parentPanel.removeAll();
+                        cargarPaquetes(comboBoxPaquetesComprarPaquete);
+                        cargarClientes(comboBoxClientesComprarPaquete);
                         parentPanel.add(ComprarPaquete);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -737,27 +766,27 @@ public class EstacionTrabajo {
             UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable1, consulta);
         });
 
-//        ActionListener listener = e -> {
-//            if (paqueteVueloRadioButton.isSelected()) {
-//                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaPaqueteRutaVuelo);
-//            } else if (reservaDeVueloRadioButton.isSelected()) {
-//                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaVuelo);
-//            } else if (rutaDeVueloRadioButton.isSelected()) {
-//                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaRutaVuelo);
-//            }
-//        };
-//
-//        paqueteVueloRadioButton.addActionListener(listener);
-//        reservaDeVueloRadioButton.addActionListener(listener);
-//        rutaDeVueloRadioButton.addActionListener(listener);
-//
-//
-//        listarUsuariosButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
-//            }
-//        });
+        ActionListener listener = e -> {
+            if (paqueteVueloRadioButton.isSelected()) {
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaPaqueteRutaVuelo);
+            } else if (reservaDeVueloRadioButton.isSelected()) {
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaVuelo);
+            } else if (rutaDeVueloRadioButton.isSelected()) {
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaRutaVuelo);
+            }
+        };
+
+        paqueteVueloRadioButton.addActionListener(listener);
+        reservaDeVueloRadioButton.addActionListener(listener);
+        rutaDeVueloRadioButton.addActionListener(listener);
+
+
+        listarUsuariosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
+            }
+        });
 
         /*----- MODIFICAR USUARIO -----*/
         modificarUsuarioAceptar.addActionListener(new ActionListener() {
@@ -1220,7 +1249,7 @@ public class EstacionTrabajo {
                             fechaCal.get(Calendar.MONTH) + 1,
                             fechaCal.get(Calendar.YEAR)
                     );
-                    sistema.crearPaquete(nomPaq, descripcion, diasValidosInt, descuentoFloat, fechaAlta);
+                    sistema.crearPaquete(nomPaq, descripcion,null, diasValidosInt, descuentoFloat, fechaAlta);
                     JOptionPane.showMessageDialog(crearPaquete, "Paquete creado correctamente.");
 
                     nombreAltaPaqtxt.setText("");
@@ -1296,12 +1325,52 @@ public class EstacionTrabajo {
         });
 
             //------------COMPRAR PAQUETE --------------
-        comboBoxPaquetesComprarPaquete.addActionListener(new ActionListener() {
+
+        aceptarComprarPaquete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                DTPaqueteVuelos paquete = (DTPaqueteVuelos) comboBoxPaquetesComprarPaquete.getSelectedItem();
+                DTCliente cliente = (DTCliente) comboBoxClientesComprarPaquete.getSelectedItem();
 
+                if (paquete == null || cliente == null) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete y un cliente");
+                    return;
+                }
+
+                try {
+                    // seteás los seleccionados en el sistema
+                    sistema.seleccionarPaquete(paquete.getNombre());
+                    sistema.seleccionarCliente(cliente.getNickname());
+
+                    // ahora armás los demás datos de la compra
+
+                    LocalDate hoy = LocalDate.now();
+                    DTFecha fechaCompra = new DTFecha(hoy.getDayOfMonth(), hoy.getMonthValue(), hoy.getYear());
+                    float costo = paquete.getDescuento();
+                    // calcular vencimiento sumando los días válidos del paquete
+                    LocalDate vencimientoLocalDate = hoy.plusDays(paquete.getDiasValidos());
+                    DTFecha vencimiento = new DTFecha(
+                            vencimientoLocalDate.getDayOfMonth(),
+                            vencimientoLocalDate.getMonthValue(),
+                            vencimientoLocalDate.getYear()
+                    );
+                    TipoAsiento tipoAsiento = paquete.getTipoAsiento();
+
+                    // ejecutar la compra
+                    sistema.realizarCompra(fechaCompra, costo, vencimiento, tipoAsiento);
+
+                    JOptionPane.showMessageDialog(null, "Compra realizada con éxito");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al realizar compra: " + ex.getMessage());
+                }
             }
-        });
+            });
+        }
     }
-}
+
+
+
+
+
+
 

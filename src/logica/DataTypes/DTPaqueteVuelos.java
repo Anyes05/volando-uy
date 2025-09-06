@@ -108,4 +108,8 @@ public class DTPaqueteVuelos {
     public void setRutas(List<RutaVuelo> rutas) {
         this.rutas = rutas;
     }
+
+    public String toString() {
+        return nombre;
+    }
 }

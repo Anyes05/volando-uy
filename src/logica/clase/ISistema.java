@@ -60,19 +60,19 @@ public interface ISistema {
     public List<DTRutaVuelo> listarRutaVueloDeVuelo();
 
     // PAQUETES DE VUELO
-    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
+    public void crearPaquete(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta);
     //AGREGAR RUTA DE VUELO A PAQUETE
 //    public List<DTPaqueteVuelos> mostrarPaquete();
-//    public void seleccionarPaquete(String nombrePaquete);
+    public void seleccionarPaquete(String nombrePaquete);
 //
 //    public void agregarRutaAPaquete(RutaVuelo ruta, int cant);
 
     // COMPRA DE PAQUETE DE VUELO
-    //mostrarPaquete (repetida)
+     public List<DTPaqueteVuelos> mostrarPaquete();
     //seleccionarPaquete (repetida)
-//    public List<DTCliente> mostrarClientes();
-//    public void seleccionarCliente(String nombreCliente);
-//    public void realizarCompra(DTFecha fechaCompra, int costo, DTFecha vencimiento, TipoAsiento tipoAsiento);
+     public List<DTCliente> mostrarClientes();
+     public void seleccionarCliente(String nombreCliente);
+    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento, TipoAsiento tipoAsiento);
 
 
     // CREAR PAQUETE DE VUELO
