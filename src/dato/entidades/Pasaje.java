@@ -12,18 +12,27 @@ public class Pasaje {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;   // Clave primaria
 
-    @ManyToOne // Preguntarle a facu bien como sería
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
     private Cliente pasajero;
 
-    @Enumerated(EnumType.STRING) // me dice que el enum es string para guardar correctamente en la base de datos
+    @Enumerated(EnumType.ORDINAL) // Usar ordinal para compatibilidad con base de datos existente
     @Column(nullable = false)
     private TipoAsiento tipoAsiento;
 
     @Column(nullable = false)
     private int costoPasaje;
 
-    // Relacion con reserva - preguntaerle a facu
+    // Campos para nombre y apellido del pasajero (pueden ser diferentes al cliente principal)
+    @Column(nullable = false)
+    private String nombrePasajero;
+    
+    @Column(nullable = false)
+    private String apellidoPasajero;
+
+    // Relacion con reserva
     @ManyToOne
+    @JoinColumn(name = "reserva_id")
     private Reserva reserva;
 
     public Pasaje() { // Constuctor vacío
@@ -33,6 +42,9 @@ public class Pasaje {
         this.pasajero = pasajero;
         this.reserva = reserva;
         this.tipoAsiento = tipoAsiento;
+        // Establecer nombre y apellido del cliente como pasajero
+        this.nombrePasajero = pasajero.getNombre();
+        this.apellidoPasajero = pasajero.getApellido();
     }
 
     // Getter y Setter
@@ -50,4 +62,10 @@ public class Pasaje {
 
     public int getCostoPasaje() { return costoPasaje; }
     public void setCostoPasaje(int costoPasaje) { this.costoPasaje = costoPasaje; }
+
+    public String getNombrePasajero() { return nombrePasajero; }
+    public void setNombrePasajero(String nombrePasajero) { this.nombrePasajero = nombrePasajero; }
+
+    public String getApellidoPasajero() { return apellidoPasajero; }
+    public void setApellidoPasajero(String apellidoPasajero) { this.apellidoPasajero = apellidoPasajero; }
 }

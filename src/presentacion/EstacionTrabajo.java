@@ -18,6 +18,9 @@ import javax.swing.JTable;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.DefaultComboBoxModel;
 
 
 public class EstacionTrabajo {
@@ -217,7 +220,7 @@ public class EstacionTrabajo {
     private JTable reservaVueloListarUsuariosTable;
     private JTextField reservaVueloSeleccionarUsuarioCliente;
     private JPanel reservaVueloSeleccionarUsuarioJPanel;
-    private JComboBox reservaVueloSeleccionarUsuarioTipoAsiento;
+    private JComboBox<TipoAsiento> reservaVueloSeleccionarUsuarioTipoAsiento;
     private JButton reservaVueloSeleccionarUsuarioAceptar;
     private JButton reservaVueloSeleccionarUsuarioCancelar;
     private JSpinner reservaVueloSeleccionarUsuarioCantidadPasajes;
@@ -276,6 +279,42 @@ public class EstacionTrabajo {
         listCatAltaRuta = new JList<>();
         modificarClienteJCalendar = new JCalendar();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        // Inicializar ComboBox de TipoAsiento para reserva de vuelo
+        reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
+        reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0); // Seleccionar Turista por defecto
+
+    }
+
+    private void inicializarComboBoxTipoAsiento() {
+        if (reservaVueloSeleccionarUsuarioTipoAsiento != null) {
+            // Limpiar el ComboBox
+            reservaVueloSeleccionarUsuarioTipoAsiento.removeAllItems();
+
+            // Agregar los valores del enum
+            for (TipoAsiento tipo : TipoAsiento.values()) {
+                reservaVueloSeleccionarUsuarioTipoAsiento.addItem(tipo);
+            }
+
+            // Seleccionar Turista por defecto
+            reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0);
+
+            System.out.println("ComboBox TipoAsiento reinicializado con " + reservaVueloSeleccionarUsuarioTipoAsiento.getItemCount() + " elementos");
+
+            // Forzar repaint del componente
+            reservaVueloSeleccionarUsuarioTipoAsiento.repaint();
+            reservaVueloSeleccionarUsuarioTipoAsiento.revalidate();
+
+            // Mostrar mensaje de confirmación
+            JOptionPane.showMessageDialog(null,
+                    "ComboBox TipoAsiento inicializado con " + reservaVueloSeleccionarUsuarioTipoAsiento.getItemCount() + " elementos:\n" +
+                            "- " + TipoAsiento.Turista + "\n" +
+                            "- " + TipoAsiento.Ejecutivo,
+                    "Debug", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            System.err.println("ERROR: reservaVueloSeleccionarUsuarioTipoAsiento es null!");
+            JOptionPane.showMessageDialog(null, "ERROR: ComboBox TipoAsiento es null!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 
@@ -399,6 +438,28 @@ public class EstacionTrabajo {
         Factory factory = new Factory();
         this.sistema = factory.getSistema();
 
+
+        // Inicializar ComboBox de TipoAsiento como respaldo
+        if (reservaVueloSeleccionarUsuarioTipoAsiento == null) {
+            reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
+            reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0);
+            System.out.println("ComboBox TipoAsiento inicializado en constructor");
+        }
+
+        // Agregar listener al panel de pasajes para inicializar ComboBox cuando se muestre
+        reservaVueloPasajes.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                inicializarComboBoxTipoAsiento();
+            }
+        });
+
+        // También agregar listener al panel de selección de usuario
+        reservaVueloSeleccionarUsuarioJPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                inicializarComboBoxTipoAsiento();
+            }
+        });
+
         /*----- TABLAS -----*/
         // Columnas de la tabla
 
@@ -491,6 +552,8 @@ public class EstacionTrabajo {
                         break;
 
                     case "Reservar vuelo":
+                        // Inicializar ComboBox de TipoAsiento cuando se entra a reservar vuelo
+                        inicializarComboBoxTipoAsiento();
                         UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarAerolinea);
                         UsuarioHelper.cambiarPanel(parentPanel,reservaVuelo);
                         break;
@@ -564,7 +627,37 @@ public class EstacionTrabajo {
                 }
             }
         });
+        /*----- PRECARGA COMPLETA DEL SISTEMA -----*/
+        // Agregar botón de precarga completa al toolbar principal
+        JButton precargarCompletoButton = new JButton("Precargar Sistema Completo");
+        JToolBarPrincipal.add(precargarCompletoButton);
 
+
+        precargarCompletoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+
+                    sistema.precargarSistemaCompleto();
+
+                    JOptionPane.showMessageDialog(null,
+                            "Precarga completa del sistema realizada exitosamente!\n\n" +
+                                    "Se han precargado:\n" +
+                                    "• Aeropuertos\n" +
+                                    "• Categorías\n" +
+                                    "• Usuarios (Clientes y Aerolíneas)\n" +
+                                    "• Rutas de Vuelo\n" +
+                                    "• Vuelos",
+                            "Precarga Exitosa",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null,
+                            "Error durante la precarga completa: " + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
         /*----- ALTA CLIENTE -----*/
         //Boton de entrada
         ButtonCrearNuevoCliente.addActionListener(new ActionListener() {
@@ -1283,6 +1376,8 @@ public class EstacionTrabajo {
         reservaVueloSeleccionarAerolineaAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Cargar aerolíneas en la tabla
+                ReservaHelper.cargarAerolineasEnTabla(reservaVueloTablePrincipal);
                 UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarRutaVuelo);
             }
         });
@@ -1290,29 +1385,174 @@ public class EstacionTrabajo {
         reservaVueloSeleccionarRutaVueloAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarVuelo);
+                // Obtener aerolínea seleccionada y cargar sus rutas
+                String aerolineaSeleccionada = reservaVueloSeleccionarAerolineaInput.getText().trim();
+                if (aerolineaSeleccionada.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar una aerolínea.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                try {
+                    List<DTRutaVuelo> rutas = ReservaHelper.obtenerRutasDeAerolinea(aerolineaSeleccionada);
+                    DefaultComboBoxModel<DTRutaVuelo> model = new DefaultComboBoxModel<>();
+                    for (DTRutaVuelo ruta : rutas) {
+                        model.addElement(ruta);
+                    }
+                    comBoxRutVueloConsultaRV.setModel(model);
+                    UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarVuelo);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al cargar rutas: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
-
 
         reservaVueloSeleccionarVueloAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarUsuarioJPanel);
+                // Obtener ruta seleccionada y cargar sus vuelos
+                DTRutaVuelo rutaSeleccionada = (DTRutaVuelo) comBoxRutVueloConsultaRV.getSelectedItem();
+                if (rutaSeleccionada == null) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                try {
+                    List<DTVuelo> vuelos = ReservaHelper.obtenerVuelosDeRuta(rutaSeleccionada.getNombre());
+                    DefaultComboBoxModel<DTVuelo> model = new DefaultComboBoxModel<>();
+                    for (DTVuelo vuelo : vuelos) {
+                        model.addElement(vuelo);
+                    }
+                    vuelosConsultaRV.setModel(model);
+                    UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarUsuarioJPanel);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al cargar vuelos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
-
 
         reservaVueloSeleccionarUsuarioAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Obtener vuelo seleccionado
+                DTVuelo vueloSeleccionado = (DTVuelo) vuelosConsultaRV.getSelectedItem();
+                if (vueloSeleccionado == null) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un vuelo.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Seleccionar el vuelo para la reserva
+                ReservaHelper.seleccionarVuelo(vueloSeleccionado.getNombre());
+
+                // Cargar clientes en la tabla
+                ReservaHelper.cargarClientesEnTabla(reservaVueloListarUsuariosTable);
+
+                // Agregar listener para selección de clientes
+                ReservaHelper.configurarSeleccionCliente(reservaVueloListarUsuariosTable, reservaVueloSeleccionarUsuarioCliente);
+
+                // Asegurar que el ComboBox de TipoAsiento esté inicializado
+                inicializarComboBoxTipoAsiento();
+
                 UsuarioHelper.cambiarPanel(reservaVueloParentPanel, reservaVueloPasajes);
             }
         });
+
         aceptarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UsuarioHelper.cambiarPanel(parentPanel,principalVacio);
+                try {
+                    // Obtener datos del formulario
+                    String clienteSeleccionado = reservaVueloSeleccionarUsuarioCliente.getText().trim();
+                    if (clienteSeleccionado.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Debe seleccionar un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // Obtener tipo de asiento
+                    TipoAsiento tipoAsiento = (TipoAsiento) reservaVueloSeleccionarUsuarioTipoAsiento.getSelectedItem();
+                    if (tipoAsiento == null) {
+                        JOptionPane.showMessageDialog(null, "Debe seleccionar un tipo de asiento.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // Obtener cantidad de pasajes y equipaje extra
+                    int cantidadPasajes = (Integer) reservaVueloSeleccionarUsuarioCantidadPasajes.getValue();
+                    int equipajeExtra = (Integer) reservaVueloSeleccionarUsuarioCantidadEquipajeExtra.getValue();
+
+                    // Validar datos adicionales si hay múltiples pasajes
+                    if (cantidadPasajes > 1) {
+                        // Verificar si hay datos para pasajeros adicionales
+                        String nombreAdicional = apellidoTextField.getText().trim();
+                        String apellidoAdicional = reservaVueloPasajesApellido.getText().trim();
+
+                        if (nombreAdicional.isEmpty() || apellidoAdicional.isEmpty()) {
+                            // Mostrar mensaje informativo
+                            JOptionPane.showMessageDialog(null,
+                                    "Se crearán " + cantidadPasajes + " pasajes para el cliente: " + clienteSeleccionado +
+                                            "\n\nNota: Todos los pasajes se asignan al mismo cliente. " +
+                                            "Los campos de nombre y apellido se usarán para identificar a los pasajeros adicionales.",
+                                    "Información de Reserva",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            // Confirmar datos de pasajeros adicionales
+                            int confirmacion = JOptionPane.showConfirmDialog(null,
+                                    "Se crearán " + cantidadPasajes + " pasajes:\n" +
+                                            "1. " + clienteSeleccionado + " (cliente principal)\n" +
+                                            "2-" + cantidadPasajes + ". " + nombreAdicional + " " + apellidoAdicional +
+                                            " (asociado al cliente principal)\n\n" +
+                                            "¿Desea continuar con la reserva?",
+                                    "Confirmar Reserva",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE);
+
+                            if (confirmacion != JOptionPane.YES_OPTION) {
+                                return; // Cancelar la operación
+                            }
+                        }
+                    }
+
+                    // Crear lista de pasajeros usando el helper
+                    List<String> nombresPasajeros = ReservaHelper.obtenerPasajerosParaReserva(
+                            clienteSeleccionado,
+                            cantidadPasajes,
+                            apellidoTextField, // Campo de nombre
+                            reservaVueloPasajesApellido // Campo de apellido
+                    );
+
+                    // Realizar la reserva
+                    ReservaHelper.realizarReserva(
+                            tipoAsiento,
+                            cantidadPasajes,
+                            equipajeExtra,
+                            nombresPasajeros,
+                            reservaVueloSeleccionarUsuarioJCalendar,
+                            apellidoTextField.getText().trim(),
+                            reservaVueloPasajesApellido.getText().trim()
+                    );
+
+                    // Limpiar formulario y volver al inicio
+                    ReservaHelper.limpiarFormularioReserva(
+                            reservaVueloSeleccionarAerolineaInput,
+                            reservaVueloSeleccionarRutaVueloInput,
+                            reservaVueloSeleccionarVueloInput,
+                            reservaVueloSeleccionarUsuarioCliente,
+                            reservaVueloSeleccionarUsuarioTipoAsiento,
+                            reservaVueloSeleccionarUsuarioCantidadPasajes,
+                            reservaVueloSeleccionarUsuarioCantidadEquipajeExtra,
+                            reservaVueloSeleccionarUsuarioJCalendar
+                    );
+
+                    // Limpiar también los campos específicos de pasaje
+                    ReservaHelper.limpiarFormularioPasaje(
+                            apellidoTextField, // Este campo parece ser para nombre
+                            reservaVueloPasajesApellido,
+                            reservaVueloPasajesCantidadEquipajeExtra
+                    );
+
+                    UsuarioHelper.cambiarPanel(parentPanel, principalVacio);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 

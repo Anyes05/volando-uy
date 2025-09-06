@@ -388,7 +388,7 @@ public class UsuarioHelper {
                     return false;
                 }
                 break;
-            case Pasaporte:
+            case PASAPORTE:
                 // Letras + números, entre 6 y 9 caracteres
                 if (!doc.matches("^[A-Z0-9]{6,9}$")) {
                     JOptionPane.showMessageDialog(null, "Ingrese un pasaporte válido (ej: A1234567).", "Error", JOptionPane.ERROR_MESSAGE);
@@ -469,7 +469,7 @@ public class UsuarioHelper {
                     return false;
                 }
                 break;
-            case Pasaporte:
+            case PASAPORTE:
                 // Letras + números, entre 6 y 9 caracteres
                 if (!doc.matches("^[A-Z0-9]{6,9}$")) {
                     JOptionPane.showMessageDialog(null, "Ingrese un pasaporte válido (ej: A1234567).", "Error", JOptionPane.ERROR_MESSAGE);

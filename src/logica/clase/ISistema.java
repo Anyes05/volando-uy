@@ -8,6 +8,27 @@ import java.util.List;
 
 public interface ISistema {
 
+    // Método de prueba para verificar conexión a BD
+    public void probarConexionBD();
+
+    // PRECARGA DE AEROPUERTOS
+    public void precargarAeropuertos();
+
+    // PRECARGA DE CATEGORÍAS
+    public void precargarCategorias();
+
+    // PRECARGA DE USUARIOS (CLIENTES Y AEROLÍNEAS)
+    public void precargarUsuarios();
+
+    // PRECARGA DE RUTAS DE VUELO
+    public void precargarRutasVuelo();
+
+    // PRECARGA DE VUELOS
+    public void precargarVuelos();
+
+    // PRECARGA COMPLETA DEL SISTEMA
+    public void precargarSistemaCompleto();
+
     // ALTA USUARIO
     public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
 
@@ -19,9 +40,6 @@ public interface ISistema {
 
     // ALTA CIUDAD
     public void altaCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta);
-    
-    // PRECARGA DE AEROPUERTOS
-    public void precargarAeropuertos();
 
     //ALTA RUTA VUELO
     public List<DTAerolinea> listarAerolineas();
@@ -46,7 +64,6 @@ public interface ISistema {
 
     public void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb);
 
-
     //ALTA VUELO
     public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname);
     public DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
@@ -64,14 +81,14 @@ public interface ISistema {
     //AGREGAR RUTA DE VUELO A PAQUETE
 //    public List<DTPaqueteVuelos> mostrarPaquete();
     public void seleccionarPaquete(String nombrePaquete);
-//
+
 //    public void agregarRutaAPaquete(RutaVuelo ruta, int cant);
 
     // COMPRA DE PAQUETE DE VUELO
-     public List<DTPaqueteVuelos> mostrarPaquete();
+    public List<DTPaqueteVuelos> mostrarPaquete();
     //seleccionarPaquete (repetida)
-     public List<DTCliente> mostrarClientes();
-     public void seleccionarCliente(String nombreCliente);
+    public List<DTCliente> mostrarClientes();
+    public void seleccionarCliente(String nombreCliente);
     public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento, TipoAsiento tipoAsiento);
 
 
@@ -79,7 +96,11 @@ public interface ISistema {
 //    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
 
     // RESERVA VUELO
-//    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
+    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, String nombrePasajeroAdicional, String apellidoPasajeroAdicional);
+
+    public void seleccionarVueloParaReserva(String nombreVuelo);
+
+    public List<DTCliente> listarClientes();
 
     // CONSULTA PAQUETE RUTAS DE VUELO
     //public DTPaqueteVuelos consultaPaqueteVuelo(PaqueteVuelo paqueteSeleccionado);

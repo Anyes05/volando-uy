@@ -21,7 +21,7 @@ public class CompraComunDAO extends GenericDAO<CompraComun> {
         return em.find(CompraComun.class, id);
     }
 
-    public List<CompraComun> buscarPorTipoAsiento(String tipoAsiento) {
+    public List<CompraComun> buscarPorTipoAsiento(TipoAsiento tipoAsiento) {
         TypedQuery<CompraComun> query = em.createQuery(
                 "SELECT cc FROM CompraComun cc WHERE cc.tipoAsiento = :tipoAsiento", CompraComun.class);
         query.setParameter("tipoAsiento", tipoAsiento);
@@ -29,17 +29,30 @@ public class CompraComunDAO extends GenericDAO<CompraComun> {
     }
 
     public CompraComun crear(Cliente clientePrincipal, DTFecha fechaReserva, TipoAsiento tipoAsiento, int equipajeExtra, Vuelo vueloSeleccionado) throws Exception {
-        CompraComun compraComun = new CompraComun();
-        compraComun.setCliente(clientePrincipal);
-        compraComun.setFechaReserva(fechaReserva);
-        compraComun.setTipoAsiento(tipoAsiento);
-        compraComun.setEquipajeExtra(equipajeExtra);
-        compraComun.setVuelo(vueloSeleccionado);
+        CompraComun compraComun = new CompraComun(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra);
+        compraComun.setVuelo(vueloSeleccionado); // Usa el método heredado de Reserva
 
-        em.getTransaction().begin();
-        em.persist(compraComun);
-        em.getTransaction().commit();
-        return compraComun;
+        try {
+            em.getTransaction().begin();
+            
+            // Asegurar que las entidades estén en el contexto de persistencia
+            Cliente clienteManaged = em.merge(clientePrincipal);
+            Vuelo vueloManaged = em.merge(vueloSeleccionado);
+            
+            compraComun.setCliente(clienteManaged);
+            compraComun.setVuelo(vueloManaged);
+            
+            em.persist(compraComun);
+            em.flush(); // Forzar la escritura inmediata
+            em.getTransaction().commit();
+            return compraComun;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        }
     }
 }
+
 

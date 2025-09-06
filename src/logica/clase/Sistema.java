@@ -37,6 +37,7 @@ public class Sistema implements ISistema {
     private dato.entidades.PaqueteVuelo paqueteSeleccionado;
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
+    private String vueloSeleccionadoParaReserva; // Para recordar el vuelo seleccionado para reserva
 
     private Sistema() {
         paqueteVuelos = new ArrayList<>();
@@ -446,6 +447,63 @@ public class Sistema implements ISistema {
         aeropuertoServicio.precargarAeropuertos();
     }
 
+    // PRECARGA DE CATEGORÍAS
+    public void precargarCategorias() {
+        CategoriaServicio categoriaServicio = new CategoriaServicio();
+        categoriaServicio.precargarCategorias();
+    }
+
+    // PRECARGA DE USUARIOS (CLIENTES Y AEROLÍNEAS)
+    public void precargarUsuarios() {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+
+        clienteServicio.precargarClientes();
+        aerolineaServicio.precargarAerolineas();
+    }
+
+    // PRECARGA DE RUTAS DE VUELO
+    public void precargarRutasVuelo() {
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        rutaVueloServicio.precargarRutasVuelo();
+    }
+
+    // PRECARGA DE VUELOS
+    public void precargarVuelos() {
+        VueloServicio vueloServicio = new VueloServicio();
+        vueloServicio.precargarVuelos();
+    }
+
+    // PRECARGA COMPLETA DEL SISTEMA
+    public void precargarSistemaCompleto() {
+        System.out.println("=== INICIANDO PRECARGA COMPLETA DEL SISTEMA ===");
+
+        try {
+            System.out.println("1. Precargando aeropuertos...");
+            precargarAeropuertos();
+
+            System.out.println("2. Precargando categorías...");
+            precargarCategorias();
+
+            System.out.println("3. Precargando usuarios (clientes y aerolíneas)...");
+            precargarUsuarios();
+
+            System.out.println("4. Precargando rutas de vuelo...");
+            precargarRutasVuelo();
+
+            System.out.println("5. Precargando vuelos...");
+            precargarVuelos();
+
+            System.out.println("=== PRECARGA COMPLETA FINALIZADA EXITOSAMENTE ===");
+
+        } catch (Exception e) {
+            System.err.println("Error durante la precarga completa: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error en la precarga completa del sistema", e);
+        }
+    }
+
+
     // CONSULTA RUTA VUELO
     public List<DTRutaVuelo> listarRutaVuelo(String nombreAerolinea) {
         List<DTRutaVuelo> listaRutas = new ArrayList<>();
@@ -647,73 +705,206 @@ public class Sistema implements ISistema {
         return listaRutas;
     }
 
-    // RESERVA
+    // RESERVA VUELO
 
-//    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
-//    if (recordarDatosVuelo == null) {
-//        throw new IllegalStateException("Debe seleccionar un vuelo antes de reservar.");
-//    }
-//
-//    VueloServicio vueloServicio = new VueloServicio();
-//    ClienteServicio clienteServicio = new ClienteServicio();
-//    ReservaServicio reservaServicio = new ReservaServicio();
-//    PasajeServicio pasajeServicio = new PasajeServicio();
-//
-//    dato.entidades.Vuelo vueloSeleccionado = vueloServicio.buscarVueloPorNombre(recordarDatosVuelo.getNombre());
-//    if (vueloSeleccionado == null) {
-//        throw new IllegalStateException("No se encontró el vuelo seleccionado.");
-//    }
-//
-//    Cliente clientePrincipal = clienteServicio.buscarClientePorNickname(nombresPasajeros.get(0));
-//    if (clientePrincipal == null) {
-//        throw new IllegalArgumentException("No se encontró el cliente principal.");
-//    }
-//
-//    if (tipoAsiento == TipoAsiento.Ejecutivo && vueloSeleccionado.getAsientosMaxEjecutivo() < cantidadPasaje) {
-//        throw new IllegalStateException("No hay suficientes asientos ejecutivos disponibles.");
-//    }
-//    if (tipoAsiento == TipoAsiento.Turista && vueloSeleccionado.getAsientosMaxTurista() < cantidadPasaje) {
-//        throw new IllegalStateException("No hay suficientes asientos turista disponibles.");
-//    }
-//
-//    CompraComunServicio compraComunServicio = new CompraComunServicio();
-//    dato.entidades.CompraComun reserva;
-//    try {
-//        reserva = compraComunServicio.crearCompraComun(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra, vueloSeleccionado);
-//        } catch (Exception e) {
-//            throw new IllegalStateException("Error al crear la reserva: " + e.getMessage(), e);
-//        }
-//
-//    for (String nombrePasajero : nombresPasajeros) {
-//        Cliente pasajero = clienteServicio.buscarClientePorNickname(nombrePasajero);
-//        if (pasajero == null) {
-//            throw new IllegalArgumentException("No se encontró el pasajero: " + nombrePasajero);
-//        }
-//        try {
-//            Pasaje pasaje = pasajeServicio.crearPasaje(pasajero, reserva, tipoAsiento);
-//            reserva.getPasajeros().add(pasaje);
-//            pasajero.getReservas().add(reserva);
-//            clienteServicio.actualizarCliente(pasajero);
-//        } catch (Exception e) {
-//            throw new IllegalStateException("Error al crear el pasaje para el pasajero " + nombrePasajero + ": " + e.getMessage(), e);
-//        }
-//
-//    }
-//    DTCostoBase costoBase = vueloSeleccionado.getRutaVuelo().getCostoBase();
-//    float costoTotal;
-//    if (tipoAsiento == TipoAsiento.Ejecutivo) {
-//        costoTotal = (costoBase.getCostoEjecutivo() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
-//    } else {
-//        costoTotal = (costoBase.getCostoTurista() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
-//    }
-//    reserva.setCostoReserva(costoBase);
-//    reserva.setCostoTotal(costoTotal);
-//
-//    vueloSeleccionado.getReserva().add(reserva);
-//    vueloServicio.actualizarVuelo(vueloSeleccionado);
-//    clienteServicio.actualizarCliente(clientePrincipal);
-//    reservaServicio.actualizarReserva(reserva);
-//}
+    public void seleccionarVueloParaReserva(String nombreVuelo) {
+        this.vueloSeleccionadoParaReserva = nombreVuelo;
+    }
+
+    public List<DTCliente> listarClientes() {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        List<DTCliente> listaClientes = new ArrayList<>();
+        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+
+        for (dato.entidades.Cliente c : clientes) {
+            listaClientes.add(new DTCliente(
+                    c.getNickname(),
+                    c.getNombre(),
+                    c.getCorreo(),
+                    c.getApellido(),
+                    c.getTipoDoc(),
+                    c.getNumeroDocumento(),
+                    c.getFechaNacimiento(),
+                    c.getNacionalidad(),
+                    new ArrayList<>() // Sin reservas para simplificar
+            ));
+        }
+        return listaClientes;
+    }
+
+    // Método de prueba para verificar conexión a BD
+    public void probarConexionBD() {
+        try {
+            ClienteServicio clienteServicio = new ClienteServicio();
+            List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+            System.out.println("=== PRUEBA DE CONEXIÓN BD ===");
+            System.out.println("Clientes encontrados: " + clientes.size());
+            for (dato.entidades.Cliente c : clientes) {
+                System.out.println("- Cliente: " + c.getNickname() + " (" + c.getNombre() + ")");
+            }
+
+            VueloServicio vueloServicio = new VueloServicio();
+            List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
+            System.out.println("Vuelos encontrados: " + vuelos.size());
+            for (dato.entidades.Vuelo v : vuelos) {
+                System.out.println("- Vuelo: " + v.getNombre());
+            }
+            System.out.println("=== FIN PRUEBA BD ===");
+        } catch (Exception e) {
+            System.err.println("Error en prueba de BD: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, String nombrePasajeroAdicional, String apellidoPasajeroAdicional) {
+        System.out.println("=== INICIANDO PROCESO DE RESERVA ===");
+        System.out.println("Vuelo seleccionado: " + vueloSeleccionadoParaReserva);
+        System.out.println("Tipo asiento: " + tipoAsiento);
+        System.out.println("Cantidad pasajes: " + cantidadPasaje);
+        System.out.println("Equipaje extra: " + equipajeExtra);
+        System.out.println("Pasajeros: " + nombresPasajeros);
+
+        if (vueloSeleccionadoParaReserva == null) {
+            throw new IllegalStateException("Debe seleccionar un vuelo antes de reservar.");
+        }
+
+        // Usar un EntityManager compartido para toda la operación
+        jakarta.persistence.EntityManagerFactory emf = jakarta.persistence.Persistence.createEntityManagerFactory("volandouyPU");
+        jakarta.persistence.EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            VueloServicio vueloServicio = new VueloServicio();
+            ClienteServicio clienteServicio = new ClienteServicio();
+
+            dato.entidades.Vuelo vueloSeleccionado = vueloServicio.buscarVueloPorNombre(vueloSeleccionadoParaReserva);
+            if (vueloSeleccionado == null) {
+                throw new IllegalStateException("No se encontró el vuelo seleccionado.");
+            }
+
+            String nicknameClientePrincipal = nombresPasajeros.get(0);
+            if (nicknameClientePrincipal == null || nicknameClientePrincipal.trim().isEmpty()) {
+                throw new IllegalArgumentException("No se ha seleccionado un cliente principal. Debe seleccionar un cliente de la tabla.");
+            }
+
+            Cliente clientePrincipal = clienteServicio.buscarClientePorNickname(nicknameClientePrincipal.trim());
+            if (clientePrincipal == null) {
+                throw new IllegalArgumentException("No se encontró el cliente principal con nickname: " + nicknameClientePrincipal.trim() +
+                        ". Verifique que el cliente existe en el sistema.");
+            }
+
+            // Verificar disponibilidad de asientos
+            if (tipoAsiento == TipoAsiento.Ejecutivo && vueloSeleccionado.getAsientosMaxEjecutivo() < cantidadPasaje) {
+                throw new IllegalStateException("No hay suficientes asientos ejecutivos disponibles.");
+            }
+            if (tipoAsiento == TipoAsiento.Turista && vueloSeleccionado.getAsientosMaxTurista() < cantidadPasaje) {
+                throw new IllegalStateException("No hay suficientes asientos turista disponibles.");
+            }
+
+            // Calcular costo total ANTES de crear la reserva
+            DTCostoBase costoBase = vueloSeleccionado.getRutaVuelo().getCostoBase();
+            float costoTotal;
+            if (tipoAsiento == TipoAsiento.Ejecutivo) {
+                costoTotal = (costoBase.getCostoEjecutivo() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
+            } else {
+                costoTotal = (costoBase.getCostoTurista() * cantidadPasaje) + (equipajeExtra * costoBase.getCostoEquipajeExtra());
+            }
+
+            System.out.println("Costo total calculado ANTES de crear reserva: " + costoTotal);
+
+            // Crear la reserva directamente en el EntityManager
+            dato.entidades.CompraComun reserva = new dato.entidades.CompraComun(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra);
+            reserva.setVuelo(vueloSeleccionado);
+
+            // Establecer correctamente el costo base con la cantidad de equipaje extra
+            costoBase.setCantidadEquipajeExtra(equipajeExtra);
+            costoBase.setCostoTotal(costoTotal);
+            reserva.setCostoReserva(costoBase);
+
+            em.persist(reserva);
+            em.flush(); // Forzar la escritura inmediata para obtener el ID
+
+            System.out.println("Reserva creada con ID: " + reserva.getId());
+
+            // Crear pasajes según la cantidad especificada
+            System.out.println("Creando " + cantidadPasaje + " pasajes...");
+
+            // Calcular costo individual del pasaje
+            float costoIndividualPasaje;
+            if (tipoAsiento == TipoAsiento.Ejecutivo) {
+                costoIndividualPasaje = costoBase.getCostoEjecutivo();
+            } else {
+                costoIndividualPasaje = costoBase.getCostoTurista();
+            }
+
+            // Crear un pasaje por cada cantidad especificada
+            for (int i = 0; i < cantidadPasaje; i++) {
+                String nombrePasajero = nombresPasajeros.get(i % nombresPasajeros.size()); // Usar el cliente correspondiente
+                System.out.println("Procesando pasaje " + (i + 1) + " para: " + nombrePasajero);
+
+                Cliente pasajero = clienteServicio.buscarClientePorNickname(nombrePasajero);
+                if (pasajero == null) {
+                    throw new IllegalArgumentException("No se encontró el pasajero: " + nombrePasajero);
+                }
+
+                // Crear pasaje directamente en el EntityManager
+                dato.entidades.Pasaje pasaje = new dato.entidades.Pasaje();
+                pasaje.setPasajero(pasajero);
+                pasaje.setReserva(reserva);
+                pasaje.setTipoAsiento(tipoAsiento);
+                pasaje.setCostoPasaje((int) costoIndividualPasaje); // Establecer el costo del pasaje
+
+                // Debug: verificar el valor de tipoAsiento antes de persistir
+                System.out.println("DEBUG: tipoAsiento = " + tipoAsiento + " (ordinal: " + tipoAsiento.ordinal() + ")");
+
+                // Establecer nombre y apellido específicos para cada pasaje
+                if (i == 0) {
+                    // Primer pasaje: usar datos del cliente principal
+                    pasaje.setNombrePasajero(pasajero.getNombre());
+                    pasaje.setApellidoPasajero(pasajero.getApellido());
+                } else {
+                    // Pasajes adicionales: usar datos específicos si están disponibles
+                    if (nombrePasajeroAdicional != null && !nombrePasajeroAdicional.trim().isEmpty() &&
+                            apellidoPasajeroAdicional != null && !apellidoPasajeroAdicional.trim().isEmpty()) {
+                        pasaje.setNombrePasajero(nombrePasajeroAdicional.trim());
+                        pasaje.setApellidoPasajero(apellidoPasajeroAdicional.trim());
+                    } else {
+                        // Si no hay datos específicos, usar los datos del cliente principal
+                        pasaje.setNombrePasajero(pasajero.getNombre() + " (Pasaje " + (i + 1) + ")");
+                        pasaje.setApellidoPasajero(pasajero.getApellido());
+                    }
+                }
+
+                // Establecer la relación bidireccional
+                reserva.getPasajeros().add(pasaje);
+
+                em.persist(pasaje);
+                em.flush(); // Forzar la escritura inmediata
+
+                System.out.println("Pasaje " + (i + 1) + " creado para: " + nombrePasajero +
+                        " (" + pasaje.getNombrePasajero() + " " + pasaje.getApellidoPasajero() +
+                        ") con ID: " + pasaje.getId() + " y costo: " + costoIndividualPasaje);
+            }
+
+            em.getTransaction().commit();
+            System.out.println("Reserva completada exitosamente. ID: " + reserva.getId());
+
+            // Limpiar selección
+            vueloSeleccionadoParaReserva = null;
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            System.err.println("Error en el proceso de reserva: " + e.getMessage());
+            e.printStackTrace();
+            throw new IllegalStateException("Error al realizar la reserva: " + e.getMessage(), e);
+        } finally {
+            em.close();
+            emf.close();
+        }
+    }
 
     // PAQUETES DE VUELO
 //

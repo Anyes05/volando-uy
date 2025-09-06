@@ -9,15 +9,14 @@ import java.util.List;
 @Entity
 @Table(name = "compraComun")
 public class CompraComun extends Reserva{
+    @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     private TipoAsiento tipoAsiento;
 
     @Column(nullable = false)
     private int equipajeExtra;
 
-    // Relacion con vuelo
-    @OneToMany(mappedBy = "compraComun")
-    private List<Vuelo> vuelos = new ArrayList<>();
+    // La relación con vuelo se hereda de Reserva
 
     //CONSTRUCTORES
     public CompraComun() {}
@@ -26,6 +25,9 @@ public class CompraComun extends Reserva{
         super(cliente, fechaReserva);
         this.tipoAsiento= tipoAsiento;
         this.equipajeExtra = equipajeExtra;
+        
+        // Inicializar costoReserva con valores por defecto usando el setter
+        this.setCostoReserva(new logica.DataTypes.DTCostoBase(0, 0, 0));
     }
 
     //GETTERS Y SETTERS
@@ -35,8 +37,7 @@ public class CompraComun extends Reserva{
     public int getEquipajeExtra() {return equipajeExtra;}
     public void setEquipajeExtra(int equipajeExtra) {this.equipajeExtra = equipajeExtra;}
 
-    public List<Vuelo> getVuelos() {return vuelos;}
-    public void setVuelos(List<Vuelo> vuelos) {this.vuelos = vuelos;}
+    // Los métodos getVuelo() y setVuelo() se heredan de Reserva
 
     //no se si va
     //@Override

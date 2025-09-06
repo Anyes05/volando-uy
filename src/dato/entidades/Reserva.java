@@ -22,10 +22,11 @@ public class Reserva {
     @Column(nullable = false)
     private DTFecha fechaReserva;
 
-    @Column(nullable = false)
+    @Column(nullable = true) // Temporalmente nullable para permitir guardar primero
+    @Convert(converter = dato.converter.DTCostoBaseConverter.class)
     private DTCostoBase costoReserva;
 
-    @OneToMany
+    @OneToMany(mappedBy = "reserva")
     private List<dato.entidades.Pasaje> pasajeros = new ArrayList<>();
 
     // Relacion con Vuelo
@@ -52,14 +53,21 @@ public class Reserva {
     public DTCostoBase getCostoReserva() { return costoReserva; }
     public void setCostoReserva(DTCostoBase costoReserva) { this.costoReserva = costoReserva; }
 
-    public List<Pasaje> getPasajeros() { return pasajeros; }
+    public List<Pasaje> getPasajeros() { 
+        if (pasajeros == null) {
+            pasajeros = new ArrayList<>();
+        }
+        return pasajeros; 
+    }
     public void setPasajeros(List<Pasaje> pasajeros) { this.pasajeros = pasajeros; }
 
     public Vuelo getVuelo() { return vuelo; }
     public void setVuelo(Vuelo vuelo) { this.vuelo = vuelo; }
 
     public void setCostoTotal(float costoTotal) {
-        this.costoReserva.setCostoTotal(costoTotal);
+        if (this.costoReserva != null) {
+            this.costoReserva.setCostoTotal(costoTotal);
+        }
     }
 
 

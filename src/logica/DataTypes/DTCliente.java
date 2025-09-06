@@ -46,19 +46,10 @@ public class DTCliente extends DTUsuario{
     public List<DTReserva> getReserva() {
         return this.reserva;
     }
-    // MÉTODOS
 
+    // MÉTODOS
     public String toString (){
         return numeroDocumento;
     }
-//    @Override
-//    public String toString() {
-//        return super.toString() +
-//                ", Apellido: " + apellido +
-//                ", Fecha Nac: " + fechaNacimiento +
-//                ", Nacionalidad: " + nacionalidad +
-//                ", TipoDoc: " + tipoDocumento +
-//                ", NumDoc: " + numeroDocumento;
-//    }
 
 }

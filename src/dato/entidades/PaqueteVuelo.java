@@ -25,9 +25,6 @@ public class PaqueteVuelo {
     @Column(nullable = false)
     private float descuento;
 
-    @Column(nullable = true)
-    private TipoAsiento tipoAsiento;
-
 //    @Column(nullable = false)
 //    private DTCostoBase DTCostoBase;
 
@@ -46,6 +43,9 @@ public class PaqueteVuelo {
     @JoinColumn(name = "compraPaquete_id")
     private CompraPaquete compraPaquete;
 
+    @Column(nullable = true)
+    private TipoAsiento tipoAsiento;
+
     // Constructores
 
     public PaqueteVuelo() { // Constuctor vacío
@@ -55,10 +55,10 @@ public class PaqueteVuelo {
     public PaqueteVuelo(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
         this.nombre = nombrePaquete;
         this.descripcion = descripcion;
-        this.tipoAsiento = tipoAsiento;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.fechaAlta = fechaAlta;
+        this.tipoAsiento = tipoAsiento;
         this.cantidad = null;
     }
 

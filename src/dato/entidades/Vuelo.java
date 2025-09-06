@@ -44,13 +44,10 @@ public class Vuelo {
     private RutaVuelo rutaVuelo;
 
     //Relacion con reserva
-    @OneToMany (mappedBy = "vuelo")
+    @OneToMany(mappedBy = "vuelo")
     private List<Reserva> reserva;
 
-    //Relacion con compraComun, no estoy segura de si va
-    @ManyToOne
-    @JoinColumn(name = "compraComun_id")
-    private CompraComun compraComun;
+    // La relación con CompraComun se maneja a través de Reserva (herencia)
 
     // CONSTRUCTOR
     public Vuelo() {

@@ -10,7 +10,7 @@ public class DTCompraComun extends DTReserva {
 
     // Getters
 
-    public TipoAsiento getTipoAsiento(TipoAsiento tipoAsiento) {
+    public TipoAsiento getTipoAsiento() {
         return this.tipoAsiento;
     }
 

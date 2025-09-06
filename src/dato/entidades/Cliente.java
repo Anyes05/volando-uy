@@ -66,6 +66,9 @@ public class Cliente extends Usuario {
 
     // Helper methods para mantener sincronía en la relación
     public void addReserva(Reserva reserva) {
+        if (reservas == null) {
+            reservas = new ArrayList<>();
+        }
         reservas.add(reserva);
         reserva.setCliente(this);
     }

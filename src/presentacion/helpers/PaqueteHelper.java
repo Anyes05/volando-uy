@@ -6,7 +6,6 @@ import logica.clase.Factory;
 import logica.clase.ISistema;
 import logica.DataTypes.*;
 import com.toedter.calendar.JCalendar;
-import logica.clase.Aeropuerto;
 
 import java.awt.event.ComponentEvent;
 import java.util.Date;

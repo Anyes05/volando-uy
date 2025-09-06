@@ -2,6 +2,6 @@ package logica.DataTypes;
 
 public enum TipoDoc {
     CI,
-    Pasaporte,
+    PASAPORTE,
     DNI
 }
