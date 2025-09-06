@@ -1,5 +1,6 @@
 package presentacion;
 
+import dato.entidades.RutaVuelo;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -190,7 +191,7 @@ public class EstacionTrabajo {
     private JButton buttonCancelarVuelo;
     private JPanel agregarRutaaPaquete;
     private JComboBox comboBoxPaqueteAgrRutaaPaquete;
-    private JComboBox comboBoxAeroAgrRutaaPaquete;
+    private JComboBox<String> comboBoxAeroAgrRutaaPaquete;
     private JComboBox comboBoxRutaVueloAgrRutaaPaquete;
     private JTextField cantidadAgrRutaaPaquetetxt;
     private JButton buttonAceptarAgrRutaaPaquete;
@@ -317,6 +318,14 @@ public class EstacionTrabajo {
         }
     }
 
+    private void inicializarComboBoxTipoAsientoPaquete() {
+        comboBoxTipoAsientoAgrRutaaPaquete.removeAllItems();
+        for (TipoAsiento tipo : TipoAsiento.values()) {
+            comboBoxTipoAsientoAgrRutaaPaquete.addItem(tipo);
+        }
+        comboBoxTipoAsientoAgrRutaaPaquete.setSelectedIndex(-1);
+    }
+
 
     private void cargarAerolineas(JComboBox<String> combo) {
         combo.removeAllItems(); // limpiar combo por si ya tiene algo
@@ -365,6 +374,9 @@ public class EstacionTrabajo {
         boolean esConsulta = (comboRutas == comBoxRutVueloConsultaRV);
         if (esConsulta) cargandoRutasRV = true;
         comboRutas.removeAllItems(); // Limpiar combo
+        if (nicknameAerolinea == null || nicknameAerolinea.isEmpty()) {
+            return; // No hacer nada si el nickname es nulo o vacío
+        }
         List<DTRutaVuelo> rutas = sistema.seleccionarAerolineaRet(nicknameAerolinea);
         for (DTRutaVuelo ruta : rutas) {
             comboRutas.addItem(ruta);
@@ -587,6 +599,10 @@ public class EstacionTrabajo {
                         break;
                     case "Agregar ruta a paquete":
                         parentPanel.removeAll();
+                        cargarPaquetes(comboBoxPaqueteAgrRutaaPaquete);
+                        cargarAerolineas(comboBoxAeroAgrRutaaPaquete);
+                        cargarRutas(comboBoxRutaVueloAgrRutaaPaquete, (String) comboBoxAeroAgrRutaaPaquete.getSelectedItem());
+                        inicializarComboBoxTipoAsientoPaquete();
                         parentPanel.add(agregarRutaaPaquete);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -1630,9 +1646,94 @@ public class EstacionTrabajo {
                     JOptionPane.showMessageDialog(null, "Error al realizar compra: " + ex.getMessage());
                 }
             }
-            });
-        }
+        });
+
+        // AGREGAR RUTA VUELO A PAQUETE
+
+        comboBoxAeroAgrRutaaPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nickname = (String) comboBoxAeroAgrRutaaPaquete.getSelectedItem();
+                if (nickname != null && !nickname.isEmpty()) {
+                    cargarRutas(comboBoxRutaVueloAgrRutaaPaquete, nickname);
+                } else {
+                    comboBoxRutaVueloAgrRutaaPaquete.removeAllItems(); // Limpia si no hay aerolínea seleccionada
+                }
+            }
+        });
+
+
+
+        buttonAceptarAgrRutaaPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DTPaqueteVuelos paqueteSeleccionado = (DTPaqueteVuelos) comboBoxPaqueteAgrRutaaPaquete.getSelectedItem();
+                String nicknameAerolinea = (String) comboBoxAeroAgrRutaaPaquete.getSelectedItem();
+                DTAerolinea aerolineaSeleccionada = null;
+                for (DTAerolinea a : sistema.listarAerolineas()) {
+                    if (a.getNickname().equals(nicknameAerolinea)) {
+                        aerolineaSeleccionada = a;
+                        break;
+                    }
+                }
+
+                DTRutaVuelo dtRutaSeleccionada = (DTRutaVuelo) comboBoxRutaVueloAgrRutaaPaquete.getSelectedItem();
+                if (dtRutaSeleccionada == null) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta.");
+                    return;
+                }
+                String nombreRuta = dtRutaSeleccionada.getNombre();
+
+//                 RutaVuelo rutaSeleccionada = (RutaVuelo) comboBoxRutaVueloAgrRutaaPaquete.getSelectedItem();
+                TipoAsiento tipoAsientoSeleccionado = (TipoAsiento) comboBoxTipoAsientoAgrRutaaPaquete.getSelectedItem();
+
+                if (paqueteSeleccionado == null || aerolineaSeleccionada == null || tipoAsientoSeleccionado == null) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete, una aerolínea y una ruta de vuelo");
+                    return;
+                }
+
+                // Como cantidad es TextField, primero string y después parseo a int
+                String cantidadStr = cantidadAgrRutaaPaquetetxt.getText().trim();
+                if (cantidadStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Debe ingresar la cantidad de veces que se incluye esta ruta en el paquete.");
+                    return;
+                }
+                int cantidad;
+                try {
+                    cantidad = Integer.parseInt(cantidadStr);
+                    if (cantidad <= 0) {
+                        throw new NumberFormatException("La cantidad debe ser un número positivo.");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Cantidad inválida: " + ex.getMessage());
+                    return;
+                }
+
+                try {
+                    // primero marco las selecciones hechas en el sistema
+                    sistema.seleccionarPaquete(paqueteSeleccionado.getNombre());
+                    sistema.seleccionarAerolinea(aerolineaSeleccionada.getNickname());
+                    sistema.seleccionarRutaVueloPaquete(nombreRuta);
+                    RutaVuelo rutaSeleccionada = sistema.getRutaVueloSeleccionada();
+                    // despues uso el resto de variables recolectadas para pasar como parametro en agregarRutaAPaquete
+                    sistema.agregarRutaAPaquete(rutaSeleccionada, cantidad, tipoAsientoSeleccionado);
+                    JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(buttonAceptarAgrRutaaPaquete),
+                            "Ruta agregada al paquete con éxito.");
+
+                    // limpiar tras exito
+                    comboBoxPaqueteAgrRutaaPaquete.setSelectedIndex(-1);
+                    comboBoxAeroAgrRutaaPaquete.setSelectedIndex(-1);
+                    comboBoxRutaVueloAgrRutaaPaquete.setSelectedIndex(-1);
+                    comboBoxTipoAsientoAgrRutaaPaquete.setSelectedIndex(0); // Si el primer item es vacío
+                    cantidadAgrRutaaPaquetetxt.setText("");
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al agregar ruta al paquete: " + ex.getMessage());
+                }
+            }
+        });
     }
+}
 
 
 

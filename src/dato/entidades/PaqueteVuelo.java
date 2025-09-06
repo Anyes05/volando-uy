@@ -6,6 +6,9 @@ import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
 
+import java.util.List;
+import java.util.ArrayList;
+
 @Entity
 @Table(name = "paquetesVuelo")
 public class PaqueteVuelo {
@@ -34,9 +37,13 @@ public class PaqueteVuelo {
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
 
-    // Relacion con cantidad
-    @ManyToOne
-    private Cantidad cantidad;
+//    // Relacion con cantidad
+//    @ManyToOne
+//    @JoinColumn(name = "cantidad_id")
+//    private Cantidad cantidad;
+
+    @OneToMany(mappedBy = "paqueteVuelo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cantidad> cantidades = new ArrayList<>();
 
     //Relacion con compraPaquete
     @ManyToOne
@@ -49,7 +56,7 @@ public class PaqueteVuelo {
     // Constructores
 
     public PaqueteVuelo() { // Constuctor vacío
-        this.cantidad = null;
+
     }
 
     public PaqueteVuelo(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
@@ -59,7 +66,7 @@ public class PaqueteVuelo {
         this.descuento = descuento;
         this.fechaAlta = fechaAlta;
         this.tipoAsiento = tipoAsiento;
-        this.cantidad = null;
+        this.cantidades = null;
     }
 
     // Getter y Setter
@@ -101,6 +108,6 @@ public class PaqueteVuelo {
 //    public float getCostoTotal() { return costoTotal; }
 //    public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal;}
 
-    public Cantidad getCantidad() { return cantidad; }
-    public void setCantidad(Cantidad cantidad) { this.cantidad = cantidad;  }
+    public List<Cantidad> getCantidad() { return cantidades; }
+    public void setCantidad(List<Cantidad> cantidades) { this.cantidades = cantidades;  }
 }

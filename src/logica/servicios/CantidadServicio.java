@@ -6,9 +6,10 @@ import dato.dao.CantidadDAO;
 public class CantidadServicio {
     private CantidadDAO cantidadDAO = new CantidadDAO();
 
-    public void registrarCantidad(int cant) {
+    public Cantidad registrarCantidad(int cant) {
         Cantidad c = new Cantidad(cant);
         cantidadDAO.guardar(c);
+        return c;
     }
 
     public Cantidad obtenerCantidad(Long id) {

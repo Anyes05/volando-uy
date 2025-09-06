@@ -15,18 +15,30 @@ public class Cantidad {
     @Column(nullable = false)
     private int cant;
 
-    // Relacion con RutaVuelo
-    @OneToMany(mappedBy = "cantidad", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RutaVuelo> rutasVuelos;
+//    // Relacion con RutaVuelo
+//    @OneToMany(mappedBy = "cantidad", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<RutaVuelo> rutasVuelos;
+
+//    @ManyToOne
+//    @JoinColumn(name = "paquete_vuelo_id")
+//    private PaqueteVuelo paqueteVuelo;
+
+    // Relacion con rutaVuelo
+    @ManyToOne
+    @JoinColumn(name = "ruta_vuelo_id")
+    private RutaVuelo rutaVuelo;
+
+    // Relacion con paqueteVuelo
+    @ManyToOne
+    @JoinColumn(name = "paquete_vuelo_id")
+    private PaqueteVuelo paqueteVuelo;
 
     // CONSTRUCTOR
     public Cantidad() {
-        this.rutasVuelos = new ArrayList<>();
     }
 
     public Cantidad(int cant) {
         this.cant = cant;
-        this.rutasVuelos = new ArrayList<>();
     }
 
     // GETTERS Y SETTERS
@@ -38,7 +50,23 @@ public class Cantidad {
 
     public void setCant(int cant) {this.cant = cant;}
 
-    public List<RutaVuelo> getRutasVuelos() {return rutasVuelos;}
+    public RutaVuelo getRutaVuelo() {
+        return rutaVuelo;
+    }
 
-    public void setRutasVuelos(List<RutaVuelo> rutasVuelos) {this.rutasVuelos = rutasVuelos;}
+    public void setRutaVuelo(RutaVuelo rutaVuelo) {
+        this.rutaVuelo = rutaVuelo;
+    }
+
+    public PaqueteVuelo getPaqueteVuelo() {
+        return paqueteVuelo;
+    }
+
+    public void setPaqueteVuelo(PaqueteVuelo paqueteVuelo) {
+        this.paqueteVuelo = paqueteVuelo;
+    }
+
+//    public List<RutaVuelo> getRutasVuelos() {return rutasVuelos;}
+//
+//    public void setRutasVuelos(List<RutaVuelo> rutasVuelos) {this.rutasVuelos = rutasVuelos;}
 }
