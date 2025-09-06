@@ -81,8 +81,10 @@ public interface ISistema {
     //AGREGAR RUTA DE VUELO A PAQUETE
 //    public List<DTPaqueteVuelos> mostrarPaquete();
     public void seleccionarPaquete(String nombrePaquete);
+    public void seleccionarRutaVueloPaquete (String nombreRutaVuelo);
+    public RutaVuelo getRutaVueloSeleccionada();
 
-//    public void agregarRutaAPaquete(RutaVuelo ruta, int cant);
+    public void agregarRutaAPaquete(RutaVuelo rutaSeleccionada, int cant, TipoAsiento tipoAsiento);
 
     // COMPRA DE PAQUETE DE VUELO
     public List<DTPaqueteVuelos> mostrarPaquete();

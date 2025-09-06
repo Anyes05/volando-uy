@@ -61,10 +61,13 @@ public class RutaVuelo {
     )
     private List<Aerolinea> aerolineas;
 
-    // Relación con cantidad, hay que ponerlo de este lado también creo
-    @ManyToOne
-    @JoinColumn(name = "cantidad_id")
-    private Cantidad cantidad;
+//    // Relación con cantidad, hay que ponerlo de este lado también creo
+//    @ManyToOne
+//    @JoinColumn(name = "cantidad_id")
+//    private Cantidad cantidad;
+
+    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL)
+    private List<Cantidad> cantidades;
 
 
     //relacion con ciudad
@@ -91,6 +94,7 @@ public class RutaVuelo {
         this.categorias = new ArrayList<>();
         this.vuelos = new ArrayList<>();
         this.aerolineas = new ArrayList<>();
+        this.cantidades = new ArrayList<>();
 
         this.ciudadDestino = null;
         this.ciudadOrigen = null;
@@ -147,9 +151,9 @@ public class RutaVuelo {
 
     public void setAerolineas(List<Aerolinea> aerolineas) { this.aerolineas = aerolineas; }
 
-    public Cantidad getCantidad() { return cantidad; }
+    public List<Cantidad> getCantidad() { return cantidades; }
 
-    public void setCantidad(Cantidad cantidad) { this.cantidad = cantidad; }
+    public void setCantidad(List<Cantidad> cantidades) { this.cantidades = cantidades; }
 
     public float getCostoBaseTurista() {
         return costoBaseTurista;

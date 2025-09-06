@@ -38,6 +38,7 @@ public class Sistema implements ISistema {
     private List<DTVuelo> listaDTVuelos;
     private String nicknameUsuarioAModificar;
     private String vueloSeleccionadoParaReserva; // Para recordar el vuelo seleccionado para reserva
+    private RutaVuelo rutaVueloSeleccionada;
 
     private Sistema() {
         paqueteVuelos = new ArrayList<>();
@@ -964,35 +965,53 @@ public class Sistema implements ISistema {
         }
         throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
     }
-//
-//    // seleccionarAerolinea (ya está mas arriba)
-//    // seleccionarRutaVuelo (ya está mas arriba)
-//
-//    public void agregarRutaAPaquete (RutaVuelo rutaSeleccionada, int cant) {
-//        if (paqueteSeleccionado == null) {
-//            throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
-//        }
-//        if (rutaSeleccionada == null) {
-//            throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
-//        }
-//        Cantidad cantidadExistente = paqueteSeleccionado.getCantidad();
-//        if (cantidadExistente != null && cantidadExistente.getRutasVuelos() != null) {
-//               if (cantidadExistente.getRutasVuelos().getNombre().equalsIgnoreCase(rutaSeleccionada.getNombre())) {
-//                   throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
-//               }
-//
-//        }
-//        Cantidad nuevaCantidad = new Cantidad();
-//        nuevaCantidad.setCant(cant);
-//        nuevaCantidad.setRutasVuelos(rutaSeleccionada);
-//
-//        CantidadServicio cantidadServicio = new CantidadServicio();
-//        cantidadServicio.registrarCantidad(nuevaCantidad);
-//
-//        paqueteSeleccionado.setCantidad(nuevaCantidad);
-//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
-//    }
-//
+
+    // seleccionarAerolinea (ya está mas arriba)
+    public void seleccionarRutaVueloPaquete(String nombreRuta) {
+        if (aerolineaSeleccionada == null) {
+            throw new IllegalStateException("No hay aerolínea seleccionada.");
+        }
+        for (RutaVuelo r : aerolineaSeleccionada.getRutasVuelo()) {
+            if (r.getNombre().equals(nombreRuta)) {
+                rutaVueloSeleccionada = r;
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Ruta de vuelo no encontrada: " + nombreRuta);
+    }
+
+    public RutaVuelo getRutaVueloSeleccionada() {
+        return rutaVueloSeleccionada;
+    }
+
+    public void agregarRutaAPaquete (RutaVuelo rutaSeleccionada, int cant, TipoAsiento tipoAsiento) {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
+        }
+        if (rutaSeleccionada == null) {
+            throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
+        }
+
+        for (Cantidad cantidad : paqueteSeleccionado.getCantidad()) {
+            if (cantidad.getRutaVuelo() != null &&
+                    cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(rutaSeleccionada.getNombre())) {
+                throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
+            }
+        }
+
+        paqueteSeleccionado.setTipoAsiento(tipoAsiento);
+
+        Cantidad nuevaCantidad = new Cantidad();
+        nuevaCantidad.setCant(cant);
+        nuevaCantidad.setRutaVuelo(rutaSeleccionada);
+        nuevaCantidad.setPaqueteVuelo(paqueteSeleccionado);
+
+        CantidadServicio cantidadServicio = new CantidadServicio();
+        cantidadServicio.registrarCantidad(nuevaCantidad.getCant());
+
+        paqueteSeleccionado.getCantidad().add(nuevaCantidad);
+    }
+
 //    // CONSULTA PAQUETE RUTAS DE VUELO
 //
 //    public DTPaqueteVuelos consultaPaqueteVuelo (dato.entidades.PaqueteVuelo paqueteSeleccionado) {
