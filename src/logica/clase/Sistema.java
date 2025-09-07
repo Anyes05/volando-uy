@@ -57,6 +57,21 @@ public class Sistema implements ISistema {
         return Instance;
     }
 
+    public static boolean esNombreValido(String nombre) {
+        if (nombre == null) return false;
+
+        String limpio = nombre.trim();
+
+        if (limpio.length() < 3) {
+            return false;
+        }
+
+        // Letras Unicode + espacios internos + apóstrofos + guiones
+        String patron = "^\\p{L}+(?:[ \\p{L}'-]+)*$";
+
+        return limpio.matches(patron);
+    }
+
     // ALTA USUARIO
     private boolean existeNickname(String nickname) {
         ClienteServicio clienteServicio = new ClienteServicio();
@@ -107,6 +122,9 @@ public class Sistema implements ISistema {
         if (existeCorreo(correo)) {
             throw new IllegalArgumentException("El correo electrónico ya existe.");
         }
+        if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(apellido) || !esNombreValido(nacionalidad)) {
+            throw new IllegalArgumentException("El nickname, nombre, apellido o nacionalidad son demasiado cortos o contienen caracteres especiales");
+        }
 
         try {
             ClienteServicio clienteServicio = new ClienteServicio();
@@ -122,6 +140,9 @@ public class Sistema implements ISistema {
         }
         if (existeCorreo(correo)) {
             throw new IllegalArgumentException("El correo electrónico ya existe.");
+        }
+        if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(correo) || !esNombreValido(descripcion)) {
+            throw new IllegalArgumentException("Nickname, nombre, correo o descripcion han sido ingresados incorrectamente, muy cortos o usan caracteres especiales");
         }
 
         try {
@@ -341,6 +362,12 @@ public class Sistema implements ISistema {
         if (aerolinea == null) {
             throw new IllegalStateException("La aerolínea seleccionada no existe.");
         }
+        if (!esNombreValido(nombreRuta) || !esNombreValido(descripcion) || !esNombreValido(ciudadDestino) || !esNombreValido(ciudadOrigen) || !esNombreValido(categoria)) {
+            throw new IllegalArgumentException("El nombre de la ruta, la descripcion, alguna de las ciudades o la categoria, han sido mal ingresados");
+        }
+        if (costoEjecutivo <= 0 || costoTurista <= 0 || costoEquipajeExtra < 0) {
+            throw new IllegalArgumentException("Uno de los costos no es valido. Ingrese un valor mayor a 0");
+        }
 
         dato.entidades.Ciudad origen = ciudadServicio.buscarCiudadPorNombre(ciudadOrigen);
         dato.entidades.Ciudad destino = ciudadServicio.buscarCiudadPorNombre(ciudadDestino);
@@ -414,6 +441,9 @@ public class Sistema implements ISistema {
 
     // ALTA CATEGORIA
     public void altaCategoria(String nombre) {
+        if (!esNombreValido(nombre)) {
+            throw new IllegalArgumentException("Ingrese un nombre con mas de 3 caracteres");
+        }
         CategoriaServicio categoriaServicio = new CategoriaServicio();
         categoriaServicio.registrarCategoria(nombre);
     }
@@ -431,6 +461,9 @@ public class Sistema implements ISistema {
         dato.entidades.Ciudad ciudadExistente = ciudadServicio.buscarCiudadPorNombreYPais(nombre, pais);
         if (ciudadExistente != null) {
             throw new IllegalArgumentException("La ciudad ya existe.");
+        }
+        if ( !esNombreValido(nombre) || !esNombreValido(pais) || !esNombreValido(aeropuerto) || !esNombreValido(descripcion)) {
+            throw new IllegalArgumentException("Nombre, pais aeropuerto o descrpcion mal ingresados");
         }
         AeropuertoServicio aeropuertoServicio = new AeropuertoServicio();
         boolean existeAeropuerto = aeropuertoServicio.existeAeropuerto(aeropuerto);
@@ -563,6 +596,9 @@ public class Sistema implements ISistema {
 
         if (ruta == null) { //recordarRutaVuelo==NULL
             throw new IllegalStateException("Debe seleccionar una ruta antes de ingresar los datos del vuelo.");
+        }
+        if (!esNombreValido(nombre)){
+            throw new IllegalStateException("El nombre del vuelo no es valido");
         }
 
         DTVuelo dtVuelo = new DTVuelo(duracion, nombre, fecha, horaVuelo, maxEjecutivo, fechaAlta, maxTurista, ruta);
@@ -928,6 +964,9 @@ public class Sistema implements ISistema {
         if (diasValidos <= 0) {
             throw new IllegalArgumentException("Los días válidos deben ser mayores a 0.");
         }
+        if (nombrePaquete.length() <= 3 || descripcion.length() <= 10) {
+            throw new IllegalStateException("Nombre o descripcion muy cortos, ingrese un nombre con mas de 3 caracteres o una descripcion con 10 o mas caracteres");
+        }
 
         try {
             dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion,tipoAsiento, diasValidos, descuento, fechaAlta);
@@ -937,25 +976,27 @@ public class Sistema implements ISistema {
     }
 
     // AGREGAR RUTAS DE VUELO A PAQUETE
-//
+
     public List<DTPaqueteVuelos> mostrarPaquete() {
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
         List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
         List<dato.entidades.PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
         for (dato.entidades.PaqueteVuelo p : paquetes) {
-            DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-                    p.getNombre(),
-                    p.getDescripcion(),
-                    p.getTipoAsiento(),
-                    p.getDiasValidos(),
-                    p.getDescuento(),
-                    p.getFechaAlta()
-            );
-            listaPaquetes.add(dtPaquete);
+            if (p.getCantidad() != null) {
+                DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                        p.getNombre(),
+                        p.getDescripcion(),
+                        p.getTipoAsiento(),
+                        p.getDiasValidos(),
+                        p.getDescuento(),
+                        p.getFechaAlta()
+                );
+                listaPaquetes.add(dtPaquete);
+            }
         }
         return listaPaquetes;
     }
-//
+
     public void seleccionarPaquete(String nombrePaquete) {
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
         dato.entidades.PaqueteVuelo paquete = paqueteVueloServicio.obtenerPaquetePorNombre(nombrePaquete);
