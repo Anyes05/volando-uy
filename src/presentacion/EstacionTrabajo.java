@@ -493,7 +493,6 @@ public class EstacionTrabajo {
         consultaUsuarioJpanel1.setLayout(new BorderLayout());
         consultaUsuarioJpanel1.add(scroll, BorderLayout.CENTER);
 
-
         JScrollPane scroll3 = new JScrollPane(modificarUsuariotable1);
         modificarUsuarioJPanel1.setLayout(new BorderLayout());
         modificarUsuarioJPanel1.add(scroll3, BorderLayout.CENTER);
