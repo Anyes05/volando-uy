@@ -32,7 +32,10 @@ public class CompraPaqueteServicio {
         compraPaqueteDAO.eliminar(id);
     }
 
-    public CompraPaquete registrarCompraPaquete(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, TipoAsiento tipoAsiento, PaqueteVuelo paqueteSeleccionado) throws Exception {
-        return compraPaqueteDAO.registrarCompra(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento, paqueteSeleccionado); // Se guarda en la BD
+    public CompraPaquete registrarCompraPaquete(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento /*TipoAsiento tipoAsiento*/, PaqueteVuelo paqueteSeleccionado) throws Exception {
+        PaqueteVueloServicio servicioPaqueteVuelo = new PaqueteVueloServicio();
+        paqueteSeleccionado.setComprado(true);
+        servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
+        return compraPaqueteDAO.registrarCompra(clienteSeleccionado, fechaCompra, vencimiento /*tipoAsiento*/, paqueteSeleccionado); // Se guarda en la BD
     }
 }

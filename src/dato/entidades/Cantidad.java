@@ -1,6 +1,8 @@
 package dato.entidades;
 
 import jakarta.persistence.*;
+import logica.DataTypes.TipoAsiento;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +17,6 @@ public class Cantidad {
     @Column(nullable = false)
     private int cant;
 
-//    // Relacion con RutaVuelo
-//    @OneToMany(mappedBy = "cantidad", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<RutaVuelo> rutasVuelos;
-
-//    @ManyToOne
-//    @JoinColumn(name = "paquete_vuelo_id")
-//    private PaqueteVuelo paqueteVuelo;
-
     // Relacion con rutaVuelo
     @ManyToOne
     @JoinColumn(name = "ruta_vuelo_id")
@@ -32,6 +26,10 @@ public class Cantidad {
     @ManyToOne
     @JoinColumn(name = "paquete_vuelo_id")
     private PaqueteVuelo paqueteVuelo;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = true)
+    private TipoAsiento tipoAsiento;
 
     // CONSTRUCTOR
     public Cantidad() {
@@ -66,7 +64,15 @@ public class Cantidad {
         this.paqueteVuelo = paqueteVuelo;
     }
 
-//    public List<RutaVuelo> getRutasVuelos() {return rutasVuelos;}
+    public TipoAsiento getTipoAsiento() {
+        return tipoAsiento;
+    }
+
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+        this.tipoAsiento = tipoAsiento;
+    }
+
+    //    public List<RutaVuelo> getRutasVuelos() {return rutasVuelos;}
 //
 //    public void setRutasVuelos(List<RutaVuelo> rutasVuelos) {this.rutasVuelos = rutasVuelos;}
 }
