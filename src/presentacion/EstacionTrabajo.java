@@ -47,7 +47,7 @@ public class EstacionTrabajo {
     private JButton cancelarAltaClienteButton;
     private JButton aceptarAltaClienteButton;
     private JTextPane altaAerolineaDescripcion;
-    private JPanel consultaUsuario;
+
     private JPanel modificarUsuario;
     private JTextField modificarUsuarioTextInput;
 
@@ -135,6 +135,8 @@ public class EstacionTrabajo {
 
 
     //CONSULTA USUARIO
+    private JScrollPane consultaUsuarioScroll;
+    private JPanel consultaUsuario;
     private JPanel consultaUsuarioParentPanel;
     private JPanel consultaUsuarioJpanel1;
     private JTable consultaUsuarioTable1;
@@ -250,6 +252,7 @@ public class EstacionTrabajo {
     private JButton aceptarComprarPaquete;
     private JButton cancelarButtonComprarPaquete;
     private JButton listarUsuariosButton;
+
 
 
     //  private JButton precargarAeropuertosButton;
@@ -532,7 +535,6 @@ public class EstacionTrabajo {
                         costoBaseTuRVConsulta.setText("");
                         costoBaseEjRVConsulta.setText("");
                         costoUnEquipajeExRVConsulta.setText("");
-                        ;
                         fechaAltaRVConsulta.setText("");
                         comboBoxAeroRVConsulta.removeAllItems();
                         comBoxRutVueloConsultaRV.removeAllItems();
@@ -647,7 +649,7 @@ public class EstacionTrabajo {
                     case "Consultar usuario":
                         parentPanel.removeAll();
                         UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
-                        parentPanel.add(consultaUsuario);
+                        parentPanel.add(consultaUsuarioScroll);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
@@ -887,6 +889,25 @@ public class EstacionTrabajo {
         });
 
         ActionListener listener = e -> {
+            cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
+            nombreRVConsulta.setText("");
+            descripcionRVConsulta.setText("");
+            ciudadORVConsulta.setText("");
+            ciudadDRVConsulta.setText("");
+            costoBaseTuRVConsulta.setText("");
+            costoBaseEjRVConsulta.setText("");
+            costoUnEquipajeExRVConsulta.setText("");
+            fechaAltaRVConsulta.setText("");
+            comboBoxAeroRVConsulta.removeAllItems();
+            comBoxRutVueloConsultaRV.removeAllItems();
+            vuelosConsultaRV.removeAllItems();
+            cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = false;
+            cargarAerolineas(comboBoxAeroRVConsulta);
+            cargarAerolineas(comboBoxAeroConsultaV);
+            String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
+            if (nicknameAerolinea != null) {
+                cargarRutas(comBoxRutVueloConsultaRV, nicknameAerolinea);
+            }
             if (paqueteVueloRadioButton.isSelected()) {
                 UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaPaqueteRutaVuelo);
             } else if (reservaDeVueloRadioButton.isSelected()) {

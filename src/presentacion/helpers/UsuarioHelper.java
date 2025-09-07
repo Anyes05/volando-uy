@@ -682,10 +682,22 @@ public class UsuarioHelper {
 
                 if (a.getRutasVuelo() != null) {
                     for (RutaVuelo ruta : a.getRutasVuelo()) {
+                        DTCostoBase costo = ruta.getCostoBase();
+                        String costoFormateado = (costo != null)
+                                ? String.format(
+                                "Turista: $%.2f | Ejecutivo: $%.2f | Equipaje Extra: $%.2f x%d | Total: $%.2f",
+                                costo.getCostoTurista(),
+                                costo.getCostoEjecutivo(),
+                                costo.getCostoEquipajeExtra(),
+                                costo.getCantidadEquipajeExtra(),
+                                costo.getCostoTotal()
+                        )
+                                : "Sin costo";
+
                         modelo.addRow(new Object[]{
                                 "Ruta",
                                 ruta.getNombre() + " - " + ruta.getDescripcion(),
-                                ruta.getCostoBase()
+                                costoFormateado
                         });
                     }
                 }
@@ -696,10 +708,20 @@ public class UsuarioHelper {
             }
 
             // Si no se encontró en ninguno
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado: " + nickname, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Usuario no encontrado: " + nickname,
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error al mostrar datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Error al mostrar datos: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
