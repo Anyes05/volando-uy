@@ -1,5 +1,6 @@
 package logica.clase;
 
+import dato.entidades.Aerolinea;
 import dato.entidades.PaqueteVuelo;
 import dato.entidades.RutaVuelo;
 import logica.DataTypes.*;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface ISistema {
 
-    // Método de prueba para verificar conexión a BD
+//     Método de prueba para verificar conexión a BD
     public void probarConexionBD();
 
     // PRECARGA DE AEROPUERTOS
@@ -82,16 +83,16 @@ public interface ISistema {
 //    public List<DTPaqueteVuelos> mostrarPaquete();
     public void seleccionarPaquete(String nombrePaquete);
     public void seleccionarRutaVueloPaquete (String nombreRutaVuelo);
-    public RutaVuelo getRutaVueloSeleccionada();
+    public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea);
 
-    public void agregarRutaAPaquete(RutaVuelo rutaSeleccionada, int cant, TipoAsiento tipoAsiento);
+    public void agregarRutaAPaquete(int cant, TipoAsiento tipoAsiento);
 
     // COMPRA DE PAQUETE DE VUELO
     public List<DTPaqueteVuelos> mostrarPaquete();
     //seleccionarPaquete (repetida)
     public List<DTCliente> mostrarClientes();
     public void seleccionarCliente(String nombreCliente);
-    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento, TipoAsiento tipoAsiento);
+    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento/*, TipoAsiento tipoAsiento*/);
 
 
     // CREAR PAQUETE DE VUELO

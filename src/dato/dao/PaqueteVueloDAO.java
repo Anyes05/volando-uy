@@ -34,4 +34,13 @@ public class PaqueteVueloDAO {
         em.close();
         return paquetes;
     }
+
+    public PaqueteVuelo actualizar(PaqueteVuelo paquete) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        PaqueteVuelo merged = em.merge(paquete); // reatacha y sincroniza
+        em.getTransaction().commit();
+        em.close();
+        return merged;
+    }
 }

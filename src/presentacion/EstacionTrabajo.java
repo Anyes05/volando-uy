@@ -1,5 +1,6 @@
 package presentacion;
 
+import dato.entidades.Aerolinea;
 import dato.entidades.RutaVuelo;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
@@ -1656,10 +1657,10 @@ public class EstacionTrabajo {
                             vencimientoLocalDate.getMonthValue(),
                             vencimientoLocalDate.getYear()
                     );
-                    TipoAsiento tipoAsiento = paquete.getTipoAsiento();
+
 
                     // ejecutar la compra
-                    sistema.realizarCompra(fechaCompra, costo, vencimiento, tipoAsiento);
+                    sistema.realizarCompra(fechaCompra, costo, vencimiento);
 
                     JOptionPane.showMessageDialog(null, "Compra realizada con éxito");
                 } catch (Exception ex) {
@@ -1689,10 +1690,11 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 DTPaqueteVuelos paqueteSeleccionado = (DTPaqueteVuelos) comboBoxPaqueteAgrRutaaPaquete.getSelectedItem();
                 String nicknameAerolinea = (String) comboBoxAeroAgrRutaaPaquete.getSelectedItem();
-                DTAerolinea aerolineaSeleccionada = null;
+
+                DTAerolinea aeroSeleccionada = null;
                 for (DTAerolinea a : sistema.listarAerolineas()) {
                     if (a.getNickname().equals(nicknameAerolinea)) {
-                        aerolineaSeleccionada = a;
+                        aeroSeleccionada = a;
                         break;
                     }
                 }
@@ -1707,7 +1709,7 @@ public class EstacionTrabajo {
 //                 RutaVuelo rutaSeleccionada = (RutaVuelo) comboBoxRutaVueloAgrRutaaPaquete.getSelectedItem();
                 TipoAsiento tipoAsientoSeleccionado = (TipoAsiento) comboBoxTipoAsientoAgrRutaaPaquete.getSelectedItem();
 
-                if (paqueteSeleccionado == null || aerolineaSeleccionada == null || tipoAsientoSeleccionado == null) {
+                if (paqueteSeleccionado == null || aeroSeleccionada == null || tipoAsientoSeleccionado == null) {
                     JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete, una aerolínea y una ruta de vuelo");
                     return;
                 }
@@ -1732,11 +1734,10 @@ public class EstacionTrabajo {
                 try {
                     // primero marco las selecciones hechas en el sistema
                     sistema.seleccionarPaquete(paqueteSeleccionado.getNombre());
-                    sistema.seleccionarAerolinea(aerolineaSeleccionada.getNickname());
+                    sistema.seleccionarAerolineaPaquete(aeroSeleccionada);
                     sistema.seleccionarRutaVueloPaquete(nombreRuta);
-                    RutaVuelo rutaSeleccionada = sistema.getRutaVueloSeleccionada();
                     // despues uso el resto de variables recolectadas para pasar como parametro en agregarRutaAPaquete
-                    sistema.agregarRutaAPaquete(rutaSeleccionada, cantidad, tipoAsientoSeleccionado);
+                    sistema.agregarRutaAPaquete(cantidad, tipoAsientoSeleccionado);
                     JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(buttonAceptarAgrRutaaPaquete),
                             "Ruta agregada al paquete con éxito.");
 

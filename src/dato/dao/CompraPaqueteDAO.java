@@ -34,12 +34,12 @@ public class CompraPaqueteDAO extends GenericDAO<CompraPaquete> {
         return query.getResultStream().findFirst().orElse(null);
     }
 
-    public CompraPaquete registrarCompra (Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, TipoAsiento tipoAsiento, PaqueteVuelo paqueteSeleccionado) throws Exception {
+    public CompraPaquete registrarCompra (Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, /*TipoAsiento tipoAsiento,*/ PaqueteVuelo paqueteSeleccionado) throws Exception {
         CompraPaquete compraPaquete = new CompraPaquete();
         compraPaquete.setCliente(clienteSeleccionado);
         compraPaquete.setFechaReserva(fechaCompra);
         compraPaquete.setVencimiento(vencimiento);
-        compraPaquete.setTipoAsiento(tipoAsiento);
+//        compraPaquete.setTipoAsiento(tipoAsiento);
         compraPaquete.setPaqueteVuelo(paqueteSeleccionado);
 
         em.getTransaction().begin();

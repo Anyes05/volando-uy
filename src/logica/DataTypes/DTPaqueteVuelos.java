@@ -8,7 +8,7 @@ import java.util.List;
 public class DTPaqueteVuelos {
     private String nombre;
     private String descripcion;
-    private TipoAsiento tipoAsiento; // Mejor sería un Enum
+//    private TipoAsiento tipoAsiento; // Mejor sería un Enum
     private int diasValidos;
     private float descuento;
     private DTCostoBase DTCostoBase;
@@ -20,8 +20,8 @@ public class DTPaqueteVuelos {
     private List<dato.entidades.RutaVuelo> rutas;
 
 
-    public DTPaqueteVuelos(String nombre, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
-        this.tipoAsiento = tipoAsiento;
+    public DTPaqueteVuelos(String nombre, String descripcion /*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta) {
+//        this.tipoAsiento = tipoAsiento;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.nombre = nombre;
@@ -45,13 +45,13 @@ public class DTPaqueteVuelos {
         this.descripcion = descripcion;
     }
 
-    public TipoAsiento getTipoAsiento() {
-        return tipoAsiento;
-    }
-
-    public void setTipoAsiento(TipoAsiento tipoAsiento) {
-        this.tipoAsiento = tipoAsiento;
-    }
+//    public TipoAsiento getTipoAsiento() {
+//        return tipoAsiento;
+//    }
+//
+//    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+//        this.tipoAsiento = tipoAsiento;
+//    }
 
     public int getDiasValidos() {
         return diasValidos;

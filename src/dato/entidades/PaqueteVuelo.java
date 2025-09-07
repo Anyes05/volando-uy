@@ -28,6 +28,8 @@ public class PaqueteVuelo {
     @Column(nullable = false)
     private float descuento;
 
+    private boolean comprado;
+
 //    @Column(nullable = false)
 //    private DTCostoBase DTCostoBase;
 
@@ -42,16 +44,17 @@ public class PaqueteVuelo {
 //    @JoinColumn(name = "cantidad_id")
 //    private Cantidad cantidad;
 
-    @OneToMany(mappedBy = "paqueteVuelo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cantidad> cantidades = new ArrayList<>();
+    @OneToMany(mappedBy = "paqueteVuelo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Cantidad> cantidades;
 
     //Relacion con compraPaquete
     @ManyToOne
     @JoinColumn(name = "compraPaquete_id")
     private CompraPaquete compraPaquete;
 
-    @Column(nullable = true)
-    private TipoAsiento tipoAsiento;
+//    @Enumerated(EnumType.ORDINAL)
+//    @Column(nullable = true)
+//    private TipoAsiento tipoAsiento;
 
     // Constructores
 
@@ -59,14 +62,15 @@ public class PaqueteVuelo {
 
     }
 
-    public PaqueteVuelo(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
+    public PaqueteVuelo(String nombrePaquete, String descripcion,/*TipoAsiento tipoAsiento*/ int diasValidos, float descuento, DTFecha fechaAlta) {
         this.nombre = nombrePaquete;
         this.descripcion = descripcion;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.fechaAlta = fechaAlta;
-        this.tipoAsiento = tipoAsiento;
-        this.cantidades = null;
+//        this.tipoAsiento = tipoAsiento;
+        this.cantidades = new ArrayList<>();
+        this.comprado = false;
     }
 
     // Getter y Setter
@@ -86,12 +90,12 @@ public class PaqueteVuelo {
     public DTFecha getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
 
-    public TipoAsiento getTipoAsiento() {
-        return tipoAsiento;
-    }
-    public void setTipoAsiento(TipoAsiento tipoAsiento) {
-        this.tipoAsiento = tipoAsiento;
-    }
+//    public TipoAsiento getTipoAsiento() {
+//        return tipoAsiento;
+//    }
+//    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+//        this.tipoAsiento = tipoAsiento;
+//    }
     public int getDiasValidos() {
         return diasValidos;
     }
@@ -108,6 +112,18 @@ public class PaqueteVuelo {
 //    public float getCostoTotal() { return costoTotal; }
 //    public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal;}
 
+    public void addCantidad(Cantidad c) {
+        cantidades.add(c);
+        c.setPaqueteVuelo(this);   // importantísimo: setea el lado propietario
+    }
     public List<Cantidad> getCantidad() { return cantidades; }
     public void setCantidad(List<Cantidad> cantidades) { this.cantidades = cantidades;  }
+
+    public boolean isComprado() {
+        return comprado;
+    }
+
+    public void setComprado(boolean comprado) {
+        this.comprado = comprado;
+    }
 }

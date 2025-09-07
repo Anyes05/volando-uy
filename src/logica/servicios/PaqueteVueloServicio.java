@@ -11,8 +11,8 @@ import java.util.List;
 public class PaqueteVueloServicio {
     private PaqueteVueloDAO paqueteVueloDAO = new PaqueteVueloDAO();
 
-    public PaqueteVuelo registrarPaqueteVuelo(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
-        PaqueteVuelo p = new PaqueteVuelo(nombrePaquete, descripcion,null, diasValidos, descuento, fechaAlta);
+    public PaqueteVuelo registrarPaqueteVuelo(String nombrePaquete, String descripcion/*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta) {
+        PaqueteVuelo p = new PaqueteVuelo(nombrePaquete, descripcion/*null*/, diasValidos, descuento, fechaAlta);
         paqueteVueloDAO.guardar(p);  // Se guarda en la BD
         return p;
     }
@@ -35,5 +35,7 @@ public class PaqueteVueloServicio {
         return null; // Si no se encuentra el paquete
     }
 
-
+    public void actualizarPaquete(PaqueteVuelo paqueteVuelo) {
+        paqueteVueloDAO.actualizar(paqueteVuelo);
+    }
 }

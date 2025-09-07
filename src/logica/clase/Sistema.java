@@ -969,7 +969,7 @@ public class Sistema implements ISistema {
         }
 
         try {
-            dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion,tipoAsiento, diasValidos, descuento, fechaAlta);
+            dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion/*tipoAsiento*/, diasValidos, descuento, fechaAlta);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
         }
@@ -986,7 +986,6 @@ public class Sistema implements ISistema {
                 DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
                         p.getNombre(),
                         p.getDescripcion(),
-                        p.getTipoAsiento(),
                         p.getDiasValidos(),
                         p.getDescuento(),
                         p.getFechaAlta()
@@ -1007,7 +1006,11 @@ public class Sistema implements ISistema {
         throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
     }
 
-    // seleccionarAerolinea (ya está mas arriba)
+    public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea) {
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        aerolineaSeleccionada = aerolineaServicio.buscarAerolineaPorNickname(DTaerolinea.getNickname());
+    }
+
     public void seleccionarRutaVueloPaquete(String nombreRuta) {
         if (aerolineaSeleccionada == null) {
             throw new IllegalStateException("No hay aerolínea seleccionada.");
@@ -1015,42 +1018,44 @@ public class Sistema implements ISistema {
         for (RutaVuelo r : aerolineaSeleccionada.getRutasVuelo()) {
             if (r.getNombre().equals(nombreRuta)) {
                 rutaVueloSeleccionada = r;
-                return;
             }
         }
-        throw new IllegalArgumentException("Ruta de vuelo no encontrada: " + nombreRuta);
+        if (rutaVueloSeleccionada == null) {
+            throw new IllegalArgumentException("Ruta de vuelo no encontrada: " + nombreRuta);
+        }
     }
 
-    public RutaVuelo getRutaVueloSeleccionada() {
-        return rutaVueloSeleccionada;
-    }
 
-    public void agregarRutaAPaquete (RutaVuelo rutaSeleccionada, int cant, TipoAsiento tipoAsiento) {
+    public void agregarRutaAPaquete (int cant, TipoAsiento tipoAsiento) {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
         }
-        if (rutaSeleccionada == null) {
+        if (rutaVueloSeleccionada == null) {
             throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
+        }
+        if (paqueteSeleccionado.isComprado()) {
+            throw new IllegalStateException("Este paquete ya fue comprado, no se pueden agregar mas rutas");
         }
 
         for (Cantidad cantidad : paqueteSeleccionado.getCantidad()) {
             if (cantidad.getRutaVuelo() != null &&
-                    cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(rutaSeleccionada.getNombre())) {
+                    cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(rutaVueloSeleccionada.getNombre())) {
                 throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
             }
         }
 
-        paqueteSeleccionado.setTipoAsiento(tipoAsiento);
-
-        Cantidad nuevaCantidad = new Cantidad();
-        nuevaCantidad.setCant(cant);
-        nuevaCantidad.setRutaVuelo(rutaSeleccionada);
-        nuevaCantidad.setPaqueteVuelo(paqueteSeleccionado);
+        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
 
         CantidadServicio cantidadServicio = new CantidadServicio();
-        cantidadServicio.registrarCantidad(nuevaCantidad.getCant());
+        Cantidad nuevaCantidad = cantidadServicio.registrarCantidad(cant);
+        nuevaCantidad.setRutaVuelo(rutaVueloSeleccionada);
+        nuevaCantidad.setPaqueteVuelo(paqueteSeleccionado);
+        nuevaCantidad.setTipoAsiento(tipoAsiento);
+        nuevaCantidad.setCant(cant);
 
-        paqueteSeleccionado.getCantidad().add(nuevaCantidad);
+        paqueteSeleccionado.addCantidad(nuevaCantidad);
+        paqueteVueloServicio.actualizarPaquete(paqueteSeleccionado);
+
     }
 
 //    // CONSULTA PAQUETE RUTAS DE VUELO
@@ -1135,7 +1140,7 @@ public class Sistema implements ISistema {
         throw new IllegalArgumentException("No se encontró un cliente con el nombre: " + nombreCliente);
     }
 
-    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento, TipoAsiento tipoAsiento){
+    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento/*TipoAsiento tipoAsiento*/){
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de realizar la compra.");
         }
@@ -1146,12 +1151,15 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("El costo no puede ser negativo.");
         }
         CompraPaqueteServicio servicioCompraPaquete = new CompraPaqueteServicio();
+        PaqueteVueloServicio servicioPaqueteVuelo = new PaqueteVueloServicio();
         try {
-            dato.entidades.CompraPaquete compraPaquete = servicioCompraPaquete.registrarCompraPaquete(clienteSeleccionado, fechaCompra, vencimiento, tipoAsiento, paqueteSeleccionado);
+            dato.entidades.CompraPaquete compraPaquete = servicioCompraPaquete.registrarCompraPaquete(clienteSeleccionado, fechaCompra, vencimiento/*tipoAsiento*/, paqueteSeleccionado);
             DTCostoBase costoBase = new DTCostoBase(0, 0, 0);
             compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
             clienteSeleccionado.addReserva(compraPaquete);
             clienteSeleccionado.incrementarCantidadPaquetes();
+            paqueteSeleccionado.setComprado(true);
+            servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error");
         }

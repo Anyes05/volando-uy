@@ -16,11 +16,12 @@ public class CompraPaquete extends Reserva{
     @OneToOne (mappedBy = "compraPaquete")
     private PaqueteVuelo paqueteVuelo;
 
+
     //@OneToOne (mappedBy = "tipoAsiento")
 
-    @Enumerated(EnumType.STRING) // guarda "Turista" o "Ejecutivo" en la BD
-    @Column(nullable = false)
-    private TipoAsiento tipoAsiento;
+//    @Enumerated(EnumType.STRING) // guarda "Turista" o "Ejecutivo" en la BD
+//    @Column(nullable = false)
+//    private TipoAsiento tipoAsiento;
 
 
     public CompraPaquete() {}
@@ -38,9 +39,9 @@ public class CompraPaquete extends Reserva{
 
     public void setPaqueteVuelo(PaqueteVuelo paqueteVuelo) {this.paqueteVuelo = paqueteVuelo;}
 
-    public TipoAsiento getTipoAsiento() {return tipoAsiento;}
-
-    public void setTipoAsiento(TipoAsiento tipoAsiento) {this.tipoAsiento = tipoAsiento;}
+//    public TipoAsiento getTipoAsiento() {return tipoAsiento;}
+//
+//    public void setTipoAsiento(TipoAsiento tipoAsiento) {this.tipoAsiento = tipoAsiento;}
 
     // No se bien que pasa con el otro metodo
     // @Override
