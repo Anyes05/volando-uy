@@ -4,6 +4,7 @@ import dato.entidades.PaqueteVuelo;
 import dato.dao.PaqueteVueloDAO;
 import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.DTRutaVuelo;
 import logica.DataTypes.TipoAsiento;
 
 import java.util.List;
@@ -37,5 +38,13 @@ public class PaqueteVueloServicio {
 
     public void actualizarPaquete(PaqueteVuelo paqueteVuelo) {
         paqueteVueloDAO.actualizar(paqueteVuelo);
+    }
+
+    public List<DTRutaVuelo> obtenerRutasDePaquete(String nombrePaquete) {
+        PaqueteVuelo paquete = obtenerPaquetePorNombre(nombrePaquete);
+        if (paquete == null) {
+            throw new IllegalStateException("No se encontró un paquete con el nombre: " + nombrePaquete);
+        }
+        return paqueteVueloDAO.obtenerRutasDePaquete(paquete);
     }
 }
