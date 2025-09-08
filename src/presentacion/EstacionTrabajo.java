@@ -1678,8 +1678,8 @@ public class EstacionTrabajo {
 
                     // ejecutar la compra
                     sistema.realizarCompra(fechaCompra, costo, vencimiento);
-                    comboBoxPaquetesComprarPaquete.removeAllItems();
-                    comboBoxClientesComprarPaquete.removeAllItems();
+                    comboBoxPaquetesComprarPaquete.setSelectedIndex(-1);
+                    comboBoxClientesComprarPaquete.setSelectedIndex(-1);
 
                     JOptionPane.showMessageDialog(null, "Compra realizada con éxito");
                 } catch (Exception ex) {
