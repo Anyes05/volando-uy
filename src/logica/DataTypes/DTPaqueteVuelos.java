@@ -8,10 +8,8 @@ import java.util.List;
 public class DTPaqueteVuelos {
     private String nombre;
     private String descripcion;
-//    private TipoAsiento tipoAsiento; // Mejor sería un Enum
     private int diasValidos;
     private float descuento;
-//    private DTCostoBase DTCostoBase;
     private float costoTotal;
     private DTFecha fechaAlta;
 
