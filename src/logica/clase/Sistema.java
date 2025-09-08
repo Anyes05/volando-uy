@@ -1059,12 +1059,27 @@ public class Sistema implements ISistema {
     }
 
     public void seleccionarRutaVueloPaquete(String nombreRuta) {
-        if (aerolineaSeleccionada == null) {
-            throw new IllegalStateException("No hay aerolínea seleccionada.");
-        }
+//        if (aerolineaSeleccionada == null) {
+//            throw new IllegalStateException("No hay aerolínea seleccionada.");
+//        }
         for (RutaVuelo r : aerolineaSeleccionada.getRutasVuelo()) {
             if (r.getNombre().equals(nombreRuta)) {
                 rutaVueloSeleccionada = r;
+            }
+        }
+        if (rutaVueloSeleccionada == null) {
+            throw new IllegalArgumentException("Ruta de vuelo no encontrada: " + nombreRuta);
+        }
+    }
+
+    public void seleccionarRVPaquete(String nombreRuta) {
+//        if (aerolineaSeleccionada == null) {
+//            throw new IllegalStateException("No hay aerolínea seleccionada.");
+//        }
+
+        for (Cantidad c : paqueteSeleccionado.getCantidad()) {
+            if (c.getRutaVuelo().getNombre().equals(nombreRuta)) {
+                rutaVueloSeleccionada = c.getRutaVuelo();
             }
         }
         if (rutaVueloSeleccionada == null) {

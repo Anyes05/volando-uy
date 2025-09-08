@@ -1,7 +1,5 @@
 package presentacion;
 
-import dato.entidades.RutaVuelo;
-import org.hibernate.sql.ast.spi.SqlAliasBase;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -259,6 +257,7 @@ public class EstacionTrabajo {
     private JTextArea costoCPtxt;
     private JTextArea fechaAltaCPtxt;
     private JComboBox comboBoxRutasVueloCP;
+    private JTextArea cantyTipoAsientotxt;
 
 
     //  private JButton precargarAeropuertosButton;
@@ -268,6 +267,8 @@ public class EstacionTrabajo {
     private boolean cargandoVuelosRV = false;
     private boolean cargandoVuelos = false;
     private boolean cargandoPaquete = false;
+    private boolean cargandoRutasCP = false;
+    private boolean consultaCP = false;
 
     private ISistema sistema; // Variable para almacenar la instancia de ISistema obtenida a través del Factory
 
@@ -435,11 +436,12 @@ public class EstacionTrabajo {
         combo.setSelectedIndex(-1);
     }
 
-    private void cargarRutasDePaquete(JComboBox<String> rutas){
+    private void cargarRutasDePaquete(JComboBox<DTRutaVuelo> rutas){
         rutas.removeAllItems();
-        for(String r : sistema.consultaPaqueteVueloRutasNombre()){
+        for(DTRutaVuelo r : sistema.consultaPaqueteVueloRutas()){
             rutas.addItem(r);
         }
+        cargandoRutasCP = true;
         rutas.setSelectedIndex(-1);
     }
     //----CLIENTES------
@@ -1825,6 +1827,7 @@ public class EstacionTrabajo {
                         costoCPtxt.setText(String.valueOf(paqueteconsulta.getCostoTotal()));
                         fechaAltaCPtxt.setText(paqueteconsulta.getFechaAlta().toString());
                         cargarRutasDePaquete(comboBoxRutasVueloCP);
+                        consultaCP = true;
                     }
                 }catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error al seleccionar paquete " + ex.getMessage());
@@ -1834,24 +1837,36 @@ public class EstacionTrabajo {
         comboBoxRutasVueloCP.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Object seleccionado = comboBoxRutasVueloCP.getSelectedItem();
-                if (seleccionado instanceof RutaVuelo) {
-                    RutaVuelo seleccionadoRuta = (RutaVuelo) seleccionado;
+                if(!cargandoRutasCP) return;
 
+                DTRutaVuelo seleccionado = (DTRutaVuelo) comboBoxRutasVueloCP.getSelectedItem();
+                DTPaqueteVuelos ps = (DTPaqueteVuelos) comboBoxPaqueteConsultaPaquete.getSelectedItem();
+
+                if(!consultaCP) return;
+                consultaCP = false;
+                if (seleccionado != null) {
+                    consultaCP = true;
+                    sistema.seleccionarRVPaquete(seleccionado.getNombre());
                     JPanel panelDetalles = new JPanel();
-                    panelDetalles.setLayout(new GridLayout(5, 1));
-                    panelDetalles.add(new JLabel("Nombre: " + seleccionadoRuta.getNombre()));
-//                    panelDetalles.add(new JLabel("Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
-//                    panelDetalles.add(new JLabel("Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
-//                    panelDetalles.add(new JLabel("Duración: " + vueloSeleccionado.getDuracion().toString()));
-//                    panelDetalles.add(new JLabel("Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
-//                    panelDetalles.add(new JLabel("Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
-//                    panelDetalles.add(new JLabel("Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
-//                    panelDetalles.add(new JLabel("Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
+                    panelDetalles.setLayout(new GridLayout(10, 1));
+                    panelDetalles.add(new JLabel("Descripción: " + seleccionado.getDescripcion()));
+                    panelDetalles.add(new JLabel("Fecha alta: " + seleccionado.getFechaAlta().toString()));
+                    panelDetalles.add(new JLabel("Costo Base turista: " + seleccionado.getCostoBase().getCostoTurista()));
+                    panelDetalles.add(new JLabel("Costo Base ejecutivo: " + seleccionado.getCostoBase().getCostoEjecutivo()));
+                    panelDetalles.add(new JLabel("Ciudad de origen: " + seleccionado.getCiudadOrigen()));
+                    panelDetalles.add(new JLabel("Ciudad de destino: " + seleccionado.getCiudadDestino()));
+                    panelDetalles.add(new JLabel("Cantidad y tipo asiento: " + sistema.consultaPaqueteVueloRutasCantidadTipo()));
+
+                    JComboBox<String> combovuelos = new JComboBox<>();
+                    for (DTVuelo v : sistema.seleccionarRutaVuelo(seleccionado.getNombre())) {
+                        combovuelos.addItem(v.getNombre());
+                    }
+                    panelDetalles.add(new JLabel("Vuelos disponibles:"));
+                    panelDetalles.add(combovuelos);
                     JOptionPane.showMessageDialog(
                             null,
                             panelDetalles,
-                            "Detalles del Vuelo",
+                            "Detalles de ruta de vuelo",
                             JOptionPane.PLAIN_MESSAGE
                     );
                 }
