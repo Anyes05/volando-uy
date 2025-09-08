@@ -1119,6 +1119,19 @@ public class Sistema implements ISistema {
         nuevaCantidad.setCant(cant);
 
         paqueteSeleccionado.addCantidad(nuevaCantidad);
+
+        float nuevoCostoTotal = 0;
+        for (Cantidad c : paqueteSeleccionado.getCantidad()) {
+            if (c.getRutaVuelo() != null) {
+                float costoUnidad = (c.getTipoAsiento() == TipoAsiento.Ejecutivo)
+                        ? c.getRutaVuelo().getCostoBase().getCostoEjecutivo()
+                        : c.getRutaVuelo().getCostoBase().getCostoTurista();
+                nuevoCostoTotal += c.getCant() * costoUnidad;
+            }
+        }
+
+        nuevoCostoTotal = nuevoCostoTotal - (nuevoCostoTotal * (paqueteSeleccionado.getDescuento() / 100));
+        paqueteSeleccionado.setCostoTotal(nuevoCostoTotal);
         paqueteVueloServicio.actualizarPaquete(paqueteSeleccionado);
     }
 
