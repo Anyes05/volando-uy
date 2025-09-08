@@ -45,25 +45,18 @@ public interface ISistema {
 
     //ALTA RUTA VUELO
     public List<DTAerolinea> listarAerolineas();
-
     public void seleccionarAerolinea(String nickname);
-
     public void ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);
-
     public void registrarRuta();
 
     // CONSULTA DATOS DE USUARIO
     public List<DTUsuario> consultarUsuarios();
-
     public DTUsuario mostrarDatosUsuario(String nickname);
 
     // MODIFICAR DATOS DE USUARIO
     public DTUsuario mostrarDatosUsuarioMod(String nickname);
-
     public void seleccionarUsuarioAMod(String nickname);
-
     public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
-
     public void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb);
 
     //ALTA VUELO
@@ -85,13 +78,10 @@ public interface ISistema {
     public void seleccionarPaquete(String nombrePaquete);
     public void seleccionarRutaVueloPaquete (String nombreRutaVuelo);
     public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea);
-
     public void agregarRutaAPaquete(int cant, TipoAsiento tipoAsiento);
 
     // COMPRA DE PAQUETE DE VUELO
-
     public List<DTPaqueteVuelos> mostrarPaqueteConRutas();
-    //seleccionarPaquete (repetida)
     public List<DTCliente> mostrarClientes();
     public void seleccionarCliente(String nombreCliente);
     public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento/*, TipoAsiento tipoAsiento*/);
@@ -107,8 +97,10 @@ public interface ISistema {
 
     public List<DTCliente> listarClientes();
 
+
     // CONSULTA PAQUETE RUTAS DE VUELO
     //public DTPaqueteVuelos consultaPaqueteVuelo(PaqueteVuelo paqueteSeleccionado);
+//    public List <String> consultaPaqueteVueloRutasCantidad();
 
 }
 
