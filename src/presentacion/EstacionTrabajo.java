@@ -640,6 +640,11 @@ public class EstacionTrabajo {
                     case "Consulta de paquete":
                         parentPanel.removeAll();
                         cargarPaquetes(comboBoxPaqueteConsultaPaquete);
+                        descripcionCPtxt.setText("");
+                        diasvalidosCPtxt.setText("");
+                        descuentoCPtxt.setText("");
+                        costoCPtxt.setText("");
+                        fechaAltaCPtxt.setText("");
                         parentPanel.add(ConsultaPaquete);
                         parentPanel.repaint();
                         parentPanel.revalidate();
