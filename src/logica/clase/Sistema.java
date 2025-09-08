@@ -1167,22 +1167,14 @@ public class Sistema implements ISistema {
         return dtPaquete;
     }
 
-    public List <String> consultaPaqueteVueloRutasNombre() {
+    public List <DTRutaVuelo> consultaPaqueteVueloRutas() {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
         }
-        List<String> rutasConCantidad = new ArrayList<>();
-        if (paqueteSeleccionado.getCantidad() != null) {
-            for (Cantidad c : paqueteSeleccionado.getCantidad()) {
-                if (c.getRutaVuelo() != null) {
-                    String rutaInfo = "Ruta: " + c.getRutaVuelo().getNombre();
-                    rutasConCantidad.add(rutaInfo);
-                    rutaVueloSeleccionada = c.getRutaVuelo();
-                }
-            }
-        }
-        return rutasConCantidad;
+        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+        return paqueteVueloServicio.obtenerRutasDePaquete(paqueteSeleccionado.getNombre());
     }
+
 
     public String consultaPaqueteVueloRutasCantidadTipo() {
         if (paqueteSeleccionado == null) {
@@ -1206,41 +1198,6 @@ public class Sistema implements ISistema {
         return rutasConCantidad;
     }
 
-    public DTRutaVuelo consultaPaqueteRutaVueloInfo (String nombreRuta) {
-        if (paqueteSeleccionado == null) {
-            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
-        }
-        if (paqueteSeleccionado.getCantidad() == null || paqueteSeleccionado.getCantidad().isEmpty()) {
-            throw new IllegalStateException("El paquete no tiene rutas asociadas.");
-        }
-        RutaVuelo rutaEncontrada = null;
-        for (Cantidad c : paqueteSeleccionado.getCantidad()) {
-            if (c.getRutaVuelo() != null && c.getRutaVuelo().getNombre().equalsIgnoreCase(nombreRuta)) {
-                rutaEncontrada = c.getRutaVuelo();
-                break;
-            }
-        }
-        if (rutaEncontrada == null) {
-            throw new IllegalArgumentException("No se encontró la ruta en el paquete: " + nombreRuta);
-        }
-
-        Aerolinea aerolinea = null;
-        if (rutaEncontrada.getAerolineas() != null && !rutaEncontrada.getAerolineas().isEmpty()) {
-            aerolinea = rutaEncontrada.getAerolineas().get(0); // Tomamos la primera aerolínea asociada
-        }
-
-        DTAerolinea dtAerolinea = aerolinea != null ? new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>()) : null;
-
-        return new DTRutaVuelo(
-                rutaEncontrada.getNombre(),
-                rutaEncontrada.getDescripcion(),
-                rutaEncontrada.getFechaAlta(),
-                rutaEncontrada.getCostoBase(),
-                dtAerolinea,
-                new DTCiudad(rutaEncontrada.getCiudadOrigen().getNombre(), rutaEncontrada.getCiudadOrigen().getPais()),
-                new DTCiudad(rutaEncontrada.getCiudadDestino().getNombre(), rutaEncontrada.getCiudadDestino().getPais())
-        );
-    }
 
     public List <String> listarAerolineasRutaVuelo () {
         List<String> listaAerolineas = new ArrayList<>();
@@ -1254,9 +1211,7 @@ public class Sistema implements ISistema {
         }
         return listaAerolineas;
     }
-
-
-
+    
     // COMPRA PAQUETE
 
     //mostrarPaquete (repetida)
