@@ -11,7 +11,7 @@ public class DTPaqueteVuelos {
 //    private TipoAsiento tipoAsiento; // Mejor sería un Enum
     private int diasValidos;
     private float descuento;
-    private DTCostoBase DTCostoBase;
+//    private DTCostoBase DTCostoBase;
     private float costoTotal;
     private DTFecha fechaAlta;
 
@@ -69,13 +69,13 @@ public class DTPaqueteVuelos {
         this.descuento = descuento;
     }
 
-    public DTCostoBase getDTCostoBase() {
-        return DTCostoBase;
-    }
-
-    public void setDTCostoBase(DTCostoBase DTCostoBase) {
-        this.DTCostoBase = DTCostoBase;
-    }
+//    public DTCostoBase getDTCostoBase() {
+//        return DTCostoBase;
+//    }
+//
+//    public void setDTCostoBase(DTCostoBase DTCostoBase) {
+//        this.DTCostoBase = DTCostoBase;
+//    }
 
     public float getCostoTotal() {
         return costoTotal;
