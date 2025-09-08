@@ -2591,7 +2591,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="489bf" binding="consultaPaqueteRutaVueloJPanelTable" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="489bf" binding="consultaPaqueteRutaVueloJPanelTable" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -2599,11 +2599,22 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="d80c8" class="javax.swing.JTable" binding="consultaPaqueteRutaVueloTablaPrincipal">
+                  <component id="87462" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="50"/>
-                      </grid>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Paquete:"/>
+                    </properties>
+                  </component>
+                  <hspacer id="3641e">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </hspacer>
+                  <component id="f6c82" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
                   </component>
@@ -2641,14 +2652,6 @@
                           </grid>
                         </constraints>
                         <properties/>
-                      </component>
-                      <component id="87462" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Ingresar Paquete:"/>
-                        </properties>
                       </component>
                       <component id="f97b8" class="javax.swing.JButton" binding="consultaPaqueteRutaVueloSeleccionarPaqueteAceptar">
                         <constraints>
@@ -2920,6 +2923,154 @@
               </grid>
             </children>
           </scrollpane>
+          <grid id="c1cd7" binding="ConsultaPaquete" layout-manager="GridLayoutManager" row-count="9" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <card name="Card4"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="e305f" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Paquete:"/>
+                </properties>
+              </component>
+              <hspacer id="fea1a">
+                <constraints>
+                  <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <vspacer id="66445">
+                <constraints>
+                  <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+              <component id="4328" class="javax.swing.JComboBox" binding="comboBoxPaqueteConsultaPaquete">
+                <constraints>
+                  <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="db141" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Descripción:"/>
+                </properties>
+              </component>
+              <component id="4434d" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Dias válidos:"/>
+                </properties>
+              </component>
+              <component id="44681" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Descuento:"/>
+                </properties>
+              </component>
+              <component id="3fdb3" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Costo:"/>
+                </properties>
+              </component>
+              <component id="1c12a" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Fecha de alta:"/>
+                </properties>
+              </component>
+              <component id="777f0" class="javax.swing.JTextArea" binding="descripcionCPtxt">
+                <constraints>
+                  <grid row="2" column="2" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="50"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                </properties>
+              </component>
+              <component id="96b10" class="javax.swing.JTextArea" binding="descuentoCPtxt">
+                <constraints>
+                  <grid row="4" column="2" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="50"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                </properties>
+              </component>
+              <component id="d33a8" class="javax.swing.JTextArea" binding="costoCPtxt">
+                <constraints>
+                  <grid row="5" column="2" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="50"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                </properties>
+              </component>
+              <component id="86f95" class="javax.swing.JTextArea" binding="fechaAltaCPtxt">
+                <constraints>
+                  <grid row="6" column="2" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="50"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                </properties>
+              </component>
+              <hspacer id="ba1c2">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <vspacer id="d170b">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+              <component id="5e73" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Rutas de vuelo:"/>
+                </properties>
+              </component>
+              <component id="ab974" class="javax.swing.JComboBox" binding="comboBoxRutasVueloCP">
+                <constraints>
+                  <grid row="7" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="f08b4" class="javax.swing.JTextArea" binding="diasvalidosCPtxt">
+                <constraints>
+                  <grid row="3" column="2" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="50"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <editable value="false"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
         </children>
       </grid>
     </children>

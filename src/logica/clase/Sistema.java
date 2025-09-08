@@ -1149,39 +1149,39 @@ public class Sistema implements ISistema {
 //        return dtPaquete;
 //    }
 
-//    public DTPaqueteVuelos consultaPaqueteVuelo () {
-//        if (paqueteSeleccionado == null) {
-//            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
-//        }
+    public DTPaqueteVuelos consultaPaqueteVuelo () {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
+        }
+
+        DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                paqueteSeleccionado.getNombre(),
+                paqueteSeleccionado.getDescripcion(),
+                paqueteSeleccionado.getDiasValidos(),
+                paqueteSeleccionado.getDescuento(),
+                paqueteSeleccionado.getFechaAlta()
+        );
+        dtPaquete.setCantidad(paqueteSeleccionado.getCantidad());
+        dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
+
+        return dtPaquete;
+    }
 //
-//        DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-//                paqueteSeleccionado.getNombre(),
-//                paqueteSeleccionado.getDescripcion(),
-//                paqueteSeleccionado.getDiasValidos(),
-//                paqueteSeleccionado.getDescuento(),
-//                paqueteSeleccionado.getFechaAlta()
-//        );
-//        dtPaquete.setCantidad(paqueteSeleccionado.getCantidad());
-//        dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
-//
-//        return dtPaquete;
-//    }
-//
-//    public List <String> consultaPaqueteVueloRutasCantidad() {
-//        if (paqueteSeleccionado == null) {
-//            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
-//        }
-//        List<String> rutasConCantidad = new ArrayList<>();
-//        if (paqueteSeleccionado.getCantidad() != null) {
-//            for (Cantidad c : paqueteSeleccionado.getCantidad()) {
-//                if (c.getRutaVuelo() != null) {
-//                    String rutaInfo = "Ruta: " + c.getRutaVuelo().getNombre() + ", Cantidad: " + c.getCant() + ", Tipo Asiento: " + c.getTipoAsiento();
-//                    rutasConCantidad.add(rutaInfo);
-//                }
-//            }
-//        }
-//        return rutasConCantidad;
-//    }
+    public List <String> consultaPaqueteVueloRutasCantidad() {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
+        }
+        List<String> rutasConCantidad = new ArrayList<>();
+        if (paqueteSeleccionado.getCantidad() != null) {
+            for (Cantidad c : paqueteSeleccionado.getCantidad()) {
+                if (c.getRutaVuelo() != null) {
+                    String rutaInfo = "Ruta: " + c.getRutaVuelo().getNombre() + ", Cantidad: " + c.getCant() + ", Tipo Asiento: " + c.getTipoAsiento();
+                    rutasConCantidad.add(rutaInfo);
+                }
+            }
+        }
+        return rutasConCantidad;
+    }
 
     // COMPRA PAQUETE
 

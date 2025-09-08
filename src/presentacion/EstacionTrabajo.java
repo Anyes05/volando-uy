@@ -1,7 +1,6 @@
 package presentacion;
 
-import dato.entidades.Aerolinea;
-import dato.entidades.RutaVuelo;
+import org.hibernate.sql.ast.spi.SqlAliasBase;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -20,8 +19,6 @@ import javax.swing.JTable;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
-import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.DefaultComboBoxModel;
 
 
@@ -241,7 +238,6 @@ public class EstacionTrabajo {
     //CONSULTA PAQUETE DE RUTA DE VUELO
     private JPanel consultaPaqueteRutaVuelo;
     private JPanel consultaPaqueteRutaVueloJPanelTable;
-    private JTable consultaPaqueteRutaVueloTablaPrincipal;
     private JPanel consultaPaqueteRutaVueloParentPanel;
     private JPanel consultaPaqueteRutaVueloSeleccionarPaquete;
     private JTextField consultaPaqueteRutaVueloSeleccionarPaqueteInput;
@@ -253,7 +249,15 @@ public class EstacionTrabajo {
     private JButton aceptarComprarPaquete;
     private JButton cancelarButtonComprarPaquete;
     private JButton listarUsuariosButton;
-
+    private JComboBox comboBox1;
+    private JPanel ConsultaPaquete;
+    private JComboBox comboBoxPaqueteConsultaPaquete;
+    private JTextArea descripcionCPtxt;
+    private JTextArea diasvalidosCPtxt;
+    private JTextArea descuentoCPtxt;
+    private JTextArea costoCPtxt;
+    private JTextArea fechaAltaCPtxt;
+    private JComboBox comboBoxRutasVueloCP;
 
 
     //  private JButton precargarAeropuertosButton;
@@ -412,7 +416,8 @@ public class EstacionTrabajo {
     private void cargarPaquetes(JComboBox<DTPaqueteVuelos> combo){
         combo.removeAllItems();
         for (DTPaqueteVuelos p : sistema.mostrarPaquete()){
-            combo.addItem(p);
+                combo.addItem(p);
+
         }
         combo.setSelectedIndex(-1);
     }
@@ -425,6 +430,14 @@ public class EstacionTrabajo {
             }
         }
         combo.setSelectedIndex(-1);
+    }
+
+    private void cargarRutasDePaquete(JComboBox<String> rutas){
+        rutas.removeAllItems();
+        for(String r : sistema.consultaPaqueteVueloRutasCantidad()){
+            rutas.addItem(r);
+        }
+        rutas.setSelectedIndex(-1);
     }
     //----CLIENTES------
     private void cargarClientes(JComboBox<DTCliente> combo){
@@ -620,8 +633,13 @@ public class EstacionTrabajo {
                         parentPanel.revalidate();
                         break;
                     case "Consulta de paquete":
-                        UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel,consultaPaqueteRutaVueloSeleccionarPaquete);
-                        UsuarioHelper.cambiarPanel(parentPanel,consultaPaqueteRutaVuelo);
+                        parentPanel.removeAll();
+                        cargarPaquetes(comboBoxPaqueteConsultaPaquete);
+                        parentPanel.add(ConsultaPaquete);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+//                        UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel,consultaPaqueteRutaVueloSeleccionarPaquete);
+//                        UsuarioHelper.cambiarPanel(parentPanel,consultaPaqueteRutaVuelo);
                         break;
                     case "Comprar paquete":
                         parentPanel.removeAll();
@@ -1780,6 +1798,39 @@ public class EstacionTrabajo {
                 parentPanel.add(principalVacio);
                 parentPanel.repaint();
                 parentPanel.revalidate();
+            }
+        });
+
+        //------- CONSULTA PAQUETE ------------
+        comboBoxPaqueteConsultaPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                DTPaqueteVuelos paqueteconsulta = (DTPaqueteVuelos) comboBoxPaqueteConsultaPaquete.getSelectedItem();
+                try {
+                    if (paqueteconsulta == null) {
+                        JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete");
+                        return;
+                    }
+                    sistema.seleccionarPaquete(paqueteconsulta.getNombre());
+                    paqueteconsulta = sistema.consultaPaqueteVuelo();
+                    if (paqueteconsulta != null) {
+                        descripcionCPtxt.setText(paqueteconsulta.getDescripcion());
+                        diasvalidosCPtxt.setText(String.valueOf(paqueteconsulta.getDiasValidos()));
+                        descuentoCPtxt.setText(String.valueOf(paqueteconsulta.getDescuento()));
+                        costoCPtxt.setText(String.valueOf(paqueteconsulta.getCostoTotal()));
+                        fechaAltaCPtxt.setText(paqueteconsulta.getFechaAlta().toString());
+                        cargarRutasDePaquete(comboBoxRutasVueloCP);
+                    }
+                }catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al seleccionar paquete " + ex.getMessage());
+                }
+            }
+        });
+        comboBoxRutasVueloCP.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }
