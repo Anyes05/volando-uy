@@ -4,6 +4,10 @@ import dato.entidades.PaqueteVuelo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import logica.DataTypes.DTAerolinea;
+import logica.DataTypes.DTCiudad;
+import logica.DataTypes.DTRutaVuelo;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -42,5 +46,26 @@ public class PaqueteVueloDAO {
         em.getTransaction().commit();
         em.close();
         return merged;
+    }
+
+    public List<DTRutaVuelo> obtenerRutasDePaquete(PaqueteVuelo paquete) {
+        EntityManager em = emf.createEntityManager();
+        PaqueteVuelo p = em.find(PaqueteVuelo.class, paquete.getId());
+        List<DTRutaVuelo> rutas = new ArrayList<>();
+        DTAerolinea aerolinea = null;
+        if (p != null) {
+            for (dato.entidades.Cantidad c : p.getCantidad()) {
+                rutas.add(new DTRutaVuelo(
+                        c.getRutaVuelo().getNombre(),
+                        c.getRutaVuelo().getDescripcion(),
+                        c.getRutaVuelo().getFechaAlta(),
+                        c.getRutaVuelo().getCostoBase(),
+                        aerolinea,
+                        new DTCiudad(c.getRutaVuelo().getCiudadOrigen().getNombre(), c.getRutaVuelo().getCiudadOrigen().getPais()),
+                        new DTCiudad(c.getRutaVuelo().getCiudadDestino().getNombre(), c.getRutaVuelo().getCiudadDestino().getPais())
+                ));
+            }
+        }
+        return rutas;
     }
 }
