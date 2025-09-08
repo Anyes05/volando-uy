@@ -976,7 +976,6 @@ public class Sistema implements ISistema {
     }
 
     // AGREGAR RUTAS DE VUELO A PAQUETE
-
     public List<DTPaqueteVuelos> mostrarPaquete() {
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
         List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
@@ -995,6 +994,54 @@ public class Sistema implements ISistema {
         }
         return listaPaquetes;
     }
+
+    public List<DTPaqueteVuelos> mostrarPaqueteConRutas() {
+        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
+        List<PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
+
+        for (PaqueteVuelo p : paquetes) {
+            if (p.getCantidad() != null && !p.getCantidad().isEmpty()) {
+
+                // Creamos el DTO del paquete usando entidades
+                DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                        p.getNombre(),
+                        p.getDescripcion(),
+                        p.getDiasValidos(),
+                        p.getDescuento(),
+                        p.getFechaAlta()
+                );
+
+                // Copiamos las rutas
+                List<RutaVuelo> rutas = new ArrayList<>();
+                for (Cantidad c : p.getCantidad()) {
+                    if (c.getRutaVuelo() != null) {
+                        rutas.add(c.getRutaVuelo());
+                    }
+                }
+
+                dtPaquete.setRutas(rutas);
+
+                listaPaquetes.add(dtPaquete);
+            }
+        }
+
+        return listaPaquetes;
+    }
+
+    public boolean clienteYaComproPaquete() {
+        CompraPaqueteServicio cps = new CompraPaqueteServicio();
+        List<CompraPaquete> compras = cps.buscarPorCliente(clienteSeleccionado);
+
+        for (CompraPaquete cp : compras) {
+            if (cp.getPaqueteVuelo().getId().equals(paqueteSeleccionado.getId())) {
+                return true; // si ya lo compró
+            }
+        }
+        return false;
+    }
+
+
 
     public void seleccionarPaquete(String nombrePaquete) {
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();

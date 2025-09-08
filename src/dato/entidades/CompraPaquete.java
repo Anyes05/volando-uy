@@ -13,7 +13,8 @@ public class CompraPaquete extends Reserva{
     @Column(nullable = false)
     private DTFecha vencimiento;
 
-    @OneToOne (mappedBy = "compraPaquete")
+    @ManyToOne(fetch = FetchType.EAGER)  // cada compra pertenece a un paquete
+    @JoinColumn(name = "paquete_id", nullable = false)
     private PaqueteVuelo paqueteVuelo;
 
 
@@ -35,7 +36,7 @@ public class CompraPaquete extends Reserva{
 
     public void setVencimiento(DTFecha vencimiento) {this.vencimiento = vencimiento;}
 
-    public PaqueteVuelo getPaquetesVuelo() {return this.paqueteVuelo;}
+    public PaqueteVuelo getPaqueteVuelo() {return this.paqueteVuelo;}
 
     public void setPaqueteVuelo(PaqueteVuelo paqueteVuelo) {this.paqueteVuelo = paqueteVuelo;}
 

@@ -416,6 +416,16 @@ public class EstacionTrabajo {
         }
         combo.setSelectedIndex(-1);
     }
+    //para el caso de uso de comprar paquete
+    private void cargarPaquetesConRutas(JComboBox<DTPaqueteVuelos> combo){
+        combo.removeAllItems();
+        for (DTPaqueteVuelos p : sistema.mostrarPaqueteConRutas()) {
+            if (p.getRutas() != null && !p.getRutas().isEmpty()) {
+                combo.addItem(p);
+            }
+        }
+        combo.setSelectedIndex(-1);
+    }
     //----CLIENTES------
     private void cargarClientes(JComboBox<DTCliente> combo){
         combo.removeAllItems();
@@ -615,7 +625,7 @@ public class EstacionTrabajo {
                         break;
                     case "Comprar paquete":
                         parentPanel.removeAll();
-                        cargarPaquetes(comboBoxPaquetesComprarPaquete);
+                        cargarPaquetesConRutas(comboBoxPaquetesComprarPaquete);
                         cargarClientes(comboBoxClientesComprarPaquete);
                         parentPanel.add(ComprarPaquete);
                         parentPanel.repaint();
@@ -1635,8 +1645,12 @@ public class EstacionTrabajo {
                 DTPaqueteVuelos paquete = (DTPaqueteVuelos) comboBoxPaquetesComprarPaquete.getSelectedItem();
                 DTCliente cliente = (DTCliente) comboBoxClientesComprarPaquete.getSelectedItem();
 
-                if (paquete == null || cliente == null) {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete y un cliente");
+                if (paquete == null){
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete");
+                return;
+                }
+                if (cliente == null) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar un cliente");
                     return;
                 }
 
@@ -1644,8 +1658,11 @@ public class EstacionTrabajo {
                     // seteás los seleccionados en el sistema
                     sistema.seleccionarPaquete(paquete.getNombre());
                     sistema.seleccionarCliente(cliente.getNickname());
-
-                    // ahora armás los demás datos de la compra
+                    // Verificar si el cliente ya compró el paquete
+                    if (sistema.clienteYaComproPaquete()) {
+                        JOptionPane.showMessageDialog(null, "El cliente ya compró este paquete");
+                        return;
+                    }
 
                     LocalDate hoy = LocalDate.now();
                     DTFecha fechaCompra = new DTFecha(hoy.getDayOfMonth(), hoy.getMonthValue(), hoy.getYear());
@@ -1661,6 +1678,8 @@ public class EstacionTrabajo {
 
                     // ejecutar la compra
                     sistema.realizarCompra(fechaCompra, costo, vencimiento);
+                    comboBoxPaquetesComprarPaquete.removeAllItems();
+                    comboBoxClientesComprarPaquete.removeAllItems();
 
                     JOptionPane.showMessageDialog(null, "Compra realizada con éxito");
                 } catch (Exception ex) {
@@ -1751,6 +1770,16 @@ public class EstacionTrabajo {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error al agregar ruta al paquete: " + ex.getMessage());
                 }
+            }
+        });
+
+        cancelarButtonComprarPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
             }
         });
     }

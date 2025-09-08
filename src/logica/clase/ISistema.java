@@ -1,6 +1,7 @@
 package logica.clase;
 
 import dato.entidades.Aerolinea;
+import dato.entidades.Cliente;
 import dato.entidades.PaqueteVuelo;
 import dato.entidades.RutaVuelo;
 import logica.DataTypes.*;
@@ -80,7 +81,7 @@ public interface ISistema {
     // PAQUETES DE VUELO
     public void crearPaquete(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta);
     //AGREGAR RUTA DE VUELO A PAQUETE
-//    public List<DTPaqueteVuelos> mostrarPaquete();
+    public List<DTPaqueteVuelos> mostrarPaquete();
     public void seleccionarPaquete(String nombrePaquete);
     public void seleccionarRutaVueloPaquete (String nombreRutaVuelo);
     public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea);
@@ -88,12 +89,13 @@ public interface ISistema {
     public void agregarRutaAPaquete(int cant, TipoAsiento tipoAsiento);
 
     // COMPRA DE PAQUETE DE VUELO
-    public List<DTPaqueteVuelos> mostrarPaquete();
+
+    public List<DTPaqueteVuelos> mostrarPaqueteConRutas();
     //seleccionarPaquete (repetida)
     public List<DTCliente> mostrarClientes();
     public void seleccionarCliente(String nombreCliente);
     public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento/*, TipoAsiento tipoAsiento*/);
-
+    public boolean clienteYaComproPaquete();
 
     // CREAR PAQUETE DE VUELO
 //    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);

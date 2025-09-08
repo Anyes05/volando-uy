@@ -38,4 +38,8 @@ public class CompraPaqueteServicio {
         servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
         return compraPaqueteDAO.registrarCompra(clienteSeleccionado, fechaCompra, vencimiento /*tipoAsiento*/, paqueteSeleccionado); // Se guarda en la BD
     }
+    public List<CompraPaquete> buscarPorCliente(Cliente cliente) {
+        return compraPaqueteDAO.buscarPorCliente(cliente);
+    }
+
 }
