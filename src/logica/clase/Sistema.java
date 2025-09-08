@@ -1087,7 +1087,6 @@ public class Sistema implements ISistema {
         }
     }
 
-
     public void agregarRutaAPaquete (int cant, TipoAsiento tipoAsiento) {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
@@ -1098,18 +1097,22 @@ public class Sistema implements ISistema {
         if (paqueteSeleccionado.isComprado()) {
             throw new IllegalStateException("Este paquete ya fue comprado, no se pueden agregar mas rutas");
         }
-
-        for (Cantidad cantidad : paqueteSeleccionado.getCantidad()) {
-            if (cantidad.getRutaVuelo() != null &&
-                    cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(rutaVueloSeleccionada.getNombre())) {
+        for (Cantidad c : paqueteSeleccionado.getCantidad()) {
+            if (c.getRutaVuelo() != null && c.getRutaVuelo().getNombre().equalsIgnoreCase(rutaVueloSeleccionada.getNombre())) {
                 throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
             }
+//            if (c.getRutaVuelo() != null) {
+//                float costoTotal = 10;
+//                costoTotal += c.getCant() * (c.getTipoAsiento() == TipoAsiento.Ejecutivo ? c.getRutaVuelo().getCostoBase().getCostoEjecutivo() : c.getRutaVuelo().getCostoBase().getCostoTurista());
+//                paqueteSeleccionado.setCostoTotal(costoTotal);
+//            }
         }
 
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
-
         CantidadServicio cantidadServicio = new CantidadServicio();
+
         Cantidad nuevaCantidad = cantidadServicio.registrarCantidad(cant);
+
         nuevaCantidad.setRutaVuelo(rutaVueloSeleccionada);
         nuevaCantidad.setPaqueteVuelo(paqueteSeleccionado);
         nuevaCantidad.setTipoAsiento(tipoAsiento);
@@ -1117,52 +1120,7 @@ public class Sistema implements ISistema {
 
         paqueteSeleccionado.addCantidad(nuevaCantidad);
         paqueteVueloServicio.actualizarPaquete(paqueteSeleccionado);
-
     }
-
-//    // CONSULTA PAQUETE RUTAS DE VUELO
-//
-//    public DTPaqueteVuelos consultaPaqueteVuelo (dato.entidades.PaqueteVuelo paqueteSeleccionado) {
-//        if (paqueteSeleccionado == null) {
-//            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
-//        }
-//
-//        VueloServicio vueloServicio = new VueloServicio();
-//        List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
-//        if (recordarDatosVuelo != null) {
-//            for (dato.entidades.Vuelo v : vuelos) {
-//                if (v.getNombre().equalsIgnoreCase(recordarDatosVuelo.getNombre())) {
-//                    throw new IllegalStateException("Ya existe un vuelo con ese nombre.");
-//                }
-//            }
-//        }
-//        DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-//                paqueteSeleccionado.getNombre(),
-//                paqueteSeleccionado.getDescripcion(),
-//                paqueteSeleccionado.getTipoAsiento(),
-//                paqueteSeleccionado.getDiasValidos(),
-//                paqueteSeleccionado.getDescuento(),
-//                paqueteSeleccionado.getFechaAlta()
-//        );
-//
-//        List<dato.entidades.Cantidad> listaCantidad = new ArrayList<>();
-//        List<dato.entidades.RutaVuelo> listaRutas = new ArrayList<>();
-//        if (paqueteSeleccionado.getCantidad() != null) {
-//            // Convertir entidad Cantidad a clase lógica Cantidad
-//            dato.entidades.Cantidad cantidadEntidad = paqueteSeleccionado.getCantidad();
-//            listaCantidad.add(cantidadEntidad);
-//            if(cantidadEntidad.getRutasVuelos() != null) {
-//                listaRutas.addAll(cantidadEntidad.getRutasVuelos());
-//            }
-//        }
-//        dtPaquete.setCantidad(listaCantidad);
-//        dtPaquete.setRutas(listaRutas);
-//
-//        dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
-//        dtPaquete.setDTCostoBase(paqueteSeleccionado.getCostoBase());
-//
-//        return dtPaquete;
-//    }
 
     public DTPaqueteVuelos consultaPaqueteVuelo () {
         if (paqueteSeleccionado == null) {
@@ -1229,9 +1187,6 @@ public class Sistema implements ISistema {
     
     // COMPRA PAQUETE
 
-    //mostrarPaquete (repetida)
-    //seleccionarPaquete (repetida)
-
     public List<DTCliente> mostrarClientes() {
         ClienteServicio clienteServicio = new ClienteServicio();
         List<DTCliente> listaClientes = new ArrayList<>();
@@ -1284,6 +1239,7 @@ public class Sistema implements ISistema {
             clienteSeleccionado.addReserva(compraPaquete);
             clienteSeleccionado.incrementarCantidadPaquetes();
             paqueteSeleccionado.setComprado(true);
+            paqueteSeleccionado.setCompraPaquete(compraPaquete);
             servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error");

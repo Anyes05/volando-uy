@@ -30,19 +30,11 @@ public class PaqueteVuelo {
 
     private boolean comprado;
 
-//    @Column(nullable = false)
-//    private DTCostoBase DTCostoBase;
-
     @Column(nullable = false)
-    private float costoTotal; // Lo dejé porque lo teníamos en la clase, pero costoTotal sería un calculado que no va en el constructor(?
+    private float costoTotal;
 
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
-
-//    // Relacion con cantidad
-//    @ManyToOne
-//    @JoinColumn(name = "cantidad_id")
-//    private Cantidad cantidad;
 
     @OneToMany(mappedBy = "paqueteVuelo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Cantidad> cantidades;
@@ -51,10 +43,6 @@ public class PaqueteVuelo {
     @ManyToOne
     @JoinColumn(name = "compraPaquete_id")
     private CompraPaquete compraPaquete;
-
-//    @Enumerated(EnumType.ORDINAL)
-//    @Column(nullable = true)
-//    private TipoAsiento tipoAsiento;
 
     // Constructores
 
@@ -68,7 +56,7 @@ public class PaqueteVuelo {
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.fechaAlta = fechaAlta;
-//        this.tipoAsiento = tipoAsiento;
+        this.costoTotal = 0;
         this.cantidades = new ArrayList<>();
         this.comprado = false;
     }
@@ -90,12 +78,6 @@ public class PaqueteVuelo {
     public DTFecha getFechaAlta() { return fechaAlta; }
     public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
 
-//    public TipoAsiento getTipoAsiento() {
-//        return tipoAsiento;
-//    }
-//    public void setTipoAsiento(TipoAsiento tipoAsiento) {
-//        this.tipoAsiento = tipoAsiento;
-//    }
     public int getDiasValidos() {
         return diasValidos;
     }
@@ -107,16 +89,9 @@ public class PaqueteVuelo {
     public void setDescuento(float descuento) {
         this.descuento = descuento; }
 
-//    public DTCostoBase getCostoBase() { return DTCostoBase; }
-//    public void setCostoBase(DTCostoBase DTCostoBase) { this.DTCostoBase = DTCostoBase; }
     public float getCostoTotal() { return costoTotal; }
-    public void setCostoTotal() {
-        for (Cantidad c : cantidades) {
-            if (c.getRutaVuelo() != null) {
-                this.costoTotal += c.getCant() * c.getRutaVuelo().getCostoBase().getCostoTotal();
-            }
-        }
-    }
+
+    public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal; }
 
     public void addCantidad(Cantidad c) {
         cantidades.add(c);
@@ -131,5 +106,13 @@ public class PaqueteVuelo {
 
     public void setComprado(boolean comprado) {
         this.comprado = comprado;
+    }
+
+    public CompraPaquete getCompraPaquete() {
+        return compraPaquete;
+    }
+
+    public void setCompraPaquete(CompraPaquete compraPaquete) {
+        this.compraPaquete = compraPaquete;
     }
 }
