@@ -1,5 +1,6 @@
 package presentacion;
 
+import dato.entidades.RutaVuelo;
 import org.hibernate.sql.ast.spi.SqlAliasBase;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
@@ -266,6 +267,7 @@ public class EstacionTrabajo {
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
     private boolean cargandoVuelos = false;
+    private boolean cargandoPaquete = false;
 
     private ISistema sistema; // Variable para almacenar la instancia de ISistema obtenida a través del Factory
 
@@ -413,13 +415,14 @@ public class EstacionTrabajo {
     }
 
     //---PAQUETES------
-    private void cargarPaquetes(JComboBox<DTPaqueteVuelos> combo){
-        combo.removeAllItems();
+    private void cargarPaquetes(JComboBox<DTPaqueteVuelos> comboPaquete){
+        comboPaquete.removeAllItems();
         for (DTPaqueteVuelos p : sistema.mostrarPaquete()){
-                combo.addItem(p);
+                comboPaquete.addItem(p);
 
         }
-        combo.setSelectedIndex(-1);
+        cargandoPaquete = true;
+        comboPaquete.setSelectedIndex(-1);
     }
     //para el caso de uso de comprar paquete
     private void cargarPaquetesConRutas(JComboBox<DTPaqueteVuelos> combo){
@@ -434,7 +437,7 @@ public class EstacionTrabajo {
 
     private void cargarRutasDePaquete(JComboBox<String> rutas){
         rutas.removeAllItems();
-        for(String r : sistema.consultaPaqueteVueloRutasCantidad()){
+        for(String r : sistema.consultaPaqueteVueloRutasNombre()){
             rutas.addItem(r);
         }
         rutas.setSelectedIndex(-1);
@@ -1805,11 +1808,12 @@ public class EstacionTrabajo {
         comboBoxPaqueteConsultaPaquete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!cargandoPaquete) return;
 
                 DTPaqueteVuelos paqueteconsulta = (DTPaqueteVuelos) comboBoxPaqueteConsultaPaquete.getSelectedItem();
                 try {
                     if (paqueteconsulta == null) {
-                        JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete");
+//                        JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete");
                         return;
                     }
                     sistema.seleccionarPaquete(paqueteconsulta.getNombre());
@@ -1830,11 +1834,32 @@ public class EstacionTrabajo {
         comboBoxRutasVueloCP.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Object seleccionado = comboBoxRutasVueloCP.getSelectedItem();
+                if (seleccionado instanceof RutaVuelo) {
+                    RutaVuelo seleccionadoRuta = (RutaVuelo) seleccionado;
 
+                    JPanel panelDetalles = new JPanel();
+                    panelDetalles.setLayout(new GridLayout(5, 1));
+                    panelDetalles.add(new JLabel("Nombre: " + seleccionadoRuta.getNombre()));
+//                    panelDetalles.add(new JLabel("Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
+//                    panelDetalles.add(new JLabel("Duración: " + vueloSeleccionado.getDuracion().toString()));
+//                    panelDetalles.add(new JLabel("Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
+//                    panelDetalles.add(new JLabel("Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
+//                    panelDetalles.add(new JLabel("Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
+//                    panelDetalles.add(new JLabel("Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
+                    JOptionPane.showMessageDialog(
+                            null,
+                            panelDetalles,
+                            "Detalles del Vuelo",
+                            JOptionPane.PLAIN_MESSAGE
+                    );
+                }
             }
         });
     }
 }
+
 
 
 
