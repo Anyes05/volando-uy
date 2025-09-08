@@ -1801,6 +1801,16 @@ public class EstacionTrabajo {
             }
         });
 
+        buttonCancelarAgrRutaaPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
+            }
+        });
+
         cancelarButtonComprarPaquete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
