@@ -100,7 +100,9 @@ public interface ISistema {
 
     // CONSULTA PAQUETE RUTAS DE VUELO
     public DTPaqueteVuelos consultaPaqueteVuelo();
-    public List <String> consultaPaqueteVueloRutasCantidad();
+    public List <String> consultaPaqueteVueloRutasNombre();
+    public String consultaPaqueteVueloRutasCantidadTipo();
+    public List <String> listarAerolineasRutaVuelo ();
 
 }
 

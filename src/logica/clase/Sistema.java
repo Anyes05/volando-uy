@@ -1166,8 +1166,8 @@ public class Sistema implements ISistema {
 
         return dtPaquete;
     }
-//
-    public List <String> consultaPaqueteVueloRutasCantidad() {
+
+    public List <String> consultaPaqueteVueloRutasNombre() {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
         }
@@ -1175,13 +1175,87 @@ public class Sistema implements ISistema {
         if (paqueteSeleccionado.getCantidad() != null) {
             for (Cantidad c : paqueteSeleccionado.getCantidad()) {
                 if (c.getRutaVuelo() != null) {
-                    String rutaInfo = "Ruta: " + c.getRutaVuelo().getNombre() + ", Cantidad: " + c.getCant() + ", Tipo Asiento: " + c.getTipoAsiento();
+                    String rutaInfo = "Ruta: " + c.getRutaVuelo().getNombre();
                     rutasConCantidad.add(rutaInfo);
+                    rutaVueloSeleccionada = c.getRutaVuelo();
                 }
             }
         }
         return rutasConCantidad;
     }
+
+    public String consultaPaqueteVueloRutasCantidadTipo() {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
+        }
+        if (paqueteSeleccionado.getCantidad() == null || paqueteSeleccionado.getCantidad().isEmpty()) {
+            throw new IllegalStateException("El paquete no tiene rutas asociadas.");
+        }
+        if (rutaVueloSeleccionada == null) {
+            throw new IllegalStateException("No hay una ruta de vuelo seleccionada.");
+        }
+        String rutasConCantidad = "";
+        if (paqueteSeleccionado.getCantidad() != null) {
+            for (Cantidad c : paqueteSeleccionado.getCantidad()) {
+                if (c.getRutaVuelo() == rutaVueloSeleccionada) {
+                    rutasConCantidad = "Cantidad: " + c.getCant() + ", Tipo Asiento: " + c.getTipoAsiento();
+
+                }
+            }
+        }
+        return rutasConCantidad;
+    }
+
+    public DTRutaVuelo consultaPaqueteRutaVueloInfo (String nombreRuta) {
+        if (paqueteSeleccionado == null) {
+            throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
+        }
+        if (paqueteSeleccionado.getCantidad() == null || paqueteSeleccionado.getCantidad().isEmpty()) {
+            throw new IllegalStateException("El paquete no tiene rutas asociadas.");
+        }
+        RutaVuelo rutaEncontrada = null;
+        for (Cantidad c : paqueteSeleccionado.getCantidad()) {
+            if (c.getRutaVuelo() != null && c.getRutaVuelo().getNombre().equalsIgnoreCase(nombreRuta)) {
+                rutaEncontrada = c.getRutaVuelo();
+                break;
+            }
+        }
+        if (rutaEncontrada == null) {
+            throw new IllegalArgumentException("No se encontró la ruta en el paquete: " + nombreRuta);
+        }
+
+        Aerolinea aerolinea = null;
+        if (rutaEncontrada.getAerolineas() != null && !rutaEncontrada.getAerolineas().isEmpty()) {
+            aerolinea = rutaEncontrada.getAerolineas().get(0); // Tomamos la primera aerolínea asociada
+        }
+
+        DTAerolinea dtAerolinea = aerolinea != null ? new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>()) : null;
+
+        return new DTRutaVuelo(
+                rutaEncontrada.getNombre(),
+                rutaEncontrada.getDescripcion(),
+                rutaEncontrada.getFechaAlta(),
+                rutaEncontrada.getCostoBase(),
+                dtAerolinea,
+                new DTCiudad(rutaEncontrada.getCiudadOrigen().getNombre(), rutaEncontrada.getCiudadOrigen().getPais()),
+                new DTCiudad(rutaEncontrada.getCiudadDestino().getNombre(), rutaEncontrada.getCiudadDestino().getPais())
+        );
+    }
+
+    public List <String> listarAerolineasRutaVuelo () {
+        List<String> listaAerolineas = new ArrayList<>();
+        if (rutaVueloSeleccionada == null) {
+            throw new IllegalStateException("No hay una ruta de vuelo seleccionada.");
+        }
+        if (rutaVueloSeleccionada.getAerolineas() != null) {
+            for (Aerolinea a : rutaVueloSeleccionada.getAerolineas()) {
+                listaAerolineas.add(a.getNickname());
+            }
+        }
+        return listaAerolineas;
+    }
+
+
 
     // COMPRA PAQUETE
 
