@@ -1454,6 +1454,9 @@ public class EstacionTrabajo {
                     calendarAltaPaquete.setCalendar(Calendar.getInstance());
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(crearPaquete, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }catch (Exception ex) {
+                    JOptionPane.showMessageDialog(crearPaquete, "Error inesperado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
                 }
             }
         });
