@@ -1,5 +1,6 @@
 package presentacion;
 
+import dato.entidades.PaqueteVuelo;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -48,13 +49,6 @@ public class EstacionTrabajo {
     private JPanel modificarUsuario;
     private JTextField modificarUsuarioTextInput;
 
-    private JTextField textField6;
-    private JTextField textField7;
-    private JTextField textField8;
-    private JTextField textField9;
-    private JTextField textField10;
-    private JTextArea textArea2;
-    private JButton guardarButton;
     private JPanel parentPanel;
     private JPanel buttonsPanel;
     private JButton botonInicio;
@@ -257,6 +251,7 @@ public class EstacionTrabajo {
     private JTextArea costoCPtxt;
     private JTextArea fechaAltaCPtxt;
     private JComboBox comboBoxRutasVueloCP;
+    private JButton consultaUsuarioCancelar;
     private JTextArea cantyTipoAsientotxt;
 
 
@@ -493,6 +488,11 @@ public class EstacionTrabajo {
         Factory factory = new Factory();
         this.sistema = factory.getSistema();
 
+        /*----- CONSULTA USUARIO -----*/
+        ButtonGroup grupo = new ButtonGroup();
+        grupo.add(paqueteVueloRadioButton);
+        grupo.add(reservaDeVueloRadioButton);
+        grupo.add(rutaDeVueloRadioButton);
 
         // Inicializar ComboBox de TipoAsiento como respaldo
         if (reservaVueloSeleccionarUsuarioTipoAsiento == null) {
@@ -672,10 +672,27 @@ public class EstacionTrabajo {
                 // Según lo que se elija, haces algo
                 switch (seleccionado) {
                     case "Crear usuario":
-                        parentPanel.removeAll();
-                        parentPanel.add(altaUsuario);
-                        parentPanel.repaint();
-                        parentPanel.revalidate();
+                        UsuarioHelper.limpiarCampos(
+                            nicknameAltaCliente,
+                            nombreAltaCliente,
+                            apellidoAltaCliente,
+                            correoAltaCliente,
+                            nacionalidadAltaCliente,
+                            numeroDocAltaCliente,
+                            altaAerolineaNickname,
+                            altaAerolineaNombre,
+                            altaAerolineaCorreo,
+                            altaAerolineaLinkWeb
+                    );
+                        UsuarioHelper.resetFormulario(
+                                comboBoxAltaCliente,
+                                JCalendarAltaCliente,
+                                nicknameAltaCliente
+                        );
+                        UsuarioHelper.limpiarTextPane(
+                            altaAerolineaDescripcion
+                        );
+                        UsuarioHelper.cambiarPanel(parentPanel,altaUsuario);
                         break;
                     case "Modificar usuario":
                         UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
@@ -687,6 +704,9 @@ public class EstacionTrabajo {
                     case "Consultar usuario":
                         parentPanel.removeAll();
                         UsuarioHelper.actualizarTablaUsuarios(consultaUsuarioTable1);
+                        UsuarioHelper.limpiarCampos(consultaUsuarioText);
+                        grupo.clearSelection();
+                        UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, principalVacio);
                         parentPanel.add(consultaUsuarioScroll);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -767,7 +787,8 @@ public class EstacionTrabajo {
                             correoAltaCliente,
                             nacionalidadAltaCliente,
                             (TipoDoc) comboBoxAltaCliente.getSelectedItem(),
-                            numeroDocAltaCliente
+                            numeroDocAltaCliente,
+                            JCalendarAltaCliente
                     );
 
                     if (!valido) {
@@ -912,18 +933,20 @@ public class EstacionTrabajo {
             }
         });
 
-        /*----- CONSULTA USUARIO -----*/
-        ButtonGroup grupo = new ButtonGroup();
-        grupo.add(paqueteVueloRadioButton);
-        grupo.add(reservaDeVueloRadioButton);
-        grupo.add(rutaDeVueloRadioButton);
 
-// Si querés empezar con ninguno seleccionado
+
+// Si queres empezar con ninguno seleccionado
         grupo.clearSelection();
 
         consultaUsuarioAceptar.addActionListener(e -> {
             String consulta = consultaUsuarioText.getText().trim();
             UsuarioHelper.mostrarDatosUsuario(consultaUsuarioTable1, consulta);
+        });
+        consultaUsuarioCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UsuarioHelper.cambiarPanel(parentPanel,principalVacio);
+            }
         });
 
         ActionListener listener = e -> {
@@ -943,11 +966,17 @@ public class EstacionTrabajo {
             cargarAerolineas(comboBoxAeroRVConsulta);
             cargarAerolineas(comboBoxAeroConsultaV);
             String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
+            cargarPaquetes(comboBoxPaqueteConsultaPaquete);
+            descripcionCPtxt.setText("");
+            diasvalidosCPtxt.setText("");
+            descuentoCPtxt.setText("");
+            costoCPtxt.setText("");
+            fechaAltaCPtxt.setText("");
             if (nicknameAerolinea != null) {
                 cargarRutas(comBoxRutVueloConsultaRV, nicknameAerolinea);
             }
             if (paqueteVueloRadioButton.isSelected()) {
-                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaPaqueteRutaVuelo);
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, ConsultaPaquete);
             } else if (reservaDeVueloRadioButton.isSelected()) {
                 UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaVuelo);
             } else if (rutaDeVueloRadioButton.isSelected()) {
@@ -1452,7 +1481,7 @@ public class EstacionTrabajo {
                     descripcionAltaPaqtxt.setText("");
                     descuentoAltaPaqtxt.setText("");
                     calendarAltaPaquete.setCalendar(Calendar.getInstance());
-                } catch (IllegalArgumentException ex) {
+                } catch (IllegalArgumentException | IllegalStateException ex) {
                     JOptionPane.showMessageDialog(crearPaquete, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }catch (Exception ex) {
                     JOptionPane.showMessageDialog(crearPaquete, "Error inesperado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -1738,6 +1767,11 @@ public class EstacionTrabajo {
         buttonAceptarAgrRutaaPaquete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+//                DefaultComboBoxModel<DTPaqueteVuelos> model = new DefaultComboBoxModel<>();
+//                for (DTPaqueteVuelos paquete : sistema.obtenerPaquetesNoComprados()) {
+//                    model.addElement(paquete);
+//                }
+//                comboBoxPaqueteAgrRutaaPaquete.setModel(model);
                 DTPaqueteVuelos paqueteSeleccionado = (DTPaqueteVuelos) comboBoxPaqueteAgrRutaaPaquete.getSelectedItem();
                 String nicknameAerolinea = (String) comboBoxAeroAgrRutaaPaquete.getSelectedItem();
 
@@ -1801,6 +1835,16 @@ public class EstacionTrabajo {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error al agregar ruta al paquete: " + ex.getMessage());
                 }
+            }
+        });
+
+        buttonCancelarAgrRutaaPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
             }
         });
 
@@ -1880,6 +1924,8 @@ public class EstacionTrabajo {
                 }
             }
         });
+
+
     }
 }
 
