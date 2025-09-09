@@ -274,6 +274,17 @@ public class UsuarioHelper {
             campo.setText("");
         }
     }
+    public static void limpiarTextPane(JTextPane... panes) {
+        for (JTextPane pane : panes) {
+            pane.setText("");
+        }
+    }
+    // reiniciar ComboBox y Calendar
+    public static void resetFormulario(JComboBox<?> combo, JCalendar calendario, JTextField primerCampo) {
+        if (combo != null) combo.setSelectedIndex(0);
+        if (calendario != null) calendario.setDate(new Date());
+        if (primerCampo != null) primerCampo.requestFocus();
+    }
 
     // ACTUALIZAR TABLA DE LISTADO DE USUARIOS
     public static void actualizarTablaUsuarios(JTable tablaUsuarios) {
@@ -327,17 +338,25 @@ public class UsuarioHelper {
             JTextArea descripcion
     ) {
 
-        // Validar nombre
-        if (nombre.getText().trim().length() < 4) {
+        String nombreTexto = nombre.getText().trim();
+
+        if (nombreTexto.length() < 4) {
             JOptionPane.showMessageDialog(null, "El nombre debe tener al menos 4 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
+        // Solo letras y espacios (sin símbolos ni números)
+        if (!nombreTexto.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+            JOptionPane.showMessageDialog(null, "El nombre solo puede contener letras y espacios, sin símbolos ni números.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+
 
         // Validar sitio web
         String sitioText = sitioWeb.getText().trim();
-        if (!sitioText.matches("^[^\\s]+\\.[^\\s]+$")){
-            JOptionPane.showMessageDialog(null, "El sitio web debe comenzar con http:// o https:// y ser válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (!sitioText.matches(".*\\.[a-zA-Z]{2,}$")) {
+            JOptionPane.showMessageDialog(null, "El sitio web debe contener un dominio válido como .com, .ar, etc.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -410,6 +429,52 @@ public class UsuarioHelper {
         return true;
     }
 
+
+    public static boolean validarFechaNacimiento(JCalendar calendarioNacimiento) {
+        if (calendarioNacimiento == null || calendarioNacimiento.getDate() == null) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una fecha de nacimiento.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        Date fecha = calendarioNacimiento.getDate();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fecha);
+
+        int año = cal.get(Calendar.YEAR);
+
+        // Validar que el año sea numérico y positivo
+        if (año < 0) {
+            JOptionPane.showMessageDialog(null, "El año de nacimiento no puede ser negativo.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        Date hoy = new Date();
+
+        // No puede ser futura
+        if (fecha.after(hoy)) {
+            JOptionPane.showMessageDialog(null, "La fecha de nacimiento no puede ser en el futuro.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Debe tener más de 10 años
+        Calendar minEdad = Calendar.getInstance();
+        minEdad.add(Calendar.YEAR, -10);
+        if (fecha.after(minEdad.getTime())) {
+            JOptionPane.showMessageDialog(null, "Debe tener al menos 10 años de edad.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // No puede tener más de 100 años
+        Calendar maxEdad = Calendar.getInstance();
+        maxEdad.add(Calendar.YEAR, -100);
+        if (fecha.before(maxEdad.getTime())) {
+            JOptionPane.showMessageDialog(null, "La edad no puede superar los 100 años.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
     public static boolean validarCliente(
             JTextField nickname,
             JTextField nombre,
@@ -417,7 +482,8 @@ public class UsuarioHelper {
             JTextField correo,
             JTextField nacionalidad,
             TipoDoc tipoDocumento,
-            JTextField numeroDocumento
+            JTextField numeroDocumento,
+            JCalendar fechaNac
     ) {
         String nick = nickname.getText().trim();
         String nom = nombre.getText().trim();
@@ -426,6 +492,9 @@ public class UsuarioHelper {
         String nac = nacionalidad.getText().trim();
         String doc = numeroDocumento.getText().trim();
 
+        if (!validarFechaNacimiento(fechaNac)) {
+            return false;
+        }
 
         if (nick.isEmpty() || nom.isEmpty() || ape.isEmpty() || mail.isEmpty() || nac.isEmpty() || doc.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Por favor complete todos los campos obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -504,9 +573,16 @@ public class UsuarioHelper {
             return false;
         }
 
-        // Validar nombre
-        if (nombre.getText().trim().length() < 2) {
-            JOptionPane.showMessageDialog(null, "El nombre debe tener al menos 2 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+        String nombreTexto = nombre.getText().trim();
+
+        if (nombreTexto.length() < 4) {
+            JOptionPane.showMessageDialog(null, "El nombre debe tener al menos 4 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Solo letras y espacios (sin símbolos ni números)
+        if (!nombreTexto.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+            JOptionPane.showMessageDialog(null, "El nombre solo puede contener letras y espacios, sin símbolos ni números.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -519,11 +595,10 @@ public class UsuarioHelper {
 
         // Validar sitio web
         String sitioText = sitioWeb.getText().trim();
-        if (!sitioText.matches("^[^\\s]+\\.[^\\s]+$")){
-            JOptionPane.showMessageDialog(null, "El sitio web debe comenzar con http:// o https:// y ser válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (!sitioText.matches(".*\\.[a-zA-Z]{2,}$")) {
+            JOptionPane.showMessageDialog(null, "El sitio web debe contener un dominio válido como .com, .ar, etc.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
         // Validar descripción
         if (descripcion.getText().trim().length() < 10) {
             JOptionPane.showMessageDialog(null, "La descripción debe tener al menos 10 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -579,12 +654,7 @@ public class UsuarioHelper {
         return new DTFecha(dia, mes, anio);
     }
 
-    // reiniciar ComboBox y Calendar
-    public static void resetFormulario(JComboBox<?> combo, JCalendar calendario, JTextField primerCampo) {
-        if (combo != null) combo.setSelectedIndex(0);
-        if (calendario != null) calendario.setDate(new Date());
-        if (primerCampo != null) primerCampo.requestFocus();
-    }
+
 
     /// ////// Aerolinea ///////////
 
@@ -726,67 +796,7 @@ public class UsuarioHelper {
     }
 
 
-/*
-    public static void mostrarDatosUsuario(JTable tabla, String nickname) {
-        if (nickname == null || nickname.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Debe proporcionar un Nickname",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-        try {
-            DTUsuario usuario = getSistema().mostrarDatosUsuario(nickname);
 
-            String[] columnas = {"Campo", "Valor", "Valor"};
-            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
-
-            // Cliente
-            if (usuario instanceof DTCliente c) {
-                modelo.addRow(new Object[]{"Nickname", c.getNickname(),""});
-                modelo.addRow(new Object[]{"Nombre", c.getNombre(),""});
-                modelo.addRow(new Object[]{"Correo", c.getCorreo(),""});
-                modelo.addRow(new Object[]{"Apellido", c.getApellido(),""});
-                modelo.addRow(new Object[]{"Tipo Doc", c.getTipoDocumento(),""});
-                modelo.addRow(new Object[]{"Documento", c.getNumeroDocumento(),""});
-                modelo.addRow(new Object[]{"Fecha Nac", c.getFechaNacimiento(),""});
-                modelo.addRow(new Object[]{"Nacionalidad", c.getNacionalidad(),""});
-
-                // Reservas y paquetes
-                if (c.getReserva() != null) {
-                    for (DTReserva r : c.getReserva()) {
-                        modelo.addRow(new Object[]{"Reserva", formatearReserva(r),""});
-                    }
-
-                }
-            }
-            // Aerolínea
-            else if (usuario instanceof DTAerolinea a) {
-                modelo.addRow(new Object[]{"Nickname", a.getNickname(),""});
-                modelo.addRow(new Object[]{"Nombre", a.getNombre(),""});
-                modelo.addRow(new Object[]{"Correo", a.getCorreo(),""});
-                modelo.addRow(new Object[]{"Descripción", a.getDescripcion(),""});
-                modelo.addRow(new Object[]{"Sitio Web", a.getLinkSitioWeb(),""});
-
-                if (a.getRutasVuelo() != null) {
-                    for (DTRutaVuelo ruta : a.getRutasVuelo()) {
-                        modelo.addRow(new Object[]{"Ruta", ruta.getNombre()+"-"+ruta.getDescripcion(), ruta.getCostoBase()});
-                    }
-                }
-            }
-
-            // Asignar modelo a la tabla
-            tabla.setModel(modelo);
-            tabla.setAutoCreateRowSorter(true);
-
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado: " + nickname, "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error al mostrar datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }*/
 
    /* ////////PAQUETES DE VUELO/////////// ESTE NO RECIBE PARAMETROS POR QUE TODAVIA NO ESTA IMPLEMENTADO EN SISTEMA
     public static void mostrarPaquetes(JTable tabla) {
