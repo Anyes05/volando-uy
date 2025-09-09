@@ -99,8 +99,9 @@ public interface ISistema {
     public void seleccionarVueloParaReserva(String nombreVuelo);
 
     public List<DTCliente> listarClientes();
-    public List<DTCliente> mostrarClientesSinVueloSeleccionado();
-
+    //public List<DTCliente> mostrarClientesSinVueloSeleccionado();
+    public List<String> nombresPasajes(String nombre, List<String> nombresPasajeros);
+    public List<DTPasajero> pasajeros(String nombreCliente);
 
     // CONSULTA PAQUETE RUTAS DE VUELO
     public DTPaqueteVuelos consultaPaqueteVuelo();

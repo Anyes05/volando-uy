@@ -761,35 +761,37 @@ public class Sistema implements ISistema {
 
     // RESERVA VUELO
 
-    public List<DTCliente> mostrarClientesSinVueloSeleccionado() {
-        ClienteServicio clienteServicio = new ClienteServicio();
-        List<DTCliente> listaClientes = new ArrayList<>();
-        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
-        for (Usuario u : clientes) {
-            if (u instanceof Cliente c) {
-                if (!c.getReservas().isEmpty()) {
-                    if (c.getReservas().stream().noneMatch(r -> r instanceof dato.entidades.CompraComun compraComun && compraComun.getVuelo() != null && compraComun.getVuelo().getNombre().equals(vueloSeleccionadoParaReserva))) {
-                        listaClientes.add(new DTCliente(
-                                c.getNickname(),
-                                c.getNombre(),
-                                c.getCorreo(),
-                                c.getApellido(),
-                                c.getTipoDoc(),
-                                c.getNumeroDocumento(),
-                                c.getFechaNacimiento(),
-                                c.getNacionalidad(),
-                                new ArrayList<>()
-                        ));
-                    }
-                }
-            }
+    public List<String> nombresPasajes(String nombre, List<String> nombresPasajeros) {
+        if(nombresPasajeros.contains(nombre)) {
+            throw new IllegalArgumentException("El pasajero ya fue seleccionado anteriormente.");
         }
-        return listaClientes;
+        nombresPasajeros.add(nombre);
+
+        return nombresPasajeros;
     }
 
     public void seleccionarVueloParaReserva(String nombreVuelo) {
         this.vueloSeleccionadoParaReserva = nombreVuelo;
     }
+
+    public List<DTPasajero> pasajeros(String nombreCliente){
+        ClienteServicio clienteServicio = new ClienteServicio();
+        List<DTPasajero> listaClientes = new ArrayList<>();
+        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+
+        for (dato.entidades.Cliente c : clientes) {
+            if(c.getNickname().equalsIgnoreCase(nombreCliente)){
+                continue;
+            }
+            listaClientes.add(new DTPasajero(
+                    c.getNombre(),
+                    c.getApellido(),
+                    c.getNickname()
+            ));
+        }
+        return listaClientes;
+    }
+
 
     public List<DTCliente> listarClientes() {
         ClienteServicio clienteServicio = new ClienteServicio();
@@ -935,7 +937,8 @@ public class Sistema implements ISistema {
                 pasaje.setPasajero(pasajero);
                 pasaje.setReserva(reserva);
                 pasaje.setTipoAsiento(tipoAsiento);
-                pasaje.setCostoPasaje((int) costoIndividualPasaje); // Establecer el costo del pasaje
+                pasaje.setCostoPasaje((int) costoIndividualPasaje);// Establecer el costo del pasaje
+
 
                 // Debug: verificar el valor de tipoAsiento antes de persistir
                 System.out.println("DEBUG: tipoAsiento = " + tipoAsiento + " (ordinal: " + tipoAsiento.ordinal() + ")");
@@ -954,8 +957,6 @@ public class Sistema implements ISistema {
             em.getTransaction().commit();
             System.out.println("Reserva completada exitosamente. ID: " + reserva.getId());
 
-            // Limpiar selección
-            vueloSeleccionadoParaReserva = null;
 
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {

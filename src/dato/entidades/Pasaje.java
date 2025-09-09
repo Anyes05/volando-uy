@@ -43,8 +43,8 @@ public class Pasaje {
         this.reserva = reserva;
         this.tipoAsiento = tipoAsiento;
         // Establecer nombre y apellido del cliente como pasajero
-        this.nombrePasajero = pasajero.getNombre();
-        this.apellidoPasajero = pasajero.getApellido();
+//        this.nombrePasajero = pasajero.getNombre();
+//        this.apellidoPasajero = pasajero.getApellido();
     }
 
     // Getter y Setter

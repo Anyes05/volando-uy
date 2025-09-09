@@ -206,7 +206,7 @@ public class EstacionTrabajo {
     private JTable reservaVueloListarUsuariosTable;
     private JTextField reservaVueloSeleccionarUsuarioCliente;
     private JPanel reservaVueloSeleccionarUsuarioJPanel;
-    //private JComboBox<TipoAsiento> reservaVueloSeleccionarUsuarioTipoAsiento;
+    private JComboBox<TipoAsiento> reservaVueloSeleccionarUsuarioTipoAsiento;
     private JButton reservaVueloSeleccionarUsuarioAceptar;
     private JSpinner reservaVueloSeleccionarUsuarioCantidadPasajes;
     private JSpinner reservaVueloSeleccionarUsuarioCantidadEquipajeExtra;
@@ -254,18 +254,19 @@ public class EstacionTrabajo {
     private JComboBox comboBoxClienteReservaV;
     private JComboBox comboBoxTipoAsientoReservaV;
     private JTextField cantPasajesReservaVtxt;
-    private JTextField textField1;
+    private JTextField equipajeExtraReservaV;
     private JCalendar fechaReservaV;
     private JButton buttonCancelarReservaV;
     private JButton buttonAceptarReservaV;
     private JCalendar fechaReservaVJC;
     private JComboBox comboBoxPasajerosReservaV;
+    private JButton buttonAgregarPasajeroReservaV;
     private JList list1;
     private JTextArea cantyTipoAsientotxt;
     private JScrollPane scrollReservaVuelo;
 
     //  private JButton precargarAeropuertosButton;
-
+    public List<String> nombresPasajeros = new java.util.ArrayList<>();
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
@@ -300,8 +301,8 @@ public class EstacionTrabajo {
 
         //scrollReservaVuelo = new JScrollPane(reservaVuelo);
 //        // Inicializar ComboBox de TipoAsiento para reserva de vuelo
-//        reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
-//        reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0); // Seleccionar Turista por defecto
+        reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
+        reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0); // Seleccionar Turista por defecto
 
     }
 
@@ -342,6 +343,13 @@ public class EstacionTrabajo {
             comboBoxTipoAsientoAgrRutaaPaquete.addItem(tipo);
         }
         comboBoxTipoAsientoAgrRutaaPaquete.setSelectedIndex(-1);
+    }
+    private void inicializarComboBoxTipoAsientoReserva() {
+        comboBoxTipoAsientoReservaV.removeAllItems();
+        for (TipoAsiento tipo : TipoAsiento.values()) {
+            comboBoxTipoAsientoReservaV.addItem(tipo);
+        }
+        comboBoxTipoAsientoReservaV.setSelectedIndex(-1);
     }
 
 
@@ -469,9 +477,17 @@ public class EstacionTrabajo {
         combo.setSelectedIndex(-1);
     }
 
-    private void cargarClientesSinVuelo(JComboBox<DTCliente> combo){
+    private void cargarClientesSinVueloSeleccionado(JComboBox<DTCliente> combo){
         combo.removeAllItems();
-        for (DTCliente c : sistema.mostrarClientesSinVueloSeleccionado()){
+        for (DTCliente c : sistema.mostrarClientes()){
+            combo.addItem(c);
+        }
+        combo.setSelectedIndex(-1);
+    }
+
+    private void cargarPasajeros(JComboBox<DTPasajero> combo, String nombreCliente){
+        combo.removeAllItems();
+        for (DTPasajero c : sistema.pasajeros(nombreCliente)){
             combo.addItem(c);
         }
         combo.setSelectedIndex(-1);
@@ -523,12 +539,12 @@ public class EstacionTrabajo {
         grupo.add(reservaDeVueloRadioButton);
         grupo.add(rutaDeVueloRadioButton);
 
-//        // Inicializar ComboBox de TipoAsiento como respaldo
-//        if (reservaVueloSeleccionarUsuarioTipoAsiento == null) {
-//            reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
-//            reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0);
-//            System.out.println("ComboBox TipoAsiento inicializado en constructor");
-//        }
+        // Inicializar ComboBox de TipoAsiento como respaldo
+        if (reservaVueloSeleccionarUsuarioTipoAsiento == null) {
+            reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
+            reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0);
+            System.out.println("ComboBox TipoAsiento inicializado en constructor");
+        }
 
 //        // Agregar listener al panel de pasajes para inicializar ComboBox cuando se muestre
 //        reservaVueloPasajes.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -637,7 +653,10 @@ public class EstacionTrabajo {
                         // Inicializar ComboBox de TipoAsiento cuando se entra a reservar vuelo
 //                        inicializarComboBoxTipoAsiento();
                         parentPanel.removeAll();
+                        cantPasajesReservaVtxt.setText("");
+                        equipajeExtraReservaV.setText("");
                         cargarAerolineas(comboBoxAeroReservaV);
+                        inicializarComboBoxTipoAsientoReserva();
                         parentPanel.add(reservaVuelo);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -1966,12 +1985,16 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 if (cargandoAeroRV) return;
                 String a = (String) comboBoxAeroReservaV.getSelectedItem();
+                comboBoxRutasVueloReservaV.removeAllItems();
+                comboBoxVuelosReservaV.removeAllItems();
+
                 if (a != null) {
                     cargarRutas(comboBoxRutasVueloReservaV, a);
                     cargandoVuelosRV = true;
                     vuelosConsultaRV.removeAllItems();
                     cargandoVuelosRV = false;
                 }
+
             }
 
         });
@@ -1980,9 +2003,20 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 DTRutaVuelo rutaSeleccionada = (DTRutaVuelo) comboBoxRutasVueloReservaV.getSelectedItem();
                 comboBoxVuelosReservaV.removeAllItems();
+
                 if (rutaSeleccionada != null) {
-                    cargarVuelos(comboBoxVuelosReservaV, rutaSeleccionada.getNombre());
+                    // Llenar combo de vuelos asociados a esta ruta
+                    List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(rutaSeleccionada.getNombre());
+                    cargandoVuelosRV = true;
+                    comboBoxVuelosReservaV.removeAllItems(); // limpiar lista previa
+                    for (DTVuelo v : vuelos) {
+                        comboBoxVuelosReservaV.addItem(v); // cargar vuelos
+                    }
+                    cargandoVuelosRV = false;
+                    comboBoxVuelosReservaV.setSelectedIndex(-1);
                 }
+
+
                 //comboBoxVuelosReservaV.setSelectedItem(-1);
             }
         });
@@ -1991,6 +2025,7 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 DTVuelo v = (DTVuelo) comboBoxVuelosReservaV.getSelectedItem();
                 if (v != null) {
+                    sistema.seleccionarVueloParaReserva(v.getNombre());
                     nombreVueloReservaV.setText(v.getNombre());
                     fechaVReservaV.setText(v.getFechaVuelo().toString());
                     horaVReservaV.setText(v.getHoraVuelo().toString());
@@ -1998,9 +2033,52 @@ public class EstacionTrabajo {
                     cantidadAsientosTReservaV.setText(String.valueOf(v.getAsientosMaxTurista()));
                     cantidadAsientosEReservaV.setText(String.valueOf(v.getAsientosMaxEjecutivo()));
                     fechaAltaVReservaV.setText(v.getFechaAlta().toString());
+                    cargarClientesSinVueloSeleccionado(comboBoxClienteReservaV);
                 } else {
                     VueloHelper.limpiarCampos(nombreVueloReservaV,fechaVReservaV,horaVReservaV,duracionVReservaV,cantidadAsientosTReservaV,
                             cantidadAsientosEReservaV,fechaAltaVReservaV);
+                }
+            }
+        });
+        buttonAceptarReservaV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                TipoAsiento asiento = (TipoAsiento) comboBoxTipoAsientoReservaV.getSelectedItem();
+
+                DTFecha fechaAltaRV = new DTFecha(
+                        fechaReservaVJC.getCalendar().get(Calendar.DAY_OF_MONTH),
+                        fechaReservaVJC.getCalendar().get(Calendar.MONTH) + 1,
+                        fechaReservaVJC.getCalendar().get(Calendar.YEAR)
+                );
+                int cant = Integer.parseInt(cantPasajesReservaVtxt.getText().trim());
+                int equipajeExtra = Integer.parseInt(equipajeExtraReservaV.getText().trim());
+                DTCliente pasajero = (DTCliente) comboBoxClienteReservaV.getSelectedItem();
+                nombresPasajeros.add(0, pasajero.getNickname());
+
+                sistema.datosReserva(asiento, cant, equipajeExtra, nombresPasajeros, fechaAltaRV );
+                nombresPasajeros.clear();
+
+            }
+        });
+
+        comboBoxClienteReservaV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DTCliente cliente = (DTCliente) comboBoxClienteReservaV.getSelectedItem();
+                if (cliente != null) {
+                    cargarPasajeros(comboBoxPasajerosReservaV, cliente.getNickname());
+                }
+            }
+        });
+
+        buttonAgregarPasajeroReservaV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DTPasajero pasajero = (DTPasajero) comboBoxPasajerosReservaV.getSelectedItem();
+
+                if(pasajero != null){
+                    sistema.nombresPasajes(pasajero.getNicknameCliente(), nombresPasajeros);
                 }
             }
         });

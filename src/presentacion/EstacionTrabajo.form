@@ -2688,334 +2688,342 @@
                   <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
-              <grid id="f92" binding="reservaVuelo" layout-manager="GridLayoutManager" row-count="14" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
+            </children>
+          </grid>
+          <grid id="f92" binding="reservaVuelo" layout-manager="GridLayoutManager" row-count="14" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <card name="Card16"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="757c7" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Aerolínea:"/>
+                </properties>
+              </component>
+              <hspacer id="82750">
+                <constraints>
+                  <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <component id="b0f4e" class="javax.swing.JComboBox" binding="comboBoxAeroReservaV">
+                <constraints>
+                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
-                <border type="none"/>
+              </component>
+              <component id="1c094" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Rutas de vuelo:"/>
+                </properties>
+              </component>
+              <component id="b69a5" class="javax.swing.JComboBox" binding="comboBoxRutasVueloReservaV">
+                <constraints>
+                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="bef4e" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Vuelos:"/>
+                </properties>
+              </component>
+              <component id="3fad3" class="javax.swing.JComboBox" binding="comboBoxVuelosReservaV">
+                <constraints>
+                  <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="4c6b9" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value=""/>
+                </properties>
+              </component>
+              <grid id="9b1c3" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none" title="Datos del vuelo a reservar" title-justification="2"/>
                 <children>
-                  <component id="757c7" class="javax.swing.JLabel">
+                  <component id="6beb4" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Aerolínea:"/>
+                      <text value="Nombre del vuelo"/>
                     </properties>
                   </component>
-                  <hspacer id="82750">
+                  <component id="b163a" class="javax.swing.JTextArea" binding="nombreVueloReservaV">
                     <constraints>
-                      <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                  </hspacer>
-                  <component id="b0f4e" class="javax.swing.JComboBox" binding="comboBoxAeroReservaV">
-                    <constraints>
-                      <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                  </component>
-                  <component id="1c094" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
+                      </grid>
                     </constraints>
                     <properties>
-                      <text value="Rutas de vuelo:"/>
+                      <editable value="false"/>
                     </properties>
                   </component>
-                  <component id="b69a5" class="javax.swing.JComboBox" binding="comboBoxRutasVueloReservaV">
+                  <component id="16cba" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                  </component>
-                  <component id="bef4e" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Vuelos:"/>
+                      <text value="Fecha del vuelo"/>
                     </properties>
                   </component>
-                  <component id="3fad3" class="javax.swing.JComboBox" binding="comboBoxVuelosReservaV">
+                  <component id="c8d7a" class="javax.swing.JTextArea" binding="fechaVReservaV">
                     <constraints>
-                      <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                  </component>
-                  <component id="4c6b9" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
+                      </grid>
                     </constraints>
                     <properties>
+                      <editable value="false"/>
                       <text value=""/>
                     </properties>
                   </component>
-                  <grid id="9b1c3" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                    <margin top="0" left="0" bottom="0" right="0"/>
+                  <component id="46100" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                    <border type="none" title="Datos del vuelo a reservar" title-justification="2"/>
-                    <children>
-                      <component id="6beb4" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Nombre del vuelo"/>
-                        </properties>
-                      </component>
-                      <component id="b163a" class="javax.swing.JTextArea" binding="nombreVueloReservaV">
-                        <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                        </properties>
-                      </component>
-                      <component id="16cba" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Fecha del vuelo"/>
-                        </properties>
-                      </component>
-                      <component id="c8d7a" class="javax.swing.JTextArea" binding="fechaVReservaV">
-                        <constraints>
-                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                          <text value=""/>
-                        </properties>
-                      </component>
-                      <component id="46100" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Hora del vuelo"/>
-                        </properties>
-                      </component>
-                      <component id="76527" class="javax.swing.JTextArea" binding="horaVReservaV">
-                        <constraints>
-                          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                        </properties>
-                      </component>
-                      <component id="60674" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Duración del vuelo"/>
-                        </properties>
-                      </component>
-                      <component id="6162c" class="javax.swing.JTextArea" binding="duracionVReservaV">
-                        <constraints>
-                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                        </properties>
-                      </component>
-                      <component id="5d68c" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Cantidad de asientos máximos en Clase Turista"/>
-                        </properties>
-                      </component>
-                      <component id="9938e" class="javax.swing.JTextArea" binding="cantidadAsientosTReservaV">
-                        <constraints>
-                          <grid row="4" column="1" row-span="2" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                        </properties>
-                      </component>
-                      <component id="80437" class="javax.swing.JTextArea" binding="cantidadAsientosEReservaV">
-                        <constraints>
-                          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                        </properties>
-                      </component>
-                      <component id="5225d" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Cantidad de asientos máximos en Clase Ejecutiva"/>
-                        </properties>
-                      </component>
-                      <component id="198d4" class="javax.swing.JTextArea" binding="fechaAltaVReservaV">
-                        <constraints>
-                          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="50"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <editable value="false"/>
-                        </properties>
-                      </component>
-                      <component id="abdfc" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Fecha de alta de vuelo"/>
-                        </properties>
-                      </component>
-                    </children>
-                  </grid>
-                  <component id="ba4b5" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Cliente:"/>
+                      <text value="Hora del vuelo"/>
                     </properties>
                   </component>
-                  <vspacer id="3ac10">
+                  <component id="76527" class="javax.swing.JTextArea" binding="horaVReservaV">
                     <constraints>
-                      <grid row="13" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                  </vspacer>
-                  <component id="cec34" class="javax.swing.JComboBox" binding="comboBoxClienteReservaV">
-                    <constraints>
-                      <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                  </component>
-                  <component id="13fe0" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Tipo asiento:"/>
-                    </properties>
-                  </component>
-                  <component id="4fec6" class="javax.swing.JComboBox" binding="comboBoxTipoAsientoReservaV">
-                    <constraints>
-                      <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties/>
-                  </component>
-                  <component id="5874e" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Cantidad de pasajes:"/>
-                    </properties>
-                  </component>
-                  <component id="aa8c8" class="javax.swing.JTextField" binding="cantPasajesReservaVtxt">
-                    <constraints>
-                      <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
+                      <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
-                  </component>
-                  <component id="afd57" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
                     <properties>
-                      <text value="Cantidad equipaje extra:"/>
+                      <editable value="false"/>
                     </properties>
                   </component>
-                  <component id="5cf30" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+                  <component id="60674" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="9" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Duración del vuelo"/>
+                    </properties>
+                  </component>
+                  <component id="6162c" class="javax.swing.JTextArea" binding="duracionVReservaV">
+                    <constraints>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
-                  </component>
-                  <component id="c965a" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
                     <properties>
-                      <text value="Pasajeros:"/>
+                      <editable value="false"/>
                     </properties>
                   </component>
-                  <component id="561bf" class="javax.swing.JLabel">
+                  <component id="5d68c" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value=""/>
+                      <text value="Cantidad de asientos máximos en Clase Turista"/>
                     </properties>
                   </component>
-                  <component id="bd679" class="javax.swing.JButton" binding="buttonCancelarReservaV">
+                  <component id="9938e" class="javax.swing.JTextArea" binding="cantidadAsientosTReservaV">
                     <constraints>
-                      <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="4" column="1" row-span="2" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
+                      </grid>
                     </constraints>
                     <properties>
-                      <text value="Cancelar"/>
+                      <editable value="false"/>
                     </properties>
                   </component>
-                  <component id="7a307" class="javax.swing.JButton" binding="buttonAceptarReservaV">
+                  <component id="80437" class="javax.swing.JTextArea" binding="cantidadAsientosEReservaV">
                     <constraints>
-                      <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
+                      </grid>
                     </constraints>
                     <properties>
-                      <text value="Aceptar"/>
+                      <editable value="false"/>
                     </properties>
                   </component>
-                  <hspacer id="f1f0c">
+                  <component id="5225d" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                  </hspacer>
-                  <vspacer id="903e4">
-                    <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                  </vspacer>
-                  <component id="bebbc" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Fecha de reserva:"/>
+                      <text value="Cantidad de asientos máximos en Clase Ejecutiva"/>
                     </properties>
                   </component>
-                  <component id="92932" class="com.toedter.calendar.JCalendar" binding="fechaReservaVJC" custom-create="true">
+                  <component id="198d4" class="javax.swing.JTextArea" binding="fechaAltaVReservaV">
                     <constraints>
-                      <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
+                      </grid>
                     </constraints>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
-                  <component id="39a61" class="javax.swing.JComboBox" binding="comboBoxPasajerosReservaV">
+                  <component id="abdfc" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <text value="Fecha de alta de vuelo"/>
+                    </properties>
                   </component>
                 </children>
               </grid>
+              <component id="ba4b5" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Cliente:"/>
+                </properties>
+              </component>
+              <vspacer id="3ac10">
+                <constraints>
+                  <grid row="13" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+              <component id="cec34" class="javax.swing.JComboBox" binding="comboBoxClienteReservaV">
+                <constraints>
+                  <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="13fe0" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Tipo asiento:"/>
+                </properties>
+              </component>
+              <component id="4fec6" class="javax.swing.JComboBox" binding="comboBoxTipoAsientoReservaV">
+                <constraints>
+                  <grid row="7" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="5874e" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Cantidad de pasajes:"/>
+                </properties>
+              </component>
+              <component id="aa8c8" class="javax.swing.JTextField" binding="cantPasajesReservaVtxt">
+                <constraints>
+                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="afd57" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Cantidad equipaje extra:"/>
+                </properties>
+              </component>
+              <component id="5cf30" class="javax.swing.JTextField" binding="equipajeExtraReservaV">
+                <constraints>
+                  <grid row="9" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="c965a" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Pasajeros:"/>
+                </properties>
+              </component>
+              <component id="561bf" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="bd679" class="javax.swing.JButton" binding="buttonCancelarReservaV">
+                <constraints>
+                  <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Cancelar"/>
+                </properties>
+              </component>
+              <component id="7a307" class="javax.swing.JButton" binding="buttonAceptarReservaV">
+                <constraints>
+                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Aceptar"/>
+                </properties>
+              </component>
+              <hspacer id="f1f0c">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <vspacer id="903e4">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+              <component id="bebbc" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Fecha de reserva:"/>
+                </properties>
+              </component>
+              <component id="92932" class="com.toedter.calendar.JCalendar" binding="fechaReservaVJC" custom-create="true">
+                <constraints>
+                  <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </component>
+              <component id="39a61" class="javax.swing.JComboBox" binding="comboBoxPasajerosReservaV">
+                <constraints>
+                  <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="2a1ba" class="javax.swing.JButton" binding="buttonAgregarPasajeroReservaV">
+                <constraints>
+                  <grid row="11" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Agregar"/>
+                </properties>
+              </component>
             </children>
           </grid>
         </children>
