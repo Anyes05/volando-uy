@@ -943,11 +943,17 @@ public class EstacionTrabajo {
             cargarAerolineas(comboBoxAeroRVConsulta);
             cargarAerolineas(comboBoxAeroConsultaV);
             String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
+            cargarPaquetes(comboBoxPaqueteConsultaPaquete);
+            descripcionCPtxt.setText("");
+            diasvalidosCPtxt.setText("");
+            descuentoCPtxt.setText("");
+            costoCPtxt.setText("");
+            fechaAltaCPtxt.setText("");
             if (nicknameAerolinea != null) {
                 cargarRutas(comBoxRutVueloConsultaRV, nicknameAerolinea);
             }
             if (paqueteVueloRadioButton.isSelected()) {
-                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaPaqueteRutaVuelo);
+                UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, ConsultaPaquete);
             } else if (reservaDeVueloRadioButton.isSelected()) {
                 UsuarioHelper.cambiarPanel(consultaUsuarioParentPanel, consultaVuelo);
             } else if (rutaDeVueloRadioButton.isSelected()) {
