@@ -1012,6 +1012,25 @@ public class Sistema implements ISistema {
         return listaPaquetes;
     }
 
+    public List<DTPaqueteVuelos> obtenerPaquetesNoComprados() {
+        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
+        List<dato.entidades.PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
+        for (dato.entidades.PaqueteVuelo p : paquetes) {
+            if (!p.isComprado() && p.getCantidad() != null) {
+                DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                        p.getNombre(),
+                        p.getDescripcion(),
+                        p.getDiasValidos(),
+                        p.getDescuento(),
+                        p.getFechaAlta()
+                );
+                listaPaquetes.add(dtPaquete);
+            }
+        }
+        return listaPaquetes;
+    }
+
     public List<DTPaqueteVuelos> mostrarPaqueteConRutas() {
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
         List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
@@ -1069,35 +1088,6 @@ public class Sistema implements ISistema {
         }
         throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
     }
-//
-//    public void seleccionarPaqueteNoComprado(String nombrePaquete) {
-//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
-//        dato.entidades.PaqueteVuelo paquete = paqueteVueloServicio.obtenerPaquetePorNombre(nombrePaquete);
-//        if (paquete != null && !paquete.isComprado()) {
-//            paqueteSeleccionado = paquete;
-//            return;
-//        }
-//        throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
-//    }
-//
-//    public List<DTPaqueteVuelos> obtenerPaquetesNoComprados() {
-//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
-//        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
-//        List<dato.entidades.PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
-//        for (dato.entidades.PaqueteVuelo p : paquetes) {
-//            if (p.getCantidad() != null && !p.isComprado()) {
-//                DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-//                        p.getNombre(),
-//                        p.getDescripcion(),
-//                        p.getDiasValidos(),
-//                        p.getDescuento(),
-//                        p.getFechaAlta()
-//                );
-//                listaPaquetes.add(dtPaquete);
-//            }
-//        }
-//        return listaPaquetes;
-//    }
 
     public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea) {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
@@ -1147,11 +1137,6 @@ public class Sistema implements ISistema {
             if (c.getRutaVuelo() != null && c.getRutaVuelo().getNombre().equalsIgnoreCase(rutaVueloSeleccionada.getNombre())) {
                 throw new IllegalArgumentException("La ruta ya está agregada al paquete.");
             }
-//            if (c.getRutaVuelo() != null) {
-//                float costoTotal = 10;
-//                costoTotal += c.getCant() * (c.getTipoAsiento() == TipoAsiento.Ejecutivo ? c.getRutaVuelo().getCostoBase().getCostoEjecutivo() : c.getRutaVuelo().getCostoBase().getCostoTurista());
-//                paqueteSeleccionado.setCostoTotal(costoTotal);
-//            }
         }
 
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
@@ -1293,12 +1278,11 @@ public class Sistema implements ISistema {
         PaqueteVueloServicio servicioPaqueteVuelo = new PaqueteVueloServicio();
         try {
             dato.entidades.CompraPaquete compraPaquete = servicioCompraPaquete.registrarCompraPaquete(clienteSeleccionado, fechaCompra, vencimiento/*tipoAsiento*/, paqueteSeleccionado);
-            DTCostoBase costoBase = new DTCostoBase(0, 0, 0);
             compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
             clienteSeleccionado.addReserva(compraPaquete);
             clienteSeleccionado.incrementarCantidadPaquetes();
             paqueteSeleccionado.setComprado(true);
-            paqueteSeleccionado.setCompraPaquete(compraPaquete);
+            paqueteSeleccionado.agregarCompraPaquete(compraPaquete);
             servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error");

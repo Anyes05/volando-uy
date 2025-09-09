@@ -420,6 +420,15 @@ public class EstacionTrabajo {
         cargandoPaquete = true;
         comboPaquete.setSelectedIndex(-1);
     }
+
+    private void cargarPaquetesNoComprados(JComboBox<DTPaqueteVuelos> comboPaquete) {
+        comboPaquete.removeAllItems();
+        for (DTPaqueteVuelos p : sistema.obtenerPaquetesNoComprados()){
+            comboPaquete.addItem(p);
+        }
+        cargandoPaquete = true;
+        comboPaquete.setSelectedIndex(-1);
+    }
     //para el caso de uso de comprar paquete
     private void cargarPaquetesConRutas(JComboBox<DTPaqueteVuelos> combo){
         combo.removeAllItems();
@@ -629,7 +638,8 @@ public class EstacionTrabajo {
                         break;
                     case "Agregar ruta a paquete":
                         parentPanel.removeAll();
-                        cargarPaquetes(comboBoxPaqueteAgrRutaaPaquete);
+                        cantidadAgrRutaaPaquetetxt.setText("");
+                        cargarPaquetesNoComprados(comboBoxPaqueteAgrRutaaPaquete);
                         cargarAerolineas(comboBoxAeroAgrRutaaPaquete);
                         cargarRutas(comboBoxRutaVueloAgrRutaaPaquete, (String) comboBoxAeroAgrRutaaPaquete.getSelectedItem());
                         inicializarComboBoxTipoAsientoPaquete();
@@ -1826,7 +1836,7 @@ public class EstacionTrabajo {
                     comboBoxPaqueteAgrRutaaPaquete.setSelectedIndex(-1);
                     comboBoxAeroAgrRutaaPaquete.setSelectedIndex(-1);
                     comboBoxRutaVueloAgrRutaaPaquete.setSelectedIndex(-1);
-                    comboBoxTipoAsientoAgrRutaaPaquete.setSelectedIndex(0); // Si el primer item es vacío
+                    comboBoxTipoAsientoAgrRutaaPaquete.setSelectedIndex(-1); // Si el primer item es vacío
                     cantidadAgrRutaaPaquetetxt.setText("");
 
                 } catch (Exception ex) {
