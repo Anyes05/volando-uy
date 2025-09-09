@@ -94,11 +94,12 @@ public interface ISistema {
 //    public void crearPaquete(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta);
 
     // RESERVA VUELO
-    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, String nombrePasajeroAdicional, String apellidoPasajeroAdicional);
+    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
 
     public void seleccionarVueloParaReserva(String nombreVuelo);
 
     public List<DTCliente> listarClientes();
+    public List<DTCliente> mostrarClientesSinVueloSeleccionado();
 
 
     // CONSULTA PAQUETE RUTAS DE VUELO

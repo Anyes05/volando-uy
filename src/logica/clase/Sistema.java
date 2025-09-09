@@ -761,6 +761,32 @@ public class Sistema implements ISistema {
 
     // RESERVA VUELO
 
+    public List<DTCliente> mostrarClientesSinVueloSeleccionado() {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        List<DTCliente> listaClientes = new ArrayList<>();
+        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+        for (Usuario u : clientes) {
+            if (u instanceof Cliente c) {
+                if (!c.getReservas().isEmpty()) {
+                    if (c.getReservas().stream().noneMatch(r -> r instanceof dato.entidades.CompraComun compraComun && compraComun.getVuelo() != null && compraComun.getVuelo().getNombre().equals(vueloSeleccionadoParaReserva))) {
+                        listaClientes.add(new DTCliente(
+                                c.getNickname(),
+                                c.getNombre(),
+                                c.getCorreo(),
+                                c.getApellido(),
+                                c.getTipoDoc(),
+                                c.getNumeroDocumento(),
+                                c.getFechaNacimiento(),
+                                c.getNacionalidad(),
+                                new ArrayList<>()
+                        ));
+                    }
+                }
+            }
+        }
+        return listaClientes;
+    }
+
     public void seleccionarVueloParaReserva(String nombreVuelo) {
         this.vueloSeleccionadoParaReserva = nombreVuelo;
     }
@@ -810,7 +836,7 @@ public class Sistema implements ISistema {
         }
     }
 
-    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, String nombrePasajeroAdicional, String apellidoPasajeroAdicional) {
+    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
         System.out.println("=== INICIANDO PROCESO DE RESERVA ===");
         System.out.println("Vuelo seleccionado: " + vueloSeleccionadoParaReserva);
         System.out.println("Tipo asiento: " + tipoAsiento);
@@ -894,7 +920,7 @@ public class Sistema implements ISistema {
 
             // Crear un pasaje por cada cantidad especificada
             for (int i = 0; i < cantidadPasaje; i++) {
-                String nombrePasajero = nombresPasajeros.get(i % nombresPasajeros.size()); // Usar el cliente correspondiente
+                String nombrePasajero = nombresPasajeros.get(i); // Usar el cliente correspondiente
                 System.out.println("Procesando pasaje " + (i + 1) + " para: " + nombrePasajero);
 
                 Cliente pasajero = clienteServicio.buscarClientePorNickname(nombrePasajero);
@@ -904,6 +930,8 @@ public class Sistema implements ISistema {
 
                 // Crear pasaje directamente en el EntityManager
                 dato.entidades.Pasaje pasaje = new dato.entidades.Pasaje();
+                pasaje.setNombrePasajero(pasajero.getNombre());
+                pasaje.setApellidoPasajero(pasajero.getApellido());
                 pasaje.setPasajero(pasajero);
                 pasaje.setReserva(reserva);
                 pasaje.setTipoAsiento(tipoAsiento);
@@ -912,27 +940,9 @@ public class Sistema implements ISistema {
                 // Debug: verificar el valor de tipoAsiento antes de persistir
                 System.out.println("DEBUG: tipoAsiento = " + tipoAsiento + " (ordinal: " + tipoAsiento.ordinal() + ")");
 
-                // Establecer nombre y apellido específicos para cada pasaje
-                if (i == 0) {
-                    // Primer pasaje: usar datos del cliente principal
-                    pasaje.setNombrePasajero(pasajero.getNombre());
-                    pasaje.setApellidoPasajero(pasajero.getApellido());
-                } else {
-                    // Pasajes adicionales: usar datos específicos si están disponibles
-                    if (nombrePasajeroAdicional != null && !nombrePasajeroAdicional.trim().isEmpty() &&
-                            apellidoPasajeroAdicional != null && !apellidoPasajeroAdicional.trim().isEmpty()) {
-                        pasaje.setNombrePasajero(nombrePasajeroAdicional.trim());
-                        pasaje.setApellidoPasajero(apellidoPasajeroAdicional.trim());
-                    } else {
-                        // Si no hay datos específicos, usar los datos del cliente principal
-                        pasaje.setNombrePasajero(pasajero.getNombre() + " (Pasaje " + (i + 1) + ")");
-                        pasaje.setApellidoPasajero(pasajero.getApellido());
-                    }
-                }
 
                 // Establecer la relación bidireccional
                 reserva.getPasajeros().add(pasaje);
-
                 em.persist(pasaje);
                 em.flush(); // Forzar la escritura inmediata
 
