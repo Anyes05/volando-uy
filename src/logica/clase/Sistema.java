@@ -115,12 +115,29 @@ public class Sistema implements ISistema {
         return false;
     }
 
+    private boolean existeDocumento(String numeroDocumento) {
+        ClienteServicio clienteServicio = new ClienteServicio();
+
+        // Buscar por número de documento en clientes
+        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+        for (dato.entidades.Cliente c : clientes) {
+            if (c.getNumeroDocumento().equals(numeroDocumento)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
         if (existeNickname(nickname)) {
             throw new IllegalArgumentException("El nickname ya existe.");
         }
         if (existeCorreo(correo)) {
             throw new IllegalArgumentException("El correo electrónico ya existe.");
+        }
+        if (existeDocumento(numeroDocumento)) {
+            throw new IllegalArgumentException("El número de documento ya existe.");
         }
         if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(apellido) || !esNombreValido(nacionalidad)) {
             throw new IllegalArgumentException("El nickname, nombre, apellido o nacionalidad son demasiado cortos o contienen caracteres especiales");
