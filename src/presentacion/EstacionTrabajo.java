@@ -1,5 +1,6 @@
 package presentacion;
 
+import dato.entidades.PaqueteVuelo;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -1458,7 +1459,7 @@ public class EstacionTrabajo {
                     descripcionAltaPaqtxt.setText("");
                     descuentoAltaPaqtxt.setText("");
                     calendarAltaPaquete.setCalendar(Calendar.getInstance());
-                } catch (IllegalArgumentException ex) {
+                } catch (IllegalArgumentException | IllegalStateException ex) {
                     JOptionPane.showMessageDialog(crearPaquete, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -1741,6 +1742,11 @@ public class EstacionTrabajo {
         buttonAceptarAgrRutaaPaquete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+//                DefaultComboBoxModel<DTPaqueteVuelos> model = new DefaultComboBoxModel<>();
+//                for (DTPaqueteVuelos paquete : sistema.obtenerPaquetesNoComprados()) {
+//                    model.addElement(paquete);
+//                }
+//                comboBoxPaqueteAgrRutaaPaquete.setModel(model);
                 DTPaqueteVuelos paqueteSeleccionado = (DTPaqueteVuelos) comboBoxPaqueteAgrRutaaPaquete.getSelectedItem();
                 String nicknameAerolinea = (String) comboBoxAeroAgrRutaaPaquete.getSelectedItem();
 

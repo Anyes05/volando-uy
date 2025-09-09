@@ -1069,6 +1069,35 @@ public class Sistema implements ISistema {
         }
         throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
     }
+//
+//    public void seleccionarPaqueteNoComprado(String nombrePaquete) {
+//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+//        dato.entidades.PaqueteVuelo paquete = paqueteVueloServicio.obtenerPaquetePorNombre(nombrePaquete);
+//        if (paquete != null && !paquete.isComprado()) {
+//            paqueteSeleccionado = paquete;
+//            return;
+//        }
+//        throw new IllegalArgumentException("No se encontró un paquete con el nombre: " + nombrePaquete);
+//    }
+//
+//    public List<DTPaqueteVuelos> obtenerPaquetesNoComprados() {
+//        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+//        List<DTPaqueteVuelos> listaPaquetes = new ArrayList<>();
+//        List<dato.entidades.PaqueteVuelo> paquetes = paqueteVueloServicio.listarPaquetes();
+//        for (dato.entidades.PaqueteVuelo p : paquetes) {
+//            if (p.getCantidad() != null && !p.isComprado()) {
+//                DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+//                        p.getNombre(),
+//                        p.getDescripcion(),
+//                        p.getDiasValidos(),
+//                        p.getDescuento(),
+//                        p.getFechaAlta()
+//                );
+//                listaPaquetes.add(dtPaquete);
+//            }
+//        }
+//        return listaPaquetes;
+//    }
 
     public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea) {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();

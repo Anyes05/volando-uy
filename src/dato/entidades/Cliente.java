@@ -43,6 +43,7 @@ public class Cliente extends Usuario {
         this.nacionalidad = nacionalidad;
         this.tipoDoc = tipoDoc;
         this.numeroDocumento = numeroDocumento;
+        this.cantidadPaquetes = 0;
     }
 
     // Getters y Setters
