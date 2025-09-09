@@ -40,9 +40,8 @@ public class PaqueteVuelo {
     private List<Cantidad> cantidades;
 
     //Relacion con compraPaquete
-    @ManyToOne
-    @JoinColumn(name = "compraPaquete_id")
-    private CompraPaquete compraPaquete;
+    @ManyToMany(mappedBy = "paqueteVuelo", fetch = FetchType.EAGER)
+    private List<CompraPaquete> compraPaquete;
 
     // Constructores
 
@@ -108,11 +107,11 @@ public class PaqueteVuelo {
         this.comprado = comprado;
     }
 
-    public CompraPaquete getCompraPaquete() {
+    public List<CompraPaquete> getCompraPaquete() {
         return compraPaquete;
     }
 
-    public void setCompraPaquete(CompraPaquete compraPaquete) {
-        this.compraPaquete = compraPaquete;
+    public void agregarCompraPaquete(CompraPaquete compraPaquete) {
+        this.compraPaquete.add(compraPaquete);
     }
 }

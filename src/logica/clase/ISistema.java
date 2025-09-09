@@ -79,8 +79,7 @@ public interface ISistema {
     public void seleccionarRutaVueloPaquete (String nombreRutaVuelo);
     public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea);
     public void agregarRutaAPaquete(int cant, TipoAsiento tipoAsiento);
-//    public void seleccionarPaqueteNoComprado(String nombrePaquete);
-//    public List<DTPaqueteVuelos> obtenerPaquetesNoComprados();
+    public List<DTPaqueteVuelos> obtenerPaquetesNoComprados();
 
 
 
