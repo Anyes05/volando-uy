@@ -178,7 +178,7 @@ public class ReservaHelper {
 
         // Realizar la reserva
         try {
-            getSistema().datosReserva(tipoAsiento, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReservaDT, nombrePasajeroAdicional, apellidoPasajeroAdicional);
+            getSistema().datosReserva(tipoAsiento, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReservaDT);
             JOptionPane.showMessageDialog(null, "Reserva realizada con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (IllegalStateException e) {
             throw new Exception(e.getMessage());

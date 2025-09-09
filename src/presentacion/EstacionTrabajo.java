@@ -469,6 +469,14 @@ public class EstacionTrabajo {
         combo.setSelectedIndex(-1);
     }
 
+    private void cargarClientesSinVuelo(JComboBox<DTCliente> combo){
+        combo.removeAllItems();
+        for (DTCliente c : sistema.mostrarClientesSinVueloSeleccionado()){
+            combo.addItem(c);
+        }
+        combo.setSelectedIndex(-1);
+    }
+
 
 //    private void cargarAerolineas(JComboBox<String> combo) {
 //        combo.removeAllItems(); // limpiar combo por si ya tiene algo
