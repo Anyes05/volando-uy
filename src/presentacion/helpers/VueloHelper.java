@@ -279,7 +279,7 @@ public class VueloHelper {
         }
 
 // Validaciones de rango
-        int maxAsientos = 200;
+        int maxAsientos = 900;
         if (maxTuristaInt < 0 || maxTuristaInt > maxAsientos || maxEjecutivoInt < 0 || maxEjecutivoInt > maxAsientos) {
             throw new IllegalArgumentException(
                     "La cantidad de asientos debe estar entre 0 y " + maxAsientos + "."
