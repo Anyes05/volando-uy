@@ -9,6 +9,8 @@ import com.toedter.calendar.JCalendar;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.*;
 import javax.swing.JScrollPane;
 import java.awt.*;
@@ -261,12 +263,69 @@ public class EstacionTrabajo {
     private JCalendar fechaReservaVJC;
     private JComboBox comboBoxPasajerosReservaV;
     private JButton buttonAgregarPasajeroReservaV;
+    private JButton buttonAceptarReservaVuelo;
+    private JButton buttonQuitarPasajeroReservaV;
     private JList list1;
     private JTextArea cantyTipoAsientotxt;
     private JScrollPane scrollReservaVuelo;
 
-    //  private JButton precargarAeropuertosButton;
-    public List<String> nombresPasajeros = new java.util.ArrayList<>();
+    // Método helper para actualizar la lista de pasajeros en la interfaz
+    private void actualizarListaPasajeros() {
+        if (listaPasajerosReservaVJlist != null) {
+            listaPasajerosReservaVJlist.setListData(nombresPasajeros.toArray(new String[0]));
+        }
+    }
+
+    // Método helper para limpiar todos los campos del formulario de reserva
+    private void limpiarFormularioReserva() {
+        try {
+            // Limpiar lista de pasajeros
+            nombresPasajeros.clear();
+            actualizarListaPasajeros();
+            
+            // Limpiar campos de texto
+            if (cantPasajesReservaVtxt != null) {
+                cantPasajesReservaVtxt.setText("");
+            }
+            if (equipajeExtraReservaV != null) {
+                equipajeExtraReservaV.setText("");
+            }
+            
+            // Limpiar selecciones de combo boxes
+            if (comboBoxTipoAsientoReservaV != null) {
+                comboBoxTipoAsientoReservaV.setSelectedIndex(-1);
+            }
+            if (comboBoxClienteReservaV != null) {
+                comboBoxClienteReservaV.setSelectedIndex(-1);
+            }
+            if (comboBoxPasajerosReservaV != null) {
+                comboBoxPasajerosReservaV.setSelectedIndex(-1);
+            }
+            
+            // Limpiar fecha de reserva (establecer fecha actual)
+            if (fechaReservaVJC != null) {
+                fechaReservaVJC.setDate(new java.util.Date());
+            }
+            
+        } catch (Exception e) {
+            // Si hay algún error al limpiar, no hacer nada para evitar más errores
+            System.err.println("Error al limpiar formulario: " + e.getMessage());
+        }
+    }
+
+    // Método helper para quitar un pasajero de la lista
+    private void quitarPasajero(String nicknamePasajero) {
+        if (nombresPasajeros.contains(nicknamePasajero)) {
+            nombresPasajeros.remove(nicknamePasajero);
+            actualizarListaPasajeros();
+            JOptionPane.showMessageDialog(null, "Pasajero quitado exitosamente: " + nicknamePasajero, 
+                "Pasajero Quitado", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "ERROR: El pasajero " + nicknamePasajero + 
+                " no está en la lista de pasajeros.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
@@ -276,6 +335,9 @@ public class EstacionTrabajo {
     private boolean consultaCP = false;
 
     private ISistema sistema; // Variable para almacenar la instancia de ISistema obtenida a través del Factory
+    
+    // Lista de pasajeros para reservas
+    public List<String> nombresPasajeros = new java.util.ArrayList<>();
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
@@ -2043,22 +2105,144 @@ public class EstacionTrabajo {
         buttonAceptarReservaV.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Declarar variables fuera del try para que sean accesibles en el catch
+                TipoAsiento asiento = null;
+                int cant = 0;
+                int equipajeExtra = 0;
+                
+                try {
+                    asiento = (TipoAsiento) comboBoxTipoAsientoReservaV.getSelectedItem();
+                    
+                    // Validar que se haya seleccionado un tipo de asiento
+                    if (asiento == null) {
+                        JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un tipo de asiento.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                TipoAsiento asiento = (TipoAsiento) comboBoxTipoAsientoReservaV.getSelectedItem();
+                    // Validar que se haya seleccionado un cliente
+                    DTCliente pasajero = (DTCliente) comboBoxClienteReservaV.getSelectedItem();
+                    if (pasajero == null) {
+                        JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                DTFecha fechaAltaRV = new DTFecha(
-                        fechaReservaVJC.getCalendar().get(Calendar.DAY_OF_MONTH),
-                        fechaReservaVJC.getCalendar().get(Calendar.MONTH) + 1,
-                        fechaReservaVJC.getCalendar().get(Calendar.YEAR)
-                );
-                int cant = Integer.parseInt(cantPasajesReservaVtxt.getText().trim());
-                int equipajeExtra = Integer.parseInt(equipajeExtraReservaV.getText().trim());
-                DTCliente pasajero = (DTCliente) comboBoxClienteReservaV.getSelectedItem();
-                nombresPasajeros.add(0, pasajero.getNickname());
+                    // Validar cantidad de pasajes
+                    try {
+                        cant = Integer.parseInt(cantPasajesReservaVtxt.getText().trim());
+                        if (cant <= 0) {
+                            JOptionPane.showMessageDialog(null, "ERROR: La cantidad de pasajes debe ser mayor a 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "ERROR: La cantidad de pasajes debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                sistema.datosReserva(asiento, cant, equipajeExtra, nombresPasajeros, fechaAltaRV );
-                nombresPasajeros.clear();
+                    // Validar equipaje extra
+                    try {
+                        equipajeExtra = Integer.parseInt(equipajeExtraReservaV.getText().trim());
+                        if (equipajeExtra < 0) {
+                            JOptionPane.showMessageDialog(null, "ERROR: El equipaje extra no puede ser negativo.", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "ERROR: El equipaje extra debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
+                    // Preparar lista de pasajeros (solo agregar el cliente principal si no está ya en la lista)
+                    if (!nombresPasajeros.contains(pasajero.getNickname())) {
+                        nombresPasajeros.add(0, pasajero.getNickname());
+                    }
+
+                    // Validación adicional: verificar que no haya duplicados antes de crear la reserva
+                    Set<String> pasajerosUnicos = new HashSet<>(nombresPasajeros);
+                    if (nombresPasajeros.size() != pasajerosUnicos.size()) {
+                        throw new IllegalArgumentException("ERROR: Hay pasajeros duplicados en la lista. " +
+                            "Tiene " + nombresPasajeros.size() + " entradas pero solo " + pasajerosUnicos.size() + " pasajeros únicos. " +
+                            "Debe quitar los pasajeros duplicados de la lista.");
+                    }
+
+                    // Validación adicional: verificar que la cantidad de pasajeros coincida con la cantidad de pasajes
+                    if (pasajerosUnicos.size() != cant) {
+                        if (pasajerosUnicos.size() < cant) {
+                            throw new IllegalArgumentException("ERROR: No completó la lista de pasajeros. Solicitó " + cant +
+                                " pasajes pero solo tiene " + pasajerosUnicos.size() + " pasajero(s) únicos en la lista. " +
+                                "Debe agregar " + (cant - pasajerosUnicos.size()) + " pasajero(s) más.");
+                        } else {
+                            throw new IllegalArgumentException("ERROR: Agregó demasiados pasajeros. Solicitó " + cant + 
+                                " pasajes pero tiene " + pasajerosUnicos.size() + " pasajero(s) únicos en la lista. " +
+                                "Debe quitar " + (pasajerosUnicos.size() - cant) + " pasajero(s) de la lista.");
+                        }
+                    }
+
+                    // Usar ReservaHelper para realizar la reserva con manejo de excepciones
+                    ReservaHelper.realizarReserva(asiento, cant, equipajeExtra, nombresPasajeros, 
+                        fechaReservaVJC, null, null);
+                    
+                    // Limpiar todos los campos del formulario después de la reserva exitosa
+                    limpiarFormularioReserva();
+                    
+                } catch (Exception ex) {
+                    // Verificar si es un conflicto que requiere administración
+                    if (ex.getMessage() != null && ex.getMessage().startsWith("ADMIN_REQUIRED:")) {
+                        // Extraer el mensaje sin el prefijo
+                        String mensajeCompleto = ex.getMessage().substring("ADMIN_REQUIRED:".length());
+                        
+                        // Mostrar opciones de administración
+                        String[] opciones = {
+                            "1. Cambiar aerolínea",
+                            "2. Cambiar ruta de vuelo", 
+                            "3. Cambiar vuelo",
+                            "4. Cambiar cliente",
+                            "5. Cancelar caso de uso"
+                        };
+                        
+                        int opcionSeleccionada = JOptionPane.showOptionDialog(null,
+                            mensajeCompleto + "\n\n¿Qué desea hacer?",
+                            "Conflicto de Reserva - Administración Requerida",
+                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.WARNING_MESSAGE,
+                            null,
+                            opciones,
+                            opciones[4]); // Opción por defecto: Cancelar
+                        
+                        if (opcionSeleccionada >= 0 && opcionSeleccionada < 5) {
+                            try {
+                                String opcion = String.valueOf(opcionSeleccionada + 1);
+                                sistema.manejarConflictoReserva(opcion, asiento, cant, equipajeExtra, nombresPasajeros, 
+                                    ReservaHelper.convertirFecha(fechaReservaVJC));
+                                
+                                // Si llegamos aquí, la operación fue exitosa
+                                JOptionPane.showMessageDialog(null, "Operación completada exitosamente.", 
+                                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                limpiarFormularioReserva();
+                                
+                            } catch (Exception adminEx) {
+                                if (adminEx.getMessage() != null && adminEx.getMessage().startsWith("SUCCESS:")) {
+                                    // Es un mensaje de éxito (como cancelación)
+                                    JOptionPane.showMessageDialog(null, adminEx.getMessage().substring("SUCCESS:".length()), 
+                                        "Operación Completada", JOptionPane.INFORMATION_MESSAGE);
+                                    limpiarFormularioReserva();
+                                } else {
+                                    // Es un error real
+                                    JOptionPane.showMessageDialog(null, "ERROR: " + adminEx.getMessage(), 
+                                        "Error en Administración", JOptionPane.ERROR_MESSAGE);
+                                    // NO limpiar formulario en caso de error de administración
+                                    // Los datos se mantienen para que el administrador pueda corregir
+                                }
+                            }
+                        }
+                        // Si el usuario cancela (opcionSeleccionada == -1), NO hacer nada
+                        // Los datos se mantienen para que pueda intentar de nuevo
+                    } else {
+                        // Error normal, mostrar en ventana de Swing
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error en Reserva", JOptionPane.ERROR_MESSAGE);
+                        
+                        // Limpiar todos los campos del formulario después del error
+                        limpiarFormularioReserva();
+                    }
+                }
             }
         });
 
@@ -2075,13 +2259,99 @@ public class EstacionTrabajo {
         buttonAgregarPasajeroReservaV.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DTPasajero pasajero = (DTPasajero) comboBoxPasajerosReservaV.getSelectedItem();
+                try {
+                    DTPasajero pasajero = (DTPasajero) comboBoxPasajerosReservaV.getSelectedItem();
 
-                if(pasajero != null){
-                    sistema.nombresPasajes(pasajero.getNicknameCliente(), nombresPasajeros);
+                    if(pasajero != null){
+                        // Verificar si el pasajero ya está en la lista
+                        if (nombresPasajeros.contains(pasajero.getNicknameCliente())) {
+                            // Si ya está, mostrar error y NO permitir agregarlo
+                            JOptionPane.showMessageDialog(null, 
+                                "ERROR: El pasajero " + pasajero.getNicknameCliente() + " ya está en la lista.\n" +
+                                "No se pueden agregar pasajeros duplicados.\n" +
+                                "Si desea quitarlo, use el botón 'Quitar' o seleccione otro pasajero.", 
+                                "Pasajero Duplicado", 
+                                JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Si no está, agregarlo normalmente
+                            sistema.nombresPasajes(pasajero.getNicknameCliente(), nombresPasajeros);
+                            actualizarListaPasajeros(); // Actualizar la lista visual
+                            JOptionPane.showMessageDialog(null, "Pasajero agregado exitosamente: " + pasajero.getNicknameCliente(), 
+                                "Pasajero Agregado", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un pasajero.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, "ERROR: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "ERROR: Error inesperado al agregar pasajero: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
+        // Listener para el botón de quitar pasajero (solo si el botón existe)
+        if (buttonQuitarPasajeroReservaV != null) {
+            buttonQuitarPasajeroReservaV.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        // Obtener el pasajero seleccionado en el combo box
+                        DTPasajero pasajero = (DTPasajero) comboBoxPasajerosReservaV.getSelectedItem();
+                        
+                        if (pasajero != null) {
+                            String nicknamePasajero = pasajero.getNicknameCliente();
+                            
+                            // Verificar si el pasajero está en la lista
+                            if (nombresPasajeros.contains(nicknamePasajero)) {
+                                // Confirmar antes de quitar
+                                int opcion = JOptionPane.showConfirmDialog(null,
+                                    "¿Desea quitar el pasajero '" + nicknamePasajero + "' de la lista?",
+                                    "Quitar Pasajero",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE);
+
+                                if (opcion == JOptionPane.YES_OPTION) {
+                                    quitarPasajero(nicknamePasajero);
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "ERROR: El pasajero " + nicknamePasajero + 
+                                    " no está en la lista de pasajeros.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un pasajero del combo box.", 
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "ERROR: Error inesperado al quitar pasajero: " + ex.getMessage(), 
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+        }
+
+        // Listener para doble clic en la lista de pasajeros (para quitar pasajeros)
+        if (listaPasajerosReservaVJlist != null) {
+            listaPasajerosReservaVJlist.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    if (evt.getClickCount() == 2) { // Doble clic
+                        String pasajeroSeleccionado = (String) listaPasajerosReservaVJlist.getSelectedValue();
+                        if (pasajeroSeleccionado != null) {
+                            int opcion = JOptionPane.showConfirmDialog(null, 
+                                "¿Desea quitar el pasajero '" + pasajeroSeleccionado + "' de la lista?", 
+                                "Quitar Pasajero", 
+                                JOptionPane.YES_NO_OPTION, 
+                                JOptionPane.QUESTION_MESSAGE);
+                            
+                            if (opcion == JOptionPane.YES_OPTION) {
+                                quitarPasajero(pasajeroSeleccionado);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 }
 

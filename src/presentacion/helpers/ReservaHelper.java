@@ -74,13 +74,12 @@ public class ReservaHelper {
                         String nickname = (String) tablaClientes.getValueAt(filaSeleccionada, 0);
                         if (nickname != null && !nickname.trim().isEmpty()) {
                             campoCliente.setText(nickname.trim());
-                            System.out.println("Cliente seleccionado: " + nickname.trim());
                             
                             // Mostrar mensaje informativo
                             String nombreCliente = (String) tablaClientes.getValueAt(filaSeleccionada, 1);
                             String apellidoCliente = (String) tablaClientes.getValueAt(filaSeleccionada, 2);
                             JOptionPane.showMessageDialog(null, 
-                                "Cliente seleccionado: " + nombreCliente + " " + apellidoCliente + 
+                                "Cliente seleccionado: " + nombreCliente + " " + apellidoCliente +
                                 "\nNickname: " + nickname.trim(),
                                 "Cliente Seleccionado", 
                                 JOptionPane.INFORMATION_MESSAGE);
@@ -132,24 +131,27 @@ public class ReservaHelper {
             String apellidoPasajeroAdicional) throws Exception {
 
         // Probar conexión a BD antes de proceder
-        System.out.println("Probando conexión a BD...");
-        getSistema().probarConexionBD();
+        try {
+            getSistema().probarConexionBD();
+        } catch (Exception e) {
+            throw new Exception("ERROR: No se pudo conectar a la base de datos. " + e.getMessage());
+        }
 
         // Validaciones
         if (nombresPasajeros == null || nombresPasajeros.isEmpty()) {
-            throw new Exception("Debe ingresar al menos un pasajero.");
+            throw new Exception("ERROR: Debe ingresar al menos un pasajero.");
         }
 
         if (cantidadPasajes <= 0) {
-            throw new Exception("La cantidad de pasajes debe ser mayor a 0.");
+            throw new Exception("ERROR: La cantidad de pasajes debe ser mayor a 0.");
         }
 
         if (equipajeExtra < 0) {
-            throw new Exception("El equipaje extra no puede ser negativo.");
+            throw new Exception("ERROR: El equipaje extra no puede ser negativo.");
         }
 
         if (fechaReservaCalendar == null) {
-            throw new Exception("Debe seleccionar una fecha de reserva.");
+            throw new Exception("ERROR: Debe seleccionar una fecha de reserva.");
         }
 
         // Validar fecha de reserva (no puede ser anterior a hoy)
@@ -166,7 +168,7 @@ public class ReservaHelper {
         fechaReserva.set(Calendar.MILLISECOND, 0);
 
         if (fechaReserva.before(hoy)) {
-            throw new Exception("La fecha de reserva no puede ser anterior al día de hoy.");
+            throw new Exception("ERROR: La fecha de reserva no puede ser anterior al día de hoy.");
         }
 
         // Convertir fecha
@@ -179,8 +181,15 @@ public class ReservaHelper {
         // Realizar la reserva
         try {
             getSistema().datosReserva(tipoAsiento, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReservaDT);
-            JOptionPane.showMessageDialog(null, "Reserva realizada con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            
         } catch (IllegalStateException e) {
+            // Verificar si es un mensaje de éxito especial
+            if (e.getMessage() != null && e.getMessage().startsWith("SUCCESS:")) {
+                String mensajeExito = e.getMessage().substring(8); // Remover "SUCCESS:"
+                JOptionPane.showMessageDialog(null, mensajeExito, "Reserva Exitosa", JOptionPane.INFORMATION_MESSAGE);
+                
+                return; // Salir exitosamente
+            }
             throw new Exception(e.getMessage());
         } catch (IllegalArgumentException e) {
             throw new Exception(e.getMessage());
@@ -192,17 +201,17 @@ public class ReservaHelper {
     // ------------------- VALIDAR DATOS DE PASAJERO -------------------
     public static void validarDatosPasajero(String nombre, String apellido) throws Exception {
         if (nombre == null || nombre.trim().isEmpty()) {
-            throw new Exception("El nombre del pasajero es obligatorio.");
+            throw new Exception("ERROR: El nombre del pasajero es obligatorio.");
         }
         if (apellido == null || apellido.trim().isEmpty()) {
-            throw new Exception("El apellido del pasajero es obligatorio.");
+            throw new Exception("ERROR: El apellido del pasajero es obligatorio.");
         }
     }
 
     // ------------------- CONVERTIR TIPO ASIENTO -------------------
     public static TipoAsiento convertirTipoAsiento(String tipoAsientoStr) throws Exception {
         if (tipoAsientoStr == null || tipoAsientoStr.trim().isEmpty()) {
-            throw new Exception("Debe seleccionar un tipo de asiento.");
+            throw new Exception("ERROR: Debe seleccionar un tipo de asiento.");
         }
         
         switch (tipoAsientoStr.toLowerCase()) {
@@ -211,7 +220,7 @@ public class ReservaHelper {
             case "ejecutivo":
                 return TipoAsiento.Ejecutivo;
             default:
-                throw new Exception("Tipo de asiento inválido. Debe ser 'Turista' o 'Ejecutivo'.");
+                throw new Exception("ERROR: Tipo de asiento inválido. Debe ser 'Turista' o 'Ejecutivo'.");
         }
     }
 
@@ -259,13 +268,13 @@ public class ReservaHelper {
         
         // Validar datos
         if (nombre == null || nombre.trim().isEmpty()) {
-            throw new Exception("El nombre del pasajero es obligatorio.");
+            throw new Exception("ERROR: El nombre del pasajero es obligatorio.");
         }
         if (apellido == null || apellido.trim().isEmpty()) {
-            throw new Exception("El apellido del pasajero es obligatorio.");
+            throw new Exception("ERROR: El apellido del pasajero es obligatorio.");
         }
         if (nicknameCliente == null || nicknameCliente.trim().isEmpty()) {
-            throw new Exception("El nickname del cliente es obligatorio.");
+            throw new Exception("ERROR: El nickname del cliente es obligatorio.");
         }
         
         // Por ahora, solo validamos. En el futuro se podría crear un cliente temporal
@@ -304,5 +313,73 @@ public class ReservaHelper {
         if (campoNombre != null) campoNombre.setText("");
         if (campoApellido != null) campoApellido.setText("");
         if (spinnerEquipajeExtra != null) spinnerEquipajeExtra.setValue(0);
+    }
+    
+    // ------------------- MOSTRAR CONFIRMACIÓN DE PASAJES AGREGADOS -------------------
+    public static void mostrarConfirmacionPasajes(int cantidadPasajes, List<String> nombresPasajeros, TipoAsiento tipoAsiento) {
+        StringBuilder mensaje = new StringBuilder();
+        mensaje.append("CONFIRMACIÓN DE PASAJES AGREGADOS \n\n");
+        mensaje.append("✓ Cantidad de pasajes: ").append(cantidadPasajes).append("\n");
+        mensaje.append("✓ Tipo de asiento: ").append(tipoAsiento).append("\n\n");
+        mensaje.append("Pasajeros agregados:\n");
+        
+        for (int i = 0; i < nombresPasajeros.size(); i++) {
+            mensaje.append("• Pasaje ").append(i + 1).append(": ").append(nombresPasajeros.get(i)).append("\n");
+        }
+        
+        mensaje.append("\n Todos los pasajes han sido agregados exitosamente a la reserva.");
+        
+        JOptionPane.showMessageDialog(null, mensaje.toString(), " Pasajes Confirmados", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    // ------------------- MOSTRAR RESUMEN DE RESERVA -------------------
+    public static void mostrarResumenReserva(String clienteNombre, String vueloNombre, TipoAsiento tipoAsiento, 
+                                           int cantidadPasajes, int equipajeExtra, float costoTotal, DTFecha fechaReserva) {
+        String mensaje = " RESUMEN DE RESERVA \n\n" +
+            " Cliente: " + clienteNombre + "\n" +
+            " Vuelo: " + vueloNombre + "\n" +
+            " Tipo de asiento: " + tipoAsiento + "\n" +
+            " Cantidad de pasajes: " + cantidadPasajes + "\n" +
+            " Equipaje extra: " + equipajeExtra + " unidad(es)\n" +
+            " Fecha de reserva: " + fechaReserva.getDia() + "/" + fechaReserva.getMes() + "/" + fechaReserva.getAno() + "\n" +
+            " Costo total: $" + costoTotal + "\n\n" +
+            " Reserva confirmada exitosamente\n" +
+            " Pasajes agregados a la reserva";
+        
+        JOptionPane.showMessageDialog(null, mensaje, " Reserva Confirmada", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    // ------------------- MOSTRAR MENSAJE DE PROGRESO -------------------
+    public static void mostrarMensajeProgreso(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje, " Procesando...", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    // ------------------- MOSTRAR MENSAJE DE INFORMACIÓN -------------------
+    public static void mostrarMensajeInformacion(String mensaje, String titulo) {
+        JOptionPane.showMessageDialog(null, mensaje, titulo, JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    // ------------------- MOSTRAR MENSAJE DE ADVERTENCIA -------------------
+    public static void mostrarMensajeAdvertencia(String mensaje, String titulo) {
+        JOptionPane.showMessageDialog(null, mensaje, titulo, JOptionPane.WARNING_MESSAGE);
+    }
+    
+    // ------------------- MOSTRAR MENSAJE DE ERROR -------------------
+    public static void mostrarMensajeError(String mensaje, String titulo) {
+        JOptionPane.showMessageDialog(null, mensaje, titulo, JOptionPane.ERROR_MESSAGE);
+    }
+    
+    // ------------------- CONVERTIR FECHA -------------------
+    public static DTFecha convertirFecha(JCalendar calendar) {
+        if (calendar == null) {
+            throw new IllegalArgumentException("ERROR: El calendario no puede ser null.");
+        }
+        
+        Calendar cal = calendar.getCalendar();
+        if (cal == null) {
+            throw new IllegalArgumentException("ERROR: No se pudo obtener la fecha del calendario.");
+        }
+        
+        return new DTFecha(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
     }
 }

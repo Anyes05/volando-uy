@@ -28,6 +28,15 @@ public class CompraComunDAO extends GenericDAO<CompraComun> {
         return query.getResultList();
     }
 
+    public List<CompraComun> buscarPorClienteYVuelo(Cliente cliente, Vuelo vuelo) {
+        TypedQuery<CompraComun> query = em.createQuery(
+                "SELECT cc FROM CompraComun cc WHERE cc.cliente = :cliente AND cc.vuelo = :vuelo", 
+                CompraComun.class);
+        query.setParameter("cliente", cliente);
+        query.setParameter("vuelo", vuelo);
+        return query.getResultList();
+    }
+
     public CompraComun crear(Cliente clientePrincipal, DTFecha fechaReserva, TipoAsiento tipoAsiento, int equipajeExtra, Vuelo vueloSeleccionado) throws Exception {
         CompraComun compraComun = new CompraComun(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra);
         compraComun.setVuelo(vueloSeleccionado); // Usa el método heredado de Reserva

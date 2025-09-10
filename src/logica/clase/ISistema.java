@@ -103,6 +103,9 @@ public interface ISistema {
     public List<String> nombresPasajes(String nombre, List<String> nombresPasajeros);
     public List<DTPasajero> pasajeros(String nombreCliente);
 
+    // ADMINISTRACIÓN DE CONFLICTOS DE RESERVA
+    public void manejarConflictoReserva(String opcionSeleccionada, TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva);
+
     // CONSULTA PAQUETE RUTAS DE VUELO
     public DTPaqueteVuelos consultaPaqueteVuelo();
     public String consultaPaqueteVueloRutasCantidadTipo();
