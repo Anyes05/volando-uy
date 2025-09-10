@@ -1101,15 +1101,16 @@ public class EstacionTrabajo {
                         calendarCiudadAlta.getCalendar().get(Calendar.YEAR)
                 );
 
-                VueloHelper.crearCiudad(nombre, pais, aeropuerto, descripcion, sitioWeb, fecha);
+                boolean creada = VueloHelper.crearCiudad(nombre, pais, aeropuerto, descripcion, sitioWeb, fecha);
 
-                // Limpiar campos
-                ciudadAltaText.setText("");
-                paisAltaCiText.setText("");
-                comboBoxAeropuertosAC.setSelectedIndex(-1);
-                sitioWebAltaCiText.setText("");
-                descripcionAltaCiText.setText("");
-                calendarCiudadAlta.setCalendar(Calendar.getInstance());
+                if (creada) {
+                    ciudadAltaText.setText("");
+                    paisAltaCiText.setText("");
+                    comboBoxAeropuertosAC.setSelectedIndex(-1);
+                    sitioWebAltaCiText.setText("");
+                    descripcionAltaCiText.setText("");
+                    calendarCiudadAlta.setCalendar(Calendar.getInstance());
+                }
             }
         });
 
