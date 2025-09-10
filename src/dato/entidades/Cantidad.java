@@ -72,7 +72,4 @@ public class Cantidad {
         this.tipoAsiento = tipoAsiento;
     }
 
-    //    public List<RutaVuelo> getRutasVuelos() {return rutasVuelos;}
-//
-//    public void setRutasVuelos(List<RutaVuelo> rutasVuelos) {this.rutasVuelos = rutasVuelos;}
 }

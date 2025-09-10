@@ -17,10 +17,6 @@ public class Categoria {
     @ManyToMany (mappedBy = "categorias")
     private List <RutaVuelo> rutas;
 
-    // Como lo tenemos segun el Dcd:
-    //@OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<RutaVuelo> rutas; // no se si esto es necesario, por lo menos en el DCD esto no está. Lo dejo por si alguien lo está utilizando en alguna función
-                                   // sino lo sacamos
     // Constructores
     public Categoria() {}  // Obligatorio para JPA
 

@@ -16,9 +16,6 @@ public class CompraPaqueteServicio {
         this.compraPaqueteDAO = new CompraPaqueteDAO();
     }
 
-    //public void crearCompraPaquete(CompraPaquete compraPaquete) throws Exception {
-    //    compraPaqueteDAO.crear(compraPaquete);
-    //}
 
     public CompraPaquete buscarPorId(Long id) {
         return compraPaqueteDAO.buscarPorId(id);
