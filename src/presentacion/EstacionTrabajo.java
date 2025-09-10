@@ -87,17 +87,13 @@ public class EstacionTrabajo {
     private JButton aceptarRuta;
     private JTextField horaText;
     private JTextField costoTurText;
-    private JTextField ciudadDText;
-    private JTextField ciudadOText;
     private JTextField costoEjText;
     private JTextField costoEqExText;
     private JComboBox comboBoxCat;
     private JPanel altaCiudad;
     private JTextField ciudadAltaText;
     private JButton buttonAltaCiudad;
-    private JTextField aeropuertoAltaText;
     private JLabel DescCiudadText;
-    private JLabel AeropuertoCiuText;
     private JLabel SitioWebCiuText;
     private JTextField descripcionAltaCiText;
     private JTextField sitioWebAltaCiText;
@@ -176,6 +172,7 @@ public class EstacionTrabajo {
     private JTextArea maxTuristaConsultaVtxt;
     private JTextArea maxEjecutivoConsultaVtxt;
     private JTextArea fechaAltaVueloConsultaVtxt;
+    private JLabel AeropuertoCiuText;
     private JTextArea fechaAlta;
     private JTextArea fechaAltaConsultaVtxt;
     private JButton buttonCancelarCiudad;
@@ -265,6 +262,10 @@ public class EstacionTrabajo {
     private JButton buttonAgregarPasajeroReservaV;
     private JButton buttonAceptarReservaVuelo;
     private JButton buttonQuitarPasajeroReservaV;
+    private JComboBox comboBoxReservasConsultaV;
+    private JComboBox comboBoxAeropuertosAC;
+    private JComboBox comboBoxCiudadOrigenARV;
+    private JComboBox comboBoxCiudadDestinoARV;
     private JList list1;
     private JTextArea cantyTipoAsientotxt;
     private JScrollPane scrollReservaVuelo;
@@ -414,6 +415,32 @@ public class EstacionTrabajo {
         comboBoxTipoAsientoReservaV.setSelectedIndex(-1);
     }
 
+    private void cargarAeropuertos(JComboBox<String> combo){
+        combo.removeAllItems();
+        for(String aero : sistema.listarAeropuertos()){
+            combo.addItem(aero);
+        }
+        combo.setSelectedIndex(-1);
+    }
+
+    private void cargarCiudadesOrigen(JComboBox<String> combo) {
+        combo.removeAllItems(); // limpiar combo
+        for (DTCiudad c : sistema.listarCiudades()) {
+            combo.addItem(c.getNombre());
+        }
+        combo.setSelectedIndex(-1);
+    }
+
+    private void cargarCiudadesDestino(JComboBox<String> combo, String ciudadOrigen) {
+        combo.removeAllItems(); // limpiar combo
+        List<DTCiudad> ciudades = sistema.listarCiudades();
+        List<DTCiudad> ciudadesDestino = sistema.listarCiudadesDestino(ciudades, ciudadOrigen);
+        for (DTCiudad c : ciudadesDestino) {
+            combo.addItem(c.getNombre());
+        }
+        combo.setSelectedIndex(-1);
+    }
+
 
     private void cargarAerolineas(JComboBox<String> combo) {
         combo.removeAllItems(); // limpiar combo por si ya tiene algo
@@ -490,6 +517,15 @@ public class EstacionTrabajo {
             cargandoVuelos = false;
             comboVuelos.setSelectedIndex(-1); // evitar disparo inicial
         }
+    }
+
+    private void cargarReservas(JComboBox<DTVueloReserva> comboR, String nombreV){
+        comboR.removeAllItems();
+        List<DTVueloReserva> reservas = sistema.listarReservasVuelo(nombreV);
+        for(DTVueloReserva r : reservas){
+            comboR.addItem(r);
+        }
+        comboR.setSelectedIndex(-1);
     }
 
     //---PAQUETES------
@@ -584,8 +620,8 @@ public class EstacionTrabajo {
         costoTurText.setText("");
         costoEjText.setText("");
         costoEqExText.setText("");
-        ciudadOText.setText("");
-        ciudadDText.setText("");
+        comboBoxCiudadOrigenARV.setSelectedIndex(-1);
+        comboBoxCiudadDestinoARV.setSelectedIndex(-1);
         fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
         aerolineaVuelo.setSelectedItem(null);
     }
@@ -594,10 +630,18 @@ public class EstacionTrabajo {
     private void limpiarCamposAltaCiudad() {
         ciudadAltaText.setText("");
         descripcionAltaCiText.setText("");
-        aeropuertoAltaText.setText("");
+        comboBoxAeropuertosAC.setSelectedIndex(-1);
         sitioWebAltaCiText.setText("");
         paisAltaCiText.setText("");
         calendarCiudadAlta.setCalendar(Calendar.getInstance());
+    }
+    private void limpiarCamposCrearPaquete(){
+        nombreAltaPaqtxt.setText("");
+        descripcionAltaPaqtxt.setText("");
+        períodoAltaPaqtxt.setText("");
+        descripcionAltaPaqtxt.setText("");
+        descuentoAltaPaqtxt.setText("");
+        calendarAltaPaquete.setCalendar(Calendar.getInstance());
     }
 
     public EstacionTrabajo() {
@@ -665,6 +709,8 @@ public class EstacionTrabajo {
                     case "Crear ruta de vuelo":
                         limpiarCamposAltaRutaVuelo();
                         parentPanel.removeAll();
+
+                        cargarCiudadesOrigen(comboBoxCiudadOrigenARV);
                         cargarAerolineas(aerolineaVuelo);
                         cargarCategorias(listCatAltaRuta);
                         parentPanel.add(altaRuta);
@@ -697,6 +743,7 @@ public class EstacionTrabajo {
                         break;
                     case "Crear Vuelo":
                         parentPanel.removeAll();
+                        limpiarCamposAltaVuelo();
                         cargarAerolineas(aerolinea);
                         parentPanel.add(altaVuelo);
                         parentPanel.repaint();
@@ -712,12 +759,14 @@ public class EstacionTrabajo {
                     case "Crear Ciudad":
                         limpiarCamposAltaCiudad();
                         parentPanel.removeAll();
+                        cargarAeropuertos(comboBoxAeropuertosAC);
                         parentPanel.add(altaCiudad);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
                     case "Crear Categoría":
                         parentPanel.removeAll();
+                        categoriaAltaText.setText("");
                         parentPanel.add(altaCategoría);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -750,6 +799,7 @@ public class EstacionTrabajo {
                 switch (seleccionado) {
                     case "Crear paquete":
                         parentPanel.removeAll();
+                        limpiarCamposCrearPaquete();
                         parentPanel.add(crearPaquete);
                         parentPanel.repaint();
                         parentPanel.revalidate();
@@ -1040,7 +1090,7 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 String nombre = ciudadAltaText.getText().trim();
                 String pais = paisAltaCiText.getText().trim();
-                String aeropuerto = aeropuertoAltaText.getText().trim();
+                String aeropuerto = (String) comboBoxAeropuertosAC.getSelectedItem();
                 String descripcion = descripcionAltaCiText.getText().trim();
                 String sitioWeb = sitioWebAltaCiText.getText().trim();
                 DTFecha fecha = new DTFecha(
@@ -1054,7 +1104,7 @@ public class EstacionTrabajo {
                 // Limpiar campos
                 ciudadAltaText.setText("");
                 paisAltaCiText.setText("");
-                aeropuertoAltaText.setText("");
+                comboBoxAeropuertosAC.setSelectedIndex(-1);
                 sitioWebAltaCiText.setText("");
                 descripcionAltaCiText.setText("");
                 calendarCiudadAlta.setCalendar(Calendar.getInstance());
@@ -1066,7 +1116,7 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 ciudadAltaText.setText("");
                 paisAltaCiText.setText("");
-                aeropuertoAltaText.setText("");
+                comboBoxAeropuertosAC.setSelectedIndex(-1);
                 sitioWebAltaCiText.setText("");
                 descripcionAltaCiText.setText("");
                 calendarCiudadAlta.setCalendar(Calendar.getInstance());
@@ -1331,8 +1381,8 @@ public class EstacionTrabajo {
                     String costoTuristaStr = costoTurText.getText().trim();
                     String costoEjecutivoStr = costoEjText.getText().trim();
                     String costoEquipajeStr = costoEqExText.getText().trim();
-                    String origen = ciudadOText.getText().trim();
-                    String destino = ciudadDText.getText().trim();
+                    String origen = comboBoxCiudadOrigenARV.getSelectedItem().toString();
+                    String destino = comboBoxCiudadDestinoARV.getSelectedItem().toString();
                     Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
                     String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
 
@@ -1360,8 +1410,8 @@ public class EstacionTrabajo {
                     costoTurText.setText("");
                     costoEjText.setText("");
                     costoEqExText.setText("");
-                    ciudadOText.setText("");
-                    ciudadDText.setText("");
+                    comboBoxCiudadOrigenARV.setSelectedIndex(-1);
+                    comboBoxCiudadDestinoARV.setSelectedIndex(-1);
                     fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
                     aerolineaVuelo.setSelectedItem(null);
                 } catch (IllegalArgumentException ex) {
@@ -1585,7 +1635,9 @@ public class EstacionTrabajo {
                     maxTuristaConsultaVtxt.setText(String.valueOf(v.getAsientosMaxTurista()));
                     maxEjecutivoConsultaVtxt.setText(String.valueOf(v.getAsientosMaxEjecutivo()));
                     fechaAltaVueloConsultaVtxt.setText(v.getFechaAlta().toString());
+                    cargarReservas(comboBoxReservasConsultaV, v.getNombre());
                 } else {
+                    comboBoxReservasConsultaV.removeAllItems();
                     VueloHelper.limpiarCampos(nombVueloConsultaVtxt,fechaVueloConsultaVtxt,horaVueloConsultaVtxt,duracionVueloConsultaVtxt,maxTuristaConsultaVtxt,
                             maxEjecutivoConsultaVtxt,fechaAltaVueloConsultaVtxt);
                 }
@@ -1637,12 +1689,7 @@ public class EstacionTrabajo {
         buttonCancelarCrearPaquete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                nombreAltaPaqtxt.setText("");
-                descripcionAltaPaqtxt.setText("");
-                períodoAltaPaqtxt.setText("");
-                descripcionAltaPaqtxt.setText("");
-                descuentoAltaPaqtxt.setText("");
-                calendarAltaPaquete.setCalendar(Calendar.getInstance());
+                limpiarCamposCrearPaquete();
                 parentPanel.removeAll();
                 parentPanel.add(principalVacio);
                 parentPanel.repaint();
@@ -2381,6 +2428,17 @@ public class EstacionTrabajo {
                 }
             });
         }
+        comboBoxCiudadOrigenARV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String ciudadOrigen = (String) comboBoxCiudadOrigenARV.getSelectedItem();
+                if(ciudadOrigen != null){
+                    cargarCiudadesDestino(comboBoxCiudadDestinoARV, ciudadOrigen);
+                }else{
+                    comboBoxCiudadDestinoARV.removeAllItems();
+                }
+            }
+        });
     }
 }
 

@@ -44,7 +44,7 @@ public class Vuelo {
     private RutaVuelo rutaVuelo;
 
     //Relacion con reserva
-    @OneToMany(mappedBy = "vuelo")
+    @OneToMany(mappedBy = "vuelo", fetch = FetchType.EAGER)
     private List<Reserva> reserva;
 
     // La relación con CompraComun se maneja a través de Reserva (herencia)

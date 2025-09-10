@@ -4,7 +4,11 @@ import dato.dao.CiudadDAO;
 import dato.dao.AeropuertoDAO;
 import dato.entidades.Aeropuerto;
 import dato.entidades.Ciudad;
+import logica.DataTypes.DTCiudad;
 import logica.DataTypes.DTFecha;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CiudadServicio {
     private CiudadDAO ciudadDAO = new CiudadDAO();
@@ -40,5 +44,16 @@ public class CiudadServicio {
     
     public Ciudad buscarCiudadPorNombreYPais(String nombre, String pais) {
         return ciudadDAO.buscarCiudadPorNombreYPais(nombre, pais);
+    }
+    public List<DTCiudad> listarCiudades() {
+        List<Ciudad> ciudades = ciudadDAO.listarCiudades();
+        List<DTCiudad> dtCiudades = new ArrayList<>();
+        for (Ciudad ciudad : ciudades) {
+            dtCiudades.add(new DTCiudad(
+                ciudad.getNombre(),
+                ciudad.getPais()
+            ));
+        }
+        return dtCiudades;
     }
 }

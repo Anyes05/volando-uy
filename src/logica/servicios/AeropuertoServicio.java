@@ -6,6 +6,7 @@ import dato.entidades.Ciudad;
 import dato.dao.CiudadDAO;
 import logica.DataTypes.DTFecha;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AeropuertoServicio {
@@ -111,5 +112,13 @@ public class AeropuertoServicio {
     // Método para listar todos los aeropuertos
     public List<Aeropuerto> listarAeropuertos() {
         return aeropuertoDAO.listarTodos();
+    }
+    public List<String> listarNombresAeropuertos(){
+        List<String> lista = new ArrayList<>();
+        List<Aeropuerto> a = AeropuertoDAO.listarTodos();
+        for(Aeropuerto aeropuerto : a){
+            lista.add(aeropuerto.getNombre());
+        }
+        return lista;
     }
 }

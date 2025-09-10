@@ -42,7 +42,7 @@ public class AeropuertoDAO {
     }
     
     // Listar todos los aeropuertos
-    public List<Aeropuerto> listarTodos() {
+    public static List<Aeropuerto> listarTodos() {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Aeropuerto> query = em.createQuery(

@@ -1074,14 +1074,6 @@
                           <text value="Nombre"/>
                         </properties>
                       </component>
-                      <component id="f5b0f" class="javax.swing.JTextField" binding="ciudadOText">
-                        <constraints>
-                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
-                          </grid>
-                        </constraints>
-                        <properties/>
-                      </component>
                       <component id="e29f2" class="javax.swing.JLabel">
                         <constraints>
                           <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
@@ -1089,14 +1081,6 @@
                         <properties>
                           <text value="Ciudad Destino"/>
                         </properties>
-                      </component>
-                      <component id="4b725" class="javax.swing.JTextField" binding="ciudadDText">
-                        <constraints>
-                          <grid row="1" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
-                          </grid>
-                        </constraints>
-                        <properties/>
                       </component>
                       <component id="5e6d6" class="javax.swing.JLabel">
                         <constraints>
@@ -1208,6 +1192,18 @@
                         </constraints>
                         <properties/>
                       </component>
+                      <component id="cb0ba" class="javax.swing.JComboBox" binding="comboBoxCiudadOrigenARV">
+                        <constraints>
+                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="7f15b" class="javax.swing.JComboBox" binding="comboBoxCiudadDestinoARV">
+                        <constraints>
+                          <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
                     </children>
                   </grid>
                   <component id="eb64c" class="javax.swing.JComboBox" binding="aerolineaVuelo">
@@ -1251,7 +1247,7 @@
             <properties/>
             <border type="none" title="Consultar Vuelo" title-justification="2"/>
             <children>
-              <grid id="436ea" layout-manager="GridLayoutManager" row-count="11" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="436ea" layout-manager="GridLayoutManager" row-count="12" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
@@ -1393,7 +1389,7 @@
                   <component id="6a638" class="javax.swing.JTextArea" binding="fechaAltaVueloConsultaVtxt">
                     <constraints>
                       <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="50"/>
+                        <preferred-size width="150" height="52"/>
                       </grid>
                     </constraints>
                     <properties>
@@ -1402,7 +1398,9 @@
                   </component>
                   <component id="2a3f3" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                        <preferred-size width="139" height="52"/>
+                      </grid>
                     </constraints>
                     <properties>
                       <text value="Fecha de alta de vuelo"/>
@@ -1427,6 +1425,20 @@
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
+                  </component>
+                  <component id="1e0e" class="javax.swing.JComboBox" binding="comboBoxReservasConsultaV">
+                    <constraints>
+                      <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="31b28" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Reservas"/>
+                    </properties>
                   </component>
                 </children>
               </grid>
@@ -1507,16 +1519,6 @@
                     </constraints>
                     <properties>
                       <text value="Aeropuerto:"/>
-                    </properties>
-                  </component>
-                  <component id="c4531" class="javax.swing.JTextField" binding="aeropuertoAltaText">
-                    <constraints>
-                      <grid row="4" column="4" row-span="3" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <text value=""/>
                     </properties>
                   </component>
                   <component id="b80ff" class="javax.swing.JLabel" binding="SitioWebCiuText">
@@ -1611,6 +1613,12 @@
                       <grid row="10" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                   </hspacer>
+                  <component id="d026" class="javax.swing.JComboBox" binding="comboBoxAeropuertosAC">
+                    <constraints>
+                      <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
                 </children>
               </grid>
             </children>

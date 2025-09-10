@@ -6,6 +6,8 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 
+import java.util.List;
+
 public class CiudadDAO {
     private static final EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("volandouyPU");
@@ -62,6 +64,16 @@ public class CiudadDAO {
             query.setParameter("nombre", nombre);
             query.setParameter("pais", pais);
             return !query.getResultList().isEmpty();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Ciudad> listarCiudades() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Ciudad> query = em.createQuery("SELECT c FROM Ciudad c", Ciudad.class);
+            return query.getResultList();
         } finally {
             em.close();
         }

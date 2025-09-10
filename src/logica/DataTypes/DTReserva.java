@@ -6,11 +6,11 @@ public class DTReserva {
     private Long id;
     private String nickname;
 
-    public DTReserva(DTFecha fechaReserva, DTCostoBase costoReserva, Long id, String nickname) {
+    public DTReserva(DTFecha fechaReserva, DTCostoBase costoReserva) {
         this.fechaReserva = fechaReserva;
         this.costoReserva = costoReserva;
-        this.id = id;
-        this.nickname = nickname;
+        this.id = null;
+        this.nickname = null;
     }
 
     public DTFecha getFechaReserva() {

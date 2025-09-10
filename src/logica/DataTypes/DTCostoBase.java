@@ -55,4 +55,8 @@ public class DTCostoBase {
     public void setCostoTotal(float costoTotal) {
         this.costoTotal = costoTotal;
     }
+
+    public String toString(){
+        return String.valueOf(getCostoTotal());
+    }
 }

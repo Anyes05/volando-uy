@@ -68,15 +68,18 @@ public class UsuarioHelper {
         String tipo;
 
         if (r instanceof CompraPaquete) {
-            tipo = "Paquete";
+            tipo = "Paquete" +
+                    " | Costo: " + ((CompraPaquete) r).getPaqueteVuelo().getCostoTotal();
+
         } else if (r instanceof CompraComun) {
-            tipo = "Común";
+            tipo = "Común" +
+                    " | Costo: " + ((CompraComun) r).getCostoReserva();;
         } else {
             tipo = "Desconocido";
         }
 
-        return tipo + " | Fecha: " + formatearFecha(r.getFechaReserva()) +
-                " | Costo: " + r.getCostoReserva();
+        return tipo + " | Fecha: " + formatearFecha(r.getFechaReserva()) ;
+
     }
 
 

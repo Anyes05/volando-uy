@@ -209,7 +209,10 @@ public class Sistema implements ISistema {
                         if (r instanceof CompraPaquete cp) {
                             reservasDTO.add(new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento()));
                         } else {
-                            reservasDTO.add(new DTReserva(r.getFechaReserva(), r.getCostoReserva(), r.getId(), c.getNickname()));
+                            DTReserva reserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
+                            reserva.setId(r.getId());
+                            reserva.setNickname(r.getCliente().getNickname());
+                            reservasDTO.add(reserva);
                         }
                     }
                     return new DTCliente(
@@ -383,9 +386,21 @@ public class Sistema implements ISistema {
         if (aerolinea == null) {
             throw new IllegalStateException("La aerolínea seleccionada no existe.");
         }
-        if (!esNombreValido(nombreRuta) || !esNombreValido(descripcion) || !esNombreValido(ciudadDestino) || !esNombreValido(ciudadOrigen) || !esNombreValido(categoria)) {
-            throw new IllegalArgumentException("El nombre de la ruta, la descripcion, alguna de las ciudades o la categoria, han sido mal ingresados");
+        if (!esNombreValido(nombreRuta)){
+            throw new IllegalArgumentException("El nombre de la ruta ha sido mal ingresado");
         }
+        if( !esNombreValido(descripcion)){
+            throw new IllegalArgumentException("La descripcion ha sido mal ingresada");
+        }
+
+        if(!esNombreValido(ciudadDestino) || !esNombreValido(ciudadOrigen)){
+            throw new IllegalArgumentException("El nombre de alguna de las ciudades ha sido mal ingresado");
+        }
+        if ( !esNombreValido(categoria)) {
+            throw new IllegalArgumentException("El nombre de la categoria ha sido mal ingresado");
+        }
+
+
         if (costoEjecutivo <= 0 || costoTurista <= 0 || costoEquipajeExtra < 0) {
             throw new IllegalArgumentException("Uno de los costos no es valido. Ingrese un valor mayor a 0");
         }
@@ -459,6 +474,42 @@ public class Sistema implements ISistema {
         recuerdaAerolinea = null;
         recordarRutaVuelo = null;
     }
+
+//    public List<DTPasajero> pasajeros(String nombreCliente){
+//        ClienteServicio clienteServicio = new ClienteServicio();
+//        List<DTPasajero> listaClientes = new ArrayList<>();
+//        List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
+//
+//        for (dato.entidades.Cliente c : clientes) {
+//            if(c.getNickname().equalsIgnoreCase(nombreCliente)){
+//                continue;
+//            }
+//            listaClientes.add(new DTPasajero(
+//                    c.getNombre(),
+//                    c.getApellido(),
+//                    c.getNickname()
+//            ));
+//        }
+//        return listaClientes;
+//    }
+
+    public List<DTCiudad> listarCiudades() {
+        CiudadServicio ciudadServicio = new CiudadServicio();
+        List<DTCiudad> listarCiudades = new ArrayList<>();
+
+        return listarCiudades = ciudadServicio.listarCiudades();
+    }
+
+    public List<DTCiudad> listarCiudadesDestino(List<DTCiudad> ciudades, String ciudadOrigen) {
+        List<DTCiudad> ciudadesDestino = new ArrayList<>();
+        for (DTCiudad ciudad : ciudades) {
+            if (!ciudad.getNombre().equalsIgnoreCase(ciudadOrigen)) {
+                ciudadesDestino.add(ciudad);
+            }
+        }
+        return ciudadesDestino;
+    }
+
 
     // ALTA CATEGORIA
     public void altaCategoria(String nombre) {
@@ -734,7 +785,9 @@ public class Sistema implements ISistema {
         for (dato.entidades.Vuelo v : vuelos) {
             if (v.getNombre().equalsIgnoreCase(nombre)) {
                 for (Reserva r : v.getReserva()) {
-                    DTReserva dtReserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva(), r.getId(), r.getCliente().getNickname());
+                    DTReserva dtReserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
+                    dtReserva.setId(r.getId());
+                    dtReserva.setNickname(r.getCliente().getNickname());
                     DTVueloReserva dtVueloR = new DTVueloReserva(vueloSeleccionado, dtReserva);
                     listaReservas.add(dtVueloR);
                 }
@@ -1363,6 +1416,12 @@ public class Sistema implements ISistema {
         } catch (Exception e) {
             throw new IllegalArgumentException("Error");
         }
+    }
+
+    public List<String> listarAeropuertos(){
+        AeropuertoServicio aeroS = new AeropuertoServicio();
+        List<String> listaAero = aeroS.listarNombresAeropuertos();
+        return listaAero;
     }
 
     // MÉTODO DE ADMINISTRACIÓN PARA MANEJAR RESERVAS DUPLICADAS

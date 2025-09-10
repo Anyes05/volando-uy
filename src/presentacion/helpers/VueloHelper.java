@@ -153,6 +153,16 @@ public class VueloHelper {
         fechaVal.set(Calendar.MILLISECOND, 0);
 
 // Comparar
+        int year = fechaVal.get(Calendar.YEAR);
+        if (year <= 0) {
+            throw new IllegalArgumentException("El año ingresado no es válido.");
+        }
+        // Validar que sea hoy (comparando campos)
+        if (fechaVal.get(Calendar.YEAR) != hoy.get(Calendar.YEAR) ||
+                fechaVal.get(Calendar.MONTH) != hoy.get(Calendar.MONTH) ||
+                fechaVal.get(Calendar.DAY_OF_MONTH) != hoy.get(Calendar.DAY_OF_MONTH)) {
+            throw new IllegalArgumentException("La fecha de alta debe ser el día de hoy (año).");
+        }
         if (!fechaVal.equals(hoy)) {
             throw new IllegalArgumentException("La fecha de alta debe ser el día de hoy.");
         }

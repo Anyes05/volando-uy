@@ -40,7 +40,7 @@ public class PaqueteVuelo {
     private List<Cantidad> cantidades;
 
     //Relacion con compraPaquete
-    @ManyToMany(mappedBy = "paqueteVuelo", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "paqueteVuelo", fetch = FetchType.EAGER)
     private List<CompraPaquete> compraPaquete;
 
     // Constructores

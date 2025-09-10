@@ -17,4 +17,8 @@ public class DTVueloReserva {// Armar según corresponda
     public DTReserva getReserva() {
         return reserva;
     }
+
+    public String toString(){
+        return "ID: " + reserva.getId() + "     -     Cliente: " + reserva.getNickname();
+    }
 }

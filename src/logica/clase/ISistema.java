@@ -42,12 +42,15 @@ public interface ISistema {
 
     // ALTA CIUDAD
     public void altaCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta);
+    public List<String> listarAeropuertos();
 
     //ALTA RUTA VUELO
     public List<DTAerolinea> listarAerolineas();
     public void seleccionarAerolinea(String nickname);
     public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);
     public void registrarRuta();
+    public List<DTCiudad> listarCiudades();
+    public List<DTCiudad> listarCiudadesDestino(List<DTCiudad> ciudades, String ciudadOrigen);
 
     // CONSULTA DATOS DE USUARIO
     public List<DTUsuario> consultarUsuarios();

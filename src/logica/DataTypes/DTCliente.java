@@ -48,8 +48,8 @@ public class DTCliente extends DTUsuario{
     }
 
     // MÉTODOS
-    public String toString (){
-        return numeroDocumento;
+    public String toString(){
+        return super.getNickname();
     }
 
 }
