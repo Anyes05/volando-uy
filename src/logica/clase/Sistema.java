@@ -209,7 +209,7 @@ public class Sistema implements ISistema {
                         if (r instanceof CompraPaquete cp) {
                             reservasDTO.add(new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento()));
                         } else {
-                            reservasDTO.add(new DTReserva(r.getFechaReserva(), r.getCostoReserva()));
+                            reservasDTO.add(new DTReserva(r.getFechaReserva(), r.getCostoReserva(), r.getId(), c.getNickname()));
                         }
                     }
                     return new DTCliente(
@@ -686,6 +686,7 @@ public class Sistema implements ISistema {
 
     //CONSULTA VUELO
 
+
     public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
         listaDTVuelos.clear();
         VueloServicio vueloServicio = new VueloServicio();
@@ -714,7 +715,7 @@ public class Sistema implements ISistema {
         return listaDTVuelos;
     }
 
-    public List<DTVueloReserva> seleccionarVuelo(String nombre){
+    public List<DTVueloReserva> listarReservasVuelo(String nombre){
         List<DTVueloReserva> listaReservas = new ArrayList<>();
         DTVuelo vueloSeleccionado = null;
         for (DTVuelo dtVuelo : listaDTVuelos) {
@@ -733,7 +734,7 @@ public class Sistema implements ISistema {
         for (dato.entidades.Vuelo v : vuelos) {
             if (v.getNombre().equalsIgnoreCase(nombre)) {
                 for (Reserva r : v.getReserva()) {
-                    DTReserva dtReserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
+                    DTReserva dtReserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva(), r.getId(), r.getCliente().getNickname());
                     DTVueloReserva dtVueloR = new DTVueloReserva(vueloSeleccionado, dtReserva);
                     listaReservas.add(dtVueloR);
                 }

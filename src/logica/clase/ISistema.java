@@ -68,8 +68,8 @@ public interface ISistema {
 
     //CONSULTA VUELO
     public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo);
-    public List<DTVueloReserva> seleccionarVuelo(String nombre);
     public List<DTRutaVuelo> listarRutaVueloDeVuelo();
+    public List<DTVueloReserva> listarReservasVuelo(String nombre);
 
     // PAQUETES DE VUELO
     public void crearPaquete(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta);

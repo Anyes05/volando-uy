@@ -49,7 +49,7 @@ public class PaqueteVuelo {
 
     }
 
-    public PaqueteVuelo(String nombrePaquete, String descripcion,/*TipoAsiento tipoAsiento*/ int diasValidos, float descuento, DTFecha fechaAlta) {
+    public PaqueteVuelo(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
         this.nombre = nombrePaquete;
         this.descripcion = descripcion;
         this.diasValidos = diasValidos;

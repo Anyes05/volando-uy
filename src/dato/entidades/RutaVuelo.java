@@ -61,10 +61,6 @@ public class RutaVuelo {
     )
     private List<Aerolinea> aerolineas;
 
-//    // Relación con cantidad, hay que ponerlo de este lado también creo
-//    @ManyToOne
-//    @JoinColumn(name = "cantidad_id")
-//    private Cantidad cantidad;
 
     @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL)
     private List<Cantidad> cantidades;
