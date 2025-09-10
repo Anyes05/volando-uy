@@ -2329,6 +2329,7 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 DTCliente cliente = (DTCliente) comboBoxClienteReservaV.getSelectedItem();
                 if (cliente != null) {
+                    nombresPasajeros.clear();
                     cargarPasajeros(comboBoxPasajerosReservaV, cliente.getNickname());
                 }
             }
