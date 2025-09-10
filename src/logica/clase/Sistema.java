@@ -370,7 +370,7 @@ public class Sistema implements ISistema {
         }
     }
 
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, DTHora hora, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
         if (recuerdaAerolinea == null) {
             throw new IllegalStateException("Debe seleccionar una aerolínea antes de ingresar los datos de la ruta.");
         }

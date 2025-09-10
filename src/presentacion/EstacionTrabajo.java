@@ -580,7 +580,7 @@ public class EstacionTrabajo {
     private void limpiarCamposAltaRutaVuelo() {
         nombreAltRutaText.setText("");
         descRutaText.setText("");
-        horaText.setText("");
+//        horaText.setText("");
         costoTurText.setText("");
         costoEjText.setText("");
         costoEqExText.setText("");
@@ -588,6 +588,16 @@ public class EstacionTrabajo {
         ciudadDText.setText("");
         fechaAltaRutaVuelo.setCalendar(Calendar.getInstance());
         aerolineaVuelo.setSelectedItem(null);
+    }
+
+    // Limpiar alta ciudad al cambiar de panel
+    private void limpiarCamposAltaCiudad() {
+        ciudadAltaText.setText("");
+        descripcionAltaCiText.setText("");
+        aeropuertoAltaText.setText("");
+        sitioWebAltaCiText.setText("");
+        paisAltaCiText.setText("");
+        calendarCiudadAlta.setCalendar(Calendar.getInstance());
     }
 
     public EstacionTrabajo() {
@@ -653,6 +663,7 @@ public class EstacionTrabajo {
                 // Según lo que se elija, haces algo
                 switch (seleccionado) {
                     case "Crear ruta de vuelo":
+                        limpiarCamposAltaRutaVuelo();
                         parentPanel.removeAll();
                         cargarAerolineas(aerolineaVuelo);
                         cargarCategorias(listCatAltaRuta);
@@ -699,6 +710,7 @@ public class EstacionTrabajo {
                         parentPanel.revalidate();
                         break;
                     case "Crear Ciudad":
+                        limpiarCamposAltaCiudad();
                         parentPanel.removeAll();
                         parentPanel.add(altaCiudad);
                         parentPanel.repaint();
@@ -1049,6 +1061,23 @@ public class EstacionTrabajo {
             }
         });
 
+        buttonCancelarCiudad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ciudadAltaText.setText("");
+                paisAltaCiText.setText("");
+                aeropuertoAltaText.setText("");
+                sitioWebAltaCiText.setText("");
+                descripcionAltaCiText.setText("");
+                calendarCiudadAlta.setCalendar(Calendar.getInstance());
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
+
+            }
+        });
+
 
 
 // Si queres empezar con ninguno seleccionado
@@ -1298,7 +1327,7 @@ public class EstacionTrabajo {
                     // Tomar los datos del formulario
                     String nombreRuta = nombreAltRutaText.getText().trim();
                     String descripcionRuta = descRutaText.getText().trim();
-                    String horaStr = horaText.getText().trim();
+//                    String horaStr = horaText.getText().trim();
                     String costoTuristaStr = costoTurText.getText().trim();
                     String costoEjecutivoStr = costoEjText.getText().trim();
                     String costoEquipajeStr = costoEqExText.getText().trim();
@@ -1314,7 +1343,7 @@ public class EstacionTrabajo {
                     VueloHelper.ingresarRutaVuelo(
                             nombreRuta,
                             descripcionRuta,
-                            horaStr,
+//                            horaStr,
                             costoTuristaStr,
                             costoEjecutivoStr,
                             costoEquipajeStr,
@@ -1327,7 +1356,7 @@ public class EstacionTrabajo {
                     JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
                     nombreAltRutaText.setText("");
                     descRutaText.setText("");
-                    horaText.setText("");
+//                    horaText.setText("");
                     costoTurText.setText("");
                     costoEjText.setText("");
                     costoEqExText.setText("");

@@ -1146,14 +1146,6 @@
                         </constraints>
                         <properties/>
                       </component>
-                      <component id="1c6e8" class="javax.swing.JLabel">
-                        <constraints>
-                          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="Hora"/>
-                        </properties>
-                      </component>
                       <component id="f4a62" class="javax.swing.JLabel">
                         <constraints>
                           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
@@ -1208,14 +1200,6 @@
                           </component>
                         </children>
                       </grid>
-                      <component id="5d291" class="javax.swing.JTextField" binding="horaText">
-                        <constraints>
-                          <grid row="3" column="3" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
-                          </grid>
-                        </constraints>
-                        <properties/>
-                      </component>
                       <component id="26694" class="javax.swing.JList" binding="listCatAltaRuta">
                         <constraints>
                           <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">

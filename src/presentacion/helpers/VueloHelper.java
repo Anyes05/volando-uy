@@ -79,7 +79,6 @@ public class VueloHelper {
     public static void ingresarRutaVuelo(
             String nombre,
             String descripcion,
-            String horaStr,
             String costoTuristaStr,
             String costoEjecutivoStr,
             String costoEquipajeStr,
@@ -99,22 +98,22 @@ public class VueloHelper {
             throw new Exception("El origen y destino no pueden ser iguales.");
         }
 
-        int hora, minutos;
-        try {
-            String[] partes = horaStr.split(":");
-            if (partes.length != 2) {
-                throw new Exception("Formato inválido. Use HH:mm");
-            }
-
-            hora = Integer.parseInt(partes[0]);
-            minutos = Integer.parseInt(partes[1]);
-
-            if (hora < 0 || hora > 23 || minutos < 0 || minutos > 59) {
-                throw new Exception("Ingrese una hora válida en formato HH:mm");
-            }
-        } catch (NumberFormatException e) {
-            throw new Exception("Formato inválido. Use HH:mm (ejemplo: 14:30)");
-        }
+//        int hora, minutos;
+//        try {
+//            String[] partes = horaStr.split(":");
+//            if (partes.length != 2) {
+//                throw new Exception("Formato inválido. Use HH:mm");
+//            }
+//
+//            hora = Integer.parseInt(partes[0]);
+//            minutos = Integer.parseInt(partes[1]);
+//
+//            if (hora < 0 || hora > 23 || minutos < 0 || minutos > 59) {
+//                throw new Exception("Ingrese una hora válida en formato HH:mm");
+//            }
+//        } catch (NumberFormatException e) {
+//            throw new Exception("Formato inválido. Use HH:mm (ejemplo: 14:30)");
+//        }
 
         float costoTurista, costoEjecutivo, costoEquipaje;
         try {
@@ -165,7 +164,7 @@ public class VueloHelper {
                 fechaCal.get(Calendar.YEAR)
         );
 
-        DTHora horaVuelo = new DTHora(hora, minutos);
+//        DTHora horaVuelo = new DTHora(hora, minutos);
 
 
         // ------------------- CREAR LA RUTA -------------------
@@ -175,7 +174,7 @@ public class VueloHelper {
                 getSistema().ingresarDatosRuta(
                         nombre,
                         descripcion,
-                        horaVuelo,
+//                        horaVuelo,
                         costoTurista,
                         costoEjecutivo,
                         costoEquipaje,
