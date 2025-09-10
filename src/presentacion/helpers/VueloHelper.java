@@ -179,7 +179,6 @@ public class VueloHelper {
 
         // ------------------- CREAR LA RUTA -------------------
 
-        for (String categoria : categoriasSeleccionadas) {
             try {
                 getSistema().ingresarDatosRuta(
                         nombre,
@@ -191,7 +190,7 @@ public class VueloHelper {
                         origen,
                         destino,
                         fecha,
-                        categoria // un String por vez
+                        categoriasSeleccionadas // un String por vez
                 );
                 getSistema().registrarRuta();
             } catch (IllegalArgumentException e) {
@@ -201,7 +200,7 @@ public class VueloHelper {
             }
         }
 
-    }
+
 
     public static void crearCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta) {
         if (nombre == null || nombre.trim().isEmpty() || pais == null || pais.trim().isEmpty()) {

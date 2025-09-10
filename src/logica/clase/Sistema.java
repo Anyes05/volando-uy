@@ -373,7 +373,7 @@ public class Sistema implements ISistema {
         }
     }
 
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, String categoria) {
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias) {
         if (recuerdaAerolinea == null) {
             throw new IllegalStateException("Debe seleccionar una aerolínea antes de ingresar los datos de la ruta.");
         }
@@ -396,10 +396,6 @@ public class Sistema implements ISistema {
         if(!esNombreValido(ciudadDestino) || !esNombreValido(ciudadOrigen)){
             throw new IllegalArgumentException("El nombre de alguna de las ciudades ha sido mal ingresado");
         }
-        if ( !esNombreValido(categoria)) {
-            throw new IllegalArgumentException("El nombre de la categoria ha sido mal ingresado");
-        }
-
 
         if (costoEjecutivo <= 0 || costoTurista <= 0 || costoEquipajeExtra < 0) {
             throw new IllegalArgumentException("Uno de los costos no es valido. Ingrese un valor mayor a 0");
@@ -412,11 +408,6 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Una de las ciudades no existe.");
         }
 
-        dato.entidades.Categoria cat = categoriaServicio.obtenerCategoriaPorNombre(categoria);
-        if (cat == null) {
-            throw new IllegalArgumentException("La categoría no existe.");
-        }
-
         DTCostoBase costoBase = new DTCostoBase(costoTurista, costoEjecutivo, costoEquipajeExtra);
 
 
@@ -427,9 +418,17 @@ public class Sistema implements ISistema {
                 fechaAlta
         );
 
+        for(String catNombre : categorias) {
+            Categoria categoria = categoriaServicio.obtenerCategoriaPorNombre(catNombre);
+            if (categoria != null) {
+                rutaVuelo.getCategorias().add(categoria);
+            } else {
+                throw new IllegalArgumentException("La categoría '" + catNombre + "' no existe.");
+            }
+        }
+
         rutaVuelo.setCiudadDestino(destino);
         rutaVuelo.setCiudadOrigen(origen);
-        rutaVuelo.getCategorias().add(cat);
         rutaVuelo.getAerolineas().add(aerolinea);
 
         recordarRutaVuelo = rutaVuelo;

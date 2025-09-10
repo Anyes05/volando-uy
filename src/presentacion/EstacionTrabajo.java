@@ -58,7 +58,6 @@ public class EstacionTrabajo {
     private JToolBar JToolBarPrincipal;
     private JList listaPasajerosReservaVJlist;
     private JComboBox comboBoxAeroRVConsulta;
-    private JTextArea nombreRVConsulta;
     private JTextArea costoBaseRVConsulta;
     private JTextArea fechaAltaRVConsulta;
     private JRadioButton rutaDeVueloRadioButton;
@@ -266,9 +265,11 @@ public class EstacionTrabajo {
     private JComboBox comboBoxAeropuertosAC;
     private JComboBox comboBoxCiudadOrigenARV;
     private JComboBox comboBoxCiudadDestinoARV;
+    private JTextArea categoriasRVtxt;
     private JList list1;
     private JTextArea cantyTipoAsientotxt;
     private JScrollPane scrollReservaVuelo;
+    private JScrollPane scrollConsultaRV;
 
     // Método helper para actualizar la lista de pasajeros en la interfaz
     private void actualizarListaPasajeros() {
@@ -462,20 +463,20 @@ public class EstacionTrabajo {
     private void mostrarDatosRuta(String nicknameAerolinea, String nombreRuta) {
         DTRutaVuelo ruta = VueloHelper.getRutasDeAerolinea(nicknameAerolinea, nombreRuta);
         if (ruta != null) {
-            nombreRVConsulta.setText(ruta.getNombre());
             descripcionRVConsulta.setText(ruta.getDescripcion());
             ciudadORVConsulta.setText(String.valueOf(ruta.getCiudadOrigen()));
             ciudadDRVConsulta.setText(String.valueOf(ruta.getCiudadDestino()));
+            categoriasRVtxt.setText(ruta.toString2());
             costoBaseTuRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoTurista()));
             costoBaseEjRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoEjecutivo()));
             costoUnEquipajeExRVConsulta.setText(String.valueOf(ruta.getCostoBase().getCostoEquipajeExtra()));
             fechaAltaRVConsulta.setText(ruta.getFechaAlta().toString());
         } else {
             VueloHelper.limpiarCampos(
-                    nombreRVConsulta,
                     descripcionRVConsulta,
                     ciudadORVConsulta,
                     ciudadDRVConsulta,
+                    categoriasRVtxt,
                     costoBaseTuRVConsulta,
                     costoBaseEjRVConsulta,
                     costoUnEquipajeExRVConsulta,
@@ -687,6 +688,7 @@ public class EstacionTrabajo {
         modificarUsuarioJPanel1.setLayout(new BorderLayout());
         modificarUsuarioJPanel1.add(scroll3, BorderLayout.CENTER);
 
+
         /*----- PANEL DE BOTONES -----*/
         //Boton de inicio
         botonInicio.addActionListener(new ActionListener() {
@@ -720,10 +722,10 @@ public class EstacionTrabajo {
                     case "Consultar ruta de vuelo":
                         parentPanel.removeAll();
                         cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
-                        nombreRVConsulta.setText("");
                         descripcionRVConsulta.setText("");
                         ciudadORVConsulta.setText("");
                         ciudadDRVConsulta.setText("");
+                        categoriasRVtxt.setText("");
                         costoBaseTuRVConsulta.setText("");
                         costoBaseEjRVConsulta.setText("");
                         costoUnEquipajeExRVConsulta.setText("");
@@ -1146,10 +1148,10 @@ public class EstacionTrabajo {
 
         ActionListener listener = e -> {
             cargandoAeroRV = cargandoRutasRV = cargandoVuelosRV = true;
-            nombreRVConsulta.setText("");
             descripcionRVConsulta.setText("");
             ciudadORVConsulta.setText("");
             ciudadDRVConsulta.setText("");
+            categoriasRVtxt.setText("");
             costoBaseTuRVConsulta.setText("");
             costoBaseEjRVConsulta.setText("");
             costoUnEquipajeExRVConsulta.setText("");
@@ -1526,10 +1528,10 @@ public class EstacionTrabajo {
                     vuelosConsultaRV.setSelectedIndex(-1);
                 }else{
                     VueloHelper.limpiarCampos(
-                            nombreRVConsulta,
                             descripcionRVConsulta,
                             ciudadORVConsulta,
                             ciudadDRVConsulta,
+                            categoriasRVtxt,
                             costoBaseTuRVConsulta,
                             costoBaseEjRVConsulta,
                             costoUnEquipajeExRVConsulta,

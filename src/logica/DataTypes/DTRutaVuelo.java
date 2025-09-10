@@ -1,5 +1,10 @@
 package logica.DataTypes;
 
+import dato.entidades.Categoria;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DTRutaVuelo {
     private String nombre;
     private String descripcion;
@@ -8,6 +13,7 @@ public class DTRutaVuelo {
     private DTAerolinea aerolinea;
     private DTCiudad ciudadOrigen;
     private DTCiudad ciudadDestino;
+    private List<Categoria> categorias;
 
     public DTRutaVuelo(String nombre, String descripcion,DTFecha fechaAlta,DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
         this.nombre = nombre;
@@ -43,10 +49,27 @@ public class DTRutaVuelo {
         return ciudadDestino;
     }
 
+    public List<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
+    }
+
     // MÉTODOS
     @Override
     public String toString() {
         return nombre;
+    }
 
+
+    public String toString2() {
+        String nombresCategorias = "";
+        for(Categoria c : categorias) {
+            nombresCategorias = nombresCategorias + c.getNombre() + "     ";
+
+        }
+        return nombresCategorias;
     }
 }

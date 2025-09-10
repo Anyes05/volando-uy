@@ -1,9 +1,6 @@
 package logica.clase;
 
-import dato.entidades.Aerolinea;
-import dato.entidades.Cliente;
-import dato.entidades.PaqueteVuelo;
-import dato.entidades.RutaVuelo;
+import dato.entidades.*;
 import logica.DataTypes.*;
 
 import java.util.List;
@@ -47,7 +44,7 @@ public interface ISistema {
     //ALTA RUTA VUELO
     public List<DTAerolinea> listarAerolineas();
     public void seleccionarAerolinea(String nickname);
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, String categoria);
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias);
     public void registrarRuta();
     public List<DTCiudad> listarCiudades();
     public List<DTCiudad> listarCiudadesDestino(List<DTCiudad> ciudades, String ciudadOrigen);

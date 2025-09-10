@@ -54,7 +54,7 @@ public class AerolineaServicio {
         }
         List<DTRutaVuelo> listaRutas = new ArrayList<>();
         for (RutaVuelo r : aerolinea.getRutasVuelo()) {
-            listaRutas.add(new DTRutaVuelo(
+            DTRutaVuelo rv = new DTRutaVuelo(
                     r.getNombre(),
                     r.getDescripcion(),
                     r.getFechaAlta(),
@@ -62,7 +62,10 @@ public class AerolineaServicio {
                     new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>()),
                     new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
                     new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
-            ));
+            );
+            rv.setCategorias(r.getCategorias());
+            listaRutas.add(rv);
+
         }
         return listaRutas;
     }
