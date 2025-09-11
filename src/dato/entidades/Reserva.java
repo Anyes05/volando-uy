@@ -38,34 +38,61 @@ public class Reserva {
     private Vuelo vuelo;
 
     // Constructores
-    public Reserva() {}
+    public Reserva() {
+    }
 
     public Reserva(Cliente cliente, DTFecha fechaReserva) {
         this.cliente = cliente;
         this.fechaReserva = fechaReserva;
     }
+
     // getters y setters
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public Cliente getCliente() {
+        return cliente;
+    }
 
-    public DTFecha getFechaReserva() { return fechaReserva; }
-    public void setFechaReserva(DTFecha fechaReserva) { this.fechaReserva = fechaReserva; }
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
-    public DTCostoBase getCostoReserva() { return costoReserva; }
-    public void setCostoReserva(DTCostoBase costoReserva) { this.costoReserva = costoReserva; }
+    public DTFecha getFechaReserva() {
+        return fechaReserva;
+    }
 
-    public List<Pasaje> getPasajeros() { 
+    public void setFechaReserva(DTFecha fechaReserva) {
+        this.fechaReserva = fechaReserva;
+    }
+
+    public DTCostoBase getCostoReserva() {
+        return costoReserva;
+    }
+
+    public void setCostoReserva(DTCostoBase costoReserva) {
+        this.costoReserva = costoReserva;
+    }
+
+    public List<Pasaje> getPasajeros() {
         if (pasajeros == null) {
             pasajeros = new ArrayList<>();
         }
-        return pasajeros; 
+        return pasajeros;
     }
-    public void setPasajeros(List<Pasaje> pasajeros) { this.pasajeros = pasajeros; }
 
-    public Vuelo getVuelo() { return vuelo; }
-    public void setVuelo(Vuelo vuelo) { this.vuelo = vuelo; }
+    public void setPasajeros(List<Pasaje> pasajeros) {
+        this.pasajeros = pasajeros;
+    }
+
+    public Vuelo getVuelo() {
+        return vuelo;
+    }
+
+    public void setVuelo(Vuelo vuelo) {
+        this.vuelo = vuelo;
+    }
 
     public void setCostoTotal(float costoTotal) {
         if (this.costoReserva != null) {

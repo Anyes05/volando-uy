@@ -13,6 +13,7 @@ public class DTCiudad {
     public String getNombre() {
         return nombre;
     }
+
     public String getPais() {
         return pais;
     }

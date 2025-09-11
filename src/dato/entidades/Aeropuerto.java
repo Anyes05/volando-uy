@@ -17,11 +17,12 @@ public class Aeropuerto {
     private String nombre;
 
     @ManyToOne
-    @JoinColumn (name = "ciudad_id", nullable = false)  // Foreign key
+    @JoinColumn(name = "ciudad_id", nullable = false)  // Foreign key
     private Ciudad ciudad;
 
     // Constructores
-    public Aeropuerto() {}  // Obligatorio para JPA
+    public Aeropuerto() {
+    }  // Obligatorio para JPA
 
     public Aeropuerto(String nombre, Ciudad ciudad) {
         this.nombre = nombre;
@@ -29,12 +30,24 @@ public class Aeropuerto {
     }
 
     // Getters y setters
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public Ciudad getCiudad() { return ciudad; }
-    public void setCiudad(Ciudad ciudad) { this.ciudad = ciudad; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public Ciudad getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(Ciudad ciudad) {
+        this.ciudad = ciudad;
+    }
 
 }

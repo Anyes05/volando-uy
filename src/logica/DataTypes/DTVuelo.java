@@ -25,23 +25,34 @@ public class DTVuelo {
     public DTHora getDuracion() {
         return duracion;
     }
+
     public String getNombre() {
         return nombre;
     }
+
     public DTFecha getFechaVuelo() {
         return fechaVuelo;
     }
-    public DTHora  getHoraVuelo() { return horaVuelo; }
+
+    public DTHora getHoraVuelo() {
+        return horaVuelo;
+    }
+
     public int getAsientosMaxEjecutivo() {
         return asientosMaxEjecutivo;
     }
+
     public DTFecha getFechaAlta() {
         return fechaAlta;
     }
+
     public int getAsientosMaxTurista() {
         return asientosMaxTurista;
     }
-    public DTRutaVuelo getRuta() {return ruta; }
+
+    public DTRutaVuelo getRuta() {
+        return ruta;
+    }
 
     //Setters
     public String toString() {

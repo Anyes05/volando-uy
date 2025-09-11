@@ -33,7 +33,8 @@ public class Cliente extends Usuario {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Reserva> reservas = new ArrayList<>();
 
-    public Cliente() {}
+    public Cliente() {
+    }
 
     public Cliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNacimiento,
                    String nacionalidad, TipoDoc tipoDoc, String numeroDocumento) {
@@ -47,23 +48,53 @@ public class Cliente extends Usuario {
     }
 
     // Getters y Setters
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getApellido() {
+        return apellido;
+    }
 
-    public DTFecha getFechaNacimiento() { return fechaNacimiento; }
-    public void setFechaNacimiento(DTFecha fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
 
-    public String getNacionalidad() { return nacionalidad; }
-    public void setNacionalidad(String nacionalidad) { this.nacionalidad = nacionalidad; }
+    public DTFecha getFechaNacimiento() {
+        return fechaNacimiento;
+    }
 
-    public TipoDoc getTipoDoc() { return tipoDoc; }
-    public void setTipoDoc(TipoDoc tipoDoc) { this.tipoDoc = tipoDoc; }
+    public void setFechaNacimiento(DTFecha fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
 
-    public String getNumeroDocumento() { return numeroDocumento; }
-    public void setNumeroDocumento(String numeroDocumento) { this.numeroDocumento = numeroDocumento; }
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
 
-    public List<Reserva> getReservas() { return reservas; }
-    public void setReservas(List<Reserva> reservas) { this.reservas = reservas; }
+    public void setNacionalidad(String nacionalidad) {
+        this.nacionalidad = nacionalidad;
+    }
+
+    public TipoDoc getTipoDoc() {
+        return tipoDoc;
+    }
+
+    public void setTipoDoc(TipoDoc tipoDoc) {
+        this.tipoDoc = tipoDoc;
+    }
+
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
+
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
+    }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
+    }
 
     // Helper methods para mantener sincronía en la relación
     public void addReserva(Reserva reserva) {
@@ -74,7 +105,7 @@ public class Cliente extends Usuario {
         reserva.setCliente(this);
     }
 
-//    public void removeReserva(Reserva reserva) {
+    //    public void removeReserva(Reserva reserva) {
 //        reservas.remove(reserva);
 //        reserva.setCliente(null);
 //    }

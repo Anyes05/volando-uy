@@ -386,14 +386,14 @@ public class Sistema implements ISistema {
         if (aerolinea == null) {
             throw new IllegalStateException("La aerolínea seleccionada no existe.");
         }
-        if (!esNombreValido(nombreRuta)){
+        if (!esNombreValido(nombreRuta)) {
             throw new IllegalArgumentException("El nombre de la ruta ha sido mal ingresado");
         }
-        if( !esNombreValido(descripcion)){
+        if (!esNombreValido(descripcion)) {
             throw new IllegalArgumentException("La descripcion ha sido mal ingresada");
         }
 
-        if(!esNombreValido(ciudadDestino) || !esNombreValido(ciudadOrigen)){
+        if (!esNombreValido(ciudadDestino) || !esNombreValido(ciudadOrigen)) {
             throw new IllegalArgumentException("El nombre de alguna de las ciudades ha sido mal ingresado");
         }
 
@@ -418,7 +418,7 @@ public class Sistema implements ISistema {
                 fechaAlta
         );
 
-        for(String catNombre : categorias) {
+        for (String catNombre : categorias) {
             Categoria categoria = categoriaServicio.obtenerCategoriaPorNombre(catNombre);
             if (categoria != null) {
                 rutaVuelo.getCategorias().add(categoria);
@@ -525,7 +525,7 @@ public class Sistema implements ISistema {
     }
 
     // ALTA CIUDAD
-    public void altaCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta){
+    public void altaCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta) {
         CiudadServicio ciudadServicio = new CiudadServicio();
 
         // Verificar si la ciudad ya existe usando el servicio
@@ -533,7 +533,7 @@ public class Sistema implements ISistema {
         if (ciudadExistente != null) {
             throw new IllegalArgumentException("La ciudad ya existe.");
         }
-        if ( !esNombreValido(nombre) || !esNombreValido(pais) || !esNombreValido(aeropuerto) || !esNombreValido(descripcion)) {
+        if (!esNombreValido(nombre) || !esNombreValido(pais) || !esNombreValido(aeropuerto) || !esNombreValido(descripcion)) {
             throw new IllegalArgumentException("Nombre, pais aeropuerto o descrpcion mal ingresados");
         }
         AeropuertoServicio aeropuertoServicio = new AeropuertoServicio();
@@ -545,7 +545,7 @@ public class Sistema implements ISistema {
         // Crear la ciudad usando el servicio
         ciudadServicio.registrarCiudad(nombre, pais, aeropuerto, descripcion, sitioWeb, fechaAlta);
     }
-    
+
     // PRECARGA DE AEROPUERTOS
     public void precargarAeropuertos() {
         AeropuertoServicio aeropuertoServicio = new AeropuertoServicio();
@@ -581,28 +581,13 @@ public class Sistema implements ISistema {
 
     // PRECARGA COMPLETA DEL SISTEMA
     public void precargarSistemaCompleto() {
-        System.out.println("=== INICIANDO PRECARGA COMPLETA DEL SISTEMA ===");
-
         try {
-            System.out.println("1. Precargando aeropuertos...");
             precargarAeropuertos();
-
-            System.out.println("2. Precargando categorías...");
             precargarCategorias();
-
-            System.out.println("3. Precargando usuarios (clientes y aerolíneas)...");
             precargarUsuarios();
-
-            System.out.println("4. Precargando rutas de vuelo...");
             precargarRutasVuelo();
-
-            System.out.println("5. Precargando vuelos...");
             precargarVuelos();
-
-            System.out.println("=== PRECARGA COMPLETA FINALIZADA EXITOSAMENTE ===");
-
         } catch (Exception e) {
-            System.err.println("Error durante la precarga completa: " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("Error en la precarga completa del sistema", e);
         }
@@ -632,7 +617,7 @@ public class Sistema implements ISistema {
     }
 
     // ALTA DE VUELO
-    public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname){
+    public List<DTRutaVuelo> seleccionarAerolineaRet(String nickname) {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
         this.recuerdaAerolinea = nickname;
         return aerolineaServicio.obtenerRutasDeAerolinea(nickname);
@@ -734,7 +719,7 @@ public class Sistema implements ISistema {
     //CONSULTA VUELO
 
 
-    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo){
+    public List<DTVuelo> seleccionarRutaVuelo(String nombreRutaVuelo) {
         listaDTVuelos.clear();
         VueloServicio vueloServicio = new VueloServicio();
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
@@ -743,26 +728,26 @@ public class Sistema implements ISistema {
 
         for (dato.entidades.Vuelo v : vuelos) {
             dato.entidades.RutaVuelo r = v.getRutaVuelo();
-                if (r!= null && r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
-                    DTAerolinea dtAerolinea = r.getAerolineas() != null ? new DTAerolinea(r.getAerolineas().get(0).getNickname(), r.getAerolineas().get(0).getNombre(), r.getAerolineas().get(0).getCorreo(), r.getAerolineas().get(0).getDescripcion(), r.getAerolineas().get(0).getLinkSitioWeb(), new ArrayList<>()) : null;
-                    DTRutaVuelo dtRuta = new DTRutaVuelo(
-                            r.getNombre(),
-                            r.getDescripcion(),
-                            r.getFechaAlta(),
-                            r.getCostoBase(),
-                            dtAerolinea,
-                            new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
-                            new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
-                    );
-                    DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta);
-                    listaDTVuelos.add(dtVuelo);
-                }
+            if (r != null && r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
+                DTAerolinea dtAerolinea = r.getAerolineas() != null ? new DTAerolinea(r.getAerolineas().get(0).getNickname(), r.getAerolineas().get(0).getNombre(), r.getAerolineas().get(0).getCorreo(), r.getAerolineas().get(0).getDescripcion(), r.getAerolineas().get(0).getLinkSitioWeb(), new ArrayList<>()) : null;
+                DTRutaVuelo dtRuta = new DTRutaVuelo(
+                        r.getNombre(),
+                        r.getDescripcion(),
+                        r.getFechaAlta(),
+                        r.getCostoBase(),
+                        dtAerolinea,
+                        new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                        new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais())
+                );
+                DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta);
+                listaDTVuelos.add(dtVuelo);
+            }
 
         }
         return listaDTVuelos;
     }
 
-    public List<DTVueloReserva> listarReservasVuelo(String nombre){
+    public List<DTVueloReserva> listarReservasVuelo(String nombre) {
         List<DTVueloReserva> listaReservas = new ArrayList<>();
         DTVuelo vueloSeleccionado = null;
         for (DTVuelo dtVuelo : listaDTVuelos) {
@@ -792,7 +777,7 @@ public class Sistema implements ISistema {
         return listaReservas;
     }
 
-    public List<DTRutaVuelo> listarRutaVueloDeVuelo(){
+    public List<DTRutaVuelo> listarRutaVueloDeVuelo() {
         List<DTRutaVuelo> listaRutas = new ArrayList<>();
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
         List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
@@ -816,7 +801,7 @@ public class Sistema implements ISistema {
     // RESERVA VUELO
 
     public List<String> nombresPasajes(String nombre, List<String> nombresPasajeros) {
-        if(nombresPasajeros.contains(nombre)) {
+        if (nombresPasajeros.contains(nombre)) {
             throw new IllegalArgumentException("El pasajero ya fue seleccionado anteriormente.");
         }
         nombresPasajeros.add(nombre);
@@ -828,13 +813,13 @@ public class Sistema implements ISistema {
         this.vueloSeleccionadoParaReserva = nombreVuelo;
     }
 
-    public List<DTPasajero> pasajeros(String nombreCliente){
+    public List<DTPasajero> pasajeros(String nombreCliente) {
         ClienteServicio clienteServicio = new ClienteServicio();
         List<DTPasajero> listaClientes = new ArrayList<>();
         List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
 
         for (dato.entidades.Cliente c : clientes) {
-            if(c.getNickname().equalsIgnoreCase(nombreCliente)){
+            if (c.getNickname().equalsIgnoreCase(nombreCliente)) {
                 continue;
             }
             listaClientes.add(new DTPasajero(
@@ -868,29 +853,6 @@ public class Sistema implements ISistema {
         return listaClientes;
     }
 
-    // Método de prueba para verificar conexión a BD
-    public void probarConexionBD() {
-        try {
-            ClienteServicio clienteServicio = new ClienteServicio();
-            List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
-            System.out.println("=== PRUEBA DE CONEXIÓN BD ===");
-            System.out.println("Clientes encontrados: " + clientes.size());
-            for (dato.entidades.Cliente c : clientes) {
-                System.out.println("- Cliente: " + c.getNickname() + " (" + c.getNombre() + ")");
-            }
-
-            VueloServicio vueloServicio = new VueloServicio();
-            List<dato.entidades.Vuelo> vuelos = vueloServicio.listarVuelos();
-            System.out.println("Vuelos encontrados: " + vuelos.size());
-            for (dato.entidades.Vuelo v : vuelos) {
-                System.out.println("- Vuelo: " + v.getNombre());
-            }
-            System.out.println("=== FIN PRUEBA BD ===");
-        } catch (Exception e) {
-            System.err.println("Error en prueba de BD: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
     public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva) {
 
@@ -932,41 +894,41 @@ public class Sistema implements ISistema {
             // NUEVA VALIDACIÓN: Verificar si el cliente ya tiene una reserva para este vuelo
             CompraComunServicio compraComunServicio = new CompraComunServicio();
             List<dato.entidades.CompraComun> reservasExistentes = compraComunServicio.buscarPorClienteYVuelo(clientePrincipal, vueloSeleccionado);
-            
+
             if (!reservasExistentes.isEmpty()) {
                 // Hay reservas existentes, lanzar excepción especial para manejo de administración
                 StringBuilder mensaje = new StringBuilder();
                 mensaje.append("CONFLICTO DE RESERVA: El cliente ").append(clientePrincipal.getNickname())
-                       .append(" ya tiene ").append(reservasExistentes.size()).append(" reserva(s) para el vuelo ")
-                       .append(vueloSeleccionado.getNombre()).append(".\n\n");
-                
+                        .append(" ya tiene ").append(reservasExistentes.size()).append(" reserva(s) para el vuelo ")
+                        .append(vueloSeleccionado.getNombre()).append(".\n\n");
+
                 mensaje.append("Reservas existentes:\n");
                 for (int i = 0; i < reservasExistentes.size(); i++) {
                     dato.entidades.CompraComun reserva = reservasExistentes.get(i);
                     mensaje.append("- Reserva ").append(i + 1).append(": ")
-                           .append("Fecha: ").append(reserva.getFechaReserva())
-                           .append(", Tipo: ").append(reserva.getTipoAsiento())
-                           .append(", Costo: $").append(reserva.getCostoReserva().getCostoTotal()).append("\n");
+                            .append("Fecha: ").append(reserva.getFechaReserva())
+                            .append(", Tipo: ").append(reserva.getTipoAsiento())
+                            .append(", Costo: $").append(reserva.getCostoReserva().getCostoTotal()).append("\n");
                 }
-                
+
                 mensaje.append("\nEl administrador debe decidir:\n");
                 mensaje.append("1. Cambiar la aerolínea\n");
                 mensaje.append("2. Cambiar la ruta de vuelo\n");
                 mensaje.append("3. Cambir el vuelo\n");
                 mensaje.append("4. Cambiar el cliente seleccionado\n");
                 mensaje.append("5. Cancelar el caso de uso\n");
-                
+
                 throw new IllegalStateException("ADMIN_REQUIRED:" + mensaje.toString());
             }
 
             // Verificar disponibilidad de asientos
             if (tipoAsiento == TipoAsiento.Ejecutivo && vueloSeleccionado.getAsientosMaxEjecutivo() < cantidadPasaje) {
                 throw new IllegalStateException("ERROR: No hay suficientes asientos ejecutivos disponibles. Disponibles: " +
-                    vueloSeleccionado.getAsientosMaxEjecutivo() + ", Solicitados: " + cantidadPasaje);
+                        vueloSeleccionado.getAsientosMaxEjecutivo() + ", Solicitados: " + cantidadPasaje);
             }
             if (tipoAsiento == TipoAsiento.Turista && vueloSeleccionado.getAsientosMaxTurista() < cantidadPasaje) {
                 throw new IllegalStateException("ERROR: No hay suficientes asientos turista disponibles. Disponibles: " +
-                    vueloSeleccionado.getAsientosMaxTurista() + ", Solicitados: " + cantidadPasaje);
+                        vueloSeleccionado.getAsientosMaxTurista() + ", Solicitados: " + cantidadPasaje);
             }
 
             // Calcular costo total ANTES de crear la reserva
@@ -1001,24 +963,24 @@ public class Sistema implements ISistema {
             // Contar pasajeros únicos (sin duplicados)
             Set<String> pasajerosUnicos = new HashSet<>(nombresPasajeros);
             int cantidadPasajerosUnicos = pasajerosUnicos.size();
-            
+
             // Verificar si hay duplicados
             if (nombresPasajeros.size() != cantidadPasajerosUnicos) {
                 throw new IllegalArgumentException("ERROR: Hay pasajeros duplicados en la lista. " +
-                    "Tiene " + nombresPasajeros.size() + " entradas pero solo " + cantidadPasajerosUnicos + " pasajeros únicos. " +
-                    "Debe quitar los pasajeros duplicados de la lista.");
+                        "Tiene " + nombresPasajeros.size() + " entradas pero solo " + cantidadPasajerosUnicos + " pasajeros únicos. " +
+                        "Debe quitar los pasajeros duplicados de la lista.");
             }
-            
+
             // Validar que la cantidad de pasajeros únicos coincida exactamente con la cantidad de pasajes solicitados
             if (cantidadPasajerosUnicos != cantidadPasaje) {
                 if (cantidadPasajerosUnicos < cantidadPasaje) {
-                    throw new IllegalArgumentException("ERROR: No completó la lista de pasajeros. Solicitó " + cantidadPasaje + 
-                        " pasajes pero solo tiene " + cantidadPasajerosUnicos + " pasajero(s) únicos en la lista. " +
-                        "Debe agregar " + (cantidadPasaje - cantidadPasajerosUnicos) + " pasajero(s) más.");
+                    throw new IllegalArgumentException("ERROR: No completó la lista de pasajeros. Solicitó " + cantidadPasaje +
+                            " pasajes pero solo tiene " + cantidadPasajerosUnicos + " pasajero(s) únicos en la lista. " +
+                            "Debe agregar " + (cantidadPasaje - cantidadPasajerosUnicos) + " pasajero(s) más.");
                 } else {
-                    throw new IllegalArgumentException("ERROR: Agregó demasiados pasajeros. Solicitó " + cantidadPasaje + 
-                        " pasajes pero tiene " + cantidadPasajerosUnicos + " pasajero(s) únicos en la lista. " +
-                        "Debe quitar " + (cantidadPasajerosUnicos - cantidadPasaje) + " pasajero(s) de la lista.");
+                    throw new IllegalArgumentException("ERROR: Agregó demasiados pasajeros. Solicitó " + cantidadPasaje +
+                            " pasajes pero tiene " + cantidadPasajerosUnicos + " pasajero(s) únicos en la lista. " +
+                            "Debe quitar " + (cantidadPasajerosUnicos - cantidadPasaje) + " pasajero(s) de la lista.");
                 }
             }
 
@@ -1030,7 +992,7 @@ public class Sistema implements ISistema {
                 Cliente pasajero = clienteServicio.buscarClientePorNickname(nombrePasajero);
                 if (pasajero == null) {
                     throw new IllegalArgumentException("ERROR: No se encontró el pasajero con nickname: " + nombrePasajero +
-                        ". Verifique que el cliente existe en el sistema.");
+                            ". Verifique que el cliente existe en el sistema.");
                 }
 
                 // Crear pasaje directamente en el EntityManager
@@ -1049,18 +1011,18 @@ public class Sistema implements ISistema {
             }
 
             em.getTransaction().commit();
-            
+
             // Lanzar excepción especial con información de éxito para mostrar en Swing
             String mensajeExito = "¡RESERVA REALIZADA CON ÉXITO!\n\n" +
-                "✓ Reserva creada con ID: " + reserva.getId() + "\n" +
-                "✓ Cliente: " + clientePrincipal.getNombre() + " " + clientePrincipal.getApellido() + "\n" +
-                "✓ Vuelo: " + vueloSeleccionado.getNombre() + "\n" +
-                "✓ Tipo de asiento: " + tipoAsiento + "\n" +
-                "✓ Cantidad de pasajes: " + cantidadPasaje + "\n" +
-                "✓ Equipaje extra: " + equipajeExtra + " unidades\n" +
-                "✓ Costo total: $" + costoTotal + "\n" +
-                "✓ Pasajes agregados exitosamente a la reserva";
-            
+                    "✓ Reserva creada con ID: " + reserva.getId() + "\n" +
+                    "✓ Cliente: " + clientePrincipal.getNombre() + " " + clientePrincipal.getApellido() + "\n" +
+                    "✓ Vuelo: " + vueloSeleccionado.getNombre() + "\n" +
+                    "✓ Tipo de asiento: " + tipoAsiento + "\n" +
+                    "✓ Cantidad de pasajes: " + cantidadPasaje + "\n" +
+                    "✓ Equipaje extra: " + equipajeExtra + " unidades\n" +
+                    "✓ Costo total: $" + costoTotal + "\n" +
+                    "✓ Pasajes agregados exitosamente a la reserva";
+
             throw new IllegalStateException("SUCCESS:" + mensajeExito);
 
         } catch (IllegalStateException e) {
@@ -1088,7 +1050,7 @@ public class Sistema implements ISistema {
     // PAQUETES DE VUELO
 //
     // CREAR PAQUETE VUELO
-    public void crearPaquete(String nombrePaquete, String descripcion,TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
+    public void crearPaquete(String nombrePaquete, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
 //        for (PaqueteVuelo p : paqueteVuelos) {
 //            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
 //                throw new IllegalArgumentException("El nombre del paquete ya existe.");
@@ -1203,7 +1165,6 @@ public class Sistema implements ISistema {
     }
 
 
-
     public void seleccionarPaquete(String nombrePaquete) {
         PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
         dato.entidades.PaqueteVuelo paquete = paqueteVueloServicio.obtenerPaquetePorNombre(nombrePaquete);
@@ -1248,7 +1209,7 @@ public class Sistema implements ISistema {
         }
     }
 
-    public void agregarRutaAPaquete (int cant, TipoAsiento tipoAsiento) {
+    public void agregarRutaAPaquete(int cant, TipoAsiento tipoAsiento) {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de agregar una ruta.");
         }
@@ -1291,7 +1252,7 @@ public class Sistema implements ISistema {
         paqueteVueloServicio.actualizarPaquete(paqueteSeleccionado);
     }
 
-    public DTPaqueteVuelos consultaPaqueteVuelo () {
+    public DTPaqueteVuelos consultaPaqueteVuelo() {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
         }
@@ -1309,7 +1270,7 @@ public class Sistema implements ISistema {
         return dtPaquete;
     }
 
-    public List <DTRutaVuelo> consultaPaqueteVueloRutas() {
+    public List<DTRutaVuelo> consultaPaqueteVueloRutas() {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de consultar.");
         }
@@ -1341,7 +1302,7 @@ public class Sistema implements ISistema {
     }
 
 
-    public List <String> listarAerolineasRutaVuelo () {
+    public List<String> listarAerolineasRutaVuelo() {
         List<String> listaAerolineas = new ArrayList<>();
         if (rutaVueloSeleccionada == null) {
             throw new IllegalStateException("No hay una ruta de vuelo seleccionada.");
@@ -1353,7 +1314,7 @@ public class Sistema implements ISistema {
         }
         return listaAerolineas;
     }
-    
+
     // COMPRA PAQUETE
 
     public List<DTCliente> mostrarClientes() {
@@ -1379,7 +1340,7 @@ public class Sistema implements ISistema {
     }
 
 
-    public void seleccionarCliente(String nombreCliente){
+    public void seleccionarCliente(String nombreCliente) {
         ClienteServicio clienteServicio = new ClienteServicio();
         dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nombreCliente);
         if (cliente != null) {
@@ -1389,7 +1350,7 @@ public class Sistema implements ISistema {
         throw new IllegalArgumentException("No se encontró un cliente con el nombre: " + nombreCliente);
     }
 
-    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento/*TipoAsiento tipoAsiento*/){
+    public void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento/*TipoAsiento tipoAsiento*/) {
         if (paqueteSeleccionado == null) {
             throw new IllegalStateException("Debe seleccionar un paquete antes de realizar la compra.");
         }
@@ -1414,7 +1375,7 @@ public class Sistema implements ISistema {
         }
     }
 
-    public List<String> listarAeropuertos(){
+    public List<String> listarAeropuertos() {
         AeropuertoServicio aeroS = new AeropuertoServicio();
         List<String> listaAero = aeroS.listarNombresAeropuertos();
         return listaAero;

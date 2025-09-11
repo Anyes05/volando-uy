@@ -4,7 +4,7 @@ import logica.clase.ISistema;
 import logica.clase.Sistema;
 
 public class Factory {
-    public ISistema getSistema(){
+    public ISistema getSistema() {
         return Sistema.getInstance();
     }
 }

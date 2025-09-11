@@ -15,7 +15,7 @@ public class DTRutaVuelo {
     private DTCiudad ciudadDestino;
     private List<Categoria> categorias;
 
-    public DTRutaVuelo(String nombre, String descripcion,DTFecha fechaAlta,DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
+    public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaAlta = fechaAlta;
@@ -30,21 +30,27 @@ public class DTRutaVuelo {
     public String getNombre() {
         return nombre;
     }
+
     public String getDescripcion() {
         return descripcion;
     }
+
     public DTFecha getFechaAlta() {
         return fechaAlta;
     }
+
     public DTCostoBase getCostoBase() {
         return costoBase;
     }
+
     public DTAerolinea getAerolinea() {
         return aerolinea;
     }
+
     public DTCiudad getCiudadOrigen() {
         return ciudadOrigen;
     }
+
     public DTCiudad getCiudadDestino() {
         return ciudadDestino;
     }
@@ -66,7 +72,7 @@ public class DTRutaVuelo {
 
     public String toString2() {
         String nombresCategorias = "";
-        for(Categoria c : categorias) {
+        for (Categoria c : categorias) {
             nombresCategorias = nombresCategorias + c.getNombre() + "     ";
 
         }

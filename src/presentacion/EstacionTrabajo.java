@@ -6,6 +6,7 @@ import logica.clase.Factory;
 import logica.clase.ISistema;
 
 import com.toedter.calendar.JCalendar;
+
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
@@ -284,7 +285,7 @@ public class EstacionTrabajo {
             // Limpiar lista de pasajeros
             nombresPasajeros.clear();
             actualizarListaPasajeros();
-            
+
             // Limpiar campos de texto
             if (cantPasajesReservaVtxt != null) {
                 cantPasajesReservaVtxt.setText("");
@@ -292,7 +293,7 @@ public class EstacionTrabajo {
             if (equipajeExtraReservaV != null) {
                 equipajeExtraReservaV.setText("");
             }
-            
+
             // Limpiar selecciones de combo boxes
             if (comboBoxTipoAsientoReservaV != null) {
                 comboBoxTipoAsientoReservaV.setSelectedIndex(-1);
@@ -303,12 +304,12 @@ public class EstacionTrabajo {
             if (comboBoxPasajerosReservaV != null) {
                 comboBoxPasajerosReservaV.setSelectedIndex(-1);
             }
-            
+
             // Limpiar fecha de reserva (establecer fecha actual)
             if (fechaReservaVJC != null) {
                 fechaReservaVJC.setDate(new java.util.Date());
             }
-            
+
         } catch (Exception e) {
             // Si hay algún error al limpiar, no hacer nada para evitar más errores
             System.err.println("Error al limpiar formulario: " + e.getMessage());
@@ -320,14 +321,14 @@ public class EstacionTrabajo {
         if (nombresPasajeros.contains(nicknamePasajero)) {
             nombresPasajeros.remove(nicknamePasajero);
             actualizarListaPasajeros();
-            JOptionPane.showMessageDialog(null, "Pasajero quitado exitosamente: " + nicknamePasajero, 
-                "Pasajero Quitado", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Pasajero quitado exitosamente: " + nicknamePasajero,
+                    "Pasajero Quitado", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "ERROR: El pasajero " + nicknamePasajero + 
-                " no está en la lista de pasajeros.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "ERROR: El pasajero " + nicknamePasajero +
+                    " no está en la lista de pasajeros.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     private boolean cargandoAeroRV = false;//estos booleanos son para la carga de los comboBox, porque sino no me funcionaba
     private boolean cargandoRutasRV = false;
     private boolean cargandoVuelosRV = false;
@@ -337,7 +338,7 @@ public class EstacionTrabajo {
     private boolean consultaCP = false;
 
     private ISistema sistema; // Variable para almacenar la instancia de ISistema obtenida a través del Factory
-    
+
     // Lista de pasajeros para reservas
     public List<String> nombresPasajeros = new java.util.ArrayList<>();
 
@@ -362,45 +363,11 @@ public class EstacionTrabajo {
         fechaReservaVJC = new JCalendar();
         listaPasajerosReservaVJlist = new JList<>();
         listCatAltaRuta.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        //scrollReservaVuelo = new JScrollPane(reservaVuelo);
-//        // Inicializar ComboBox de TipoAsiento para reserva de vuelo
         reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
         reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0); // Seleccionar Turista por defecto
 
     }
 
-//    private void inicializarComboBoxTipoAsiento() {
-//        if (reservaVueloSeleccionarUsuarioTipoAsiento != null) {
-//            // Limpiar el ComboBox
-//            reservaVueloSeleccionarUsuarioTipoAsiento.removeAllItems();
-//
-//            // Agregar los valores del enum
-//            for (TipoAsiento tipo : TipoAsiento.values()) {
-//                reservaVueloSeleccionarUsuarioTipoAsiento.addItem(tipo);
-//            }
-//
-//            // Seleccionar Turista por defecto
-//            reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0);
-//
-//            System.out.println("ComboBox TipoAsiento reinicializado con " + reservaVueloSeleccionarUsuarioTipoAsiento.getItemCount() + " elementos");
-//
-//            // Forzar repaint del componente
-//            reservaVueloSeleccionarUsuarioTipoAsiento.repaint();
-//            reservaVueloSeleccionarUsuarioTipoAsiento.revalidate();
-//
-//            // Mostrar mensaje de confirmación
-//            JOptionPane.showMessageDialog(null,
-//                    "ComboBox TipoAsiento inicializado con " + reservaVueloSeleccionarUsuarioTipoAsiento.getItemCount() + " elementos:\n" +
-//                            "- " + TipoAsiento.Turista + "\n" +
-//                            "- " + TipoAsiento.Ejecutivo,
-//                    "Debug", JOptionPane.INFORMATION_MESSAGE);
-//        } else {
-//            System.err.println("ERROR: reservaVueloSeleccionarUsuarioTipoAsiento es null!");
-//            JOptionPane.showMessageDialog(null, "ERROR: ComboBox TipoAsiento es null!", "Error", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
-//
     private void inicializarComboBoxTipoAsientoPaquete() {
         comboBoxTipoAsientoAgrRutaaPaquete.removeAllItems();
         for (TipoAsiento tipo : TipoAsiento.values()) {
@@ -408,6 +375,7 @@ public class EstacionTrabajo {
         }
         comboBoxTipoAsientoAgrRutaaPaquete.setSelectedIndex(-1);
     }
+
     private void inicializarComboBoxTipoAsientoReserva() {
         comboBoxTipoAsientoReservaV.removeAllItems();
         for (TipoAsiento tipo : TipoAsiento.values()) {
@@ -416,9 +384,9 @@ public class EstacionTrabajo {
         comboBoxTipoAsientoReservaV.setSelectedIndex(-1);
     }
 
-    private void cargarAeropuertos(JComboBox<String> combo){
+    private void cargarAeropuertos(JComboBox<String> combo) {
         combo.removeAllItems();
-        for(String aero : sistema.listarAeropuertos()){
+        for (String aero : sistema.listarAeropuertos()) {
             combo.addItem(aero);
         }
         combo.setSelectedIndex(-1);
@@ -520,20 +488,20 @@ public class EstacionTrabajo {
         }
     }
 
-    private void cargarReservas(JComboBox<DTVueloReserva> comboR, String nombreV){
+    private void cargarReservas(JComboBox<DTVueloReserva> comboR, String nombreV) {
         comboR.removeAllItems();
         List<DTVueloReserva> reservas = sistema.listarReservasVuelo(nombreV);
-        for(DTVueloReserva r : reservas){
+        for (DTVueloReserva r : reservas) {
             comboR.addItem(r);
         }
         comboR.setSelectedIndex(-1);
     }
 
     //---PAQUETES------
-    private void cargarPaquetes(JComboBox<DTPaqueteVuelos> comboPaquete){
+    private void cargarPaquetes(JComboBox<DTPaqueteVuelos> comboPaquete) {
         comboPaquete.removeAllItems();
-        for (DTPaqueteVuelos p : sistema.mostrarPaquete()){
-                comboPaquete.addItem(p);
+        for (DTPaqueteVuelos p : sistema.mostrarPaquete()) {
+            comboPaquete.addItem(p);
 
         }
         cargandoPaquete = true;
@@ -542,14 +510,15 @@ public class EstacionTrabajo {
 
     private void cargarPaquetesNoComprados(JComboBox<DTPaqueteVuelos> comboPaquete) {
         comboPaquete.removeAllItems();
-        for (DTPaqueteVuelos p : sistema.obtenerPaquetesNoComprados()){
+        for (DTPaqueteVuelos p : sistema.obtenerPaquetesNoComprados()) {
             comboPaquete.addItem(p);
         }
         cargandoPaquete = true;
         comboPaquete.setSelectedIndex(-1);
     }
+
     //para el caso de uso de comprar paquete
-    private void cargarPaquetesConRutas(JComboBox<DTPaqueteVuelos> combo){
+    private void cargarPaquetesConRutas(JComboBox<DTPaqueteVuelos> combo) {
         combo.removeAllItems();
         for (DTPaqueteVuelos p : sistema.mostrarPaqueteConRutas()) {
             if (p.getRutas() != null && !p.getRutas().isEmpty()) {
@@ -559,47 +528,41 @@ public class EstacionTrabajo {
         combo.setSelectedIndex(-1);
     }
 
-    private void cargarRutasDePaquete(JComboBox<DTRutaVuelo> rutas){
+    private void cargarRutasDePaquete(JComboBox<DTRutaVuelo> rutas) {
         rutas.removeAllItems();
-        for(DTRutaVuelo r : sistema.consultaPaqueteVueloRutas()){
+        for (DTRutaVuelo r : sistema.consultaPaqueteVueloRutas()) {
             rutas.addItem(r);
         }
         cargandoRutasCP = true;
         rutas.setSelectedIndex(-1);
     }
+
     //----CLIENTES------
-    private void cargarClientes(JComboBox<DTCliente> combo){
+    private void cargarClientes(JComboBox<DTCliente> combo) {
         combo.removeAllItems();
-        for (DTCliente c : sistema.mostrarClientes()){
+        for (DTCliente c : sistema.mostrarClientes()) {
             combo.addItem(c);
         }
         combo.setSelectedIndex(-1);
     }
 
-    private void cargarClientesSinVueloSeleccionado(JComboBox<DTCliente> combo){
+    private void cargarClientesSinVueloSeleccionado(JComboBox<DTCliente> combo) {
         combo.removeAllItems();
-        for (DTCliente c : sistema.mostrarClientes()){
+        for (DTCliente c : sistema.mostrarClientes()) {
             combo.addItem(c);
         }
         combo.setSelectedIndex(-1);
     }
 
-    private void cargarPasajeros(JComboBox<DTPasajero> combo, String nombreCliente){
+    private void cargarPasajeros(JComboBox<DTPasajero> combo, String nombreCliente) {
         combo.removeAllItems();
-        for (DTPasajero c : sistema.pasajeros(nombreCliente)){
+        for (DTPasajero c : sistema.pasajeros(nombreCliente)) {
             combo.addItem(c);
         }
         combo.setSelectedIndex(-1);
     }
 
 
-//    private void cargarAerolineas(JComboBox<String> combo) {
-//        combo.removeAllItems(); // limpiar combo por si ya tiene algo
-//        for (DTAerolinea a : sistema.listarAerolineas()) {
-//            combo.addItem(a.getNickname());
-//        }
-//        combo.setSelectedIndex(-1);
-//    }
     //----------Boton cancelar Alta vuelo------
     private void limpiarCamposAltaVuelo() {
         nombreAltaVuelotxt.setText("");
@@ -636,7 +599,8 @@ public class EstacionTrabajo {
         paisAltaCiText.setText("");
         calendarCiudadAlta.setCalendar(Calendar.getInstance());
     }
-    private void limpiarCamposCrearPaquete(){
+
+    private void limpiarCamposCrearPaquete() {
         nombreAltaPaqtxt.setText("");
         descripcionAltaPaqtxt.setText("");
         períodoAltaPaqtxt.setText("");
@@ -662,20 +626,6 @@ public class EstacionTrabajo {
             reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0);
             System.out.println("ComboBox TipoAsiento inicializado en constructor");
         }
-
-//        // Agregar listener al panel de pasajes para inicializar ComboBox cuando se muestre
-//        reservaVueloPasajes.addComponentListener(new java.awt.event.ComponentAdapter() {
-//            public void componentShown(java.awt.event.ComponentEvent evt) {
-//                inicializarComboBoxTipoAsiento();
-//            }
-//        });
-
-//        // También agregar listener al panel de selección de usuario
-//        reservaVueloSeleccionarUsuarioJPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
-//            public void componentShown(java.awt.event.ComponentEvent evt) {
-//                inicializarComboBoxTipoAsiento();
-//            }
-//        });
 
         /*----- TABLAS -----*/
         // Columnas de la tabla
@@ -828,8 +778,6 @@ public class EstacionTrabajo {
                         parentPanel.add(ConsultaPaquete);
                         parentPanel.repaint();
                         parentPanel.revalidate();
-//                        UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel,consultaPaqueteRutaVueloSeleccionarPaquete);
-//                        UsuarioHelper.cambiarPanel(parentPanel,consultaPaqueteRutaVuelo);
                         break;
                     case "Comprar paquete":
                         parentPanel.removeAll();
@@ -853,26 +801,26 @@ public class EstacionTrabajo {
                 switch (seleccionado) {
                     case "Crear usuario":
                         UsuarioHelper.limpiarCampos(
-                            nicknameAltaCliente,
-                            nombreAltaCliente,
-                            apellidoAltaCliente,
-                            correoAltaCliente,
-                            nacionalidadAltaCliente,
-                            numeroDocAltaCliente,
-                            altaAerolineaNickname,
-                            altaAerolineaNombre,
-                            altaAerolineaCorreo,
-                            altaAerolineaLinkWeb
-                    );
+                                nicknameAltaCliente,
+                                nombreAltaCliente,
+                                apellidoAltaCliente,
+                                correoAltaCliente,
+                                nacionalidadAltaCliente,
+                                numeroDocAltaCliente,
+                                altaAerolineaNickname,
+                                altaAerolineaNombre,
+                                altaAerolineaCorreo,
+                                altaAerolineaLinkWeb
+                        );
                         UsuarioHelper.resetFormulario(
                                 comboBoxAltaCliente,
                                 JCalendarAltaCliente,
                                 nicknameAltaCliente
                         );
                         UsuarioHelper.limpiarTextPane(
-                            altaAerolineaDescripcion
+                                altaAerolineaDescripcion
                         );
-                        UsuarioHelper.cambiarPanel(parentPanel,altaUsuario);
+                        UsuarioHelper.cambiarPanel(parentPanel, altaUsuario);
                         break;
                     case "Modificar usuario":
                         UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
@@ -1132,7 +1080,6 @@ public class EstacionTrabajo {
         });
 
 
-
 // Si queres empezar con ninguno seleccionado
         grupo.clearSelection();
 
@@ -1143,7 +1090,7 @@ public class EstacionTrabajo {
         consultaUsuarioCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UsuarioHelper.cambiarPanel(parentPanel,principalVacio);
+                UsuarioHelper.cambiarPanel(parentPanel, principalVacio);
             }
         });
 
@@ -1530,7 +1477,7 @@ public class EstacionTrabajo {
                     }
                     cargandoVuelosRV = false;
                     vuelosConsultaRV.setSelectedIndex(-1);
-                }else{
+                } else {
                     VueloHelper.limpiarCampos(
                             descripcionRVConsulta,
                             ciudadORVConsulta,
@@ -1608,8 +1555,8 @@ public class EstacionTrabajo {
                 String nickname = (String) comboBoxAeroConsultaV.getSelectedItem();
                 comboBoxRutasVuelosConsultaV.removeAllItems();
                 comboBoxVuelosConsultaV.removeAllItems();
-                VueloHelper.limpiarCampos(nombVueloConsultaVtxt,fechaVueloConsultaVtxt,horaVueloConsultaVtxt,duracionVueloConsultaVtxt,maxTuristaConsultaVtxt,
-                        maxEjecutivoConsultaVtxt,fechaAltaVueloConsultaVtxt);
+                VueloHelper.limpiarCampos(nombVueloConsultaVtxt, fechaVueloConsultaVtxt, horaVueloConsultaVtxt, duracionVueloConsultaVtxt, maxTuristaConsultaVtxt,
+                        maxEjecutivoConsultaVtxt, fechaAltaVueloConsultaVtxt);
                 if (nickname != null) {
                     cargarRutas(comboBoxRutasVuelosConsultaV, nickname);
                 }
@@ -1620,8 +1567,8 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 DTRutaVuelo rutaSeleccionada = (DTRutaVuelo) comboBoxRutasVuelosConsultaV.getSelectedItem();
                 comboBoxVuelosConsultaV.removeAllItems();
-                VueloHelper.limpiarCampos(nombVueloConsultaVtxt,fechaVueloConsultaVtxt,horaVueloConsultaVtxt,duracionVueloConsultaVtxt,maxTuristaConsultaVtxt,
-                maxEjecutivoConsultaVtxt,fechaAltaVueloConsultaVtxt);
+                VueloHelper.limpiarCampos(nombVueloConsultaVtxt, fechaVueloConsultaVtxt, horaVueloConsultaVtxt, duracionVueloConsultaVtxt, maxTuristaConsultaVtxt,
+                        maxEjecutivoConsultaVtxt, fechaAltaVueloConsultaVtxt);
                 if (rutaSeleccionada != null) {
                     cargarVuelos(comboBoxVuelosConsultaV, rutaSeleccionada.getNombre());
                 }
@@ -1644,16 +1591,12 @@ public class EstacionTrabajo {
                     cargarReservas(comboBoxReservasConsultaV, v.getNombre());
                 } else {
                     comboBoxReservasConsultaV.removeAllItems();
-                    VueloHelper.limpiarCampos(nombVueloConsultaVtxt,fechaVueloConsultaVtxt,horaVueloConsultaVtxt,duracionVueloConsultaVtxt,maxTuristaConsultaVtxt,
-                            maxEjecutivoConsultaVtxt,fechaAltaVueloConsultaVtxt);
+                    VueloHelper.limpiarCampos(nombVueloConsultaVtxt, fechaVueloConsultaVtxt, horaVueloConsultaVtxt, duracionVueloConsultaVtxt, maxTuristaConsultaVtxt,
+                            maxEjecutivoConsultaVtxt, fechaAltaVueloConsultaVtxt);
                 }
 
             }
         });
-
-
-
-
 
         //--------- CREAR PAQUETE ---------------
         buttonCrearPaquete.addActionListener(new ActionListener() {
@@ -1675,7 +1618,7 @@ public class EstacionTrabajo {
                             fechaCal.get(Calendar.MONTH) + 1,
                             fechaCal.get(Calendar.YEAR)
                     );
-                    sistema.crearPaquete(nomPaq, descripcion,null, diasValidosInt, descuentoFloat, fechaAlta);
+                    sistema.crearPaquete(nomPaq, descripcion, null, diasValidosInt, descuentoFloat, fechaAlta);
                     JOptionPane.showMessageDialog(crearPaquete, "Paquete creado correctamente.");
 
                     nombreAltaPaqtxt.setText("");
@@ -1686,7 +1629,7 @@ public class EstacionTrabajo {
                     calendarAltaPaquete.setCalendar(Calendar.getInstance());
                 } catch (IllegalArgumentException | IllegalStateException ex) {
                     JOptionPane.showMessageDialog(crearPaquete, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }catch (Exception ex) {
+                } catch (Exception ex) {
                     JOptionPane.showMessageDialog(crearPaquete, "Error inesperado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 
                 }
@@ -1703,199 +1646,15 @@ public class EstacionTrabajo {
             }
         });
 
-//        // RESERVA VUELO
-//        reservaVueloSeleccionarAerolineaAceptar.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Cargar aerolíneas en la tabla
-//                ReservaHelper.cargarAerolineasEnTabla(reservaVueloTablePrincipal);
-//                UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarRutaVuelo);
-//            }
-//        });
-
-//        reservaVueloSeleccionarRutaVueloAceptar.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Obtener aerolínea seleccionada y cargar sus rutas
-//                String aerolineaSeleccionada = reservaVueloSeleccionarAerolineaInput.getText().trim();
-//                if (aerolineaSeleccionada.isEmpty()) {
-//                    JOptionPane.showMessageDialog(null, "Debe seleccionar una aerolínea.", "Error", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-//
-//                try {
-//                    List<DTRutaVuelo> rutas = ReservaHelper.obtenerRutasDeAerolinea(aerolineaSeleccionada);
-//                    DefaultComboBoxModel<DTRutaVuelo> model = new DefaultComboBoxModel<>();
-//                    for (DTRutaVuelo ruta : rutas) {
-//                        model.addElement(ruta);
-//                    }
-//                    comBoxRutVueloConsultaRV.setModel(model);
-//                    UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarVuelo);
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(null, "Error al cargar rutas: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
-//
-//        reservaVueloSeleccionarVueloAceptar.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Obtener ruta seleccionada y cargar sus vuelos
-//                DTRutaVuelo rutaSeleccionada = (DTRutaVuelo) comBoxRutVueloConsultaRV.getSelectedItem();
-//                if (rutaSeleccionada == null) {
-//                    JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta.", "Error", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-//
-//                try {
-//                    List<DTVuelo> vuelos = ReservaHelper.obtenerVuelosDeRuta(rutaSeleccionada.getNombre());
-//                    DefaultComboBoxModel<DTVuelo> model = new DefaultComboBoxModel<>();
-//                    for (DTVuelo vuelo : vuelos) {
-//                        model.addElement(vuelo);
-//                    }
-//                    vuelosConsultaRV.setModel(model);
-//                    UsuarioHelper.cambiarPanel(reservaVueloParentPanel,reservaVueloSeleccionarUsuarioJPanel);
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(null, "Error al cargar vuelos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
-//
-//        reservaVueloSeleccionarUsuarioAceptar.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Obtener vuelo seleccionado
-//                DTVuelo vueloSeleccionado = (DTVuelo) vuelosConsultaRV.getSelectedItem();
-//                if (vueloSeleccionado == null) {
-//                    JOptionPane.showMessageDialog(null, "Debe seleccionar un vuelo.", "Error", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-//
-//                // Seleccionar el vuelo para la reserva
-//                ReservaHelper.seleccionarVuelo(vueloSeleccionado.getNombre());
-//
-//                // Cargar clientes en la tabla
-//                ReservaHelper.cargarClientesEnTabla(reservaVueloListarUsuariosTable);
-//
-//                // Agregar listener para selección de clientes
-//                ReservaHelper.configurarSeleccionCliente(reservaVueloListarUsuariosTable, reservaVueloSeleccionarUsuarioCliente);
-//
-//                // Asegurar que el ComboBox de TipoAsiento esté inicializado
-//                inicializarComboBoxTipoAsiento();
-//
-//                UsuarioHelper.cambiarPanel(reservaVueloParentPanel, reservaVueloPasajes);
-//            }
-//        });
-
-//        aceptarButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    // Obtener datos del formulario
-//                    String clienteSeleccionado = reservaVueloSeleccionarUsuarioCliente.getText().trim();
-//                    if (clienteSeleccionado.isEmpty()) {
-//                        JOptionPane.showMessageDialog(null, "Debe seleccionar un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
-//                        return;
-//                    }
-//
-//                    // Obtener tipo de asiento
-//                    TipoAsiento tipoAsiento = (TipoAsiento) reservaVueloSeleccionarUsuarioTipoAsiento.getSelectedItem();
-//                    if (tipoAsiento == null) {
-//                        JOptionPane.showMessageDialog(null, "Debe seleccionar un tipo de asiento.", "Error", JOptionPane.ERROR_MESSAGE);
-//                        return;
-//                    }
-//
-//                    // Obtener cantidad de pasajes y equipaje extra
-//                    int cantidadPasajes = (Integer) reservaVueloSeleccionarUsuarioCantidadPasajes.getValue();
-//                    int equipajeExtra = (Integer) reservaVueloSeleccionarUsuarioCantidadEquipajeExtra.getValue();
-//
-//                    // Validar datos adicionales si hay múltiples pasajes
-//                    if (cantidadPasajes > 1) {
-//                        // Verificar si hay datos para pasajeros adicionales
-//                        String nombreAdicional = apellidoTextField.getText().trim();
-//                        String apellidoAdicional = reservaVueloPasajesApellido.getText().trim();
-//
-//                        if (nombreAdicional.isEmpty() || apellidoAdicional.isEmpty()) {
-//                            // Mostrar mensaje informativo
-//                            JOptionPane.showMessageDialog(null,
-//                                    "Se crearán " + cantidadPasajes + " pasajes para el cliente: " + clienteSeleccionado +
-//                                            "\n\nNota: Todos los pasajes se asignan al mismo cliente. " +
-//                                            "Los campos de nombre y apellido se usarán para identificar a los pasajeros adicionales.",
-//                                    "Información de Reserva",
-//                                    JOptionPane.INFORMATION_MESSAGE);
-//                        } else {
-//                            // Confirmar datos de pasajeros adicionales
-//                            int confirmacion = JOptionPane.showConfirmDialog(null,
-//                                    "Se crearán " + cantidadPasajes + " pasajes:\n" +
-//                                            "1. " + clienteSeleccionado + " (cliente principal)\n" +
-//                                            "2-" + cantidadPasajes + ". " + nombreAdicional + " " + apellidoAdicional +
-//                                            " (asociado al cliente principal)\n\n" +
-//                                            "¿Desea continuar con la reserva?",
-//                                    "Confirmar Reserva",
-//                                    JOptionPane.YES_NO_OPTION,
-//                                    JOptionPane.QUESTION_MESSAGE);
-//
-//                            if (confirmacion != JOptionPane.YES_OPTION) {
-//                                return; // Cancelar la operación
-//                            }
-//                        }
-//                    }
-//
-//                    // Crear lista de pasajeros usando el helper
-//                    List<String> nombresPasajeros = ReservaHelper.obtenerPasajerosParaReserva(
-//                            clienteSeleccionado,
-//                            cantidadPasajes,
-//                            apellidoTextField, // Campo de nombre
-//                            reservaVueloPasajesApellido // Campo de apellido
-//                    );
-//
-//                    // Realizar la reserva
-//                    ReservaHelper.realizarReserva(
-//                            tipoAsiento,
-//                            cantidadPasajes,
-//                            equipajeExtra,
-//                            nombresPasajeros,
-//                            reservaVueloSeleccionarUsuarioJCalendar,
-//                            apellidoTextField.getText().trim(),
-//                            reservaVueloPasajesApellido.getText().trim()
-//                    );
-//
-//                    // Limpiar formulario y volver al inicio
-//                    ReservaHelper.limpiarFormularioReserva(
-//                            reservaVueloSeleccionarAerolineaInput,
-//                            reservaVueloSeleccionarRutaVueloInput,
-//                            reservaVueloSeleccionarVueloInput,
-//                            reservaVueloSeleccionarUsuarioCliente,
-//                            reservaVueloSeleccionarUsuarioTipoAsiento,
-//                            reservaVueloSeleccionarUsuarioCantidadPasajes,
-//                            reservaVueloSeleccionarUsuarioCantidadEquipajeExtra,
-//                            reservaVueloSeleccionarUsuarioJCalendar
-//                    );
-//
-//                    // Limpiar también los campos específicos de pasaje
-//                    ReservaHelper.limpiarFormularioPasaje(
-//                            apellidoTextField, // Este campo parece ser para nombre
-//                            reservaVueloPasajesApellido,
-//                            reservaVueloPasajesCantidadEquipajeExtra
-//                    );
-//
-//                    UsuarioHelper.cambiarPanel(parentPanel, principalVacio);
-//
-//                } catch (Exception ex) {
-//                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
-
         // CONSULTA PAQUETE DE RUTA DE VUELO
         consultaPaqueteRutaVueloSeleccionarPaqueteAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel,consultaRutaVuelo);
+                UsuarioHelper.cambiarPanel(consultaPaqueteRutaVueloParentPanel, consultaRutaVuelo);
             }
         });
 
-            //------------COMPRAR PAQUETE --------------
+        //------------COMPRAR PAQUETE --------------
 
         aceptarComprarPaquete.addActionListener(new ActionListener() {
             @Override
@@ -1903,9 +1662,9 @@ public class EstacionTrabajo {
                 DTPaqueteVuelos paquete = (DTPaqueteVuelos) comboBoxPaquetesComprarPaquete.getSelectedItem();
                 DTCliente cliente = (DTCliente) comboBoxClientesComprarPaquete.getSelectedItem();
 
-                if (paquete == null){
+                if (paquete == null) {
                     JOptionPane.showMessageDialog(null, "Debe seleccionar un paquete");
-                return;
+                    return;
                 }
                 if (cliente == null) {
                     JOptionPane.showMessageDialog(null, "Debe seleccionar un cliente");
@@ -1959,7 +1718,6 @@ public class EstacionTrabajo {
                 }
             }
         });
-
 
 
         buttonAceptarAgrRutaaPaquete.addActionListener(new ActionListener() {
@@ -2060,7 +1818,7 @@ public class EstacionTrabajo {
         comboBoxPaqueteConsultaPaquete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!cargandoPaquete) return;
+                if (!cargandoPaquete) return;
 
                 DTPaqueteVuelos paqueteconsulta = (DTPaqueteVuelos) comboBoxPaqueteConsultaPaquete.getSelectedItem();
                 try {
@@ -2079,7 +1837,7 @@ public class EstacionTrabajo {
                         cargarRutasDePaquete(comboBoxRutasVueloCP);
                         consultaCP = true;
                     }
-                }catch (Exception ex) {
+                } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error al seleccionar paquete " + ex.getMessage());
                 }
             }
@@ -2087,12 +1845,12 @@ public class EstacionTrabajo {
         comboBoxRutasVueloCP.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!cargandoRutasCP) return;
+                if (!cargandoRutasCP) return;
 
                 DTRutaVuelo seleccionado = (DTRutaVuelo) comboBoxRutasVueloCP.getSelectedItem();
                 DTPaqueteVuelos ps = (DTPaqueteVuelos) comboBoxPaqueteConsultaPaquete.getSelectedItem();
 
-                if(!consultaCP) return;
+                if (!consultaCP) return;
                 consultaCP = false;
                 if (seleccionado != null) {
                     consultaCP = true;
@@ -2123,7 +1881,7 @@ public class EstacionTrabajo {
             }
         });
 
-    //--------- RESERVA VUELO -------------
+        //--------- RESERVA VUELO -------------
         comboBoxAeroReservaV.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -2179,8 +1937,8 @@ public class EstacionTrabajo {
                     fechaAltaVReservaV.setText(v.getFechaAlta().toString());
                     cargarClientesSinVueloSeleccionado(comboBoxClienteReservaV);
                 } else {
-                    VueloHelper.limpiarCampos(nombreVueloReservaV,fechaVReservaV,horaVReservaV,duracionVReservaV,cantidadAsientosTReservaV,
-                            cantidadAsientosEReservaV,fechaAltaVReservaV);
+                    VueloHelper.limpiarCampos(nombreVueloReservaV, fechaVReservaV, horaVReservaV, duracionVReservaV, cantidadAsientosTReservaV,
+                            cantidadAsientosEReservaV, fechaAltaVReservaV);
                 }
             }
         });
@@ -2191,10 +1949,10 @@ public class EstacionTrabajo {
                 TipoAsiento asiento = null;
                 int cant = 0;
                 int equipajeExtra = 0;
-                
+
                 try {
                     asiento = (TipoAsiento) comboBoxTipoAsientoReservaV.getSelectedItem();
-                    
+
                     // Validar que se haya seleccionado un tipo de asiento
                     if (asiento == null) {
                         JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un tipo de asiento.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -2241,75 +1999,75 @@ public class EstacionTrabajo {
                     Set<String> pasajerosUnicos = new HashSet<>(nombresPasajeros);
                     if (nombresPasajeros.size() != pasajerosUnicos.size()) {
                         throw new IllegalArgumentException("ERROR: Hay pasajeros duplicados en la lista. " +
-                            "Tiene " + nombresPasajeros.size() + " entradas pero solo " + pasajerosUnicos.size() + " pasajeros únicos. " +
-                            "Debe quitar los pasajeros duplicados de la lista.");
+                                "Tiene " + nombresPasajeros.size() + " entradas pero solo " + pasajerosUnicos.size() + " pasajeros únicos. " +
+                                "Debe quitar los pasajeros duplicados de la lista.");
                     }
 
                     // Validación adicional: verificar que la cantidad de pasajeros coincida con la cantidad de pasajes
                     if (pasajerosUnicos.size() != cant) {
                         if (pasajerosUnicos.size() < cant) {
                             throw new IllegalArgumentException("ERROR: No completó la lista de pasajeros. Solicitó " + cant +
-                                " pasajes pero solo tiene " + pasajerosUnicos.size() + " pasajero(s) únicos en la lista. " +
-                                "Debe agregar " + (cant - pasajerosUnicos.size()) + " pasajero(s) más.");
+                                    " pasajes pero solo tiene " + pasajerosUnicos.size() + " pasajero(s) únicos en la lista. " +
+                                    "Debe agregar " + (cant - pasajerosUnicos.size()) + " pasajero(s) más.");
                         } else {
-                            throw new IllegalArgumentException("ERROR: Agregó demasiados pasajeros. Solicitó " + cant + 
-                                " pasajes pero tiene " + pasajerosUnicos.size() + " pasajero(s) únicos en la lista. " +
-                                "Debe quitar " + (pasajerosUnicos.size() - cant) + " pasajero(s) de la lista.");
+                            throw new IllegalArgumentException("ERROR: Agregó demasiados pasajeros. Solicitó " + cant +
+                                    " pasajes pero tiene " + pasajerosUnicos.size() + " pasajero(s) únicos en la lista. " +
+                                    "Debe quitar " + (pasajerosUnicos.size() - cant) + " pasajero(s) de la lista.");
                         }
                     }
 
                     // Usar ReservaHelper para realizar la reserva con manejo de excepciones
-                    ReservaHelper.realizarReserva(asiento, cant, equipajeExtra, nombresPasajeros, 
-                        fechaReservaVJC, null, null);
-                    
+                    ReservaHelper.realizarReserva(asiento, cant, equipajeExtra, nombresPasajeros,
+                            fechaReservaVJC, null, null);
+
                     // Limpiar todos los campos del formulario después de la reserva exitosa
                     limpiarFormularioReserva();
-                    
+
                 } catch (Exception ex) {
                     // Verificar si es un conflicto que requiere administración
                     if (ex.getMessage() != null && ex.getMessage().startsWith("ADMIN_REQUIRED:")) {
                         // Extraer el mensaje sin el prefijo
                         String mensajeCompleto = ex.getMessage().substring("ADMIN_REQUIRED:".length());
-                        
+
                         // Mostrar opciones de administración
                         String[] opciones = {
-                            "1. Cambiar aerolínea",
-                            "2. Cambiar ruta de vuelo", 
-                            "3. Cambiar vuelo",
-                            "4. Cambiar cliente",
-                            "5. Cancelar caso de uso"
+                                "1. Cambiar aerolínea",
+                                "2. Cambiar ruta de vuelo",
+                                "3. Cambiar vuelo",
+                                "4. Cambiar cliente",
+                                "5. Cancelar caso de uso"
                         };
-                        
+
                         int opcionSeleccionada = JOptionPane.showOptionDialog(null,
-                            mensajeCompleto + "\n\n¿Qué desea hacer?",
-                            "Conflicto de Reserva - Administración Requerida",
-                            JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.WARNING_MESSAGE,
-                            null,
-                            opciones,
-                            opciones[4]); // Opción por defecto: Cancelar
-                        
+                                mensajeCompleto + "\n\n¿Qué desea hacer?",
+                                "Conflicto de Reserva - Administración Requerida",
+                                JOptionPane.YES_NO_CANCEL_OPTION,
+                                JOptionPane.WARNING_MESSAGE,
+                                null,
+                                opciones,
+                                opciones[4]); // Opción por defecto: Cancelar
+
                         if (opcionSeleccionada >= 0 && opcionSeleccionada < 5) {
                             try {
                                 String opcion = String.valueOf(opcionSeleccionada + 1);
-                                sistema.manejarConflictoReserva(opcion, asiento, cant, equipajeExtra, nombresPasajeros, 
-                                    ReservaHelper.convertirFecha(fechaReservaVJC));
-                                
+                                sistema.manejarConflictoReserva(opcion, asiento, cant, equipajeExtra, nombresPasajeros,
+                                        ReservaHelper.convertirFecha(fechaReservaVJC));
+
                                 // Si llegamos aquí, la operación fue exitosa
-                                JOptionPane.showMessageDialog(null, "Operación completada exitosamente.", 
-                                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Operación completada exitosamente.",
+                                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
                                 limpiarFormularioReserva();
-                                
+
                             } catch (Exception adminEx) {
                                 if (adminEx.getMessage() != null && adminEx.getMessage().startsWith("SUCCESS:")) {
                                     // Es un mensaje de éxito (como cancelación)
-                                    JOptionPane.showMessageDialog(null, adminEx.getMessage().substring("SUCCESS:".length()), 
-                                        "Operación Completada", JOptionPane.INFORMATION_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, adminEx.getMessage().substring("SUCCESS:".length()),
+                                            "Operación Completada", JOptionPane.INFORMATION_MESSAGE);
                                     limpiarFormularioReserva();
                                 } else {
                                     // Es un error real
-                                    JOptionPane.showMessageDialog(null, "ERROR: " + adminEx.getMessage(), 
-                                        "Error en Administración", JOptionPane.ERROR_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, "ERROR: " + adminEx.getMessage(),
+                                            "Error en Administración", JOptionPane.ERROR_MESSAGE);
                                     // NO limpiar formulario en caso de error de administración
                                     // Los datos se mantienen para que el administrador pueda corregir
                                 }
@@ -2320,11 +2078,22 @@ public class EstacionTrabajo {
                     } else {
                         // Error normal, mostrar en ventana de Swing
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error en Reserva", JOptionPane.ERROR_MESSAGE);
-                        
+
                         // Limpiar todos los campos del formulario después del error
                         limpiarFormularioReserva();
                     }
                 }
+            }
+        });
+
+        buttonCancelarReservaV.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limpiarFormularioReserva();
+                parentPanel.removeAll();
+                parentPanel.add(principalVacio);
+                parentPanel.repaint();
+                parentPanel.revalidate();
             }
         });
 
@@ -2345,22 +2114,22 @@ public class EstacionTrabajo {
                 try {
                     DTPasajero pasajero = (DTPasajero) comboBoxPasajerosReservaV.getSelectedItem();
 
-                    if(pasajero != null){
+                    if (pasajero != null) {
                         // Verificar si el pasajero ya está en la lista
                         if (nombresPasajeros.contains(pasajero.getNicknameCliente())) {
                             // Si ya está, mostrar error y NO permitir agregarlo
-                            JOptionPane.showMessageDialog(null, 
-                                "ERROR: El pasajero " + pasajero.getNicknameCliente() + " ya está en la lista.\n" +
-                                "No se pueden agregar pasajeros duplicados.\n" +
-                                "Si desea quitarlo, use el botón 'Quitar' o seleccione otro pasajero.", 
-                                "Pasajero Duplicado", 
-                                JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null,
+                                    "ERROR: El pasajero " + pasajero.getNicknameCliente() + " ya está en la lista.\n" +
+                                            "No se pueden agregar pasajeros duplicados.\n" +
+                                            "Si desea quitarlo, use el botón 'Quitar' o seleccione otro pasajero.",
+                                    "Pasajero Duplicado",
+                                    JOptionPane.ERROR_MESSAGE);
                         } else {
                             // Si no está, agregarlo normalmente
                             sistema.nombresPasajes(pasajero.getNicknameCliente(), nombresPasajeros);
                             actualizarListaPasajeros(); // Actualizar la lista visual
-                            JOptionPane.showMessageDialog(null, "Pasajero agregado exitosamente: " + pasajero.getNicknameCliente(), 
-                                "Pasajero Agregado", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Pasajero agregado exitosamente: " + pasajero.getNicknameCliente(),
+                                    "Pasajero Agregado", JOptionPane.INFORMATION_MESSAGE);
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un pasajero.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -2381,33 +2150,33 @@ public class EstacionTrabajo {
                     try {
                         // Obtener el pasajero seleccionado en el combo box
                         DTPasajero pasajero = (DTPasajero) comboBoxPasajerosReservaV.getSelectedItem();
-                        
+
                         if (pasajero != null) {
                             String nicknamePasajero = pasajero.getNicknameCliente();
-                            
+
                             // Verificar si el pasajero está en la lista
                             if (nombresPasajeros.contains(nicknamePasajero)) {
                                 // Confirmar antes de quitar
                                 int opcion = JOptionPane.showConfirmDialog(null,
-                                    "¿Desea quitar el pasajero '" + nicknamePasajero + "' de la lista?",
-                                    "Quitar Pasajero",
-                                    JOptionPane.YES_NO_OPTION,
-                                    JOptionPane.QUESTION_MESSAGE);
+                                        "¿Desea quitar el pasajero '" + nicknamePasajero + "' de la lista?",
+                                        "Quitar Pasajero",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.QUESTION_MESSAGE);
 
                                 if (opcion == JOptionPane.YES_OPTION) {
                                     quitarPasajero(nicknamePasajero);
                                 }
                             } else {
-                                JOptionPane.showMessageDialog(null, "ERROR: El pasajero " + nicknamePasajero + 
-                                    " no está en la lista de pasajeros.", "Error", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "ERROR: El pasajero " + nicknamePasajero +
+                                        " no está en la lista de pasajeros.", "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         } else {
-                            JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un pasajero del combo box.", 
-                                "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "ERROR: Debe seleccionar un pasajero del combo box.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, "ERROR: Error inesperado al quitar pasajero: " + ex.getMessage(), 
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "ERROR: Error inesperado al quitar pasajero: " + ex.getMessage(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
@@ -2421,12 +2190,12 @@ public class EstacionTrabajo {
                     if (evt.getClickCount() == 2) { // Doble clic
                         String pasajeroSeleccionado = (String) listaPasajerosReservaVJlist.getSelectedValue();
                         if (pasajeroSeleccionado != null) {
-                            int opcion = JOptionPane.showConfirmDialog(null, 
-                                "¿Desea quitar el pasajero '" + pasajeroSeleccionado + "' de la lista?", 
-                                "Quitar Pasajero", 
-                                JOptionPane.YES_NO_OPTION, 
-                                JOptionPane.QUESTION_MESSAGE);
-                            
+                            int opcion = JOptionPane.showConfirmDialog(null,
+                                    "¿Desea quitar el pasajero '" + pasajeroSeleccionado + "' de la lista?",
+                                    "Quitar Pasajero",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE);
+
                             if (opcion == JOptionPane.YES_OPTION) {
                                 quitarPasajero(pasajeroSeleccionado);
                             }
@@ -2439,21 +2208,13 @@ public class EstacionTrabajo {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String ciudadOrigen = (String) comboBoxCiudadOrigenARV.getSelectedItem();
-                if(ciudadOrigen != null){
+                if (ciudadOrigen != null) {
                     ciudadOrigen = ciudadOrigen.split(",")[0].trim();
                     cargarCiudadesDestino(comboBoxCiudadDestinoARV, ciudadOrigen);
-                }else{
+                } else {
                     comboBoxCiudadDestinoARV.removeAllItems();
                 }
             }
         });
     }
 }
-
-
-
-
-
-
-
-

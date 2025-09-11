@@ -3,6 +3,7 @@ package dato.converter;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import logica.DataTypes.DTFecha;
+
 import java.sql.Date;
 import java.time.LocalDate;
 
@@ -15,6 +16,7 @@ public class DTFechaConverter implements AttributeConverter<DTFecha, Date> {
         LocalDate localDate = LocalDate.of(dtFecha.getAno(), dtFecha.getMes(), dtFecha.getDia());
         return Date.valueOf(localDate);
     }
+
     // Convierte Date de la base de datos a DTFecha
     @Override
     public DTFecha convertToEntityAttribute(Date date) {

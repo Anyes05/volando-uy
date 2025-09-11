@@ -1,11 +1,11 @@
 package logica.DataTypes;
 
-public class DTCompraPaquete extends DTReserva{
+public class DTCompraPaquete extends DTReserva {
     private DTFecha vencimiento;
 
-    public DTCompraPaquete(DTFecha fechaReserva, DTCostoBase costoReserva, DTFecha vencimiento){
+    public DTCompraPaquete(DTFecha fechaReserva, DTCostoBase costoReserva, DTFecha vencimiento) {
         super(fechaReserva, costoReserva);
-        this.vencimiento=vencimiento;
+        this.vencimiento = vencimiento;
     }
 
     //Getters

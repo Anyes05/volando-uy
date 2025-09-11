@@ -5,7 +5,8 @@ public class DTPasajero {
     private String apellido;
     private String nicknameCliente; // Nickname del cliente al que pertenece este pasajero
 
-    public DTPasajero() {}
+    public DTPasajero() {
+    }
 
     public DTPasajero(String nombre, String apellido, String nicknameCliente) {
         this.nombre = nombre;
@@ -14,14 +15,29 @@ public class DTPasajero {
     }
 
     // Getters y setters
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public String getNicknameCliente() { return nicknameCliente; }
-    public void setNicknameCliente(String nicknameCliente) { this.nicknameCliente = nicknameCliente; }
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public String getNicknameCliente() {
+        return nicknameCliente;
+    }
+
+    public void setNicknameCliente(String nicknameCliente) {
+        this.nicknameCliente = nicknameCliente;
+    }
 
     @Override
     public String toString() {

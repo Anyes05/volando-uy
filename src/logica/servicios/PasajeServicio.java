@@ -11,7 +11,7 @@ public class PasajeServicio {
         pasajeDAO.guardar(p);  // Se guarda en la BD
     }
 
-    public Pasaje crearPasaje (Cliente pasajero, Reserva reserva, TipoAsiento tipoAsiento) throws Exception {
+    public Pasaje crearPasaje(Cliente pasajero, Reserva reserva, TipoAsiento tipoAsiento) throws Exception {
         return pasajeDAO.crear(pasajero, reserva, tipoAsiento);
     }
 

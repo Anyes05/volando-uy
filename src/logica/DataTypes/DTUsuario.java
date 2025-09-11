@@ -5,7 +5,7 @@ public class DTUsuario {
     private String nombre;
     private String correo;
 
-    public  DTUsuario(String nickname, String nombre, String correo) {
+    public DTUsuario(String nickname, String nombre, String correo) {
         this.nickname = nickname;
         this.nombre = nombre;
         this.correo = correo;

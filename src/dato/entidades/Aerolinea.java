@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "aerolineas")
-public class Aerolinea extends Usuario{
+public class Aerolinea extends Usuario {
     @Column(nullable = false)
     private String descripcion;
 
@@ -21,7 +21,8 @@ public class Aerolinea extends Usuario{
     private List<RutaVuelo> rutasVuelo = new ArrayList<>();
 
 
-    public Aerolinea() {}
+    public Aerolinea() {
+    }
 
     public Aerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb) {
         super(nickname, nombre, correo);

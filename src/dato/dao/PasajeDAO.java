@@ -45,14 +45,14 @@ public class PasajeDAO {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            
+
             // Asegurar que las entidades estén en el contexto de persistencia
             dato.entidades.Cliente clienteManaged = em.merge(pasajero);
             dato.entidades.Reserva reservaManaged = em.merge(reserva);
-            
+
             pasaje.setPasajero(clienteManaged);
             pasaje.setReserva(reservaManaged);
-            
+
             em.persist(pasaje);
             em.flush(); // Forzar la escritura inmediata
             em.getTransaction().commit();

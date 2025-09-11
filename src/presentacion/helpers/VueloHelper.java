@@ -100,23 +100,6 @@ public class VueloHelper {
             throw new Exception("El origen y destino no pueden ser iguales.");
         }
 
-//        int hora, minutos;
-//        try {
-//            String[] partes = horaStr.split(":");
-//            if (partes.length != 2) {
-//                throw new Exception("Formato inválido. Use HH:mm");
-//            }
-//
-//            hora = Integer.parseInt(partes[0]);
-//            minutos = Integer.parseInt(partes[1]);
-//
-//            if (hora < 0 || hora > 23 || minutos < 0 || minutos > 59) {
-//                throw new Exception("Ingrese una hora válida en formato HH:mm");
-//            }
-//        } catch (NumberFormatException e) {
-//            throw new Exception("Formato inválido. Use HH:mm (ejemplo: 14:30)");
-//        }
-
         float costoTurista, costoEjecutivo, costoEquipaje;
         try {
             costoTurista = Float.parseFloat(costoTuristaStr);
@@ -181,44 +164,26 @@ public class VueloHelper {
 
         // ------------------- CREAR LA RUTA -------------------
 
-            try {
-                getSistema().ingresarDatosRuta(
-                        nombre,
-                        descripcion,
-//                        horaVuelo,
-                        costoTurista,
-                        costoEjecutivo,
-                        costoEquipaje,
-                        origen,
-                        destino,
-                        fecha,
-                        categoriasSeleccionadas // un String por vez
-                );
-                getSistema().registrarRuta();
-            } catch (IllegalArgumentException e) {
-                throw e; // re-lanzar tal cual
-            } catch (Exception e) {
-                throw new RuntimeException(e); // otras excepciones se envuelven
-            }
-        }
-
-
-
-    /*public static void crearCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta) {
-        if (nombre == null || nombre.trim().isEmpty() || pais == null || pais.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Nombre y país son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         try {
-            getSistema().altaCiudad(nombre.trim(), pais.trim(), aeropuerto, descripcion, sitioWeb, fechaAlta);
-            JOptionPane.showMessageDialog(null, "Ciudad creada con éxito.");
+            getSistema().ingresarDatosRuta(
+                    nombre,
+                    descripcion,
+//                        horaVuelo,
+                    costoTurista,
+                    costoEjecutivo,
+                    costoEquipaje,
+                    origen,
+                    destino,
+                    fecha,
+                    categoriasSeleccionadas // un String por vez
+            );
+            getSistema().registrarRuta();
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            throw e; // re-lanzar tal cual
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            throw new RuntimeException(e); // otras excepciones se envuelven
         }
-    }*/
+    }
 
     public static boolean crearCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta) {
         // Validación de nombre de ciudad
@@ -305,7 +270,7 @@ public class VueloHelper {
     public static void crearCategoria(String nombre) {
         getSistema().altaCategoria(nombre);
     }
-    
+
     public static void precargarAeropuertos() {
         try {
             getSistema().precargarAeropuertos();
@@ -496,15 +461,12 @@ public class VueloHelper {
         }
     }
 
-//----------LIMPIEZA-----------
-public static void limpiarCampos(JTextArea... campos) {
-    for (JTextArea campo : campos) {
-        campo.setText("");
+    //----------LIMPIEZA-----------
+    public static void limpiarCampos(JTextArea... campos) {
+        for (JTextArea campo : campos) {
+            campo.setText("");
+        }
     }
-}
-
-
-
 
 
 }

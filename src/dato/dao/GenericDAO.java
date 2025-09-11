@@ -3,6 +3,7 @@ package dato.dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
 import java.util.List;
 
 public class GenericDAO<T> {
@@ -15,7 +16,7 @@ public class GenericDAO<T> {
 
     public GenericDAO(Class<T> entityClass) {
         this.entityClass = entityClass;
-      //  this.em = emf.createEntityManager();
+        //  this.em = emf.createEntityManager();
     }
 
     public void crear(T entity) {

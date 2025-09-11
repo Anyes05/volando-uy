@@ -3,8 +3,10 @@ package dato.dao;
 import dato.entidades.CompraPaquete;
 import dato.entidades.PaqueteVuelo;
 import jakarta.persistence.TypedQuery;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import dato.entidades.Cliente;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
@@ -50,7 +52,7 @@ public class CompraPaqueteDAO extends GenericDAO<CompraPaquete> {
         }
     }
 
-    public CompraPaquete registrarCompra (Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, /*TipoAsiento tipoAsiento,*/ PaqueteVuelo paqueteSeleccionado) throws Exception {
+    public CompraPaquete registrarCompra(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, /*TipoAsiento tipoAsiento,*/ PaqueteVuelo paqueteSeleccionado) throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             CompraPaquete compraPaquete = new CompraPaquete();

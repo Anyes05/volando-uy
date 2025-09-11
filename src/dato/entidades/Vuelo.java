@@ -1,7 +1,9 @@
 package dato.entidades;
 
 import jakarta.persistence.*;
+
 import java.util.List;
+
 import logica.DataTypes.DTFecha;
 import dato.converter.DTFechaConverter;
 import logica.DataTypes.DTHora;
@@ -10,7 +12,7 @@ import dato.converter.DTHoraConverter;
 import java.util.ArrayList;
 
 @Entity
-@Table (name = "vuelos")
+@Table(name = "vuelos")
 public class Vuelo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,32 +71,79 @@ public class Vuelo {
     }
 
     // GETTERS Y SETTERS
-    public Long getId() { return id;}
+    public Long getId() {
+        return id;
+    }
 
-    public String getNombre() {return nombre;}
-    public void setNombre(String nombre) {this.nombre = nombre;}
+    public String getNombre() {
+        return nombre;
+    }
 
-    public DTFecha getFechaVuelo() {return fechaVuelo;}
-    public void setFechaVuelo(DTFecha fechaVuelo) {this.fechaVuelo = fechaVuelo;}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public DTHora getHoraVuelo() {return horaVuelo;}
-    public void setHoraVuelo(DTHora horaVuelo) {this.horaVuelo = horaVuelo;}
+    public DTFecha getFechaVuelo() {
+        return fechaVuelo;
+    }
 
-    public DTHora getDuracion() {return duracion;}
-    public void setDuracion(DTHora duracion) {this.duracion = duracion;}
+    public void setFechaVuelo(DTFecha fechaVuelo) {
+        this.fechaVuelo = fechaVuelo;
+    }
 
-    public int getAsientosMaxTurista() {return asientosMaxTurista;}
-    public void setAsientosMaxTurista(int asientosMaxTurista) {this.asientosMaxTurista = asientosMaxTurista;}
+    public DTHora getHoraVuelo() {
+        return horaVuelo;
+    }
 
-    public int getAsientosMaxEjecutivo() {return asientosMaxEjecutivo;}
-    public void setAsientosMaxEjecutivo(int asientosMaxEjecutivo) {this.asientosMaxEjecutivo = asientosMaxEjecutivo;}
+    public void setHoraVuelo(DTHora horaVuelo) {
+        this.horaVuelo = horaVuelo;
+    }
 
-    public DTFecha getFechaAlta() {return fechaAlta;}
-    public void setFechaAlta(DTFecha fechaAlta) {this.fechaAlta = fechaAlta;}
+    public DTHora getDuracion() {
+        return duracion;
+    }
 
-    public RutaVuelo getRutaVuelo() {return rutaVuelo;}
-    public void setRutaVuelo(RutaVuelo rutaVuelo) {this.rutaVuelo = rutaVuelo;}
+    public void setDuracion(DTHora duracion) {
+        this.duracion = duracion;
+    }
 
-    public List<Reserva> getReserva() {return reserva;}
-    public void setReserva(List<Reserva> reserva) {this.reserva = reserva;}
+    public int getAsientosMaxTurista() {
+        return asientosMaxTurista;
+    }
+
+    public void setAsientosMaxTurista(int asientosMaxTurista) {
+        this.asientosMaxTurista = asientosMaxTurista;
+    }
+
+    public int getAsientosMaxEjecutivo() {
+        return asientosMaxEjecutivo;
+    }
+
+    public void setAsientosMaxEjecutivo(int asientosMaxEjecutivo) {
+        this.asientosMaxEjecutivo = asientosMaxEjecutivo;
+    }
+
+    public DTFecha getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public void setFechaAlta(DTFecha fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
+
+    public RutaVuelo getRutaVuelo() {
+        return rutaVuelo;
+    }
+
+    public void setRutaVuelo(RutaVuelo rutaVuelo) {
+        this.rutaVuelo = rutaVuelo;
+    }
+
+    public List<Reserva> getReserva() {
+        return reserva;
+    }
+
+    public void setReserva(List<Reserva> reserva) {
+        this.reserva = reserva;
+    }
 }

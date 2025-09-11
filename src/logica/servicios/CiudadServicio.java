@@ -19,11 +19,11 @@ public class CiudadServicio {
         if (ciudadDAO.existeCiudadPorNombreYPais(nombre, pais)) {
             throw new IllegalArgumentException("Ya existe una ciudad con el nombre '" + nombre + "' en el país '" + pais + "'.");
         }
-        
+
         // Crear la ciudad
         Ciudad ciudad = new Ciudad(nombre, pais, fechaAlta);
         ciudadDAO.guardar(ciudad);
-        
+
         // Si se proporciona un nombre de aeropuerto, crear el aeropuerto
         if (nombreAeropuerto != null && !nombreAeropuerto.trim().isEmpty()) {
             // Verificar si el aeropuerto ya existe
@@ -41,17 +41,18 @@ public class CiudadServicio {
     public Ciudad buscarCiudadPorNombre(String nombre) {
         return ciudadDAO.buscarCiudadPorNombre(nombre);
     }
-    
+
     public Ciudad buscarCiudadPorNombreYPais(String nombre, String pais) {
         return ciudadDAO.buscarCiudadPorNombreYPais(nombre, pais);
     }
+
     public List<DTCiudad> listarCiudades() {
         List<Ciudad> ciudades = ciudadDAO.listarCiudades();
         List<DTCiudad> dtCiudades = new ArrayList<>();
         for (Ciudad ciudad : ciudades) {
             dtCiudades.add(new DTCiudad(
-                ciudad.getNombre(),
-                ciudad.getPais()
+                    ciudad.getNombre(),
+                    ciudad.getPais()
             ));
         }
         return dtCiudades;

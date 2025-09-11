@@ -4,7 +4,7 @@ public class DTVueloReserva {// Armar según corresponda
     DTVuelo vuelo;
     DTReserva reserva;
 
-    public DTVueloReserva(DTVuelo vuelo,DTReserva reserva){
+    public DTVueloReserva(DTVuelo vuelo, DTReserva reserva) {
         this.vuelo = vuelo;
         this.reserva = reserva;
 
@@ -18,7 +18,7 @@ public class DTVueloReserva {// Armar según corresponda
         return reserva;
     }
 
-    public String toString(){
+    public String toString() {
         return "ID: " + reserva.getId() + "     -     Cliente: " + reserva.getNickname();
     }
 }

@@ -1,6 +1,7 @@
 package dato.entidades;
 
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -14,23 +15,36 @@ public class Categoria {
     private String nombre;
 
     //Capaz nos conviene que sea muchos a muchos, actualmente está linkeado así.
-    @ManyToMany (mappedBy = "categorias", fetch = FetchType.EAGER)
-    private List <RutaVuelo> rutas;
+    @ManyToMany(mappedBy = "categorias", fetch = FetchType.EAGER)
+    private List<RutaVuelo> rutas;
 
     // Constructores
-    public Categoria() {}  // Obligatorio para JPA
+    public Categoria() {
+    }  // Obligatorio para JPA
 
     public Categoria(String nombre) {
         this.nombre = nombre;
     }
 
     // Getters y setters
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public List<RutaVuelo> getRutas() { return rutas; }
-    public void setRutas(List<RutaVuelo> rutas) { this.rutas = rutas; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public List<RutaVuelo> getRutas() {
+        return rutas;
+    }
+
+    public void setRutas(List<RutaVuelo> rutas) {
+        this.rutas = rutas;
+    }
 
 }

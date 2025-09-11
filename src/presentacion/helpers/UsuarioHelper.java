@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import logica.servicios.*;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
@@ -73,12 +74,13 @@ public class UsuarioHelper {
 
         } else if (r instanceof CompraComun) {
             tipo = "Común" +
-                    " | Costo: " + ((CompraComun) r).getCostoReserva();;
+                    " | Costo: " + ((CompraComun) r).getCostoReserva();
+            ;
         } else {
             tipo = "Desconocido";
         }
 
-        return tipo + " | Fecha: " + formatearFecha(r.getFechaReserva()) ;
+        return tipo + " | Fecha: " + formatearFecha(r.getFechaReserva());
 
     }
 
@@ -277,11 +279,13 @@ public class UsuarioHelper {
             campo.setText("");
         }
     }
+
     public static void limpiarTextPane(JTextPane... panes) {
         for (JTextPane pane : panes) {
             pane.setText("");
         }
     }
+
     // reiniciar ComboBox y Calendar
     public static void resetFormulario(JComboBox<?> combo, JCalendar calendario, JTextField primerCampo) {
         if (combo != null) combo.setSelectedIndex(0);
@@ -333,7 +337,6 @@ public class UsuarioHelper {
     }
 
 
-
     // VALIDACION
     public static boolean modificarAerolineaValidar(
             JTextField nombre,
@@ -353,7 +356,6 @@ public class UsuarioHelper {
             JOptionPane.showMessageDialog(null, "El nombre solo puede contener letras y espacios, sin símbolos ni números.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
 
 
         // Validar sitio web
@@ -658,9 +660,7 @@ public class UsuarioHelper {
     }
 
 
-
     /// ////// Aerolinea ///////////
-
 
 
     public static void crearAerolinea(
@@ -797,217 +797,6 @@ public class UsuarioHelper {
             );
         }
     }
-
-
-
-
-   /* ////////PAQUETES DE VUELO/////////// ESTE NO RECIBE PARAMETROS POR QUE TODAVIA NO ESTA IMPLEMENTADO EN SISTEMA
-    public static void mostrarPaquetes(JTable tabla) {
-        try {
-            // 1. Obtener todos los paquetes desde Sistema
-            List<DTPaqueteVuelos> paquetes = Sistema.getInstance().mostrarPaquete();
-
-            // Evitar null
-            if (paquetes == null) {
-                paquetes = new ArrayList<>();
-            }
-
-            // 2. Definir columnas
-            String[] columnas = {
-                    "Nombre",
-                    "Descripción",
-                    "Tipo Asiento",
-                    "Días Válidos",
-                    "Descuento",
-                    "Costo Total"
-            };
-            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
-
-            // 3. Llenar la tabla
-            if (!paquetes.isEmpty()) {
-                for (DTPaqueteVuelos p : paquetes) {
-                    modelo.addRow(new Object[] {
-                            p.getNombre(),
-                            p.getDescripcion(),
-                            p.getTipoAsiento(),
-                            p.getDiasValidos(),
-                            String.format("%.2f%%", p.getDescuento()),
-                            String.format("$ %.2f", p.getCostoTotal())
-                    });
-                }
-            } else {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "No hay paquetes registrados",
-                        "Información",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-
-            // 4. Asignar modelo a la tabla
-            tabla.setModel(modelo);
-            tabla.setAutoCreateRowSorter(true);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error al mostrar paquetes: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-*/
-    //////////////MOSTRAR RUTA VUELO/////////////
-   /* public static void mostrarRutaVuelo(JTable tabla, String nombreRuta) {
-        if (nombreRuta == null || nombreRuta.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Debe proporcionar nombre de ruta",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-        try {
-            // 1. Obtener los vuelos de la ruta desde Sistema
-            List<DTVuelo> vuelos = Sistema.getInstance().seleccionarRutaVuelo(nombreRuta);
-
-            // Evitar null
-            if (vuelos == null) {
-                vuelos = new ArrayList<>();
-            }
-
-            // 2. Definir columnas
-            String[] columnas = {
-                    "Nombre Vuelo",
-                    "Duración",
-                    "Fecha Vuelo",
-                    "Hora Vuelo",
-                    "Asientos Ejecutivo",
-                    "Asientos Turista",
-                    "Ruta",
-                    "Origen",
-                    "Destino",
-                    "Costo Base"
-            };
-            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
-
-            // 3. Llenar la tabla
-            if (!vuelos.isEmpty()) {
-                for (DTVuelo v : vuelos) {
-                    DTRutaVuelo ruta = v.getRuta();
-                    modelo.addRow(new Object[] {
-                            v.getNombre(),
-                            v.getDuracion(),
-                            v.getFechaVuelo(),
-                            v.getHoraVuelo(),
-                            v.getAsientosMaxEjecutivo(),
-                            v.getAsientosMaxTurista(),
-                            ruta.getNombre(),
-                            ruta.getCiudadOrigen().getNombre() + " (" + ruta.getCiudadOrigen().getPais() + ")",
-                            ruta.getCiudadDestino().getNombre() + " (" + ruta.getCiudadDestino().getPais() + ")",
-                            String.format("$ %.2f", ruta.getCostoBase())
-                    });
-                }
-            } else {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "No hay vuelos para la ruta: " + nombreRuta + ", o no existe.",
-                        "Información",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-
-            // 4. Asignar modelo a la tabla
-            tabla.setModel(modelo);
-            tabla.setAutoCreateRowSorter(true);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error al mostrar vuelos: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-
-    public static void mostrarReservasPorVuelo(JTable tabla, String nombreVuelo) {
-        if (nombreVuelo == null || nombreVuelo.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Debe proporcionar nombre de vuelo",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-
-        try {
-            // 1. Obtener las reservas del vuelo desde Sistema
-            List<DTVueloReserva> reservas = Sistema.getInstance().seleccionarVuelo(nombreVuelo);
-
-            if (reservas == null) {
-                reservas = new ArrayList<>();
-            }
-
-            // 2. Definir columnas
-            String[] columnas = {
-                    "Nombre Vuelo",
-                    "Duración",
-                    "Fecha Vuelo",
-                    "Hora Vuelo",
-                    "Ruta",
-                    "Origen",
-                    "Destino",
-                    "Fecha Reserva",
-                    "Costo Reserva"
-            };
-            DefaultTableModel modelo = new DefaultTableModel(columnas, 0);
-
-            // 3. Llenar la tabla
-            if (!reservas.isEmpty()) {
-                for (DTVueloReserva vr : reservas) {
-                    DTVuelo v = vr.getVuelo();
-                    DTRutaVuelo ruta = v.getRuta();
-                    DTReserva r = vr.getReserva();
-
-                    modelo.addRow(new Object[]{
-                            v.getNombre(),
-                            v.getDuracion(),
-                            v.getFechaVuelo(),
-                            v.getHoraVuelo(),
-                            ruta.getNombre(),
-                            ruta.getCiudadOrigen().getNombre() + " (" + ruta.getCiudadOrigen().getPais() + ")",
-                            ruta.getCiudadDestino().getNombre() + " (" + ruta.getCiudadDestino().getPais() + ")",
-                            r.getFechaReserva(),
-                            String.format("$ %.2f", r.getCostoReserva())
-                    });
-                }
-            } else {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "No hay reservas para el vuelo: " + nombreVuelo,
-                        "Información",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-
-            // 4. Asignar modelo a la tabla
-            tabla.setModel(modelo);
-            tabla.setAutoCreateRowSorter(true);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error al mostrar reservas: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-*/
 
 
 }
