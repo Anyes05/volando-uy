@@ -1994,7 +1994,7 @@
                   <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Período de validez:"/>
+                  <text value="Período de validez (días):"/>
                 </properties>
               </component>
               <component id="5805c" class="javax.swing.JTextField" binding="períodoAltaPaqtxt">

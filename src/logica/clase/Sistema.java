@@ -668,9 +668,6 @@ public class Sistema implements ISistema {
         if (ruta == null) { //recordarRutaVuelo==NULL
             throw new IllegalStateException("Debe seleccionar una ruta antes de ingresar los datos del vuelo.");
         }
-        if (!esNombreValido(nombre)){
-            throw new IllegalStateException("El nombre del vuelo no es valido");
-        }
 
         DTVuelo dtVuelo = new DTVuelo(duracion, nombre, fecha, horaVuelo, maxEjecutivo, fechaAlta, maxTurista, ruta);
         recordarDatosVuelo = dtVuelo;

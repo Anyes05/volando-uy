@@ -14,7 +14,7 @@ public class Categoria {
     private String nombre;
 
     //Capaz nos conviene que sea muchos a muchos, actualmente está linkeado así.
-    @ManyToMany (mappedBy = "categorias")
+    @ManyToMany (mappedBy = "categorias", fetch = FetchType.EAGER)
     private List <RutaVuelo> rutas;
 
     // Constructores

@@ -1391,6 +1391,9 @@ public class EstacionTrabajo {
 
                     // Seleccionar aerolínea
                     VueloHelper.seleccionarAerolinea(nicknameAerolinea);
+                    // Tomar el string de las ciudades, y solo tomar la parte antes de la coma (para evitar el pais)
+                    origen = origen.split(",")[0].trim();
+                    destino = destino.split(",")[0].trim();
 
                     // Ingresar ruta de vuelo (acepto List<String> en categoria, pero no funciona)
                     VueloHelper.ingresarRutaVuelo(
@@ -2437,6 +2440,7 @@ public class EstacionTrabajo {
             public void actionPerformed(ActionEvent e) {
                 String ciudadOrigen = (String) comboBoxCiudadOrigenARV.getSelectedItem();
                 if(ciudadOrigen != null){
+                    ciudadOrigen = ciudadOrigen.split(",")[0].trim();
                     cargarCiudadesDestino(comboBoxCiudadDestinoARV, ciudadOrigen);
                 }else{
                     comboBoxCiudadDestinoARV.removeAllItems();

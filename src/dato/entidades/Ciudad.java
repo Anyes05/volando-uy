@@ -21,7 +21,7 @@ public class Ciudad {
     @Column(nullable = false)
     private String pais;
 
-    @OneToMany (mappedBy = "ciudad", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany (mappedBy = "ciudad", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     // A tener en cuenta:
     // mappedBy indica que la relacion esta mapeada por el atributo ciudad en Aeropuerto.
     // cascade, todas las operaciones que se hagan sobre ciudad se aplican tambien a sus aeropuertos
