@@ -7,13 +7,15 @@ import java.util.List;
 import dato.converter.DTFechaConverter;
 
 @Entity
-@Table(name = "ciudades")
+@Table(name = "ciudades",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"nombre", "pais"})
+)// Asegura que no haya dos ciudades con el mismo nombre en el mismo país.
 public class Ciudad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nombre;
 
     @Column(nullable = false)

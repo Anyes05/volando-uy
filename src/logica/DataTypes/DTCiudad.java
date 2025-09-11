@@ -19,7 +19,7 @@ public class DTCiudad {
 
 
     public String toString() {
-        return nombre;
+        return nombre + ", " + pais;
     }
 
 

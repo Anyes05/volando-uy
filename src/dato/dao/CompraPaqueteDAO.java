@@ -8,6 +8,7 @@ import java.util.List;
 import dato.entidades.Cliente;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
+import jakarta.persistence.EntityManager;
 
 public class CompraPaqueteDAO extends GenericDAO<CompraPaquete> {
 
@@ -17,34 +18,54 @@ public class CompraPaqueteDAO extends GenericDAO<CompraPaquete> {
 
     // Algunos atributos por los que se puede buscar: id, cliente, vencimiento
     public CompraPaquete buscarPorId(Long id) {
-        return em.find(CompraPaquete.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(CompraPaquete.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<CompraPaquete> buscarPorCliente(Cliente cliente) {
-        TypedQuery<CompraPaquete> query = em.createQuery(
-                "SELECT cp FROM CompraPaquete cp WHERE cp.cliente = :cliente", CompraPaquete.class);
-        query.setParameter("cliente", cliente);
-        return query.getResultList();
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<CompraPaquete> query = em.createQuery(
+                    "SELECT cp FROM CompraPaquete cp WHERE cp.cliente = :cliente", CompraPaquete.class);
+            query.setParameter("cliente", cliente);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     public CompraPaquete buscarPorVencimiento(String vencimiento) {
-        TypedQuery<CompraPaquete> query = em.createQuery(
-                "SELECT cp FROM CompraPaquete cp WHERE cp.vencimiento = :vencimiento", CompraPaquete.class);
-        query.setParameter("vencimiento", vencimiento);
-        return query.getResultStream().findFirst().orElse(null);
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<CompraPaquete> query = em.createQuery(
+                    "SELECT cp FROM CompraPaquete cp WHERE cp.vencimiento = :vencimiento", CompraPaquete.class);
+            query.setParameter("vencimiento", vencimiento);
+            return query.getResultStream().findFirst().orElse(null);
+        } finally {
+            em.close();
+        }
     }
 
     public CompraPaquete registrarCompra (Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, /*TipoAsiento tipoAsiento,*/ PaqueteVuelo paqueteSeleccionado) throws Exception {
-        CompraPaquete compraPaquete = new CompraPaquete();
-        compraPaquete.setCliente(clienteSeleccionado);
-        compraPaquete.setFechaReserva(fechaCompra);
-        compraPaquete.setVencimiento(vencimiento);
+        EntityManager em = emf.createEntityManager();
+        try {
+            CompraPaquete compraPaquete = new CompraPaquete();
+            compraPaquete.setCliente(clienteSeleccionado);
+            compraPaquete.setFechaReserva(fechaCompra);
+            compraPaquete.setVencimiento(vencimiento);
 //        compraPaquete.setTipoAsiento(tipoAsiento);
-        compraPaquete.setPaqueteVuelo(paqueteSeleccionado);
+            compraPaquete.setPaqueteVuelo(paqueteSeleccionado);
 
-        em.getTransaction().begin();
-        em.persist(compraPaquete);
-        em.getTransaction().commit();
-        return compraPaquete;
+            em.getTransaction().begin();
+            em.persist(compraPaquete);
+            em.getTransaction().commit();
+            return compraPaquete;
+        } finally {
+            em.close();
+        }
     }
 }

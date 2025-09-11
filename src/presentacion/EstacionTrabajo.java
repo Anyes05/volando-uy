@@ -427,7 +427,7 @@ public class EstacionTrabajo {
     private void cargarCiudadesOrigen(JComboBox<String> combo) {
         combo.removeAllItems(); // limpiar combo
         for (DTCiudad c : sistema.listarCiudades()) {
-            combo.addItem(c.getNombre());
+            combo.addItem(c.getNombre() + ", " + c.getPais());
         }
         combo.setSelectedIndex(-1);
     }
@@ -437,7 +437,7 @@ public class EstacionTrabajo {
         List<DTCiudad> ciudades = sistema.listarCiudades();
         List<DTCiudad> ciudadesDestino = sistema.listarCiudadesDestino(ciudades, ciudadOrigen);
         for (DTCiudad c : ciudadesDestino) {
-            combo.addItem(c.getNombre());
+            combo.addItem(c.getNombre() + ", " + c.getPais());
         }
         combo.setSelectedIndex(-1);
     }

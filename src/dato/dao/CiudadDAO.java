@@ -46,9 +46,9 @@ public class CiudadDAO {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Ciudad> query = em.createQuery(
-                "SELECT c FROM Ciudad c WHERE c.nombre = :nombre AND c.pais = :pais", Ciudad.class);
-            query.setParameter("nombre", nombre);
-            query.setParameter("pais", pais);
+                "SELECT c FROM Ciudad c WHERE LOWER (TRIM(c.nombre)) = :nombre AND LOWER (TRIM(c.pais)) = :pais", Ciudad.class);
+            query.setParameter("nombre", nombre.trim().toLowerCase());
+            query.setParameter("pais", pais.trim().toLowerCase());
             return query.getResultStream().findFirst().orElse(null);
         } finally {
             em.close();
@@ -60,9 +60,9 @@ public class CiudadDAO {
         EntityManager em = emf.createEntityManager();
         try {
             TypedQuery<Ciudad> query = em.createQuery(
-                "SELECT c FROM Ciudad c WHERE c.nombre = :nombre AND c.pais = :pais", Ciudad.class);
-            query.setParameter("nombre", nombre);
-            query.setParameter("pais", pais);
+                "SELECT c FROM Ciudad c WHERE LOWER (TRIM(c.nombre)) = :nombre AND LOWER(TRIM(c.pais)) = :pais", Ciudad.class);
+            query.setParameter("nombre", nombre.trim().toLowerCase());
+            query.setParameter("pais", pais.trim().toLowerCase());
             return !query.getResultList().isEmpty();
         } finally {
             em.close();

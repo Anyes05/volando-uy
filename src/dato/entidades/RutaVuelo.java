@@ -40,7 +40,7 @@ public class RutaVuelo {
     private DTFecha fechaAlta;
 
     // Relación con categoría
-    @ManyToMany
+    @ManyToMany (fetch = FetchType.EAGER)
     @JoinTable(
             name = "ruta_categoria",
             joinColumns = @JoinColumn(name = "ruta_id"),
