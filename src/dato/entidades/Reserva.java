@@ -29,7 +29,7 @@ public class Reserva {
 //    @Column(nullable = false)
 //    private float costoTotal;
 
-    @OneToMany(mappedBy = "reserva")
+    @OneToMany(mappedBy = "reserva", fetch = FetchType.EAGER)
     private List<dato.entidades.Pasaje> pasajeros = new ArrayList<>();
 
     // Relacion con Vuelo

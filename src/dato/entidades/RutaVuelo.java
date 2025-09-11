@@ -49,7 +49,7 @@ public class RutaVuelo {
     private List<Categoria> categorias;
 
     // Relación con vuelo
-    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Vuelo> vuelos;
 
     // Relación con aerolínea
@@ -62,7 +62,7 @@ public class RutaVuelo {
     private List<Aerolinea> aerolineas;
 
 
-    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Cantidad> cantidades;
 
 

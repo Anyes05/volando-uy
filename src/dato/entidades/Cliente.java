@@ -30,7 +30,7 @@ public class Cliente extends Usuario {
     private String numeroDocumento;
 
     // Relación con Reserva
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Reserva> reservas = new ArrayList<>();
 
     public Cliente() {}
