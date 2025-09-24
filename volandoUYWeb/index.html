@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VolandoUY</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://kit.fontawesome.com/4b6b2f8f2a.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- 🔹 Sidebar -->
+<div class="w3-sidebar w3-bar-block w3-collapse w3-card w3-animate-left" style="width:220px;background:#32434B;color:white;" id="mySidebar">
+  <button class="w3-bar-item w3-button w3-large w3-hide-large" onclick="w3_close()">Cerrar &times;</button>
+  <a href="#" class="w3-bar-item w3-button">Reservar</a>
+  <a href="#" class="w3-bar-item w3-button">Gestionar</a>
+  <a href="#" class="w3-bar-item w3-button">Facturación</a>
+  <a href="#" class="w3-bar-item w3-button">Estado del vuelo</a>
+  <a href="#" class="w3-bar-item w3-button">Planificar</a>
+  <a href="#" class="w3-bar-item w3-button">Ofertas</a>
+  <a href="#" class="w3-bar-item w3-button">Fidelización</a>
+  <a href="#" class="w3-bar-item w3-button">Ayuda</a>
+</div>
+
+<!-- 🔹 Main content -->
+<div class="w3-main" style="margin-left:220px">
+
+  <!-- Header -->
+  <header class="header w3-teal" style="background:#2298CA;">
+    <button class="w3-button w3-xlarge w3-hide-large" onclick="w3_open()">&#9776;</button>
+    <div class="logo">
+      <i class="fas fa-plane-departure"></i> VolandoUY
+    </div>
+    <nav class="nav-icons">
+      <a href="#"><i class="fas fa-user"></i> Iniciar sesión</a>
+      <a href="#"><i class="fas fa-user-plus"></i> Registrarse</a>
+      <a href="#" class="cart"><i class="fas fa-shopping-cart"></i><span class="cart-badge">2</span></a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <main class="main">
+    <section class="hero">
+      <span class="badge">Escala gratuita</span>
+      <h1>Disfruta 2 noches de hotel gratuitas en Abu Dhabi</h1>
+      <p>Reserva ahora y suma millas con VolandoUY</p>
+      <button class="btn">Reservar ahora</button>
+
+      <div class="search-box">
+        <div class="trip-options">
+          <button class="active">Ida y vuelta</button>
+          <button>Solo ida</button>
+          <button>Múltiples destinos</button>
+        </div>
+        <div class="inputs">
+          <input type="text" placeholder="Desde (origen)">
+          <input type="text" placeholder="Hacia (destino)">
+          <input type="date">
+          <input type="date">
+          <button class="btn-search"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ofertas -->
+    <section class="offers">
+      <h2>Ofertas desde <span>Montevideo</span></h2>
+      <div class="carousel-container">
+        <button class="carousel-btn prev"><i class="fas fa-chevron-left"></i></button>
+        <div class="carousel">
+          <div class="offer-card">
+            <img src="https://picsum.photos/200/120?1" alt="Hanoi">
+            <h3>Hanoi</h3>
+            <p>Desde <span>USD 604</span></p>
+          </div>
+          <div class="offer-card">
+            <img src="https://picsum.photos/200/120?2" alt="Chiang Mai">
+            <h3>Chiang Mai</h3>
+            <p>Desde <span>USD 697</span></p>
+          </div>
+          <div class="offer-card">
+            <img src="https://picsum.photos/200/120?3" alt="Dubai">
+            <h3>Dubai</h3>
+            <p>Desde <span>USD 499</span></p>
+          </div>
+          <div class="offer-card">
+            <img src="https://picsum.photos/200/120?4" alt="Maldivas">
+            <h3>Maldivas</h3>
+            <p>Desde <span>USD 1,199</span></p>
+          </div>
+        </div>
+        <button class="carousel-btn next"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- Beneficios -->
+    <section class="features">
+      <div class="feature"><i class="fas fa-tags"></i> Mejores tarifas</div>
+      <div class="feature"><i class="fas fa-shield-alt"></i> Pago seguro</div>
+      <div class="feature"><i class="fas fa-headset"></i> Atención 24/7</div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="#">Contacto</a>
+      <a href="#">Información legal</a>
+      <a href="#">Términos y condiciones</a>
+      <a href="#">Política de privacidad</a>
+    </div>
+    <p>© 2025 VolandoUY - Todos los derechos reservados</p>
+  </footer>
+
+</div> <!-- /main -->
+
+<script>
+function w3_open() {
+  document.getElementById("mySidebar").style.display = "block";
+}
+function w3_close() {
+  document.getElementById("mySidebar").style.display = "none";
+}
+</script>
+
+<script src="script.js"></script>
+</body>
+</html>

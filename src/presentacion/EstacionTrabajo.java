@@ -629,7 +629,6 @@ public class EstacionTrabajo {
 
         /*----- TABLAS -----*/
         // Columnas de la tabla
-
         JScrollPane scroll = new JScrollPane(consultaUsuarioTable1);
         consultaUsuarioJpanel1.setLayout(new BorderLayout());
         consultaUsuarioJpanel1.add(scroll, BorderLayout.CENTER);
