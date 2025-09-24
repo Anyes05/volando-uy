@@ -1,117 +1,206 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VolandoUY</title>
+  <!-- FontAwesome (tu kit) -->
   <script src="https://kit.fontawesome.com/4b6b2f8f2a.js" crossorigin="anonymous"></script>
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Tu CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-  <button class="close-btn" onclick="toggleSidebar()">×</button>
-  <a href="#">Reservar</a>
-  <a href="#">Gestionar</a>
-  <a href="#">Facturación</a>
-  <a href="#">Estado del vuelo</a>
-  <a href="#">Planificar</a>
-  <a href="#">Ofertas</a>
-  <a href="#">Fidelización</a>
-  <a href="#">Ayuda</a>
-</aside>
+  <!-- Overlay para mobile / sidebar -->
+  <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
 
-<!-- Main content -->
-<div class="main">
+  <!-- Sidebar (mantuvimos tu contenido, id cambiado a sidenav-1 para coincidir con el toggler) -->
+  <aside class="sidebar" id="sidenav-1">
+    <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
+    <a href="#">Reservar</a>
+    <a href="#">Gestionar</a>
+    <a href="#">Facturación</a>
+    <a href="#">Estado del vuelo</a>
+    <a href="#">Planificar</a>
+    <a href="#">Ofertas</a>
+    <a href="#">Fidelización</a>
+    <a href="#">Ayuda</a>
+  </aside>
 
-  <!-- Header -->
-  <header class="header">
-    <button class="menu-btn" onclick="toggleSidebar()">
-      <i class="fas fa-bars"></i>
-    </button>
-    <div class="logo">VolandoUY</div>
-    <div class="header-icons">
-      <a href="#"><i class="fas fa-user"></i></a>
-      <a href="#"><i class="fas fa-user-plus"></i></a>
-    </div>
-  </header>
+  <!-- Main content -->
+  <div class="main">
 
-  <!-- Hero -->
-  <section class="hero">
-    <span class="badge">Escala gratuita</span>
-    <h1>Disfruta 2 noches de hotel gratuitas en Abu Dhabi</h1>
-    <p>Reserva ahora y suma millas con VolandoUY</p>
-    <button class="btn-primary">Reservar ahora</button>
+    <!-- Header -->
+    <header class="header">
+      <!-- Toggler (ese botón que mandaste). Tiene id="menuBtn" para mantener compatibilidad con la JS -->
+      <button
+        data-mdb-button-init
+        data-mdb-toggle="sidenav"
+        data-mdb-target="#sidenav-1"
+        data-mdb-ripple-init
+        class="sidenav-toggler"
+        id="menuBtn"
+        aria-controls="#sidenav-1"
+        aria-haspopup="true"
+        aria-label="Abrir menú">
+        <i class="fas fa-bars" aria-hidden="true"></i>
+      </button>
 
-    <!-- Buscador -->
-    <div class="search-box">
-      <div class="trip-options">
-        <button class="active">Ida y vuelta</button>
-        <button>Solo ida</button>
-        <button>Múltiples destinos</button>
+      <div class="logo">VolandoUY</div>
+
+      <div class="header-icons">
+        <a href="#" class="login-btn"><i class="fas fa-user"></i> Iniciar sesión</a>
+        <a href="#" class="signup-btn"><i class="fas fa-user-plus"></i> Registrarse</a>
       </div>
-      <div class="inputs">
-        <input type="text" placeholder="Desde (origen)">
-        <input type="text" placeholder="Hacia (destino)">
-        <input type="date">
-        <input type="date">
-        <button class="btn-search"><i class="fas fa-search"></i> Buscar</button>
-      </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- Ofertas -->
-  <section class="offers">
-    <h2>Ofertas desde <span>Montevideo</span></h2>
-    <div class="carousel">
-      <div class="offer-card">
-        <img src="https://picsum.photos/300/160?1" alt="Hanoi">
-        <h3>Hanoi</h3>
-        <p>Desde <span>USD 604</span></p>
-      </div>
-      <div class="offer-card">
-        <img src="https://picsum.photos/300/160?2" alt="Chiang Mai">
-        <h3>Chiang Mai</h3>
-        <p>Desde <span>USD 697</span></p>
-      </div>
-      <div class="offer-card">
-        <img src="https://picsum.photos/300/160?3" alt="Dubai">
-        <h3>Dubai</h3>
-        <p>Desde <span>USD 499</span></p>
-      </div>
-      <div class="offer-card">
-        <img src="https://picsum.photos/300/160?4" alt="Maldivas">
-        <h3>Maldivas</h3>
-        <p>Desde <span>USD 1,199</span></p>
-      </div>
-    </div>
-  </section>
+    <!-- Hero -->
+    <section class="hero">
+      <span class="badge">Escala gratuita</span>
+      <h1>Disfruta 2 noches de hotel gratuitas en Abu Dhabi</h1>
+      <p>Reserva ahora y suma millas con VolandoUY</p>
+      <button class="btn-primary">Reservar ahora</button>
 
-  <!-- Beneficios -->
-  <section class="features">
-    <div><i class="fas fa-tags"></i> Mejores tarifas</div>
-    <div><i class="fas fa-shield-alt"></i> Pago seguro</div>
-    <div><i class="fas fa-headset"></i> Atención 24/7</div>
-  </section>
+      <!-- Buscador -->
+      <div class="search-box">
+        <div class="trip-options">
+          <button class="active">Ida y vuelta</button>
+          <button>Solo ida</button>
+          <button>Múltiples destinos</button>
+        </div>
+        <div class="inputs">
+          <input type="text" placeholder="Desde (origen)">
+          <input type="text" placeholder="Hacia (destino)">
+          <input type="date">
+          <input type="date">
+          <button class="btn-search"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+      </div>
+    </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-links">
-      <a href="#">Contacto</a>
-      <a href="#">Información legal</a>
-      <a href="#">Términos y condiciones</a>
-      <a href="#">Política de privacidad</a>
-    </div>
-    <p>© 2025 VolandoUY - Todos los derechos reservados</p>
-  </footer>
+    <!-- Ofertas -->
+    <section class="offers">
+      <h2>Ofertas desde <span>Montevideo</span></h2>
+      <div class="carousel-container">
+        <button class="carousel-btn prev" id="prevBtn" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+        <div class="carousel" id="carousel">
+          <div class="offer-card"><img src="https://picsum.photos/300/160?1" alt="Hanoi"><h3>Hanoi</h3><p>Desde <span>USD 604</span></p></div>
+          <div class="offer-card"><img src="https://picsum.photos/300/160?2" alt="Chiang Mai"><h3>Chiang Mai</h3><p>Desde <span>USD 697</span></p></div>
+          <div class="offer-card"><img src="https://picsum.photos/300/160?3" alt="Dubai"><h3>Dubai</h3><p>Desde <span>USD 499</span></p></div>
+          <div class="offer-card"><img src="https://picsum.photos/300/160?4" alt="Maldivas"><h3>Maldivas</h3><p>Desde <span>USD 1,199</span></p></div>
+          <div class="offer-card"><img src="https://picsum.photos/300/160?5" alt="Tokio"><h3>Tokio</h3><p>Desde <span>USD 899</span></p></div>
+          <div class="offer-card"><img src="https://picsum.photos/300/160?6" alt="Madrid"><h3>Madrid</h3><p>Desde <span>USD 799</span></p></div>
+        </div>
+        <button class="carousel-btn next" id="nextBtn" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </section>
 
-</div>
+    <!-- Beneficios -->
+    <section class="features">
+      <div><i class="fas fa-tags"></i> Mejores tarifas</div>
+      <div><i class="fas fa-shield-alt"></i> Pago seguro</div>
+      <div><i class="fas fa-headset"></i> Atención 24/7</div>
+    </section>
 
-<script>
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('active');
-}
-</script>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="#">Contacto</a>
+        <a href="#">Información legal</a>
+        <a href="#">Términos y condiciones</a>
+        <a href="#">Política de privacidad</a>
+      </div>
+      <p>© 2025 VolandoUY - Todos los derechos reservados</p>
+    </footer>
+
+  </div>
+
+  <!-- Script: sidebar + carrusel (autoplay) -->
+  <script>
+    // Elementos
+    const sidebar = document.getElementById('sidenav-1');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
+
+    // Abrir / cerrar sidebar (usa overlay que ya tenías)
+    function openSidebar() {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+    function toggleSidebar() {
+      if (sidebar.classList.contains('active')) closeSidebar();
+      else openSidebar();
+    }
+
+    // Conecta el toggler (tu botón MDB) con la lógica
+    menuBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleSidebar();
+    });
+
+    // Cerrar con ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
+    });
+
+    /* ===== Carrusel ===== */
+    const carousel = document.getElementById("carousel");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function getStep() {
+      const card = carousel.querySelector('.offer-card');
+      if (!card) return 220;
+      const gapValue = getComputedStyle(carousel).gap || '15px';
+      const gap = parseInt(gapValue, 10) || 15;
+      return card.offsetWidth + gap;
+    }
+
+    function scrollNext() {
+      const step = getStep();
+      if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 5) {
+        carousel.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        carousel.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+    function scrollPrev() {
+      const step = getStep();
+      if (carousel.scrollLeft <= 5) {
+        carousel.scrollTo({ left: carousel.scrollWidth - carousel.clientWidth, behavior: 'smooth' });
+      } else {
+        carousel.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    }
+
+    prevBtn.addEventListener('click', () => { stopAutoplay(); scrollPrev(); startAutoplay(); });
+    nextBtn.addEventListener('click', () => { stopAutoplay(); scrollNext(); startAutoplay(); });
+
+    let autoplayTimer = null;
+    const AUTOPLAY_DELAY = 3500;
+    function startAutoplay() { stopAutoplay(); autoplayTimer = setInterval(scrollNext, AUTOPLAY_DELAY); }
+    function stopAutoplay() { if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; } }
+
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+    carousel.addEventListener('touchstart', () => { stopAutoplay(); }, {passive:true});
+    carousel.addEventListener('touchend', () => { setTimeout(startAutoplay, 1500); });
+
+    window.addEventListener('resize', () => { startAutoplay(); });
+
+    // iniciar autoplay
+    startAutoplay();
+
+  </script>
 </body>
 </html>
