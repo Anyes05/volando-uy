@@ -61,43 +61,74 @@ public class PaqueteVuelo {
     }
 
     // Getter y Setter
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public String getDescripcion() {
         return descripcion;
     }
+
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
 
-    public DTFecha getFechaAlta() { return fechaAlta; }
-    public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
+    public DTFecha getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public void setFechaAlta(DTFecha fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
 
     public int getDiasValidos() {
         return diasValidos;
     }
+
     public void setDiasValidos(int diasValidos) {
         this.diasValidos = diasValidos;
     }
 
-    public float getDescuento() { return descuento; }
+    public float getDescuento() {
+        return descuento;
+    }
+
     public void setDescuento(float descuento) {
-        this.descuento = descuento; }
+        this.descuento = descuento;
+    }
 
-    public float getCostoTotal() { return costoTotal; }
+    public float getCostoTotal() {
+        return costoTotal;
+    }
 
-    public void setCostoTotal(float costoTotal) { this.costoTotal = costoTotal; }
+    public void setCostoTotal(float costoTotal) {
+        this.costoTotal = costoTotal;
+    }
 
     public void addCantidad(Cantidad c) {
         cantidades.add(c);
         c.setPaqueteVuelo(this);   // importantísimo: setea el lado propietario
     }
-    public List<Cantidad> getCantidad() { return cantidades; }
-    public void setCantidad(List<Cantidad> cantidades) { this.cantidades = cantidades;  }
+
+    public List<Cantidad> getCantidad() {
+        return cantidades;
+    }
+
+    public void setCantidad(List<Cantidad> cantidades) {
+        this.cantidades = cantidades;
+    }
 
     public boolean isComprado() {
         return comprado;

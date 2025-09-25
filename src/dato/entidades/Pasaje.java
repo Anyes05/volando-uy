@@ -1,7 +1,9 @@
 package dato.entidades;
 
 import jakarta.persistence.*;
+
 import java.util.List;
+
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.TipoAsiento;
 
@@ -26,7 +28,7 @@ public class Pasaje {
     // Campos para nombre y apellido del pasajero (pueden ser diferentes al cliente principal)
     @Column(nullable = false)
     private String nombrePasajero;
-    
+
     @Column(nullable = false)
     private String apellidoPasajero;
 
@@ -48,24 +50,59 @@ public class Pasaje {
     }
 
     // Getter y Setter
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Cliente getPasajero() { return pasajero; }
-    public void setPasajero(Cliente pasajero) { this.pasajero = pasajero; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Reserva getReserva() { return reserva; }
-    public void setReserva(Reserva reserva) { this.reserva = reserva; }
+    public Cliente getPasajero() {
+        return pasajero;
+    }
 
-    public TipoAsiento getTipoAsiento() { return tipoAsiento; }
-    public void setTipoAsiento(TipoAsiento tipoAsiento) { this.tipoAsiento = tipoAsiento; }
+    public void setPasajero(Cliente pasajero) {
+        this.pasajero = pasajero;
+    }
 
-    public int getCostoPasaje() { return costoPasaje; }
-    public void setCostoPasaje(int costoPasaje) { this.costoPasaje = costoPasaje; }
+    public Reserva getReserva() {
+        return reserva;
+    }
 
-    public String getNombrePasajero() { return nombrePasajero; }
-    public void setNombrePasajero(String nombrePasajero) { this.nombrePasajero = nombrePasajero; }
+    public void setReserva(Reserva reserva) {
+        this.reserva = reserva;
+    }
 
-    public String getApellidoPasajero() { return apellidoPasajero; }
-    public void setApellidoPasajero(String apellidoPasajero) { this.apellidoPasajero = apellidoPasajero; }
+    public TipoAsiento getTipoAsiento() {
+        return tipoAsiento;
+    }
+
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+        this.tipoAsiento = tipoAsiento;
+    }
+
+    public int getCostoPasaje() {
+        return costoPasaje;
+    }
+
+    public void setCostoPasaje(int costoPasaje) {
+        this.costoPasaje = costoPasaje;
+    }
+
+    public String getNombrePasajero() {
+        return nombrePasajero;
+    }
+
+    public void setNombrePasajero(String nombrePasajero) {
+        this.nombrePasajero = nombrePasajero;
+    }
+
+    public String getApellidoPasajero() {
+        return apellidoPasajero;
+    }
+
+    public void setApellidoPasajero(String apellidoPasajero) {
+        this.apellidoPasajero = apellidoPasajero;
+    }
 }

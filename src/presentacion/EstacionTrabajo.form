@@ -615,7 +615,7 @@
                   <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Fecha nacimiento:"/>
+                  <text value="Fecha de nacimiento:"/>
                 </properties>
               </component>
               <component id="8ce8b" class="com.toedter.calendar.JCalendar" binding="JCalendarAltaCliente" custom-create="true">
@@ -628,7 +628,7 @@
                   <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Numero de coumento:"/>
+                  <text value="Número de documento:"/>
                 </properties>
               </component>
               <component id="54d34" class="javax.swing.JTextField" binding="numeroDocAltaCliente">
@@ -1994,7 +1994,7 @@
                   <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Período de validez:"/>
+                  <text value="Período de validez (días):"/>
                 </properties>
               </component>
               <component id="5805c" class="javax.swing.JTextField" binding="períodoAltaPaqtxt">

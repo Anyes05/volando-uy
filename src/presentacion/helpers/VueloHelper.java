@@ -9,6 +9,8 @@ import com.toedter.calendar.JCalendar;
 import dato.entidades.Aeropuerto;
 
 import java.awt.event.ComponentEvent;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -98,23 +100,6 @@ public class VueloHelper {
             throw new Exception("El origen y destino no pueden ser iguales.");
         }
 
-//        int hora, minutos;
-//        try {
-//            String[] partes = horaStr.split(":");
-//            if (partes.length != 2) {
-//                throw new Exception("Formato inválido. Use HH:mm");
-//            }
-//
-//            hora = Integer.parseInt(partes[0]);
-//            minutos = Integer.parseInt(partes[1]);
-//
-//            if (hora < 0 || hora > 23 || minutos < 0 || minutos > 59) {
-//                throw new Exception("Ingrese una hora válida en formato HH:mm");
-//            }
-//        } catch (NumberFormatException e) {
-//            throw new Exception("Formato inválido. Use HH:mm (ejemplo: 14:30)");
-//        }
-
         float costoTurista, costoEjecutivo, costoEquipaje;
         try {
             costoTurista = Float.parseFloat(costoTuristaStr);
@@ -179,49 +164,113 @@ public class VueloHelper {
 
         // ------------------- CREAR LA RUTA -------------------
 
-            try {
-                getSistema().ingresarDatosRuta(
-                        nombre,
-                        descripcion,
+        try {
+            getSistema().ingresarDatosRuta(
+                    nombre,
+                    descripcion,
 //                        horaVuelo,
-                        costoTurista,
-                        costoEjecutivo,
-                        costoEquipaje,
-                        origen,
-                        destino,
-                        fecha,
-                        categoriasSeleccionadas // un String por vez
-                );
-                getSistema().registrarRuta();
-            } catch (IllegalArgumentException e) {
-                throw e; // re-lanzar tal cual
-            } catch (Exception e) {
-                throw new RuntimeException(e); // otras excepciones se envuelven
-            }
+                    costoTurista,
+                    costoEjecutivo,
+                    costoEquipaje,
+                    origen,
+                    destino,
+                    fecha,
+                    categoriasSeleccionadas // un String por vez
+            );
+            getSistema().registrarRuta();
+        } catch (IllegalArgumentException e) {
+            throw e; // re-lanzar tal cual
+        } catch (Exception e) {
+            throw new RuntimeException(e); // otras excepciones se envuelven
+        }
+    }
+
+    public static boolean crearCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta) {
+        // Validación de nombre de ciudad
+        if (nombre == null || nombre.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "El nombre de la ciudad es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (nombre.trim().length() < 3) {
+            JOptionPane.showMessageDialog(null, "El nombre de la ciudad debe tener al menos 3 letras.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
 
+        // Validación de país
+        if (pais == null || pais.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "El país es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (pais.trim().length() < 3) {
+            JOptionPane.showMessageDialog(null, "El nombre del país debe tener al menos 3 letras.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
+        // Validación de descripción
+        if (descripcion != null && !descripcion.trim().isEmpty() && descripcion.trim().length() < 5) {
+            JOptionPane.showMessageDialog(null, "La descripción debe tener al menos 5 caracteres si se especifica.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
-    public static void crearCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta) {
-        if (nombre == null || nombre.trim().isEmpty() || pais == null || pais.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Nombre y país son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        // Validación de sitio web
+        if (sitioWeb == null || sitioWeb.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "El sitio web es obligatorio.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        String sitio = sitioWeb.trim().toLowerCase();
+        if (!sitio.matches(".*\\.[a-z]{2,}$")) {
+            JOptionPane.showMessageDialog(null, "El sitio web debe tener un dominio válido (como .com, .ar, .es, etc).", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Validación de fecha
+        if (fechaAlta == null) {
+            JOptionPane.showMessageDialog(null, "La fecha de alta es obligatoria.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
 
         try {
+            LocalDate fecha = LocalDate.of(fechaAlta.getAno(), fechaAlta.getMes(), fechaAlta.getDia());
+            LocalDate hoy = LocalDate.now();
+
+            if (fecha.isAfter(hoy)) {
+                JOptionPane.showMessageDialog(null, "La fecha de alta no puede ser futura.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            if (fecha.isBefore(LocalDate.of(1900, 1, 1))) {
+                JOptionPane.showMessageDialog(null, "La fecha de alta es demasiado antigua.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } catch (DateTimeException ex) {
+            JOptionPane.showMessageDialog(null, "La fecha ingresada no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Intento de creación
+        try {
             getSistema().altaCiudad(nombre.trim(), pais.trim(), aeropuerto, descripcion, sitioWeb, fechaAlta);
             JOptionPane.showMessageDialog(null, "Ciudad creada con éxito.");
+            return true;
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            String mensaje = e.getMessage().toLowerCase();
+            if (mensaje.contains("llave duplicada") || mensaje.contains("violación de unicidad")) {
+                JOptionPane.showMessageDialog(null, "Ya existe una ciudad con ese nombre y país.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
+
+        return false;
     }
 
     public static void crearCategoria(String nombre) {
         getSistema().altaCategoria(nombre);
     }
-    
+
     public static void precargarAeropuertos() {
         try {
             getSistema().precargarAeropuertos();
@@ -412,15 +461,12 @@ public class VueloHelper {
         }
     }
 
-//----------LIMPIEZA-----------
-public static void limpiarCampos(JTextArea... campos) {
-    for (JTextArea campo : campos) {
-        campo.setText("");
+    //----------LIMPIEZA-----------
+    public static void limpiarCampos(JTextArea... campos) {
+        for (JTextArea campo : campos) {
+            campo.setText("");
+        }
     }
-}
-
-
-
 
 
 }

@@ -2,6 +2,7 @@ package dato.entidades;
 
 import dato.converter.DTCostoBaseConverter;
 import jakarta.persistence.*;
+
 import java.util.List;
 
 import logica.DataTypes.DTCostoBase;
@@ -40,7 +41,7 @@ public class RutaVuelo {
     private DTFecha fechaAlta;
 
     // Relación con categoría
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "ruta_categoria",
             joinColumns = @JoinColumn(name = "ruta_id"),
@@ -49,11 +50,11 @@ public class RutaVuelo {
     private List<Categoria> categorias;
 
     // Relación con vuelo
-    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Vuelo> vuelos;
 
     // Relación con aerolínea
-    @ManyToMany (fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "ruta_aerolinea",
             joinColumns = @JoinColumn(name = "ruta_id"),
@@ -62,7 +63,7 @@ public class RutaVuelo {
     private List<Aerolinea> aerolineas;
 
 
-    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Cantidad> cantidades;
 
 
@@ -76,7 +77,8 @@ public class RutaVuelo {
     private Ciudad ciudadDestino;
 
     // Constructores
-    public RutaVuelo() {}  // Obligatorio para JPA
+    public RutaVuelo() {
+    }  // Obligatorio para JPA
 
     public RutaVuelo(String nombre, String descripcion, DTCostoBase costoBase, DTFecha fechaAlta) { // No sé por qué no estaba fechaAlta como atributo en clase/RutaVuelo, por las dudas esperar para ver como han ido implementando
         this.nombre = nombre;
@@ -97,19 +99,41 @@ public class RutaVuelo {
     }
 
     // Getters y setters
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public DTCostoBase getCostoBase() { return costoBase; }
-    public void setCostoBase(DTCostoBase DTCostoBase) { this.costoBase = costoBase; }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-    public DTFecha getFechaAlta() { return fechaAlta; }
-    public void setFechaAlta(DTFecha fechaAlta) { this.fechaAlta = fechaAlta; }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public DTCostoBase getCostoBase() {
+        return costoBase;
+    }
+
+    public void setCostoBase(DTCostoBase DTCostoBase) {
+        this.costoBase = costoBase;
+    }
+
+    public DTFecha getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public void setFechaAlta(DTFecha fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
 
     public float getCostoEquipajeExtra() {
         return costoEquipajeExtra;
@@ -135,21 +159,37 @@ public class RutaVuelo {
         this.ciudadDestino = ciudadDestino;
     }
 
-    public List<Categoria> getCategorias() { return categorias; }
+    public List<Categoria> getCategorias() {
+        return categorias;
+    }
 
-    public void setCategorias(List<Categoria> categorias) { this.categorias = categorias;}
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
+    }
 
-    public List<Vuelo> getVuelos() { return vuelos; }
+    public List<Vuelo> getVuelos() {
+        return vuelos;
+    }
 
-    public void setVuelos(List<Vuelo> vuelos) { this.vuelos = vuelos; }
+    public void setVuelos(List<Vuelo> vuelos) {
+        this.vuelos = vuelos;
+    }
 
-    public List<Aerolinea> getAerolineas() { return aerolineas; }
+    public List<Aerolinea> getAerolineas() {
+        return aerolineas;
+    }
 
-    public void setAerolineas(List<Aerolinea> aerolineas) { this.aerolineas = aerolineas; }
+    public void setAerolineas(List<Aerolinea> aerolineas) {
+        this.aerolineas = aerolineas;
+    }
 
-    public List<Cantidad> getCantidad() { return cantidades; }
+    public List<Cantidad> getCantidad() {
+        return cantidades;
+    }
 
-    public void setCantidad(List<Cantidad> cantidades) { this.cantidades = cantidades; }
+    public void setCantidad(List<Cantidad> cantidades) {
+        this.cantidades = cantidades;
+    }
 
     public float getCostoBaseTurista() {
         return costoBaseTurista;

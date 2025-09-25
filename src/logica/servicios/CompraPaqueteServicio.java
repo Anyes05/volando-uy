@@ -6,6 +6,7 @@ import dato.entidades.CompraPaquete;
 import dato.entidades.PaqueteVuelo;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class CompraPaqueteServicio {
         servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
         return compraPaqueteDAO.registrarCompra(clienteSeleccionado, fechaCompra, vencimiento /*tipoAsiento*/, paqueteSeleccionado); // Se guarda en la BD
     }
+
     public List<CompraPaquete> buscarPorCliente(Cliente cliente) {
         return compraPaqueteDAO.buscarPorCliente(cliente);
     }

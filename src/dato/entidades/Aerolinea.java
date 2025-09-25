@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "aerolineas")
-public class Aerolinea extends Usuario{
+public class Aerolinea extends Usuario {
     @Column(nullable = false)
     private String descripcion;
 
@@ -16,11 +16,13 @@ public class Aerolinea extends Usuario{
     private String linkSitioWeb;
 
     // Mapear las rutas con JPA (many to many con rutaVuelo)
-    @ManyToMany(mappedBy = "aerolineas") // aquí va el nombre de la propiedad en RutaVuelo
+
+    @ManyToMany(mappedBy = "aerolineas", fetch = FetchType.EAGER) // aquí va el nombre de la propiedad en RutaVuelo
     private List<RutaVuelo> rutasVuelo = new ArrayList<>();
 
 
-    public Aerolinea() {}
+    public Aerolinea() {
+    }
 
     public Aerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb) {
         super(nickname, nombre, correo);

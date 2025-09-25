@@ -44,9 +44,13 @@ public class Cantidad {
         return id;
     }
 
-    public int getCant() {return cant;}
+    public int getCant() {
+        return cant;
+    }
 
-    public void setCant(int cant) {this.cant = cant;}
+    public void setCant(int cant) {
+        this.cant = cant;
+    }
 
     public RutaVuelo getRutaVuelo() {
         return rutaVuelo;

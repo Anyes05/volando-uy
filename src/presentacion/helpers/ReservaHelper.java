@@ -27,14 +27,14 @@ public class ReservaHelper {
             List<DTAerolinea> aerolineas = getSistema().listarAerolineas();
             DefaultTableModel model = (DefaultTableModel) tabla.getModel();
             model.setRowCount(0); // Limpiar tabla
-            
+
             for (DTAerolinea a : aerolineas) {
                 model.addRow(new Object[]{
-                    a.getNickname(),
-                    a.getNombre(),
-                    a.getCorreo(),
-                    a.getDescripcion(),
-                    a.getLinkSitioWeb()
+                        a.getNickname(),
+                        a.getNombre(),
+                        a.getCorreo(),
+                        a.getDescripcion(),
+                        a.getLinkSitioWeb()
                 });
             }
         } catch (Exception e) {
@@ -74,15 +74,15 @@ public class ReservaHelper {
                         String nickname = (String) tablaClientes.getValueAt(filaSeleccionada, 0);
                         if (nickname != null && !nickname.trim().isEmpty()) {
                             campoCliente.setText(nickname.trim());
-                            
+
                             // Mostrar mensaje informativo
                             String nombreCliente = (String) tablaClientes.getValueAt(filaSeleccionada, 1);
                             String apellidoCliente = (String) tablaClientes.getValueAt(filaSeleccionada, 2);
-                            JOptionPane.showMessageDialog(null, 
-                                "Cliente seleccionado: " + nombreCliente + " " + apellidoCliente +
-                                "\nNickname: " + nickname.trim(),
-                                "Cliente Seleccionado", 
-                                JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null,
+                                    "Cliente seleccionado: " + nombreCliente + " " + apellidoCliente +
+                                            "\nNickname: " + nickname.trim(),
+                                    "Cliente Seleccionado",
+                                    JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
                 }
@@ -96,14 +96,14 @@ public class ReservaHelper {
             List<DTCliente> clientes = getSistema().listarClientes();
             DefaultTableModel model = (DefaultTableModel) tabla.getModel();
             model.setRowCount(0); // Limpiar tabla
-            
+
             for (DTCliente c : clientes) {
                 model.addRow(new Object[]{
-                    c.getNickname(),
-                    c.getNombre(),
-                    c.getApellido(),
-                    c.getCorreo(),
-                    c.getNacionalidad()
+                        c.getNickname(),
+                        c.getNombre(),
+                        c.getApellido(),
+                        c.getCorreo(),
+                        c.getNacionalidad()
                 });
             }
         } catch (Exception e) {
@@ -129,13 +129,6 @@ public class ReservaHelper {
             JCalendar fechaReservaCalendar,
             String nombrePasajeroAdicional,
             String apellidoPasajeroAdicional) throws Exception {
-
-        // Probar conexión a BD antes de proceder
-        try {
-            getSistema().probarConexionBD();
-        } catch (Exception e) {
-            throw new Exception("ERROR: No se pudo conectar a la base de datos. " + e.getMessage());
-        }
 
         // Validaciones
         if (nombresPasajeros == null || nombresPasajeros.isEmpty()) {
@@ -181,13 +174,13 @@ public class ReservaHelper {
         // Realizar la reserva
         try {
             getSistema().datosReserva(tipoAsiento, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReservaDT);
-            
+
         } catch (IllegalStateException e) {
             // Verificar si es un mensaje de éxito especial
             if (e.getMessage() != null && e.getMessage().startsWith("SUCCESS:")) {
                 String mensajeExito = e.getMessage().substring(8); // Remover "SUCCESS:"
                 JOptionPane.showMessageDialog(null, mensajeExito, "Reserva Exitosa", JOptionPane.INFORMATION_MESSAGE);
-                
+
                 return; // Salir exitosamente
             }
             throw new Exception(e.getMessage());
@@ -213,7 +206,7 @@ public class ReservaHelper {
         if (tipoAsientoStr == null || tipoAsientoStr.trim().isEmpty()) {
             throw new Exception("ERROR: Debe seleccionar un tipo de asiento.");
         }
-        
+
         switch (tipoAsientoStr.toLowerCase()) {
             case "turista":
                 return TipoAsiento.Turista;
@@ -230,19 +223,19 @@ public class ReservaHelper {
             int cantidadPasajes,
             JTextField campoNombre,
             JTextField campoApellido) throws Exception {
-        
+
         List<String> nombresPasajeros = new ArrayList<>();
-        
+
         // Siempre agregar el cliente principal como primer pasajero
         nombresPasajeros.add(clientePrincipal);
-        
+
         // Si hay más de un pasaje, agregar pasajeros adicionales
         if (cantidadPasajes > 1) {
             // Verificar si hay datos específicos para pasajeros adicionales
-            if (campoNombre != null && campoApellido != null && 
-                !campoNombre.getText().trim().isEmpty() && 
-                !campoApellido.getText().trim().isEmpty()) {
-                
+            if (campoNombre != null && campoApellido != null &&
+                    !campoNombre.getText().trim().isEmpty() &&
+                    !campoApellido.getText().trim().isEmpty()) {
+
                 // Crear pasajeros adicionales con los datos ingresados
                 for (int i = 1; i < cantidadPasajes; i++) {
                     // Por ahora, usar el cliente principal pero con datos específicos
@@ -256,16 +249,16 @@ public class ReservaHelper {
                 }
             }
         }
-        
+
         return nombresPasajeros;
     }
-    
+
     // ------------------- CREAR PASAJERO TEMPORAL -------------------
     public static void crearPasajeroTemporal(
             String nombre,
             String apellido,
             String nicknameCliente) throws Exception {
-        
+
         // Validar datos
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new Exception("ERROR: El nombre del pasajero es obligatorio.");
@@ -276,7 +269,7 @@ public class ReservaHelper {
         if (nicknameCliente == null || nicknameCliente.trim().isEmpty()) {
             throw new Exception("ERROR: El nickname del cliente es obligatorio.");
         }
-        
+
         // Por ahora, solo validamos. En el futuro se podría crear un cliente temporal
         // o almacenar los datos de manera diferente
     }
@@ -291,7 +284,7 @@ public class ReservaHelper {
             JSpinner spinnerCantidadPasajes,
             JSpinner spinnerEquipajeExtra,
             JCalendar fechaReserva) {
-        
+
         if (campoAerolinea != null) campoAerolinea.setText("");
         if (campoRuta != null) campoRuta.setText("");
         if (campoVuelo != null) campoVuelo.setText("");
@@ -303,18 +296,18 @@ public class ReservaHelper {
         if (spinnerEquipajeExtra != null) spinnerEquipajeExtra.setValue(0);
         if (fechaReserva != null) fechaReserva.setCalendar(Calendar.getInstance());
     }
-    
+
     // ------------------- LIMPIAR FORMULARIOS DE PASAJE -------------------
     public static void limpiarFormularioPasaje(
             JTextField campoNombre,
             JTextField campoApellido,
             JSpinner spinnerEquipajeExtra) {
-        
+
         if (campoNombre != null) campoNombre.setText("");
         if (campoApellido != null) campoApellido.setText("");
         if (spinnerEquipajeExtra != null) spinnerEquipajeExtra.setValue(0);
     }
-    
+
     // ------------------- MOSTRAR CONFIRMACIÓN DE PASAJES AGREGADOS -------------------
     public static void mostrarConfirmacionPasajes(int cantidadPasajes, List<String> nombresPasajeros, TipoAsiento tipoAsiento) {
         StringBuilder mensaje = new StringBuilder();
@@ -322,64 +315,64 @@ public class ReservaHelper {
         mensaje.append("✓ Cantidad de pasajes: ").append(cantidadPasajes).append("\n");
         mensaje.append("✓ Tipo de asiento: ").append(tipoAsiento).append("\n\n");
         mensaje.append("Pasajeros agregados:\n");
-        
+
         for (int i = 0; i < nombresPasajeros.size(); i++) {
             mensaje.append("• Pasaje ").append(i + 1).append(": ").append(nombresPasajeros.get(i)).append("\n");
         }
-        
+
         mensaje.append("\n Todos los pasajes han sido agregados exitosamente a la reserva.");
-        
+
         JOptionPane.showMessageDialog(null, mensaje.toString(), " Pasajes Confirmados", JOptionPane.INFORMATION_MESSAGE);
     }
-    
+
     // ------------------- MOSTRAR RESUMEN DE RESERVA -------------------
-    public static void mostrarResumenReserva(String clienteNombre, String vueloNombre, TipoAsiento tipoAsiento, 
-                                           int cantidadPasajes, int equipajeExtra, float costoTotal, DTFecha fechaReserva) {
+    public static void mostrarResumenReserva(String clienteNombre, String vueloNombre, TipoAsiento tipoAsiento,
+                                             int cantidadPasajes, int equipajeExtra, float costoTotal, DTFecha fechaReserva) {
         String mensaje = " RESUMEN DE RESERVA \n\n" +
-            " Cliente: " + clienteNombre + "\n" +
-            " Vuelo: " + vueloNombre + "\n" +
-            " Tipo de asiento: " + tipoAsiento + "\n" +
-            " Cantidad de pasajes: " + cantidadPasajes + "\n" +
-            " Equipaje extra: " + equipajeExtra + " unidad(es)\n" +
-            " Fecha de reserva: " + fechaReserva.getDia() + "/" + fechaReserva.getMes() + "/" + fechaReserva.getAno() + "\n" +
-            " Costo total: $" + costoTotal + "\n\n" +
-            " Reserva confirmada exitosamente\n" +
-            " Pasajes agregados a la reserva";
-        
+                " Cliente: " + clienteNombre + "\n" +
+                " Vuelo: " + vueloNombre + "\n" +
+                " Tipo de asiento: " + tipoAsiento + "\n" +
+                " Cantidad de pasajes: " + cantidadPasajes + "\n" +
+                " Equipaje extra: " + equipajeExtra + " unidad(es)\n" +
+                " Fecha de reserva: " + fechaReserva.getDia() + "/" + fechaReserva.getMes() + "/" + fechaReserva.getAno() + "\n" +
+                " Costo total: $" + costoTotal + "\n\n" +
+                " Reserva confirmada exitosamente\n" +
+                " Pasajes agregados a la reserva";
+
         JOptionPane.showMessageDialog(null, mensaje, " Reserva Confirmada", JOptionPane.INFORMATION_MESSAGE);
     }
-    
+
     // ------------------- MOSTRAR MENSAJE DE PROGRESO -------------------
     public static void mostrarMensajeProgreso(String mensaje) {
         JOptionPane.showMessageDialog(null, mensaje, " Procesando...", JOptionPane.INFORMATION_MESSAGE);
     }
-    
+
     // ------------------- MOSTRAR MENSAJE DE INFORMACIÓN -------------------
     public static void mostrarMensajeInformacion(String mensaje, String titulo) {
         JOptionPane.showMessageDialog(null, mensaje, titulo, JOptionPane.INFORMATION_MESSAGE);
     }
-    
+
     // ------------------- MOSTRAR MENSAJE DE ADVERTENCIA -------------------
     public static void mostrarMensajeAdvertencia(String mensaje, String titulo) {
         JOptionPane.showMessageDialog(null, mensaje, titulo, JOptionPane.WARNING_MESSAGE);
     }
-    
+
     // ------------------- MOSTRAR MENSAJE DE ERROR -------------------
     public static void mostrarMensajeError(String mensaje, String titulo) {
         JOptionPane.showMessageDialog(null, mensaje, titulo, JOptionPane.ERROR_MESSAGE);
     }
-    
+
     // ------------------- CONVERTIR FECHA -------------------
     public static DTFecha convertirFecha(JCalendar calendar) {
         if (calendar == null) {
             throw new IllegalArgumentException("ERROR: El calendario no puede ser null.");
         }
-        
+
         Calendar cal = calendar.getCalendar();
         if (cal == null) {
             throw new IllegalArgumentException("ERROR: No se pudo obtener la fecha del calendario.");
         }
-        
+
         return new DTFecha(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
     }
 }

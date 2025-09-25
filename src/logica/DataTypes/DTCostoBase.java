@@ -56,7 +56,7 @@ public class DTCostoBase {
         this.costoTotal = costoTotal;
     }
 
-    public String toString(){
+    public String toString() {
         return String.valueOf(getCostoTotal());
     }
 }

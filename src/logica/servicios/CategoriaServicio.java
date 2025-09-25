@@ -34,24 +34,24 @@ public class CategoriaServicio {
     public List<Categoria> listarCategorias() {
         return categoriaDAO.listarCategorias();
     }
-    
+
     // Método para precargar categorías
     public void precargarCategorias() {
         try {
             // Lista de categorías comunes para vuelos
             String[] categoriasData = {
-                "Nacional",
-                "Regional", 
-                "Internacional",
-                "Doméstico",
-                "Charter",
-                "Carga",
-                "Ejecutivo",
-                "Turismo",
-                "Negocios",
-                "Vacaciones"
+                    "Nacional",
+                    "Regional",
+                    "Internacional",
+                    "Doméstico",
+                    "Charter",
+                    "Carga",
+                    "Ejecutivo",
+                    "Turismo",
+                    "Negocios",
+                    "Vacaciones"
             };
-            
+
             for (String nombreCategoria : categoriasData) {
                 // Verificar si la categoría ya existe
                 if (categoriaDAO.buscarPorNombre(nombreCategoria) == null) {
@@ -60,7 +60,7 @@ public class CategoriaServicio {
                     System.out.println("Categoría precargada: " + nombreCategoria);
                 }
             }
-            
+
         } catch (Exception e) {
             throw new RuntimeException("Error en la precarga de categorías: " + e.getMessage(), e);
         }

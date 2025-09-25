@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "compraPaquete")
-public class CompraPaquete extends Reserva{
+public class CompraPaquete extends Reserva {
     @Column(nullable = false)
     private DTFecha vencimiento;
 
@@ -25,20 +25,29 @@ public class CompraPaquete extends Reserva{
 //    private TipoAsiento tipoAsiento;
 
 
-    public CompraPaquete() {}
+    public CompraPaquete() {
+    }
 
     public CompraPaquete(Cliente cliente, DTFecha fechaReserva, DTFecha vencimiento) {
         super(cliente, fechaReserva);
         this.vencimiento = vencimiento;
     }
 
-    public DTFecha getVencimiento() {return vencimiento;}
+    public DTFecha getVencimiento() {
+        return vencimiento;
+    }
 
-    public void setVencimiento(DTFecha vencimiento) {this.vencimiento = vencimiento;}
+    public void setVencimiento(DTFecha vencimiento) {
+        this.vencimiento = vencimiento;
+    }
 
-    public PaqueteVuelo getPaqueteVuelo() {return this.paqueteVuelo;}
+    public PaqueteVuelo getPaqueteVuelo() {
+        return this.paqueteVuelo;
+    }
 
-    public void setPaqueteVuelo(PaqueteVuelo paqueteVuelo) {this.paqueteVuelo = paqueteVuelo;}
+    public void setPaqueteVuelo(PaqueteVuelo paqueteVuelo) {
+        this.paqueteVuelo = paqueteVuelo;
+    }
 
 //    public TipoAsiento getTipoAsiento() {return tipoAsiento;}
 //

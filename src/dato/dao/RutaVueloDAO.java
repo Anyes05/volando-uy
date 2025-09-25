@@ -25,19 +25,19 @@ public class RutaVueloDAO {
         em.close();
         return rv;
     }
-    
+
     // Buscar ruta de vuelo por nombre
     public RutaVuelo buscarPorNombre(String nombre) {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery(
-                "SELECT rv FROM RutaVuelo rv WHERE rv.nombre = :nombre", 
-                RutaVuelo.class
-            )
-            .setParameter("nombre", nombre)
-            .getResultStream()
-            .findFirst()
-            .orElse(null);
+                            "SELECT rv FROM RutaVuelo rv WHERE rv.nombre = :nombre",
+                            RutaVuelo.class
+                    )
+                    .setParameter("nombre", nombre)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
         } finally {
             em.close();
         }
