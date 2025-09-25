@@ -10,8 +10,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
   <!-- Tu CSS -->
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/consultaRutaVuelo.css">
+  <script src="script/controladorVista.js"></script>
+  <script src="script/consultaRutaVuelo.js"></script>
 </head>
 <body>
+<!-- <button onclick="loadPage('inicio.html')">Inicio</button>-->
 
   <!-- Overlay para mobile / sidebar -->
   <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
@@ -19,10 +23,11 @@
   <!-- Sidebar (mantuvimos tu contenido, id cambiado a sidenav-1 para coincidir con el toggler) -->
   <aside class="sidebar" id="sidenav-1">
     <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
+    <a href="#" data-vista="inicio.html">Inicio</a>
     <a href="#">Reservar</a>
     <a href="#">Gestionar</a>
     <a href="#">Facturación</a>
-    <a href="#">Estado del vuelo</a>
+    <a href="#" data-vista="consultaRutaVuelo.html">Estado del vuelo</a>
     <a href="#">Planificar</a>
     <a href="#">Ofertas</a>
     <a href="#">Fidelización</a>
@@ -56,46 +61,13 @@
       </div>
     </header>
 
-    <!-- Hero -->
-    <section class="hero">
-      <span class="badge">Escala gratuita</span>
-      <h1>Disfruta 2 noches de hotel gratuitas en Abu Dhabi</h1>
-      <p>Reserva ahora y suma millas con VolandoUY</p>
-      <button class="btn-primary">Reservar ahora</button>
+  <div id="main-content">
 
-      <!-- Buscador -->
-      <div class="search-box">
-        <div class="trip-options">
-          <button class="active">Ida y vuelta</button>
-          <button>Solo ida</button>
-          <button>Múltiples destinos</button>
-        </div>
-        <div class="inputs">
-          <input type="text" placeholder="Desde (origen)">
-          <input type="text" placeholder="Hacia (destino)">
-          <input type="date">
-          <input type="date">
-          <button class="btn-search"><i class="fas fa-search"></i> Buscar</button>
-        </div>
-      </div>
-    </section>
 
-    <!-- Ofertas -->
-    <section class="offers">
-      <h2>Ofertas desde <span>Montevideo</span></h2>
-      <div class="carousel-container">
-        <button class="carousel-btn prev" id="prevBtn" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
-        <div class="carousel" id="carousel">
-          <div class="offer-card"><img src="https://picsum.photos/300/160?1" alt="Hanoi"><h3>Hanoi</h3><p>Desde <span>USD 604</span></p></div>
-          <div class="offer-card"><img src="https://picsum.photos/300/160?2" alt="Chiang Mai"><h3>Chiang Mai</h3><p>Desde <span>USD 697</span></p></div>
-          <div class="offer-card"><img src="https://picsum.photos/300/160?3" alt="Dubai"><h3>Dubai</h3><p>Desde <span>USD 499</span></p></div>
-          <div class="offer-card"><img src="https://picsum.photos/300/160?4" alt="Maldivas"><h3>Maldivas</h3><p>Desde <span>USD 1,199</span></p></div>
-          <div class="offer-card"><img src="https://picsum.photos/300/160?5" alt="Tokio"><h3>Tokio</h3><p>Desde <span>USD 899</span></p></div>
-          <div class="offer-card"><img src="https://picsum.photos/300/160?6" alt="Madrid"><h3>Madrid</h3><p>Desde <span>USD 799</span></p></div>
-        </div>
-        <button class="carousel-btn next" id="nextBtn" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
-      </div>
-    </section>
+    <!-- Contenido que cambia -->
+
+
+  </div>
 
     <!-- Beneficios -->
     <section class="features">
