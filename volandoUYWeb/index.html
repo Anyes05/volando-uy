@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VolandoUY</title>
+  <!-- FontAwesome (tu kit) -->
+  <script src="https://kit.fontawesome.com/4b6b2f8f2a.js" crossorigin="anonymous"></script>
+  <!-- Tipografía -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Tu CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/consultaRutaVuelo.css">
+  <script src="script/controladorVista.js"></script>
+  <script src="script/consultaRutaVuelo.js"></script>
+</head>
+<body>
+<!-- <button onclick="loadPage('inicio.html')">Inicio</button>-->
+
+  <!-- Overlay para mobile / sidebar -->
+  <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar (mantuvimos tu contenido, id cambiado a sidenav-1 para coincidir con el toggler) -->
+  <aside class="sidebar" id="sidenav-1">
+    <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
+    <a href="#" data-vista="inicio.html">Inicio</a>
+    <a href="#">Reservar</a>
+    <a href="#">Gestionar</a>
+    <a href="#">Facturación</a>
+    <a href="#" data-vista="consultaRutaVuelo.html">Estado del vuelo</a>
+    <a href="#">Planificar</a>
+    <a href="#">Ofertas</a>
+    <a href="#">Fidelización</a>
+    <a href="#">Ayuda</a>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+
+    <!-- Header -->
+    <header class="header">
+      <!-- Toggler (ese botón que mandaste). Tiene id="menuBtn" para mantener compatibilidad con la JS -->
+      <button
+        data-mdb-button-init
+        data-mdb-toggle="sidenav"
+        data-mdb-target="#sidenav-1"
+        data-mdb-ripple-init
+        class="sidenav-toggler"
+        id="menuBtn"
+        aria-controls="#sidenav-1"
+        aria-haspopup="true"
+        aria-label="Abrir menú">
+        <i class="fas fa-bars" aria-hidden="true"></i>
+      </button>
+
+      <div class="logo">VolandoUY</div>
+
+      <div class="header-icons">
+        <a href="#" class="login-btn"><i class="fas fa-user"></i> Iniciar sesión</a>
+        <a href="#" class="signup-btn"><i class="fas fa-user-plus"></i> Registrarse</a>
+      </div>
+    </header>
+
+  <div id="main-content">
+
+
+    <!-- Contenido que cambia -->
+
+
+  </div>
+
+    <!-- Beneficios -->
+    <section class="features">
+      <div><i class="fas fa-tags"></i> Mejores tarifas</div>
+      <div><i class="fas fa-shield-alt"></i> Pago seguro</div>
+      <div><i class="fas fa-headset"></i> Atención 24/7</div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="#">Contacto</a>
+        <a href="#">Información legal</a>
+        <a href="#">Términos y condiciones</a>
+        <a href="#">Política de privacidad</a>
+      </div>
+      <p>© 2025 VolandoUY - Todos los derechos reservados</p>
+    </footer>
+
+  </div>
+
+  <!-- Script: sidebar + carrusel (autoplay) -->
+  <script>
+    // Elementos
+    const sidebar = document.getElementById('sidenav-1');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
+
+    // Abrir / cerrar sidebar (usa overlay que ya tenías)
+    function openSidebar() {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+    function toggleSidebar() {
+      if (sidebar.classList.contains('active')) closeSidebar();
+      else openSidebar();
+    }
+
+    // Conecta el toggler (tu botón MDB) con la lógica
+    menuBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleSidebar();
+    });
+
+    // Cerrar con ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
+    });
+
+    /* ===== Carrusel ===== */
+    const carousel = document.getElementById("carousel");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function getStep() {
+      const card = carousel.querySelector('.offer-card');
+      if (!card) return 220;
+      const gapValue = getComputedStyle(carousel).gap || '15px';
+      const gap = parseInt(gapValue, 10) || 15;
+      return card.offsetWidth + gap;
+    }
+
+    function scrollNext() {
+      const step = getStep();
+      if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 5) {
+        carousel.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        carousel.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    }
+    function scrollPrev() {
+      const step = getStep();
+      if (carousel.scrollLeft <= 5) {
+        carousel.scrollTo({ left: carousel.scrollWidth - carousel.clientWidth, behavior: 'smooth' });
+      } else {
+        carousel.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    }
+
+    prevBtn.addEventListener('click', () => { stopAutoplay(); scrollPrev(); startAutoplay(); });
+    nextBtn.addEventListener('click', () => { stopAutoplay(); scrollNext(); startAutoplay(); });
+
+    let autoplayTimer = null;
+    const AUTOPLAY_DELAY = 3500;
+    function startAutoplay() { stopAutoplay(); autoplayTimer = setInterval(scrollNext, AUTOPLAY_DELAY); }
+    function stopAutoplay() { if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; } }
+
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+    carousel.addEventListener('touchstart', () => { stopAutoplay(); }, {passive:true});
+    carousel.addEventListener('touchend', () => { setTimeout(startAutoplay, 1500); });
+
+    window.addEventListener('resize', () => { startAutoplay(); });
+
+    // iniciar autoplay
+    startAutoplay();
+
+  </script>
+</body>
+</html>
