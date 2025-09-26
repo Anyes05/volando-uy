@@ -16,8 +16,26 @@
   </form>
 </section>
 
-<!-- Contenedor donde se listan las rutas -->
-<div id="lista-rutas"></div>
+
+
+<div class="contenedor-principal">
+  <!-- Contenedor de rutas + paginación -->
+  <div class="contenedor-rutas">
+    <div id="lista-rutas"></div>
+    <div id="paginacion"></div>
+  </div>
+
+  <!-- Aside de vuelos -->
+  <aside id="aside-vuelos">
+    <h3>Vuelos</h3>
+    <div id="lista-vuelos">
+      <p>Selecciona una ruta para ver sus vuelos</p>
+    </div>
+    <button id="btn-agregar-vuelo">Agregar vuelo</button>
+  </aside>
+</div>
+
+
 
 <!-- Detalle de ruta (puede usarse en el futuro si querés mostrar más info al hacer clic) -->
 <section class="detalle-ruta" style="display: none">

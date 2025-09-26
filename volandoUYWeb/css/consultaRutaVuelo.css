@@ -1,3 +1,4 @@
+/* ====== LISTA DE RUTAS ====== */
 #lista-rutas {
   display: flex;
   flex-wrap: wrap;
@@ -26,6 +27,8 @@
   min-width: 260px;
   color: #eaf6fb;
   border: 1px solid #2298ca;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .ruta-card img {
@@ -45,7 +48,14 @@
   color: #eaf6fb;
 }
 
-/* Botón genérico que ya tenías */
+/* Estado seleccionado */
+.ruta-card.seleccionada {
+  border: 2px solid #01aaf5;
+  box-shadow: 0 0 12px rgba(1, 170, 245, 0.7);
+  transform: scale(1.02);
+}
+
+/* ====== BOTONES ====== */
 .ruta-card .btn-primary {
   margin-top: 1em;
   background: #1976d2;
@@ -60,14 +70,9 @@
   background: #1565c0;
 }
 
-.consulta-ruta-container {
-  position: relative;
-}
-
-/* 🔽 NUEVO: botón Ver más / Ver menos */
 .ruta-card .btn-ver-mas {
   margin-top: 0.8em;
-  background: #2298ca; /* celeste del borde */
+  background: #2298ca;
   color: #eaf6fb;
   border: none;
   padding: 0.4em 1em;
@@ -80,16 +85,127 @@
   background: #1976b2;
 }
 
-/* 🔽 NUEVO: bloque expandible */
+/* ====== DETALLE RUTA ====== */
 .ruta-card .detalle-ruta {
   margin-top: 1em;
   text-align: left;
   width: 100%;
-  display: none; /* oculto por defecto */
+  display: none;
   font-size: 0.9em;
   color: #dceff6;
 }
 .ruta-card .detalle-ruta p {
   margin: 0.3em 0;
   padding-left: 0.5em;
+}
+
+/* ====== CONTENEDOR PRINCIPAL ====== */
+.contenedor-principal {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2em;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ====== ASIDE VUELOS ====== */
+#aside-vuelos {
+  width: 280px;
+  background: #2a3a42;
+  color: #eaf6fb;
+  border-left: 2px solid #2298ca;
+  padding: 1em;
+  border-radius: 8px;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.2);
+  flex-shrink: 0;
+}
+
+#aside-vuelos h3 {
+  margin-top: 0;
+  color: #01aaf5;
+  text-align: center;
+}
+
+#lista-vuelos {
+  margin-top: 1em;
+}
+
+.vuelo-card {
+  background: #32434b;
+  border: 1px solid #2298ca;
+  border-radius: 8px;
+  padding: 0.8em;
+  margin-bottom: 0.8em;
+  font-size: 0.9em;
+  text-align: center;
+}
+.vuelo-card img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin-bottom: 0.5em;
+}
+.vuelo-card p {
+  margin: 0.3em 0;
+}
+
+#btn-agregar-vuelo {
+  margin-top: 1em;
+  width: 100%;
+  background: #2298ca;
+  color: #fff;
+  border: none;
+  padding: 0.6em;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+#btn-agregar-vuelo:hover {
+  background: #1976b2;
+}
+
+/* ====== PAGINACIÓN ====== */
+#paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5em 0 2em;
+  gap: 1em;
+  font-weight: 500;
+  color: #eaf6fb;
+}
+
+#paginacion button {
+  background: #32434b;
+  color: #eaf6fb;
+  border: 1px solid #2298ca;
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  transition: all 0.3s ease;
+}
+
+#paginacion button:hover:not(:disabled) {
+  background: #2298ca;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+#paginacion button:disabled {
+  background: #2a3a42;
+  border-color: #555;
+  color: #777;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+#paginacion span {
+  font-size: 0.95em;
+  color: #eaf6fb;
 }
