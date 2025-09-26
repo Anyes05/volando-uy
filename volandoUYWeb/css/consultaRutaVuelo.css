@@ -45,6 +45,7 @@
   color: #eaf6fb;
 }
 
+/* Botón genérico que ya tenías */
 .ruta-card .btn-primary {
   margin-top: 1em;
   background: #1976d2;
@@ -61,4 +62,34 @@
 
 .consulta-ruta-container {
   position: relative;
+}
+
+/* 🔽 NUEVO: botón Ver más / Ver menos */
+.ruta-card .btn-ver-mas {
+  margin-top: 0.8em;
+  background: #2298ca; /* celeste del borde */
+  color: #eaf6fb;
+  border: none;
+  padding: 0.4em 1em;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+.ruta-card .btn-ver-mas:hover {
+  background: #1976b2;
+}
+
+/* 🔽 NUEVO: bloque expandible */
+.ruta-card .detalle-ruta {
+  margin-top: 1em;
+  text-align: left;
+  width: 100%;
+  display: none; /* oculto por defecto */
+  font-size: 0.9em;
+  color: #dceff6;
+}
+.ruta-card .detalle-ruta p {
+  margin: 0.3em 0;
+  padding-left: 0.5em;
 }

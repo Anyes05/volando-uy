@@ -2,35 +2,31 @@
   <h2>Consulta de Ruta de Vuelo</h2>
   <form id="filtro-rutas">
     <label>Aerolínea:</label>
-    <select>
-      <option>ZulyFly</option>
-      <option>LATAM</option>
+    <select id="select-aerolinea">
+      <option value="">Todas</option>
     </select>
+
     <label>Categoría:</label>
-    <select>
-      <option>Internacionales</option>
-      <option>Nacionales</option>
+    <select id="select-categoria">
+      <option value="">Todas</option>
     </select>
-    <button type="submit" class="btn-primary">Buscar</button>
+
+    <label>Buscar por nombre:</label>
+    <input type="text" id="buscador-nombre" placeholder="Ej: Montevideo - Madrid">
   </form>
 </section>
 
-<div id="lista-rutas">
-  
-</div>
+<!-- Contenedor donde se listan las rutas -->
+<div id="lista-rutas"></div>
 
-<section class="detalle-ruta" style="display:none;">
-  <h2>Detalle de la Ruta ZL1502</h2>
-  <p>Origen: Montevideo (Carrasco)</p>
-  <p>Destino: Río de Janeiro (Galeao)</p>
-  <p>Fechas: 05/08/2023 - 08/08/2023</p>
+<!-- Detalle de ruta (puede usarse en el futuro si querés mostrar más info al hacer clic) -->
+<section class="detalle-ruta" style="display: none">
+  <h2>Detalle de la Ruta</h2>
+  <p><strong>Origen:</strong> <span id="detalle-origen"></span></p>
+  <p><strong>Destino:</strong> <span id="detalle-destino"></span></p>
+  <p><strong>Fechas:</strong> <span id="detalle-fechas"></span></p>
   <h3>Vuelos asociados</h3>
-  <ul>
-    <li><a href="#">ZL150201</a></li>
-    <li><a href="#">ZL150202</a></li>
-  </ul>
+  <ul id="detalle-vuelos"></ul>
   <h3>Paquete asociado</h3>
-  <p>Sudamérica</p>
+  <p id="detalle-paquete"></p>
 </section>
-
-
