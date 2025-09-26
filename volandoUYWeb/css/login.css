@@ -1,13 +1,11 @@
-/* Fondo general */
-body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(to right, #3580A0, #2298CA);
+/* Fondo general - ajustado para funcionar dentro del layout principal */
+#main-content {
+  min-height: calc(100vh - 120px); /* Altura total menos header y footer */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  color: white;
+  background: linear-gradient(to right, #3580A0, #2298CA);
+  padding: 20px;
 }
 
 /* Contenedor principal */
@@ -21,9 +19,12 @@ body {
 .login-box {
   background: #2B3033;
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
+  border-radius: 12px;
+  box-shadow: 0px 8px 24px rgba(0,0,0,0.4);
   text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 /* Títulos */
@@ -98,4 +99,32 @@ body {
 
 .extra-links a:hover {
   text-decoration: underline;
+}
+
+/* Asegurar que el sidebar y footer se vean correctamente */
+.sidebar {
+  z-index: 1100;
+}
+
+.footer {
+  position: relative;
+  z-index: 100;
+  background: #2B3033;
+  margin-top: 0;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  #main-content {
+    padding: 10px;
+    min-height: calc(100vh - 100px);
+  }
+  
+  .login-container {
+    padding: 10px;
+  }
+  
+  .login-box {
+    padding: 20px;
+  }
 }

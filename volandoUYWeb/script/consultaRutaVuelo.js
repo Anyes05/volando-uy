@@ -286,7 +286,23 @@ function renderizarControles(totalRutas) {
   contenedor.appendChild(btnNext);
 }
 
-// Recalcular al redimensionar ventana
+// Recalcular al redimensionar ventana (con debounce para evitar múltiples llamadas)
+let resizeTimeout;
 window.addEventListener("resize", () => {
-  mostrarRutas(rutasData);
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    if (rutasData && rutasData.length > 0) {
+      mostrarRutas(rutasData);
+    }
+  }, 150);
 });
+
+// Función de inicialización para el sistema de vistas
+window.initConsultaRutaVuelo = function() {
+  cargarRutas();
+};
+
+// Inicializar automáticamente solo si no estamos en el sistema de vistas
+if (!window.location.hash || window.location.hash === '#') {
+  cargarRutas();
+}

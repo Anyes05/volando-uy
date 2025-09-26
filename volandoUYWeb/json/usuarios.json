@@ -1,0 +1,140 @@
+[
+  {
+    "id": 1,
+    "nickname": "zfly",
+    "nombre": "ZulyFly",
+    "email": "info@zfly.com",
+    "sitioWeb": "http://www.zfly.com",
+    "descripcion": "Viajes exclusivos entre los destinos más solicitados",
+    "tipo": "aerolinea",
+    "imagen": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+    "rutasVuelo": [
+      {
+        "id": 1,
+        "nombre": "Montevideo - Madrid",
+        "estado": "confirmada",
+        "descripcion": "Ruta transatlántica directa"
+      },
+      {
+        "id": 2,
+        "nombre": "Montevideo - Buenos Aires",
+        "estado": "confirmada",
+        "descripcion": "Ruta directa entre Uruguay y Argentina"
+      },
+      {
+        "id": 3,
+        "nombre": "Montevideo - Santiago",
+        "estado": "ingresada",
+        "descripcion": "Nueva ruta en evaluación"
+      },
+      {
+        "id": 4,
+        "nombre": "Montevideo - París",
+        "estado": "rechazada",
+        "descripcion": "Ruta rechazada por falta de demanda"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "nickname": "latam_uy",
+    "nombre": "LATAM Uruguay",
+    "email": "contacto@latam.com.uy",
+    "sitioWeb": "https://www.latam.com",
+    "descripcion": "Aerolínea líder en América del Sur",
+    "tipo": "aerolinea",
+    "imagen": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=400&q=80",
+    "rutasVuelo": [
+      {
+        "id": 5,
+        "nombre": "Montevideo - São Paulo",
+        "estado": "confirmada",
+        "descripcion": "Conexión con hub internacional"
+      },
+      {
+        "id": 6,
+        "nombre": "Montevideo - Lima",
+        "estado": "confirmada",
+        "descripcion": "Ruta comercial importante"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "nickname": "juan_viajero",
+    "nombre": "Juan Pérez",
+    "email": "juan.perez@email.com",
+    "sitioWeb": "",
+    "descripcion": "Viajero frecuente, amante de los destinos exóticos",
+    "tipo": "cliente",
+    "imagen": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
+    "reservas": [
+      {
+        "id": 1,
+        "vuelo": "Montevideo - Madrid",
+        "fecha": "15/03/2024",
+        "estado": "confirmada"
+      },
+      {
+        "id": 2,
+        "vuelo": "Madrid - París",
+        "fecha": "20/03/2024",
+        "estado": "confirmada"
+      }
+    ],
+    "paquetes": [
+      {
+        "id": 1,
+        "nombre": "Europa Clásica",
+        "destinos": ["Madrid", "París", "Roma"],
+        "fecha": "15/03/2024",
+        "precio": 2500
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "nickname": "maria_turismo",
+    "nombre": "María González",
+    "email": "maria.gonzalez@email.com",
+    "sitioWeb": "",
+    "descripcion": "Agente de viajes especializada en turismo de lujo",
+    "tipo": "cliente",
+    "imagen": "https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=400&q=80",
+    "reservas": [
+      {
+        "id": 3,
+        "vuelo": "Montevideo - Buenos Aires",
+        "fecha": "10/02/2024",
+        "estado": "confirmada"
+      }
+    ],
+    "paquetes": [
+      {
+        "id": 2,
+        "nombre": "Fin de Semana Buenos Aires",
+        "destinos": ["Buenos Aires"],
+        "fecha": "10/02/2024",
+        "precio": 450
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "nickname": "sky_airline",
+    "nombre": "Sky Airline",
+    "email": "info@skyairline.com",
+    "sitioWeb": "https://www.skyairline.com",
+    "descripcion": "Aerolínea low-cost con destinos en América del Sur",
+    "tipo": "aerolinea",
+    "imagen": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=400&q=80",
+    "rutasVuelo": [
+      {
+        "id": 7,
+        "nombre": "Montevideo - Santiago de Chile",
+        "estado": "confirmada",
+        "descripcion": "Conexión internacional entre Uruguay y Chile"
+      }
+    ]
+  }
+]
