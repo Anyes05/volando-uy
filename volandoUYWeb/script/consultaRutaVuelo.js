@@ -2,12 +2,17 @@ const rutasURL = "json/rutasVuelo.json";
 let rutasData = [];
 let currentPage = 1;
 let cardsPerPage = 9; // valor inicial, se recalcula dinámicamente
+let vueloSeleccionado = null;
+// Inicializar
+cargarRutas();
+cargarVuelos();
+let vuelosData = [];
 
-
-
-// 🔠 Función para quitar tildes/acentos
-function quitarTildes(texto) {
-  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function cargarVuelos() {
+  fetch('json/vuelos.json')
+    .then(res => res.json())
+    .then(data => vuelosData = data)
+    .catch(err => console.error("Error cargando vuelos:", err));
 }
 
 // Cargar rutas desde JSON
@@ -16,10 +21,16 @@ function cargarRutas() {
     .then((res) => res.json())
     .then((data) => {
       rutasData = data;
-      mostrarRutas(rutasData);
-      cargarFiltros(rutasData);
+      const confirmadas = rutasData.filter(r => r.estado === "Confirmada");
+      cargarFiltros(confirmadas);
+      mostrarRutas(confirmadas);
     })
     .catch((err) => console.error("Error cargando rutas:", err));
+}
+
+// 🔠 Función para quitar tildes/acentos
+function quitarTildes(texto) {
+  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 // Mostrar rutas en el contenedor
@@ -76,6 +87,12 @@ function mostrarRutas(lista) {
   });
 
   renderizarControles(lista.length);
+  
+  if (!lista.some(r => rutaSeleccionada && r.nombre === rutaSeleccionada.nombre)) {
+  rutaSeleccionada = null;
+  document.getElementById("lista-vuelos").innerHTML = "";
+}
+
 }
 // Cargar aerolíneas y categorías únicas
 function cargarFiltros(data) {
@@ -119,11 +136,10 @@ function filtrar() {
   const filtradas = rutasData.filter((r) => {
     const nombreNormalizado = quitarTildes(r.nombre.toLowerCase());
     const origenNormalizado = quitarTildes(r.ciudadOrigen.nombre.toLowerCase());
-    const destinoNormalizado = quitarTildes(
-      r.ciudadDestino.nombre.toLowerCase()
-    );
+    const destinoNormalizado = quitarTildes(r.ciudadDestino.nombre.toLowerCase());
 
     return (
+      r.estado === "Confirmada" && // 🔑 solo confirmadas
       (aerolinea === "" || r.aerolinea.nombre === aerolinea) &&
       (categoria === "" || r.categorias.includes(categoria)) &&
       (texto === "" ||
@@ -136,47 +152,77 @@ function filtrar() {
   mostrarRutas(filtradas);
 }
 
-// Inicializar
-cargarRutas();
-
-let vuelosData = [];
-
-function cargarVuelos() {
-  fetch('json/vuelos.json')
-    .then(res => res.json())
-    .then(data => vuelosData = data)
-    .catch(err => console.error("Error cargando vuelos:", err));
-}
-
 function mostrarVuelosDeRuta(nombreRuta) {
   const contenedor = document.getElementById("lista-vuelos");
   contenedor.innerHTML = "";
 
-  const vuelos = vuelosData.filter(v => v.ruta === nombreRuta);
+  const vuelosRuta = vuelosData.filter(
+    v => v.ruta === nombreRuta && v.estado === "Confirmada"
+  );
 
-  if (vuelos.length === 0) {
-    contenedor.innerHTML = "<p>No hay vuelos programados para esta ruta.</p>";
+  if (vuelosRuta.length === 0) {
+    contenedor.innerHTML = "<p>No hay vuelos confirmados para esta ruta.</p>";
+    vueloSeleccionado = null; // 🔄 deseleccionar si no hay vuelos
     return;
   }
 
-  vuelos.forEach(v => {
+  vuelosRuta.forEach(v => {
     const card = document.createElement("div");
     card.classList.add("vuelo-card");
+
     card.innerHTML = `
-      <img src="${v.imagen}" alt="Imagen vuelo ${v.nombre}">
+      <img src="${v.imagen}" alt="Imagen del vuelo ${v.nombre}">
       <p><strong>${v.nombre}</strong></p>
       <p><strong>Fecha:</strong> ${v.fechaVuelo}</p>
       <p><strong>Hora:</strong> ${v.horaVuelo}</p>
       <p><strong>Duración:</strong> ${v.duracion}</p>
-      <p><strong>Ejecutivo:</strong> ${v.asientosMaxEjecutivo}</p>
-      <p><strong>Turista:</strong> ${v.asientosMaxTurista}</p>
-      <p><strong>Estado:</strong> ${v.estado}</p>
     `;
+
+    card.addEventListener("click", () => {
+      document.querySelectorAll(".vuelo-card").forEach(c => c.classList.remove("seleccionado"));
+      card.classList.add("seleccionado");
+      vueloSeleccionado = v;
+    });
+
     contenedor.appendChild(card);
   });
+
+  // 🔄 Si el vuelo seleccionado ya no está en la lista actual, lo deseleccionamos
+  if (!vuelosRuta.some(v => vueloSeleccionado && v.nombre === vueloSeleccionado.nombre)) {
+    vueloSeleccionado = null;
+  }
 }
 
-cargarVuelos();
+//BOTON CONSULTAR VUELO
+document.getElementById("btn-agregar-vuelo").textContent = "Consultar vuelo";
+
+document.getElementById("btn-agregar-vuelo").addEventListener("click", () => {
+  const mensaje = document.getElementById("mensaje-vuelo");
+
+  if (!vueloSeleccionado) {
+    mensaje.textContent = "⚠️ Por favor, selecciona un vuelo primero.";
+    mensaje.style.display = "block";
+    mensaje.style.opacity = "1";
+
+    // Ocultar después de 3 segundos con fade-out
+    setTimeout(() => {
+      mensaje.style.opacity = "0";
+      setTimeout(() => {
+        mensaje.style.display = "none";
+      }, 300); // coincide con el transition
+    }, 3000);
+
+    return;
+  }
+
+  // Redirigir a la otra página con el vuelo seleccionado
+  window.location.href = `consulta-vuelo.html?vuelo=${encodeURIComponent(vueloSeleccionado.nombre)}`;
+});
+
+
+  //Lo comentado es para obtener el parámetro en la otra página de CONSULTA VUELO
+  //const params = new URLSearchParams(window.location.search);
+  //const vueloBuscado = params.get("vuelo");
 
 
 function calcularCardsPorPagina() {
@@ -201,6 +247,8 @@ function mostrarRutas(lista) {
 
   if (lista.length === 0) {
     contenedor.innerHTML = "<p>No se encontraron rutas.</p>";
+    rutaSeleccionada = null; // 🔄 deseleccionar si no hay rutas
+    document.getElementById("lista-vuelos").innerHTML = "";
     return;
   }
 
@@ -240,11 +288,18 @@ function mostrarRutas(lista) {
     card.addEventListener("click", () => {
       document.querySelectorAll(".ruta-card").forEach(c => c.classList.remove("seleccionada"));
       card.classList.add("seleccionada");
+      rutaSeleccionada = r;
       mostrarVuelosDeRuta(r.nombre);
     });
 
     contenedor.appendChild(card);
   });
+
+  // 🔄 Si la ruta seleccionada ya no está en la página actual, la deseleccionamos
+  if (!paginaRutas.some(r => rutaSeleccionada && r.nombre === rutaSeleccionada.nombre)) {
+    rutaSeleccionada = null;
+    document.getElementById("lista-vuelos").innerHTML = "";
+  }
 
   renderizarControles(lista.length);
 }
