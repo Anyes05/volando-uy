@@ -4,18 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VolandoUY</title>
-  <!-- FontAwesome (tu kit) -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- Tipografía -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <!-- Tu CSS -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/consultaRutaVuelo.css">
   <link rel="stylesheet" href="css/consultaUsuario.css">
   
 </head>
 <body>
-<!-- <button onclick="loadPage('inicio.html')">Inicio</button>-->
 
   <!-- Overlay para mobile / sidebar -->
   <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
@@ -24,15 +20,11 @@
   <aside class="sidebar" id="sidenav-1">
     <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
     <a href="#" data-vista="inicio.html">Inicio</a>
-    <a href="#">Reservar</a>
-    <a href="#">Gestionar</a>
-    <a href="#">Facturación</a>
+    <a href="#" data-vista="altaRutaVuelo.html">Alta Ruta de Vuelo</a>
+    <a href="#" data-vista="altaVuelo.html">Alta de Vuelo</a>
     <a href="#" data-vista="consultaRutaVuelo.html">Estado del vuelo</a>
     <a href="#" data-vista="consultaUsuario.html">Consulta de Usuario</a>
-    <a href="#">Planificar</a>
-    <a href="#">Ofertas</a>
-    <a href="#">Fidelización</a>
-    <a href="#">Ayuda</a>
+>
   </aside>
 
   <!-- Main content -->

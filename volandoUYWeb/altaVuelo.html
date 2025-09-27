@@ -1,0 +1,53 @@
+<section class="form-section-pro">
+  <div class="form-card-pro">
+    <h2> Alta de Vuelo</h2>
+    <p class="form-subtitle">Ingrese los datos del vuelo</p>
+
+    <form id="formAltaRutaPro" class="form-grid">
+      <!-- Nombre y Descripción corta -->
+      <div class="form-group">
+        <label for="nombre">Nombre del vuelo</label>
+        <input type="text" id="nombre">
+      </div>
+
+      <!-- Hora y Fecha -->
+      <div class="form-group">
+        <label for="duracion">Duracion</label>
+        <input type="time" id="duracion" required>
+      </div>
+      <div class="form-group">
+        <label for="fechaAlta">Fecha de alta</label>
+        <input type="date" id="fechaAlta">
+      </div>
+
+    <div class="form-group">
+        <label for="cantidadAsientosTuristas">Cantidad de Asientos Turistas</label>
+        <input type="number" id="cantidadAsientosTuristas" min="0">
+    </div>
+
+    <div class="form-group">
+        <label for="cantidadAsientosEjecutivo">Cantidad de Asientos Ejecutivos</label>
+        <input type="number" id="cantidadAsientosEjecutivo" min="0">
+    </div>
+
+      <!-- Foto -->
+      <div class="form-group full-width">
+        <label for="foto">Imagen de portada</label>
+        <input type="file" id="foto" accept="image/*">
+      </div>
+
+      <!-- Botón -->
+      <div class="form-actions full-width">
+        <button type="submit" class="btn-pro"> Guardar Vuelo</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  document.getElementById("fechaAlta").valueAsDate = new Date();
+  document.getElementById("formAltaRutaPro").addEventListener("submit", e=>{
+    e.preventDefault();
+    alert("Vuelo registrada ✅");
+  });
+</script>
