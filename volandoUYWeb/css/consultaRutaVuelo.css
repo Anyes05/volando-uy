@@ -209,3 +209,20 @@
   font-size: 0.95em;
   color: #eaf6fb;
 }
+
+.vuelo-card.seleccionado {
+  border: 2px solid #01aaf5;
+  box-shadow: 0 0 10px rgba(1,170,245,0.7);
+  transform: scale(1.02);
+}
+
+.mensaje-vuelo {
+  margin-top: 0.8em;
+  font-size: 0.9em;
+  color: #eaf6fb;
+  background: #2298ca;
+  padding: 0.5em 0.8em;
+  border-radius: 6px;
+  text-align: center;
+  display: none; /* oculto por defecto */
+}
