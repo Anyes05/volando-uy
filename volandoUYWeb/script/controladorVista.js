@@ -55,6 +55,28 @@ const controladorDeVista = {
           }
         }
 
+        // Si la vista es consultaVuelo, cargar su JS y ejecutar init
+        if (url === 'consultaVuelo.html') {
+          const yaCargado = Array.from(document.scripts)
+            .some(s => s.src.includes('script/consultaVuelo.js'));
+          const ejecutarInit = () => {
+            setTimeout(() => {
+              if (typeof window.initConsultaVuelo === 'function') {
+                window.initConsultaVuelo();
+              }
+            }, 100);
+          };
+          if (yaCargado) {
+            ejecutarInit();
+          } else {
+            const script = document.createElement('script');
+            script.src = 'script/consultaVuelo.js';
+            script.defer = true;
+            script.onload = ejecutarInit;
+            document.body.appendChild(script);
+          }
+        }
+
         // Si la vista es consultaUsuario, cargar su JS y ejecutar init
         if (url === 'consultaUsuario.html') {
           // ¿ya está el script cargado?

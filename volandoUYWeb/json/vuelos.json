@@ -7,8 +7,11 @@
     "duracion": "01:10",
     "asientosMaxEjecutivo": 20,
     "asientosMaxTurista": 150,
-    "estado": "Confirmada",
-    "imagen": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=400&q=80"
+    "imagen": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=400&q=80",
+    "reservas": [ 
+      { "cliente": "Cliente A", "asiento": "12A", "clase": "Turista", "fecha": "2024-07-01" }, 
+      { "cliente": "Cliente B", "asiento": "1B", "clase": "Ejecutivo", "fecha": "2024-07-02" } 
+    ]
   },
   {
     "nombre": "Vuelo LA1002",
@@ -29,8 +32,10 @@
     "duracion": "02:45",
     "asientosMaxEjecutivo": 25,
     "asientosMaxTurista": 180,
-    "estado": "Confirmada",
-    "imagen": "https://images.unsplash.com/photo-1508610048659-a06b669e9f7f?auto=format&fit=crop&w=400&q=80"
+    "imagen": "https://images.unsplash.com/photo-1508610048659-a06b669e9f7f?auto=format&fit=crop&w=400&q=80",
+    "reservas": [ 
+      { "cliente": "Cliente C", "asiento": "14C", "clase": "Turista", "fecha": "2024-07-05" } 
+    ]
   },
   {
     "nombre": "Vuelo IB6012",
