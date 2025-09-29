@@ -53,6 +53,26 @@ body {
   grid-column: 1/-1;
 }
 
+/* Estilos para el campo de Duración (NUEVO) */
+.duration-inputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.duration-inputs input {
+  flex-grow: 1; /* Permite que los inputs se expandan */
+  text-align: center; /* Centra el número ingresado */
+  /* Los estilos base de input ya se aplican aquí */
+}
+
+.duration-inputs span {
+  color: #01AAF5; /* Color azul para las etiquetas h y m */
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+
 /* Labels */
 .form-group label {
   display: block;
