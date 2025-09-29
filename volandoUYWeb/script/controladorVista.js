@@ -107,6 +107,32 @@ const controladorDeVista = {
           }
         }
 
+        // Si la vista es modificarUsuario, cargar su JS y ejecutar init
+        if (url === 'modificarUsuario.html') {
+          const yaCargado = Array.from(document.scripts)
+            .some(s => s.src.includes('script/modificarUsuario.js'));
+
+          const ejecutarInit = () => {
+            setTimeout(() => {
+              if (typeof window.initModificarUsuario === 'function') {
+                window.initModificarUsuario();
+              } else {
+                console.warn('initModificarUsuario no está disponible.');
+              }
+            }, 100);
+          };
+
+          if (yaCargado) {
+            ejecutarInit();
+          } else {
+            const script = document.createElement('script');
+            script.src = 'script/modificarUsuario.js';
+            script.defer = true;
+            script.onload = ejecutarInit;
+            document.body.appendChild(script);
+          }
+        }
+
         // Si la vista es inicioSesión, no necesita JS adicional
         if (url === 'inicioSesión.html') {
           console.log('Página de inicio de sesión cargada');
