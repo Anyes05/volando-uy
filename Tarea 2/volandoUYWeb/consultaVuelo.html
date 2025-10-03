@@ -11,35 +11,43 @@
     <div class="form-card-pro">
 
       <h2>Consulta de Vuelo</h2>
+      <p class="form-subtitle">Seleccione una aerolínea, luego una ruta, y vea los vuelos disponibles.</p>
 
-      <!-- Controles: solo seleccionar aerolínea y mostrar rutas -->
+      <!-- Controles -->
       <div class="controls-grid">
+        <!-- Aerolíneas -->
         <div class="form-group">
-          <label for="selectAerolinea">Seleccionar aerolínea</label>
+          <label for="selectAerolinea">Seleccionar Aerolínea</label>
           <select id="selectAerolinea">
-            <option value="">-- Elegir aerolínea --</option>
+            <option value="a1">AeroUruguay</option>
+            <option value="a2">SkyLatam</option>
+            <option value="a3">GlobalWings</option>
           </select>
         </div>
+
+        <!-- Rutas -->
         <div class="form-group">
-          <label>Rutas de Vuelo</label>
-          <div id="listaRutas" class="lista-rutas">Elija una aerolínea</div>
+          <label for="selectRuta">Seleccionar Ruta</label>
+          <select id="selectRuta" disabled>
+            <option value="">Seleccione una ruta</option>
+          </select>
         </div>
       </div>
 
       <!-- Vuelos -->
-      <div class="section-title">Vuelos disponibles</div>
-      <div id="listaVuelos" class="grid-vuelos"></div>
+      <div class="section-title">Vuelos Disponibles</div>
+      <div id="listaVuelos" class="grid-vuelos">Seleccione primero una ruta</div>
 
       <!-- Detalle del vuelo -->
       <div id="detalle-vuelo" class="detalle-card" style="display:none;">
-        <h3>Detalle del vuelo</h3>
-        <img id="vuelo-img" alt="Imagen vuelo">
+        <h3>Detalle del Vuelo</h3>
+        <img id="vuelo-img" alt="Imagen vuelo" />
         <div id="vuelo-info"></div>
       </div>
 
       <!-- Reservas -->
       <div id="reservas" class="detalle-card" style="display:none;">
-        <h3>Reservas</h3>
+        <h3>Reservas del Vuelo</h3>
         <div id="lista-reservas"></div>
       </div>
 
