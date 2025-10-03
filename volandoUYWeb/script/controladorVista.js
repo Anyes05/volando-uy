@@ -160,6 +160,30 @@ const controladorDeVista = {
               document.body.appendChild(script);
             }
           }
+          if (url === 'consultaVuelo.html') {
+  const yaCargado = Array.from(document.scripts)
+    .some(s => s.src.includes('script/consultaVuelo.js'));
+
+  const ejecutarInit = () => {
+    setTimeout(() => {
+      if (typeof window.initConsultaVuelo === 'function') {
+        window.initConsultaVuelo();
+      } else {
+        console.warn('initConsultaVuelo no está disponible.');
+      }
+    }, 100);
+  };
+
+  if (yaCargado) {
+    ejecutarInit();
+  } else {
+    const script = document.createElement('script');
+    script.src = 'script/consultaVuelo.js';
+    script.defer = true;
+    script.onload = ejecutarInit;
+    document.body.appendChild(script);
+  }
+}
 
         });
       })

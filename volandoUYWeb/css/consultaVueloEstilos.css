@@ -154,3 +154,12 @@ body {
   .form-card-pro { padding:20px; margin: 18px; }
   #vuelo-img { max-width:100%; }
 }
+
+.form-group select option {
+  color: #0b1b20;
+  background: #eaf6fb;
+}
+.form-group select option[disabled] {
+  color: rgba(15,20,24,0.6);
+  background: transparent;
+}
