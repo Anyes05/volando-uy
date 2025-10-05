@@ -100,8 +100,8 @@ function mostrarRutas(lista) {
 }
 // Cargar aerolíneas y categorías únicas
 function cargarFiltros(data) {
-  const aerolineas = [...new Set(data.map((r) => r.aerolinea.nombre))];
-  const categorias = [...new Set(data.flatMap((r) => r.categorias))];
+  const aerolineas = [...new Set(data.map(r => r.aerolinea?.nombre).filter(Boolean))].sort();
+  const categorias = [...new Set(data.flatMap(r => r.categorias).filter(Boolean))].sort();
 
   const selectAerolinea = document.getElementById("select-aerolinea");
   const selectCategoria = document.getElementById("select-categoria");
@@ -109,17 +109,17 @@ function cargarFiltros(data) {
   selectAerolinea.innerHTML = '<option value="">Todas</option>';
   selectCategoria.innerHTML = '<option value="">Todas</option>';
 
-  aerolineas.forEach((a) => {
+  aerolineas.forEach(nombre => {
     const option = document.createElement("option");
-    option.value = a;
-    option.textContent = a;
+    option.value = nombre;
+    option.textContent = nombre;
     selectAerolinea.appendChild(option);
   });
 
-  categorias.forEach((c) => {
+  categorias.forEach(cat => {
     const option = document.createElement("option");
-    option.value = c;
-    option.textContent = c;
+    option.value = cat;
+    option.textContent = cat;
     selectCategoria.appendChild(option);
   });
 
@@ -129,7 +129,6 @@ function cargarFiltros(data) {
   document.getElementById("buscador-nombre").addEventListener("input", filtrar);
 }
 
-// Filtrar en tiempo real
 function filtrar() {
   const aerolinea = document.getElementById("select-aerolinea").value;
   const categoria = document.getElementById("select-categoria").value;
@@ -143,7 +142,7 @@ function filtrar() {
     const destinoNormalizado = quitarTildes(r.ciudadDestino.nombre.toLowerCase());
 
     return (
-      r.estado === "Confirmada" && // 🔑 solo confirmadas
+      r.estado === "Confirmada" &&
       (aerolinea === "" || r.aerolinea.nombre === aerolinea) &&
       (categoria === "" || r.categorias.includes(categoria)) &&
       (texto === "" ||
@@ -152,6 +151,13 @@ function filtrar() {
         destinoNormalizado.includes(texto))
     );
   });
+
+  // 🔄 Si la ruta seleccionada ya no está en las filtradas, deseleccionarla
+  if (rutaSeleccionada && !filtradas.some(r => r.nombre === rutaSeleccionada.nombre)) {
+    rutaSeleccionada = null;
+    vueloSeleccionado = null;
+    document.getElementById("lista-vuelos").innerHTML = "";
+  }
 
   mostrarRutas(filtradas);
 }
