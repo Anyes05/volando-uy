@@ -136,5 +136,29 @@
         "descripcion": "Conexión internacional entre Uruguay y Chile"
       }
     ]
+  },
+  {
+    "id": 6,
+    "nickname": "LATAM",
+    "nombre": "LATAM",
+    "email": "contacto@latam.com.uy",
+    "sitioWeb": "https://www.latam.com",
+    "descripcion": "Aerolínea líder en América del Sur",
+    "tipo": "aerolinea",
+    "imagen": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=400&q=80",
+    "rutasVuelo": [
+      {
+        "id": 8,
+        "nombre": "Montevideo - São Paulo",
+        "estado": "confirmada",
+        "descripcion": "Conexión con hub internacional"
+      },
+      {
+        "id": 9,
+        "nombre": "Montevideo - Lima",
+        "estado": "confirmada",
+        "descripcion": "Ruta comercial importante"
+      }
+    ]
   }
 ]
