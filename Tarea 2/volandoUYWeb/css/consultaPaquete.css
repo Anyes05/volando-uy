@@ -1,0 +1,42 @@
+/* consultaPaquete.css */
+:root{
+  --bg:#263238;
+  --card:#32434b;
+  --accent:#01aaf5;
+  --muted:#eaf6fb;
+}
+
+.search-box{
+  background: linear-gradient(90deg, rgba(2,39,49,0.9), rgba(10,60,72,0.9));
+  padding:20px;
+  border-radius:12px;
+  color:var(--muted);
+  margin-bottom:20px;
+}
+
+.filtro-row{display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+.filtro-row label{min-width:200px;font-weight:600;color:var(--muted);}
+.filtro-row input{flex:1;padding:10px;border:1px solid #2298ca;border-radius:8px;background:#32434b;color:var(--muted)}
+
+#lista-paquetes{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:20px}
+.paquete-card{background:var(--card);border-radius:12px;padding:16px;border:1px solid #2298ca;cursor:pointer;transition:all .25s;color:var(--muted)}
+.paquete-card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(0,0,0,.35);border-color:var(--accent)}
+.paquete-card img{width:100%;height:160px;object-fit:cover;border-radius:8px;margin-bottom:10px}
+.paquete-card h3{margin:0;color:var(--accent)}
+.paquete-card p{margin:6px 0;color:#dfeef6}
+
+.detalle-paquete{position:relative;margin-top:30px;background:var(--card);border-radius:12px;padding:20px;border:1px solid #2298ca;color:var(--muted)}
+.close-detail-btn{position:absolute;top:12px;right:12px;background:#dc3545;color:white;border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer}
+.paquete-header{display:flex;gap:18px;align-items:flex-start}
+.paquete-header img{width:220px;height:140px;object-fit:cover;border-radius:8px}
+.paquete-info h2{margin:0;color:var(--accent)}
+.paquete-details{margin-top:16px}
+.rutas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+.ruta-item{background:#21323a;padding:10px;border-radius:10px;border:1px solid #1b6b86;color:var(--muted);cursor:pointer}
+.ruta-item h4{margin:0 0 6px 0;color:var(--accent)}
+.ruta-item p{margin:3px 0;font-size:13px}
+
+@media (max-width:800px){
+  .paquete-header{flex-direction:column}
+  .paquete-header img{width:100%;height:220px}
+}

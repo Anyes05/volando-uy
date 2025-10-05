@@ -129,6 +129,34 @@ const controladorDeVista = {
             }
           }
 
+          // Si la vista es consultaPaquete, cargar su JS y ejecutar init
+          if (url === 'consultaPaquete.html') {
+            const yaCargado = Array.from(document.scripts)
+              .some(s => s.src.includes('script/consultaPaquete.js'));
+
+            const ejecutarInit = () => {
+              setTimeout(() => {
+                if (typeof window.initConsultaPaquete === 'function') {
+                  window.initConsultaPaquete();
+                } else if (typeof cargarPaquetes === 'function') {
+                  cargarPaquetes();
+                } else {
+                  console.warn('initConsultaPaquete no está disponible.');
+                }
+              }, 100);
+            };
+
+            if (yaCargado) {
+              ejecutarInit();
+            } else {
+              const script = document.createElement('script');
+              script.src = 'script/consultaPaquete.js';
+              script.defer = true;
+              script.onload = ejecutarInit;
+              document.body.appendChild(script);
+            }
+          }
+
           // Si la vista es modificarUsuario, cargar su JS y ejecutar init
           if (url === "modificarUsuario.html") {
             const yaCargado = Array.from(document.scripts).some((s) =>
