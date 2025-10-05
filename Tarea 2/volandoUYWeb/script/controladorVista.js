@@ -76,6 +76,33 @@ const controladorDeVista = {
             script.onload = ejecutarInit;
             document.body.appendChild(script);
           }
+          
+          if (url === "registrarUsuario.html") {
+            const ejecutarInit = () => {
+              setTimeout(() => {
+                if (typeof window.initregistrarUsuario === "function") {
+                  window.initregistrarUsuario();
+                } else if (typeof cargarRutas === "function") {
+                  cargarRutas();
+                } else {
+                  console.warn("initregistrarUsuario no está disponible.");
+                }
+              }, 100);
+            };
+
+            // Eliminar script anterior si existe
+            const prev = document.querySelector(
+              'script[src="script/registrarUsuario.js"]'
+            );
+            if (prev) prev.remove();
+
+            // Inyectar script nuevo
+            const script = document.createElement("script");
+            script.src = "script/registrarUsuario.js";
+            script.defer = true;
+            script.onload = ejecutarInit;
+            document.body.appendChild(script);
+          }
 
           // Si la vista es consultaVuelo, cargar su JS y ejecutar init
           if (url === "consultaVuelo.html") {
