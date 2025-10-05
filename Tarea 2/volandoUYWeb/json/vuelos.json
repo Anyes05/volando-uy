@@ -7,6 +7,7 @@
     "duracion": "01:10",
     "asientosMaxEjecutivo": 20,
     "asientosMaxTurista": 150,
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=400&q=80",
     "reservas": [ 
       { "cliente": "Cliente A", "asiento": "12A", "clase": "Turista", "fecha": "2024-07-01" }, 
@@ -21,7 +22,7 @@
     "duracion": "01:15",
     "asientosMaxEjecutivo": 18,
     "asientosMaxTurista": 160,
-    "estado": "En horario",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80"
   },
   {
@@ -32,6 +33,7 @@
     "duracion": "02:45",
     "asientosMaxEjecutivo": 25,
     "asientosMaxTurista": 180,
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1508610048659-a06b669e9f7f?auto=format&fit=crop&w=400&q=80",
     "reservas": [ 
       { "cliente": "Cliente C", "asiento": "14C", "clase": "Turista", "fecha": "2024-07-05" } 
@@ -45,7 +47,7 @@
     "duracion": "12:25",
     "asientosMaxEjecutivo": 40,
     "asientosMaxTurista": 220,
-    "estado": "Programado",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80"
   },
   {
@@ -89,7 +91,7 @@
     "duracion": "02:35",
     "asientosMaxEjecutivo": 20,
     "asientosMaxTurista": 170,
-    "estado": "En horario",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=400&q=80"
   },
 
@@ -112,7 +114,7 @@
     "duracion": "01:55",
     "asientosMaxEjecutivo": 14,
     "asientosMaxTurista": 110,
-    "estado": "Programado",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1508610048659-a06b669e9f7f?auto=format&fit=crop&w=400&q=80"
   },
 
@@ -135,7 +137,7 @@
     "duracion": "04:35",
     "asientosMaxEjecutivo": 26,
     "asientosMaxTurista": 185,
-    "estado": "En horario",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80"
   },
 
@@ -158,7 +160,7 @@
     "duracion": "06:05",
     "asientosMaxEjecutivo": 30,
     "asientosMaxTurista": 195,
-    "estado": "Programado",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=400&q=80"
   },
 
@@ -181,7 +183,7 @@
     "duracion": "09:05",
     "asientosMaxEjecutivo": 34,
     "asientosMaxTurista": 205,
-    "estado": "En horario",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1508610048659-a06b669e9f7f?auto=format&fit=crop&w=400&q=80"
   },
 
@@ -204,7 +206,172 @@
     "duracion": "07:20",
     "asientosMaxEjecutivo": 26,
     "asientosMaxTurista": 185,
-    "estado": "Programado",
+    "estado": "Confirmada",
     "imagen": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80"
-  }
+  },
+  {
+  "nombre": "Vuelo PNA4001",
+  "ruta": "Montevideo - Asunción",
+  "fechaVuelo": "2024-08-10",
+  "horaVuelo": "11:00",
+  "duracion": "01:50",
+  "asientosMaxEjecutivo": 16,
+  "asientosMaxTurista": 120,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1617814076516-9f8f4013270f?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo PNA4002",
+  "ruta": "Montevideo - Asunción",
+  "fechaVuelo": "2024-08-12",
+  "horaVuelo": "19:20",
+  "duracion": "01:55",
+  "asientosMaxEjecutivo": 14,
+  "asientosMaxTurista": 110,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1508610048659-a06b669e9f7f?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo PNA4003",
+  "ruta": "Montevideo - Asunción",
+  "fechaVuelo": "2024-08-14",
+  "horaVuelo": "07:45",
+  "duracion": "01:50",
+  "asientosMaxEjecutivo": 15,
+  "asientosMaxTurista": 115,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1617814076516-9f8f4013270f?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo LA5001",
+  "ruta": "Montevideo - Lima",
+  "fechaVuelo": "2024-09-01",
+  "horaVuelo": "07:45",
+  "duracion": "04:40",
+  "asientosMaxEjecutivo": 28,
+  "asientosMaxTurista": 190,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo LA5002",
+  "ruta": "Montevideo - Lima",
+  "fechaVuelo": "2024-09-03",
+  "horaVuelo": "21:10",
+  "duracion": "04:35",
+  "asientosMaxEjecutivo": 26,
+  "asientosMaxTurista": 185,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo LA5003",
+  "ruta": "Montevideo - Lima",
+  "fechaVuelo": "2024-09-05",
+  "horaVuelo": "15:30",
+  "duracion": "04:45",
+  "asientosMaxEjecutivo": 27,
+  "asientosMaxTurista": 188,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo AV6001",
+  "ruta": "Montevideo - Bogotá",
+  "fechaVuelo": "2024-09-08",
+  "horaVuelo": "13:30",
+  "duracion": "06:10",
+  "asientosMaxEjecutivo": 32,
+  "asientosMaxTurista": 200,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1608679053729-1d6a2dff7e3c?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo AV6002",
+  "ruta": "Montevideo - Bogotá",
+  "fechaVuelo": "2024-09-09",
+  "horaVuelo": "22:15",
+  "duracion": "06:05",
+  "asientosMaxEjecutivo": 30,
+  "asientosMaxTurista": 195,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo AV6003",
+  "ruta": "Montevideo - Bogotá",
+  "fechaVuelo": "2024-09-11",
+  "horaVuelo": "09:50",
+  "duracion": "06:15",
+  "asientosMaxEjecutivo": 31,
+  "asientosMaxTurista": 198,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1608679053729-1d6a2dff7e3c?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo AA7001",
+  "ruta": "Montevideo - Miami",
+  "fechaVuelo": "2024-09-20",
+  "horaVuelo": "23:55",
+  "duracion": "09:10",
+  "asientosMaxEjecutivo": 36,
+  "asientosMaxTurista": 210,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo AA7002",
+  "ruta": "Montevideo - Miami",
+  "fechaVuelo": "2024-09-22",
+  "horaVuelo": "10:20",
+  "duracion": "09:05",
+  "asientosMaxEjecutivo": 34,
+  "asientosMaxTurista": 205,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1508610048659-a06b669e9f7f?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo AA7003",
+  "ruta": "Montevideo - Miami",
+  "fechaVuelo": "2024-09-24",
+  "horaVuelo": "16:40",
+  "duracion": "09:15",
+  "asientosMaxEjecutivo": 35,
+  "asientosMaxTurista": 208,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo CM8001",
+  "ruta": "Montevideo - Panamá",
+  "fechaVuelo": "2024-10-01",
+  "horaVuelo": "06:50",
+  "duracion": "07:15",
+  "asientosMaxEjecutivo": 28,
+  "asientosMaxTurista": 190,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo CM8002",
+  "ruta": "Montevideo - Panamá",
+  "fechaVuelo": "2024-10-03",
+  "horaVuelo": "17:25",
+  "duracion": "07:20",
+  "asientosMaxEjecutivo": 26,
+  "asientosMaxTurista": 185,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=400&q=80"
+},
+{
+  "nombre": "Vuelo CM8003",
+  "ruta": "Montevideo - Panamá",
+  "fechaVuelo": "2024-10-05",
+  "horaVuelo": "13:15",
+  "duracion": "07:10",
+  "asientosMaxEjecutivo": 27,
+  "asientosMaxTurista": 188,
+  "estado": "Confirmada",
+  "imagen": "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=400&q=80"
+}
 ]

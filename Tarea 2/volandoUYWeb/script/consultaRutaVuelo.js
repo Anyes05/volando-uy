@@ -3,6 +3,8 @@ let rutasData = [];
 let currentPage = 1;
 let cardsPerPage = 9; // valor inicial, se recalcula dinámicamente
 let vueloSeleccionado = null;
+let rutaSeleccionada = null;
+
 // Inicializar
 cargarRutas();
 cargarVuelos();
@@ -18,14 +20,16 @@ function cargarVuelos() {
 // Cargar rutas desde JSON
 function cargarRutas() {
   fetch(rutasURL)
-    .then((res) => res.json())
-    .then((data) => {
+    .then(res => res.json())
+    .then(data => {
       rutasData = data;
       const confirmadas = rutasData.filter(r => r.estado === "Confirmada");
       cargarFiltros(confirmadas);
       mostrarRutas(confirmadas);
+      // 👇 fuerza recalculo de cards
+      window.dispatchEvent(new Event("resize"));
     })
-    .catch((err) => console.error("Error cargando rutas:", err));
+    .catch(err => console.error("Error cargando rutas:", err));
 }
 
 // 🔠 Función para quitar tildes/acentos

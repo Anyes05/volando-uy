@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "fechaReserva": "2024-03-10",
+    "costoReserva": {
+      "monto": 850,
+      "moneda": "USD"
+    },
+    "nickname": "juan_viajero",
+    "vuelo": "Vuelo LA1001",
+    "estado": "confirmada",
+    "detalle": {
+      "descripcion": "Reserva de vuelo Montevideo - Madrid en clase económica",
+      "servicios": ["Equipaje de mano", "Asiento estándar"]
+    },
+    "pasajeros": [
+      { "nombre": "Ana", "apellido": "Gómez" },
+      { "nombre": "Carlos", "apellido": "López" }
+    ]
+  },
+  {
+    "id": 2,
+    "fechaReserva": "2024-03-15",
+    "costoReserva": {
+      "monto": 1200,
+      "moneda": "USD"
+    },
+    "nickname": "juan_viajero",
+    "vuelo": "Vuelo IB6012",
+    "estado": "confirmada",
+    "detalle": {
+      "descripcion": "Reserva de vuelo Madrid - París en clase business",
+      "servicios": ["Equipaje extra", "Comida premium", "Acceso a lounge"]
+    },
+    "pasajeros": [
+      { "nombre": "María", "apellido": "González" }
+    ]
+  },
+  {
+    "id": 3,
+    "fechaReserva": "2024-04-02",
+    "costoReserva": {
+      "monto": 980,
+      "moneda": "USD"
+    },
+    "nickname": "juan_viajero",
+    "vuelo": "Vuelo LA2003",
+    "estado": "pendiente",
+    "detalle": {
+      "descripcion": "Reserva de vuelo Montevideo - São Paulo en clase económica",
+      "servicios": ["Asiento ventana", "Snack a bordo"]
+    },
+    "pasajeros": [
+      { "nombre": "Lucía", "apellido": "Fernández" },
+      { "nombre": "Diego", "apellido": "Martínez" }
+    ]
+  }
+]

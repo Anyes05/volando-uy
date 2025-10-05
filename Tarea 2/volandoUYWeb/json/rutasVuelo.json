@@ -5,17 +5,9 @@
     "fechaAlta": "01/03/2024",
     "costoBase": 120,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "LATAM" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Buenos Aires",
-      "pais": "Argentina",
-      "aeropuerto": "Aeroparque Jorge Newbery"
-    },
+    "aerolinea": { "nombre": "LATAM", "nickname": "latam" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Buenos Aires", "pais": "Argentina", "aeropuerto": "Aeroparque Jorge Newbery" },
     "categorias": ["Nacionales", "Cortos"],
     "imagen": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
   },
@@ -23,19 +15,11 @@
     "nombre": "Montevideo - Santiago de Chile",
     "descripcion": "Conexión internacional entre Uruguay y Chile, frecuencias diarias.",
     "fechaAlta": "15/02/2024",
-    "costoBase": 220,  
+    "costoBase": 220,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "Sky Airline" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Santiago de Chile",
-      "pais": "Chile",
-      "aeropuerto": "Arturo Merino Benítez"
-    },
+    "aerolinea": { "nombre": "Sky Airline", "nickname": "sky" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Santiago de Chile", "pais": "Chile", "aeropuerto": "Arturo Merino Benítez" },
     "categorias": ["Internacionales", "América"],
     "imagen": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"
   },
@@ -45,17 +29,9 @@
     "fechaAlta": "10/01/2024",
     "costoBase": 850,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "Iberia" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Madrid",
-      "pais": "España",
-      "aeropuerto": "Adolfo Suárez Madrid-Barajas"
-    },
+    "aerolinea": { "nombre": "Iberia", "nickname": "iberia" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Madrid", "pais": "España", "aeropuerto": "Adolfo Suárez Madrid-Barajas" },
     "categorias": ["Internacionales", "Europa"],
     "imagen": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80"
   },
@@ -65,17 +41,9 @@
     "fechaAlta": "20/03/2024",
     "costoBase": 180,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "Gol Linhas Aéreas" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Río de Janeiro",
-      "pais": "Brasil",
-      "aeropuerto": "Galeão International Airport"
-    },
+    "aerolinea": { "nombre": "Gol Linhas Aéreas", "nickname": "gol" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Río de Janeiro", "pais": "Brasil", "aeropuerto": "Galeão International Airport" },
     "categorias": ["Internacionales", "América"],
     "imagen": "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=400&q=80"
   },
@@ -85,17 +53,9 @@
     "fechaAlta": "05/12/2023",
     "costoBase": 90,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "Amaszonas" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Punta del Este",
-      "pais": "Uruguay",
-      "aeropuerto": "Laguna del Sauce Airport"
-    },
+    "aerolinea": { "nombre": "Amaszonas", "nickname": "amaszonas" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Punta del Este", "pais": "Uruguay", "aeropuerto": "Laguna del Sauce Airport" },
     "categorias": ["Nacionales", "Cortos"],
     "imagen": "https://images.unsplash.com/photo-1468421870903-4df1664ac249?auto=format&fit=crop&w=400&q=80"
   },
@@ -105,17 +65,9 @@
     "fechaAlta": "12/04/2024",
     "costoBase": 200,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "LATAM" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "São Paulo",
-      "pais": "Brasil",
-      "aeropuerto": "Guarulhos International Airport"
-    },
+    "aerolinea": { "nombre": "LATAM", "nickname": "latam" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "São Paulo", "pais": "Brasil", "aeropuerto": "Guarulhos International Airport" },
     "categorias": ["Internacionales", "América"],
     "imagen": "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=400&q=80"
   },
@@ -125,17 +77,9 @@
     "fechaAlta": "22/04/2024",
     "costoBase": 170,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "Paranair" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Asunción",
-      "pais": "Paraguay",
-      "aeropuerto": "Silvio Pettirossi International Airport"
-    },
+    "aerolinea": { "nombre": "Paranair", "nickname": "paranair" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Asunción", "pais": "Paraguay", "aeropuerto": "Silvio Pettirossi International Airport" },
     "categorias": ["Internacionales", "América"],
     "imagen": "https://images.unsplash.com/photo-1617814076516-9f8f4013270f?auto=format&fit=crop&w=400&q=80"
   },
@@ -145,17 +89,9 @@
     "fechaAlta": "05/05/2024",
     "costoBase": 320,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "LATAM" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Lima",
-      "pais": "Perú",
-      "aeropuerto": "Jorge Chávez International Airport"
-    },
+    "aerolinea": { "nombre": "LATAM", "nickname": "latam" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Lima", "pais": "Perú", "aeropuerto": "Jorge Chávez International Airport" },
     "categorias": ["Internacionales", "América"],
     "imagen": "https://images.unsplash.com/photo-1526392060635-9d6019884377?auto=format&fit=crop&w=400&q=80"
   },
@@ -165,27 +101,19 @@
     "fechaAlta": "18/05/2024",
     "costoBase": 350,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "Avianca" },
-    "ciudadOrigen": {
-      "nombre": "Montevideo",
-      "pais": "Uruguay",
-      "aeropuerto": "Carrasco International Airport"
-    },
-    "ciudadDestino": {
-      "nombre": "Bogotá",
-      "pais": "Colombia",
-      "aeropuerto": "El Dorado International Airport"
-    },
+    "aerolinea": { "nombre": "Avianca", "nickname": "avianca" },
+    "ciudadOrigen": { "nombre": "Montevideo", "pais": "Uruguay", "aeropuerto": "Carrasco International Airport" },
+    "ciudadDestino": { "nombre": "Bogotá", "pais": "Colombia", "aeropuerto": "El Dorado International Airport" },
     "categorias": ["Internacionales", "América"],
     "imagen": "https://images.unsplash.com/photo-1608679053729-1d6a2dff7e3c?auto=format&fit=crop&w=400&q=80"
   },
-  {
+    {
     "nombre": "Montevideo - Miami",
     "descripcion": "Conexión directa a Estados Unidos, destino turístico y de compras.",
     "fechaAlta": "01/06/2024",
     "costoBase": 600,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "American Airlines" },
+    "aerolinea": { "nombre": "American Airlines", "nickname": "americanair" },
     "ciudadOrigen": {
       "nombre": "Montevideo",
       "pais": "Uruguay",
@@ -205,7 +133,7 @@
     "fechaAlta": "10/06/2024",
     "costoBase": 400,
     "estado": "Confirmada",
-    "aerolinea": { "nombre": "Copa Airlines" },
+    "aerolinea": { "nombre": "Copa Airlines", "nickname": "copa" },
     "ciudadOrigen": {
       "nombre": "Montevideo",
       "pais": "Uruguay",
