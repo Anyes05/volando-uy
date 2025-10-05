@@ -10,27 +10,31 @@
 <section class="search-box">
   <form id="filtro-rutas">
 
-    <!-- Aerolínea (solo visible para Cliente, el JS lo oculta si es Aerolínea logueada) -->
-    <label for="select-aerolinea">Aerolínea:</label>
-    <select id="select-aerolinea">
-      <option value="Todos">Todas</option>
-    </select>
+    <div class="filtro-group">
+      <label for="select-aerolinea">Aerolínea:</label>
+      <select id="select-aerolinea">
+        <option value="Todos">Todas</option>
+      </select>
+    </div>
 
-    <!-- Origen -->
-    <label for="select-origen">Origen:</label>
-    <select id="select-origen">
-      <option value="Todos">Todos</option>
-    </select>
+    <div class="filtro-group">
+      <label for="select-origen">Origen:</label>
+      <select id="select-origen">
+        <option value="Todos">Todos</option>
+      </select>
+    </div>
 
-    <!-- Destino -->
-    <label for="select-destino">Destino:</label>
-    <select id="select-destino">
-      <option value="Todos">Todos</option>
-    </select>
+    <div class="filtro-group">
+      <label for="select-destino">Destino:</label>
+      <select id="select-destino">
+        <option value="Todos">Todos</option>
+      </select>
+    </div>
 
-    <!-- Búsqueda -->
-    <label for="busqueda">Buscar por nombre:</label>
-    <input type="text" id="busqueda" placeholder="Ej: Montevideo - Madrid">
+    <div class="filtro-group">
+      <label for="busqueda">Buscar por nombre:</label>
+      <input type="text" id="busqueda" placeholder="Ej: Montevideo - Madrid">
+    </div>
 
   </form>
 </section>
@@ -43,7 +47,7 @@
     <div id="paginacion"></div>
   </div>
 
-  <!-- Aside de vuelos (sin botón, al seleccionar se abre panel) -->
+  <!-- Aside de vuelos -->
   <aside id="aside-vuelos">
     <h3>Vuelos</h3>
     <div id="lista-vuelos">
@@ -63,7 +67,7 @@
   </div>
 </div>
 
-<!-- (Opcional) Sección futura de detalle de ruta -->
+<!-- Sección futura de detalle de ruta -->
 <section class="detalle-ruta" style="display:none;">
   <h2>Detalle de la Ruta</h2>
   <p><strong>Origen:</strong> <span id="detalle-origen"></span></p>

@@ -19,10 +19,10 @@ const reservasURL = "json/reservas.json"; // dataset de reservas
 function initConsultaReserva() {
   // Cargar datasets en paralelo
   Promise.all([
-    fetch(usuariosURL).then(r => r.json()),
-    fetch(reservasURL).then(r => r.json()),
-    fetch(rutasURLReserva).then(r => r.json()),
-    fetch(vuelosURLReserva).then(r => r.json())
+    fetch(usuariosURL).then((r) => r.json()),
+    fetch(reservasURL).then((r) => r.json()),
+    fetch(rutasURLReserva).then((r) => r.json()),
+    fetch(vuelosURLReserva).then((r) => r.json()),
   ])
     .then(([usuarios, reservas, rutas, vuelos]) => {
       // Guardamos en memoria global
@@ -42,7 +42,7 @@ function initConsultaReserva() {
         iniciarFlujoReserva();
       }
     })
-    .catch(err => console.error("Error inicializando:", err));
+    .catch((err) => console.error("Error inicializando:", err));
 }
 
 // Configurar botones
@@ -72,26 +72,67 @@ function configurarBotones() {
   }
 }
 
-// Flujo principal
 function iniciarFlujoReserva() {
-  const confirmadas = rutasDataReserva.filter((r) => r.estado === "Confirmada");
-
+  let confirmadas = rutasDataReserva.filter(r => r.estado === "Confirmada");
   if (!usuarioActual) return;
 
-  if (usuarioActual.tipo === "cliente") {
-    // Cliente ve todas las rutas confirmadas
-    mostrarRutasReserva(confirmadas);
-  } else if (usuarioActual.tipo === "aerolinea") {
-    // Aerolínea ve solo sus rutas, comparando por nickname
-    const rutasAerolinea = confirmadas.filter(
-      (r) =>
-        r.aerolinea?.nickname?.toLowerCase() ===
-        usuarioActual.nickname?.toLowerCase()
+  if (usuarioActual.tipo === "aerolinea") {
+    confirmadas = confirmadas.filter(
+      r => (r.aerolinea?.nickname || "").toLowerCase() === usuarioActual.nickname?.toLowerCase()
     );
-    mostrarRutasReserva(rutasAerolinea);
   }
 
-  console.log("Usuario actual:", usuarioActual.nombre, "-", usuarioActual.tipo);
+  window.rutasFiltrables = confirmadas;
+
+  configurarFiltros();
+  aplicarFiltrosRutas();
+}
+
+
+function configurarFiltros() {
+  const selAerol = document.getElementById("select-aerolinea");
+  const selOrigen = document.getElementById("select-origen");
+  const selDestino = document.getElementById("select-destino");
+  const inputNombre = document.getElementById("busqueda");
+
+  if (!selAerol || !selOrigen || !selDestino || !inputNombre) return;
+
+  const base = window.rutasFiltrables || [];
+
+  // === Aerolínea vs Cliente ===
+  if (usuarioActual?.tipo === "aerolinea") {
+    const nombreAero = usuarioActual.nombre || usuarioActual.aerolinea?.nombre || usuarioActual.nickname;
+    selAerol.innerHTML = `<option value="${usuarioActual.nickname}" selected>${nombreAero}</option>`;
+    selAerol.disabled = true;
+  } else {
+    selAerol.disabled = false;
+    const aerolineas = new Map();
+    base.forEach(r => {
+      if (r.aerolinea?.nickname) {
+        aerolineas.set(r.aerolinea.nickname, r.aerolinea.nombre);
+      }
+    });
+    selAerol.innerHTML = `<option value="Todos">Todas</option>`;
+    aerolineas.forEach((nombre, nick) => {
+      selAerol.innerHTML += `<option value="${nick}">${nombre}</option>`;
+    });
+    selAerol.onchange = aplicarFiltrosRutas;
+  }
+
+  // === Orígenes ===
+  const origenes = [...new Set(base.map(r => r.ciudadOrigen?.nombre).filter(Boolean))];
+  selOrigen.innerHTML = `<option value="Todos">Todos</option>`;
+  origenes.forEach(o => selOrigen.innerHTML += `<option value="${o}">${o}</option>`);
+
+  // === Destinos ===
+  const destinos = [...new Set(base.map(r => r.ciudadDestino?.nombre).filter(Boolean))];
+  selDestino.innerHTML = `<option value="Todos">Todos</option>`;
+  destinos.forEach(d => selDestino.innerHTML += `<option value="${d}">${d}</option>`);
+
+  // === Listeners comunes ===
+  selOrigen.onchange = aplicarFiltrosRutas;
+  selDestino.onchange = aplicarFiltrosRutas;
+  inputNombre.oninput = aplicarFiltrosRutas;
 }
 
 // Mostrar rutas
@@ -235,29 +276,33 @@ function cerrarPanelReserva() {
 }
 
 function aplicarFiltrosRutas() {
-  const aerolineaSel = document.getElementById("filtro-aerolinea").value;
-  const origenSel = document.getElementById("filtro-origen").value;
-  const destinoSel = document.getElementById("filtro-destino").value;
-  const buscarNombre = document.getElementById("filtro-nombre").value.toLowerCase().trim();
+  if (!window.rutasFiltrables) return;
 
-  let lista = rutasDataReserva.filter(r => r.estado === "Confirmada");
+  const origenSel = document.getElementById("select-origen")?.value || "Todos";
+  const destinoSel = document.getElementById("select-destino")?.value || "Todos";
+  const buscarNombre = document.getElementById("busqueda")?.value.toLowerCase().trim() || "";
 
-  // Filtro por aerolínea
-  if (aerolineaSel !== "Todas") {
-    lista = lista.filter(r => r.aerolinea?.nickname === aerolineaSel);
+  let lista = [...window.rutasFiltrables];
+
+  // Cliente: usa el select de aerolínea
+  if (usuarioActual?.tipo === "cliente") {
+    const aerolineaSel = document.getElementById("select-aerolinea")?.value || "Todos";
+    if (aerolineaSel !== "Todos") {
+      lista = lista.filter(r => (r.aerolinea?.nickname || "").toLowerCase() === aerolineaSel.toLowerCase());
+    }
   }
 
-  // Filtro por origen
+  // Aerolínea: refuerzo del filtro por seguridad
+  if (usuarioActual?.tipo === "aerolinea") {
+    lista = lista.filter(r => (r.aerolinea?.nickname || "").toLowerCase() === usuarioActual.nickname?.toLowerCase());
+  }
+
   if (origenSel !== "Todos") {
     lista = lista.filter(r => r.ciudadOrigen?.nombre === origenSel);
   }
-
-  // Filtro por destino
   if (destinoSel !== "Todos") {
     lista = lista.filter(r => r.ciudadDestino?.nombre === destinoSel);
   }
-
-  // Filtro por nombre de ruta
   if (buscarNombre) {
     lista = lista.filter(r => (r.nombre || "").toLowerCase().includes(buscarNombre));
   }
