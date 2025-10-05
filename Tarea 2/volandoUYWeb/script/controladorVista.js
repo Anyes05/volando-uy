@@ -17,6 +17,9 @@ const controladorDeVista = {
         // Insertar HTML sin mostrar aún
         contenedor.innerHTML = html;
 
+        // Limpiar clases específicas de páginas
+        contenedor.classList.remove("login-page", "register-page");
+
         // Esperar un frame para que el CSS se aplique
         requestAnimationFrame(() => {
           // Remover clase de carga
@@ -41,26 +44,46 @@ const controladorDeVista = {
               document.body.appendChild(script);
             };
 
-            cargarScript("script/consultaReserva.js", () => {
-              if (typeof window.initConsultaReserva === "function") {
-                window.initConsultaReserva();
-              } else {
-                console.warn("initConsultaReserva no está disponible.");
-              }
-            });
+            const ejecutarInit = () => {
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const consultaForm = document.querySelector('.search-box') || document.getElementById('form-consulta-reserva');
+                if (consultaForm) {
+                  if (typeof window.initConsultaReserva === "function") {
+                    window.initConsultaReserva();
+                  } else {
+                    console.warn("initConsultaReserva no está disponible.");
+                  }
+                } else {
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
+                }
+              };
+              setTimeout(esperarElemento, 100);
+            };
+
+            cargarScript("script/consultaReserva.js", ejecutarInit);
           }
 
           if (url === "consultaRutaVuelo.html") {
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initConsultaRutaVuelo === "function") {
-                  window.initConsultaRutaVuelo();
-                } else if (typeof cargarRutas === "function") {
-                  cargarRutas();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const listaRutas = document.getElementById("lista-rutas") || document.querySelector(".rutas-grid");
+                if (listaRutas) {
+                  if (typeof window.initConsultaRutaVuelo === "function") {
+                    window.initConsultaRutaVuelo();
+                  } else if (typeof cargarRutas === "function") {
+                    cargarRutas();
+                  } else {
+                    console.warn("initConsultaRutaVuelo no está disponible.");
+                  }
                 } else {
-                  console.warn("initConsultaRutaVuelo no está disponible.");
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
 
             // Eliminar script anterior si existe
@@ -78,16 +101,27 @@ const controladorDeVista = {
           }
           
           if (url === "registrarUsuario.html") {
+            // Agregar clase específica para el fondo del registro
+            contenedor.className = "register-page";
+            
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initregistrarUsuario === "function") {
-                  window.initregistrarUsuario();
-                } else if (typeof cargarRutas === "function") {
-                  cargarRutas();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const registrarForm = document.querySelector('.form-box') || document.getElementById('form-registro');
+                if (registrarForm) {
+                  if (typeof window.initregistrarUsuario === "function") {
+                    window.initregistrarUsuario();
+                  } else if (typeof cargarRutas === "function") {
+                    cargarRutas();
+                  } else {
+                    console.warn("initregistrarUsuario no está disponible.");
+                  }
                 } else {
-                  console.warn("initregistrarUsuario no está disponible.");
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
 
             // Eliminar script anterior si existe
@@ -110,11 +144,21 @@ const controladorDeVista = {
               s.src.includes("script/consultaVuelo.js")
             );
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initConsultaVuelo === "function") {
-                  window.initConsultaVuelo();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const listaVuelos = document.getElementById("lista-vuelos") || document.querySelector(".vuelos-grid");
+                if (listaVuelos) {
+                  if (typeof window.initConsultaVuelo === "function") {
+                    window.initConsultaVuelo();
+                  } else {
+                    console.warn("initConsultaVuelo no está disponible.");
+                  }
+                } else {
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
             if (yaCargado) {
               ejecutarInit();
@@ -134,15 +178,23 @@ const controladorDeVista = {
             );
 
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initConsultaUsuario === "function") {
-                  window.initConsultaUsuario();
-                } else if (typeof cargarUsuarios === "function") {
-                  cargarUsuarios();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const listaUsuarios = document.getElementById("lista-usuarios");
+                if (listaUsuarios) {
+                  if (typeof window.initConsultaUsuario === "function") {
+                    window.initConsultaUsuario();
+                  } else if (typeof cargarUsuarios === "function") {
+                    cargarUsuarios();
+                  } else {
+                    console.warn("initConsultaUsuario no está disponible.");
+                  }
                 } else {
-                  console.warn("initConsultaUsuario no está disponible.");
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
 
             if (yaCargado) {
@@ -162,15 +214,23 @@ const controladorDeVista = {
               .some(s => s.src.includes('script/consultaPaquete.js'));
 
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initConsultaPaquete === 'function') {
-                  window.initConsultaPaquete();
-                } else if (typeof cargarPaquetes === 'function') {
-                  cargarPaquetes();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const listaPaquetes = document.getElementById("lista-paquetes") || document.querySelector(".paquetes-grid");
+                if (listaPaquetes) {
+                  if (typeof window.initConsultaPaquete === 'function') {
+                    window.initConsultaPaquete();
+                  } else if (typeof cargarPaquetes === 'function') {
+                    cargarPaquetes();
+                  } else {
+                    console.warn('initConsultaPaquete no está disponible.');
+                  }
                 } else {
-                  console.warn('initConsultaPaquete no está disponible.');
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
 
             if (yaCargado) {
@@ -191,13 +251,21 @@ const controladorDeVista = {
             );
 
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initModificarUsuario === "function") {
-                  window.initModificarUsuario();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const modificarForm = document.querySelector('.form-box') || document.getElementById('form-modificar');
+                if (modificarForm) {
+                  if (typeof window.initModificarUsuario === "function") {
+                    window.initModificarUsuario();
+                  } else {
+                    console.warn("initModificarUsuario no está disponible.");
+                  }
                 } else {
-                  console.warn("initModificarUsuario no está disponible.");
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
 
             if (yaCargado) {
@@ -218,13 +286,21 @@ const controladorDeVista = {
             );
 
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initCompraPaquete === "function") {
-                  window.initCompraPaquete();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const listaPaquetes = document.getElementById("lista-paquetes-compra");
+                if (listaPaquetes) {
+                  if (typeof window.initCompraPaquete === "function") {
+                    window.initCompraPaquete();
+                  } else {
+                    console.warn("initCompraPaquete no está disponible.");
+                  }
                 } else {
-                  console.warn("initCompraPaquete no está disponible.");
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
 
             if (yaCargado) {
@@ -241,6 +317,8 @@ const controladorDeVista = {
           // Si la vista es inicioSesión, no necesita JS adicional
           if (url === "inicioSesión.html") {
             console.log("Página de inicio de sesión cargada");
+            // Agregar clase específica para el fondo del login
+            contenedor.className = "login-page";
           }
 
           // Si la vista es reserva.html, cargar su JS y ejecutar init (patrón igual al de arriba)
@@ -250,14 +328,21 @@ const controladorDeVista = {
             );
 
             const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initReserva === "function") {
-                  window.initReserva();
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const reservaForm = document.querySelector('.reserve-section') || document.getElementById('form-reserva');
+                if (reservaForm) {
+                  if (typeof window.initReserva === "function") {
+                    window.initReserva();
+                  } else {
+                    console.log("reserva script cargado (ejecutarInit).");
+                  }
                 } else {
-                  // el script también se auto-inicializa; esto es solo informativo
-                  console.log("reserva script cargado (ejecutarInit).");
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
                 }
-              }, 100);
+              };
+              setTimeout(esperarElemento, 100);
             };
 
             if (yaCargado) {
@@ -265,31 +350,6 @@ const controladorDeVista = {
             } else {
               const script = document.createElement("script");
               script.src = "script/reserva.js";
-              script.defer = true;
-              script.onload = ejecutarInit;
-              document.body.appendChild(script);
-            }
-          }
-          if (url === "consultaVuelo.html") {
-            const yaCargado = Array.from(document.scripts).some((s) =>
-              s.src.includes("script/consultaVuelo.js")
-            );
-
-            const ejecutarInit = () => {
-              setTimeout(() => {
-                if (typeof window.initConsultaVuelo === "function") {
-                  window.initConsultaVuelo();
-                } else {
-                  console.warn("initConsultaVuelo no está disponible.");
-                }
-              }, 100);
-            };
-
-            if (yaCargado) {
-              ejecutarInit();
-            } else {
-              const script = document.createElement("script");
-              script.src = "script/consultaVuelo.js";
               script.defer = true;
               script.onload = ejecutarInit;
               document.body.appendChild(script);

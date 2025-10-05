@@ -244,7 +244,17 @@
       const airline = findAirline(selAirline.value);
       const route = airline ? findRoute(airline, selRoute.value) : null;
       const flight = route ? findFlight(route, selFlight.value) : null;
-      if (!flight) { summaryText.textContent = 'Seleccione un vuelo.'; return; }
+      const summaryEl = document.getElementById('summaryText');
+      const placeholderEl = summaryEl.parentElement.querySelector('.summary-placeholder');
+      
+      if (!flight) {
+        if (placeholderEl) placeholderEl.style.display = 'block';
+        summaryEl.classList.add('hidden');
+        return;
+      }
+      
+      if (placeholderEl) placeholderEl.style.display = 'none';
+      summaryEl.classList.remove('hidden');
 
       const st = seatType.value;
       const qty = Math.max(1, parseInt(qtyPassengers.value, 10) || 1);
@@ -256,16 +266,45 @@
       const unitPrice = (st === 'ejecutivo') ? priceEje : priceTur;
       const total = (unitPrice * qty) + (bagUnit * bag);
 
-      const lines = [
-        `Aerolínea: ${airline.name}`,
-        `Ruta: ${route.name}`,
-        `Vuelo: ${flight.name} — ${flight.date} ${flight.time}`,
-        `Tipo asiento: ${st}`,
-        `Pasajes: ${qty}`,
-        `Equipaje extra: ${bag}`,
-        `Precio estimado: USD ${total}`
-      ];
-      summaryText.textContent = lines.join('\n');
+      // Crear el resumen con HTML estructurado
+      summaryEl.innerHTML = `
+        <div class="summary-item">
+          <span class="label">Aerolínea:</span>
+          <span class="value">${airline.name}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Ruta:</span>
+          <span class="value">${route.name}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Vuelo:</span>
+          <span class="value">${flight.name}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Fecha:</span>
+          <span class="value">${flight.date}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Hora:</span>
+          <span class="value">${flight.time}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Tipo asiento:</span>
+          <span class="value">${st}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Pasajes:</span>
+          <span class="value">${qty}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Equipaje extra:</span>
+          <span class="value">${bag} unidades</span>
+        </div>
+        <div class="summary-total">
+          <span class="label">Precio estimado:</span>
+          <span class="value">USD $${total}</span>
+        </div>
+      `;
     }
 
     function onReserve(e) {

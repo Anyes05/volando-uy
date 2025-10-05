@@ -19,6 +19,12 @@ function cargarPaquetes() {
 
 function mostrarPaquetes(lista) {
   const contenedor = document.getElementById('lista-paquetes');
+  const statsContainer = document.getElementById('paquetes-stats');
+  
+  if (statsContainer) {
+    statsContainer.innerHTML = `<span class="total-paquetes">${lista.length} ${lista.length === 1 ? 'paquete encontrado' : 'paquetes encontrados'}</span>`;
+  }
+  
   contenedor.innerHTML = '';
 
   if (!lista || lista.length === 0) {

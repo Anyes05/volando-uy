@@ -1,7 +1,7 @@
 const rutasURL = "json/rutasVuelo.json";
 let rutasData = [];
 let currentPage = 1;
-let cardsPerPage = 9; // valor inicial, se recalcula dinámicamente
+let cardsPerPage = 6; // máximo 6 rutas por página
 let vueloSeleccionado = null;
 let rutaSeleccionada = null;
 
@@ -94,7 +94,7 @@ function mostrarRutas(lista) {
   
   if (!lista.some(r => rutaSeleccionada && r.nombre === rutaSeleccionada.nombre)) {
   rutaSeleccionada = null;
-  document.getElementById("lista-vuelos").innerHTML = "";
+  document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
 }
 
 }
@@ -156,7 +156,7 @@ function filtrar() {
   if (rutaSeleccionada && !filtradas.some(r => r.nombre === rutaSeleccionada.nombre)) {
     rutaSeleccionada = null;
     vueloSeleccionado = null;
-    document.getElementById("lista-vuelos").innerHTML = "";
+    document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
   }
 
   mostrarRutas(filtradas);
@@ -236,29 +236,26 @@ document.getElementById("btn-agregar-vuelo").addEventListener("click", () => {
 
 
 function calcularCardsPorPagina() {
-  const contenedor = document.getElementById("lista-rutas");
-  if (!contenedor) return;
-
-  // Ancho disponible
-  const anchoContenedor = contenedor.clientWidth || 1100; 
-  // Ancho estimado de cada tarjeta (incluyendo márgenes)
-  const anchoCard = 300; 
-
-  const columnas = Math.floor(anchoContenedor / anchoCard);
-  cardsPerPage = columnas * 3; // 3 filas
-  if (cardsPerPage < 3) cardsPerPage = 3; // mínimo
+  // Mantener siempre 6 rutas por página como máximo
+  cardsPerPage = 6;
 }
 
 function mostrarRutas(lista) {
   calcularCardsPorPagina(); // recalcular antes de mostrar
 
   const contenedor = document.getElementById("lista-rutas");
+  const statsContainer = document.getElementById("rutas-stats");
+  
+  if (statsContainer) {
+    statsContainer.innerHTML = `<span class="total-rutas">${lista.length} ${lista.length === 1 ? 'ruta encontrada' : 'rutas encontradas'}</span>`;
+  }
+  
   contenedor.innerHTML = "";
 
   if (lista.length === 0) {
     contenedor.innerHTML = "<p>No se encontraron rutas.</p>";
     rutaSeleccionada = null; // 🔄 deseleccionar si no hay rutas
-    document.getElementById("lista-vuelos").innerHTML = "";
+    document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
     return;
   }
 
@@ -308,7 +305,7 @@ function mostrarRutas(lista) {
   // 🔄 Si la ruta seleccionada ya no está en la página actual, la deseleccionamos
   if (!paginaRutas.some(r => rutaSeleccionada && r.nombre === rutaSeleccionada.nombre)) {
     rutaSeleccionada = null;
-    document.getElementById("lista-vuelos").innerHTML = "";
+    document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
   }
 
   renderizarControles(lista.length);

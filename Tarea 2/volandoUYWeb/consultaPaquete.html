@@ -1,16 +1,29 @@
-<section class="search-box">
-  <h2>Consulta de Paquetes</h2>
-  <form id="filtro-paquetes">
-    <div class="filtro-row">
-      <label>Buscar por nombre:</label>
-      <input type="text" id="buscador-nombre" placeholder="Ej: Escapada Caribe, Semana de Europa">
+<div class="contenido-principal">
+  <section class="search-box">
+    <div class="search-header">
+      <h2><i class="fas fa-box-open"></i> Consulta de Paquetes</h2>
+      <p class="descripcion-consulta">Explora nuestros paquetes de vuelos disponibles y descubre las mejores ofertas para tu próximo viaje.</p>
     </div>
+    
+    <form id="filtro-paquetes" class="filtros-container">
+      <div class="filtro-group">
+        <label for="buscador-nombre">Buscar por nombre:</label>
+        <input type="text" id="buscador-nombre" placeholder="Ej: Escapada Caribe, Semana de Europa">
+      </div>
+    </form>
+  </section>
 
-  </form>
-</section>
-
-<!-- Contenedor donde se listan los paquetes -->
-<div id="lista-paquetes" class="grid-list"></div>
+  <!-- Contenedor donde se listan los paquetes -->
+  <div class="paquetes-container">
+    <div class="paquetes-header">
+      <h3>Paquetes Disponibles</h3>
+      <div class="paquetes-stats" id="paquetes-stats">
+        <span class="total-paquetes">0 paquetes encontrados</span>
+      </div>
+    </div>
+    <div id="lista-paquetes" class="grid-list"></div>
+  </div>
+</div>
 
 <!-- Detalle de paquete (se muestra al hacer clic en un paquete) -->
 <section class="detalle-paquete" style="display: none">

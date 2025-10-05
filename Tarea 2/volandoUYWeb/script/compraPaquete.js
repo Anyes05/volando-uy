@@ -30,16 +30,21 @@ function mostrarPaquetesCompra(lista) {
   const contenedor = document.getElementById('lista-paquetes-compra');
   const sinPaquetes = document.getElementById('sin-paquetes');
   
+  if (!contenedor) {
+    console.error('No se encontró el elemento lista-paquetes-compra');
+    return;
+  }
+  
   contenedor.innerHTML = '';
 
   if (!lista || lista.length === 0) {
     contenedor.style.display = 'none';
-    sinPaquetes.style.display = 'block';
+    if (sinPaquetes) sinPaquetes.style.display = 'block';
     return;
   }
 
   contenedor.style.display = 'grid';
-  sinPaquetes.style.display = 'none';
+  if (sinPaquetes) sinPaquetes.style.display = 'none';
 
   lista.forEach((p, idx) => {
     const yaComprado = comprasRealizadas.some(compra => compra.paqueteId === p.id);
