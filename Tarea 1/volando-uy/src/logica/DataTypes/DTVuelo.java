@@ -1,4 +1,6 @@
 package logica.DataTypes;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class DTVuelo {
     private DTHora duracion;
@@ -9,8 +11,10 @@ public class DTVuelo {
     private DTFecha fechaAlta;
     private int asientosMaxTurista;
     private DTRutaVuelo ruta;
+    private byte[] foto;
 
-    public DTVuelo(DTHora duracion, String nombre, DTFecha fechaVuelo, DTHora horaVuelo, int asientosMaxEjecutivo, DTFecha fechaAlta, int asientosMaxTurista, DTRutaVuelo ruta) {
+
+    public DTVuelo(DTHora duracion, String nombre, DTFecha fechaVuelo, DTHora horaVuelo, int asientosMaxEjecutivo, DTFecha fechaAlta, int asientosMaxTurista, DTRutaVuelo ruta, byte[] foto) {
         this.duracion = duracion;
         this.nombre = nombre;
         this.fechaVuelo = fechaVuelo;
@@ -19,6 +23,7 @@ public class DTVuelo {
         this.fechaAlta = fechaAlta;
         this.asientosMaxTurista = asientosMaxTurista;
         this.ruta = ruta;
+        this.foto = foto;
     }
 
     //Getters
@@ -52,6 +57,10 @@ public class DTVuelo {
 
     public DTRutaVuelo getRuta() {
         return ruta;
+    }
+
+    public byte[] getFoto() {
+        return foto;
     }
 
     //Setters

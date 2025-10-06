@@ -45,7 +45,7 @@ public interface ISistema {
 
     public void seleccionarAerolinea(String nickname);
 
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias);
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias, byte[] foto);
 
     public void registrarRuta();
 
@@ -72,7 +72,7 @@ public interface ISistema {
 
     public DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
 
-    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta);
+    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, DTRutaVuelo ruta, byte[] foto);
 
     public void darAltaVuelo();
 

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class VueloServicio {
     private VueloDAO vueloDAO = new VueloDAO();
 
-    public void registrarVuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta, RutaVuelo rutaVuelo) {
-        Vuelo v = new Vuelo(nombre, fechaVuelo, horaVuelo, duracion, asientosMaxTurista, asientosMaxEjecutivo, fechaAlta);
+    public void registrarVuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta, RutaVuelo rutaVuelo, byte[] foto)  {
+        Vuelo v = new Vuelo(nombre, fechaVuelo, horaVuelo, duracion, asientosMaxTurista, asientosMaxEjecutivo, fechaAlta, foto);
         v.setRutaVuelo(rutaVuelo);
         vueloDAO.guardar(v);  // Se guarda en la BD
     }
@@ -111,7 +111,8 @@ public class VueloServicio {
                             (Integer) vueloData[8],  // asientosMaxTurista
                             (Integer) vueloData[9],  // asientosMaxEjecutivo
                             fechaAlta,
-                            rutaVuelo
+                            rutaVuelo,
+                            null  // foto
                     );
 
                     System.out.println("Vuelo precargado: " + nombreVuelo);

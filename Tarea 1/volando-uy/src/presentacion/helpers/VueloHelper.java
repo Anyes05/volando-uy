@@ -175,7 +175,8 @@ public class VueloHelper {
                     origen,
                     destino,
                     fecha,
-                    categoriasSeleccionadas // un String por vez
+                    categoriasSeleccionadas,
+                    null
             );
             getSistema().registrarRuta();
         } catch (IllegalArgumentException e) {
@@ -454,7 +455,8 @@ public class VueloHelper {
                     maxTuristaInt,
                     maxEjecutivoInt,
                     fecha,
-                    ruta
+                    ruta,
+                    null
             );
         } catch (Exception e) {
             throw new RuntimeException(e);

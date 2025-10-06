@@ -3,6 +3,8 @@ package dato.entidades;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import logica.DataTypes.DTFecha;
 import dato.converter.DTFechaConverter;
@@ -39,6 +41,9 @@ public class Vuelo {
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
 
+    @Column(name = "foto", columnDefinition = "bytea")
+    private byte[] foto;
+
     // Relacion con rutaVuelo
     // en clase/rutaVuelo, lo tenemos como una lista, pero en realidad seria así, no?: un vuelo pertenece a una sola ruta
     @ManyToOne
@@ -57,7 +62,7 @@ public class Vuelo {
         this.reserva = new ArrayList<>();
     }
 
-    public Vuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta) {
+    public Vuelo(String nombre, DTFecha fechaVuelo, DTHora horaVuelo, DTHora duracion, int asientosMaxTurista, int asientosMaxEjecutivo, DTFecha fechaAlta, byte[] foto) {
         this.nombre = nombre;
         this.fechaVuelo = fechaVuelo;
         this.horaVuelo = horaVuelo;
@@ -65,6 +70,7 @@ public class Vuelo {
         this.asientosMaxTurista = asientosMaxTurista;
         this.asientosMaxEjecutivo = asientosMaxEjecutivo;
         this.fechaAlta = fechaAlta;
+        this.foto = foto;
 
         this.rutaVuelo = null;
         this.reserva = new ArrayList<>();
@@ -145,5 +151,13 @@ public class Vuelo {
 
     public void setReserva(List<Reserva> reserva) {
         this.reserva = reserva;
+    }
+
+    public byte[] getFoto() {
+        return foto;
+    }
+
+    public void setFoto(byte[] foto) {
+        this.foto = foto;
     }
 }

@@ -62,7 +62,8 @@ public class PaqueteVueloDAO {
                         c.getRutaVuelo().getCostoBase(),
                         aerolinea,
                         new DTCiudad(c.getRutaVuelo().getCiudadOrigen().getNombre(), c.getRutaVuelo().getCiudadOrigen().getPais()),
-                        new DTCiudad(c.getRutaVuelo().getCiudadDestino().getNombre(), c.getRutaVuelo().getCiudadDestino().getPais())
+                        new DTCiudad(c.getRutaVuelo().getCiudadDestino().getNombre(), c.getRutaVuelo().getCiudadDestino().getPais()),
+                        c.getRutaVuelo().getFoto()
                 ));
             }
         }

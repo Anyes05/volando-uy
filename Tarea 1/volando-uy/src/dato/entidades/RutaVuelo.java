@@ -11,6 +11,9 @@ import dato.converter.DTFechaConverter;
 
 import java.util.ArrayList;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @Entity
 @Table(name = "rutasVuelo")
 public class RutaVuelo {
@@ -39,6 +42,9 @@ public class RutaVuelo {
 
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
+
+    @Column(name = "foto", columnDefinition = "bytea")
+    private byte[] foto;
 
     // Relación con categoría
     @ManyToMany(fetch = FetchType.EAGER)
@@ -80,7 +86,7 @@ public class RutaVuelo {
     public RutaVuelo() {
     }  // Obligatorio para JPA
 
-    public RutaVuelo(String nombre, String descripcion, DTCostoBase costoBase, DTFecha fechaAlta) { // No sé por qué no estaba fechaAlta como atributo en clase/RutaVuelo, por las dudas esperar para ver como han ido implementando
+    public RutaVuelo(String nombre, String descripcion, DTCostoBase costoBase, DTFecha fechaAlta, byte[] foto) { // No sé por qué no estaba fechaAlta como atributo en clase/RutaVuelo, por las dudas esperar para ver como han ido implementando
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costoBase = costoBase;
@@ -88,6 +94,7 @@ public class RutaVuelo {
         this.costoEquipajeExtra = costoBase.getCostoEquipajeExtra();
         this.costoBaseEjecutivo = costoBase.getCostoEjecutivo();
         this.costoBaseTurista = costoBase.getCostoTurista();
+        this.foto = foto;
 
         this.categorias = new ArrayList<>();
         this.vuelos = new ArrayList<>();
@@ -205,5 +212,13 @@ public class RutaVuelo {
 
     public void setCostoBaseEjecutivo(float costoBaseEjecutivo) {
         this.costoBaseEjecutivo = costoBaseEjecutivo;
+    }
+
+    public byte[] getFoto() {
+        return foto;
+    }
+
+    public void setFoto(byte[] foto) {
+        this.foto = foto;
     }
 }
