@@ -1,5 +1,6 @@
 package presentacion;
 
+import dato.entidades.Categoria;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -10,16 +11,18 @@ import com.toedter.calendar.JCalendar;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
-import java.util.HashSet;
-import java.util.Set;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.JScrollPane;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JTable;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -267,10 +270,16 @@ public class EstacionTrabajo {
     private JComboBox comboBoxCiudadOrigenARV;
     private JComboBox comboBoxCiudadDestinoARV;
     private JTextArea categoriasRVtxt;
+    private JButton buttonImagenAltaVuelo;
     private JList list1;
     private JTextArea cantyTipoAsientotxt;
     private JScrollPane scrollReservaVuelo;
     private JScrollPane scrollConsultaRV;
+
+    //Imagenes
+    private JLabel labelImagenVuelo;
+    private String rutaImagenVuelo;
+
 
     // Método helper para actualizar la lista de pasajeros en la interfaz
     private void actualizarListaPasajeros() {
@@ -307,7 +316,7 @@ public class EstacionTrabajo {
 
             // Limpiar fecha de reserva (establecer fecha actual)
             if (fechaReservaVJC != null) {
-                fechaReservaVJC.setDate(new java.util.Date());
+                fechaReservaVJC.setDate(new Date());
             }
 
         } catch (Exception e) {
@@ -340,7 +349,7 @@ public class EstacionTrabajo {
     private ISistema sistema; // Variable para almacenar la instancia de ISistema obtenida a través del Factory
 
     // Lista de pasajeros para reservas
-    public List<String> nombresPasajeros = new java.util.ArrayList<>();
+    public List<String> nombresPasajeros = new ArrayList<>();
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Principal");
@@ -421,7 +430,7 @@ public class EstacionTrabajo {
 
     private void cargarCategorias(JList<String> lista) {
         DefaultListModel<String> modelo = new DefaultListModel<>();
-        for (dato.entidades.Categoria c : sistema.getCategorias()) {
+        for (Categoria c : sistema.getCategorias()) {
             modelo.addElement(c.getNombre());
         }
         lista.setModel(modelo);
@@ -2183,9 +2192,9 @@ public class EstacionTrabajo {
 
         // Listener para doble clic en la lista de pasajeros (para quitar pasajeros)
         if (listaPasajerosReservaVJlist != null) {
-            listaPasajerosReservaVJlist.addMouseListener(new java.awt.event.MouseAdapter() {
+            listaPasajerosReservaVJlist.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                public void mouseClicked(MouseEvent evt) {
                     if (evt.getClickCount() == 2) { // Doble clic
                         String pasajeroSeleccionado = (String) listaPasajerosReservaVJlist.getSelectedValue();
                         if (pasajeroSeleccionado != null) {
@@ -2215,5 +2224,76 @@ public class EstacionTrabajo {
                 }
             }
         });
+
+
+        buttonImagenAltaVuelo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                // 🔹 Filtro para que solo muestre imágenes
+                FileNameExtensionFilter filtro = new FileNameExtensionFilter(
+                        "Imágenes (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
+                fileChooser.setFileFilter(filtro);
+
+                // 🔹 Mostrar diálogo
+                int resultado = fileChooser.showOpenDialog(mainPrincipal);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivoSeleccionado = fileChooser.getSelectedFile();
+
+                    // Guardar la ruta para usarla después al crear el vuelo
+                    rutaImagenVuelo = archivoSeleccionado.getAbsolutePath();
+
+                    System.out.println("Imagen seleccionada: " + rutaImagenVuelo);
+
+                    try {
+                        // 🔹 Crear y escalar la imagen
+                        ImageIcon icono = new ImageIcon(rutaImagenVuelo);
+                        Image imagenEscalada = icono.getImage().getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+
+                        // 🔹 Simplemente actualizar el label que ya existe en el formulario
+                        labelImagenVuelo.setIcon(new ImageIcon(imagenEscalada));
+                        labelImagenVuelo.setText(""); // Limpiar cualquier texto
+                        labelImagenVuelo.setVisible(true); // Hacerlo visible
+
+                    } catch (Exception ex) {
+                        System.err.println("Error al cargar la imagen: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(mainPrincipal,
+                            "No se pudo cargar la imagen seleccionada",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        buttonImagenAltaVuelo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                // Filtro para que solo muestre imágenes
+                FileNameExtensionFilter filtro = new FileNameExtensionFilter(
+                        "Imágenes (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
+                fileChooser.setFileFilter(filtro);
+
+                int resultado = fileChooser.showOpenDialog(mainPrincipal);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivoSeleccionado = fileChooser.getSelectedFile();
+                    rutaImagenVuelo = archivoSeleccionado.getAbsolutePath();
+
+                    System.out.println("Imagen seleccionada: " + rutaImagenVuelo);
+
+                    // Mostrar mensaje de confirmación
+                    JOptionPane.showMessageDialog(mainPrincipal,
+                            "Imagen seleccionada correctamente:\n" + archivoSeleccionado.getName(),
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+
+
     }
 }
