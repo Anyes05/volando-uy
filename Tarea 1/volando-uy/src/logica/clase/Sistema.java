@@ -1059,7 +1059,7 @@ public class Sistema implements ISistema {
     // PAQUETES DE VUELO
 //
     // CREAR PAQUETE VUELO
-    public void crearPaquete(String nombrePaquete, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta) {
+    public void crearPaquete(String nombrePaquete, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto) {
 //        for (PaqueteVuelo p : paqueteVuelos) {
 //            if (p.getNombre().equalsIgnoreCase(nombrePaquete)) {
 //                throw new IllegalArgumentException("El nombre del paquete ya existe.");
@@ -1082,7 +1082,7 @@ public class Sistema implements ISistema {
         }
 
         try {
-            dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion/*tipoAsiento*/, diasValidos, descuento, fechaAlta);
+            dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion/*tipoAsiento*/, diasValidos, descuento, fechaAlta, foto);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
         }
@@ -1100,7 +1100,8 @@ public class Sistema implements ISistema {
                         p.getDescripcion(),
                         p.getDiasValidos(),
                         p.getDescuento(),
-                        p.getFechaAlta()
+                        p.getFechaAlta(),
+                        p.getFoto()
                 );
                 listaPaquetes.add(dtPaquete);
             }
@@ -1119,7 +1120,8 @@ public class Sistema implements ISistema {
                         p.getDescripcion(),
                         p.getDiasValidos(),
                         p.getDescuento(),
-                        p.getFechaAlta()
+                        p.getFechaAlta(),
+                        p.getFoto()
                 );
                 listaPaquetes.add(dtPaquete);
             }
@@ -1141,7 +1143,8 @@ public class Sistema implements ISistema {
                         p.getDescripcion(),
                         p.getDiasValidos(),
                         p.getDescuento(),
-                        p.getFechaAlta()
+                        p.getFechaAlta(),
+                        p.getFoto()
                 );
 
                 // Copiamos las rutas
@@ -1271,7 +1274,8 @@ public class Sistema implements ISistema {
                 paqueteSeleccionado.getDescripcion(),
                 paqueteSeleccionado.getDiasValidos(),
                 paqueteSeleccionado.getDescuento(),
-                paqueteSeleccionado.getFechaAlta()
+                paqueteSeleccionado.getFechaAlta(),
+                paqueteSeleccionado.getFoto()
         );
         dtPaquete.setCantidad(paqueteSeleccionado.getCantidad());
         dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());

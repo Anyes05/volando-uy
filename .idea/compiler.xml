@@ -9,5 +9,8 @@
         <module name="volando-uy" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Volando.uy" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>

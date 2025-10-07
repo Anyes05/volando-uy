@@ -86,7 +86,7 @@ public interface ISistema {
     public List<DTVueloReserva> listarReservasVuelo(String nombre);
 
     // PAQUETES DE VUELO
-    public void crearPaquete(String nombrePaquete, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta);
+    public void crearPaquete(String nombrePaquete, String descripcion, TipoAsiento tipoAsiento, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto);
 
     //AGREGAR RUTA DE VUELO A PAQUETE
     public List<DTPaqueteVuelos> mostrarPaquete();

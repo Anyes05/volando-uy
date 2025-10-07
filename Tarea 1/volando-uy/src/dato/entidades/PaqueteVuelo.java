@@ -36,6 +36,9 @@ public class PaqueteVuelo {
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
 
+    @Column(name = "foto", columnDefinition = "bytea")
+    private byte[] foto;
+
     @OneToMany(mappedBy = "paqueteVuelo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Cantidad> cantidades;
 
@@ -49,12 +52,13 @@ public class PaqueteVuelo {
 
     }
 
-    public PaqueteVuelo(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta) {
+    public PaqueteVuelo(String nombrePaquete, String descripcion, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto) {
         this.nombre = nombrePaquete;
         this.descripcion = descripcion;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.fechaAlta = fechaAlta;
+        this.foto = foto;
         this.costoTotal = 0;
         this.cantidades = new ArrayList<>();
         this.comprado = false;
@@ -144,5 +148,13 @@ public class PaqueteVuelo {
 
     public void agregarCompraPaquete(CompraPaquete compraPaquete) {
         this.compraPaquete.add(compraPaquete);
+    }
+
+    public byte[] getFoto() {
+        return foto;
+    }
+
+    public void setFoto(byte[] foto) {
+        this.foto = foto;
     }
 }

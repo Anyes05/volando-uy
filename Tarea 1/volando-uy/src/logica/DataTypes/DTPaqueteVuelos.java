@@ -12,19 +12,21 @@ public class DTPaqueteVuelos {
     private float descuento;
     private float costoTotal;
     private DTFecha fechaAlta;
+    private byte[] foto;
 
     private List<dato.entidades.Cantidad> cantidad;
 
     private List<dato.entidades.RutaVuelo> rutas;
 
 
-    public DTPaqueteVuelos(String nombre, String descripcion /*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta) {
+    public DTPaqueteVuelos(String nombre, String descripcion /*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto) {
 //        this.tipoAsiento = tipoAsiento;
         this.diasValidos = diasValidos;
         this.descuento = descuento;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaAlta = fechaAlta;
+        this.foto = foto;
     }
 
     public String getNombre() {
@@ -109,5 +111,9 @@ public class DTPaqueteVuelos {
 
     public String toString() {
         return nombre;
+    }
+
+    public byte[] getFoto() {
+        return foto;
     }
 }

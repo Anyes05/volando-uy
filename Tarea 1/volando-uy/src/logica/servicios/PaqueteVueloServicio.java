@@ -12,8 +12,8 @@ import java.util.List;
 public class PaqueteVueloServicio {
     private PaqueteVueloDAO paqueteVueloDAO = new PaqueteVueloDAO();
 
-    public PaqueteVuelo registrarPaqueteVuelo(String nombrePaquete, String descripcion/*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta) {
-        PaqueteVuelo p = new PaqueteVuelo(nombrePaquete, descripcion/*null*/, diasValidos, descuento, fechaAlta);
+    public PaqueteVuelo registrarPaqueteVuelo(String nombrePaquete, String descripcion/*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto) {
+        PaqueteVuelo p = new PaqueteVuelo(nombrePaquete, descripcion/*null*/, diasValidos, descuento, fechaAlta, foto);
         paqueteVueloDAO.guardar(p);  // Se guarda en la BD
         return p;
     }

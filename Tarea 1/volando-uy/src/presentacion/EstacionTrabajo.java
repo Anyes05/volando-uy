@@ -277,6 +277,7 @@ public class EstacionTrabajo {
     private JLabel labelImagenCVuelo;
     private JButton buttonImagenRVuelo;
     private JLabel labelImagenRVuelo;
+    private JButton buttonImagenPaquete;
     private JList list1;
     private JTextArea cantyTipoAsientotxt;
     private JScrollPane scrollReservaVuelo;
@@ -286,7 +287,8 @@ public class EstacionTrabajo {
     private JLabel labelImagenVuelo;
     private String rutaImagenVuelo;
     private String rutaImagenRVuelo;
-
+    private String rutaImagenPaquete;
+    private JLabel labelImagenPaquete;
 
 
     // Método helper para actualizar la lista de pasajeros en la interfaz
@@ -1711,17 +1713,31 @@ public class EstacionTrabajo {
                     String periodoVal = períodoAltaPaqtxt.getText().trim();
                     String descuento = descuentoAltaPaqtxt.getText().trim();
                     Calendar fechaCal = calendarAltaPaquete.getCalendar();
+                    byte[] foto = null;
 
                     PaqueteHelper.ingresarPaquete(nomPaq, descripcion, periodoVal, descuento, fechaCal);
                     int diasValidosInt = Integer.parseInt(periodoVal);
                     float descuentoFloat = Float.parseFloat(descuento);
+
+                    if (rutaImagenPaquete != null && !rutaImagenPaquete.isEmpty()) {
+                        try {
+                            foto = Files.readAllBytes(Paths.get(rutaImagenPaquete));
+                            System.out.println("Imagen cargada correctamente: " + foto.length + " bytes");
+                        } catch (IOException ex) {
+                            System.err.println("Error al leer la imagen: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(crearPaquete,
+                                    "Advertencia: No se pudo cargar la imagen seleccionada.\nEl vuelo se creará sin imagen.",
+                                    "Advertencia",
+                                    JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
 
                     DTFecha fechaAlta = new DTFecha(
                             fechaCal.get(Calendar.DAY_OF_MONTH),
                             fechaCal.get(Calendar.MONTH) + 1,
                             fechaCal.get(Calendar.YEAR)
                     );
-                    sistema.crearPaquete(nomPaq, descripcion, null, diasValidosInt, descuentoFloat, fechaAlta);
+                    sistema.crearPaquete(nomPaq, descripcion, null, diasValidosInt, descuentoFloat, fechaAlta, foto);
                     JOptionPane.showMessageDialog(crearPaquete, "Paquete creado correctamente.");
 
                     nombreAltaPaqtxt.setText("");
@@ -1939,6 +1955,7 @@ public class EstacionTrabajo {
                         fechaAltaCPtxt.setText(paqueteconsulta.getFechaAlta().toString());
                         cargarRutasDePaquete(comboBoxRutasVueloCP);
                         consultaCP = true;
+                        mostrarImagen(paqueteconsulta.getFoto(), labelImagenPaquete);
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error al seleccionar paquete " + ex.getMessage());
@@ -2407,6 +2424,33 @@ public class EstacionTrabajo {
                     rutaImagenRVuelo = archivoSeleccionado.getAbsolutePath();
 
                     System.out.println("Imagen seleccionada: " + rutaImagenRVuelo);
+
+                    // Mostrar mensaje de confirmación
+                    JOptionPane.showMessageDialog(mainPrincipal,
+                            "Imagen seleccionada correctamente:\n" + archivoSeleccionado.getName(),
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+
+        buttonImagenPaquete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                // Filtro para que solo muestre imágenes
+                FileNameExtensionFilter filtro = new FileNameExtensionFilter(
+                        "Imágenes (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
+                fileChooser.setFileFilter(filtro);
+
+                int resultado = fileChooser.showOpenDialog(mainPrincipal);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivoSeleccionado = fileChooser.getSelectedFile();
+                    rutaImagenPaquete = archivoSeleccionado.getAbsolutePath();
+
+                    System.out.println("Imagen seleccionada: " + rutaImagenPaquete);
 
                     // Mostrar mensaje de confirmación
                     JOptionPane.showMessageDialog(mainPrincipal,
