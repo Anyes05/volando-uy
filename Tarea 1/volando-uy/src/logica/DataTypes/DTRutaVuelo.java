@@ -66,6 +66,10 @@ public class DTRutaVuelo {
         this.categorias = categorias;
     }
 
+    public byte[] getFoto() {
+        return foto;
+    }
+
     // MÉTODOS
     @Override
     public String toString() {

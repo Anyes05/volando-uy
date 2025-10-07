@@ -14,6 +14,9 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.JScrollPane;
@@ -271,6 +274,9 @@ public class EstacionTrabajo {
     private JComboBox comboBoxCiudadDestinoARV;
     private JTextArea categoriasRVtxt;
     private JButton buttonImagenAltaVuelo;
+    private JLabel labelImagenCVuelo;
+    private JButton buttonImagenRVuelo;
+    private JLabel labelImagenRVuelo;
     private JList list1;
     private JTextArea cantyTipoAsientotxt;
     private JScrollPane scrollReservaVuelo;
@@ -279,6 +285,8 @@ public class EstacionTrabajo {
     //Imagenes
     private JLabel labelImagenVuelo;
     private String rutaImagenVuelo;
+    private String rutaImagenRVuelo;
+
 
 
     // Método helper para actualizar la lista de pasajeros en la interfaz
@@ -570,6 +578,41 @@ public class EstacionTrabajo {
         }
         combo.setSelectedIndex(-1);
     }
+    private void mostrarImagen(byte[] fotoBytes, JLabel imagen) {
+        if (imagen == null) {
+            System.err.println("Warning: labelImagenConsultaVuelo no está inicializado");
+            return;
+        }
+
+        if (fotoBytes == null || fotoBytes.length == 0) {
+            // No hay imagen, mostrar mensaje o dejar vacío
+            imagen.setIcon(null);
+            imagen.setText("Sin imagen");
+            imagen.setHorizontalAlignment(JLabel.CENTER);
+            return;
+        }
+
+        try {
+            // 🔹 Convertir bytes a ImageIcon
+            ImageIcon iconoOriginal = new ImageIcon(fotoBytes);
+
+            // 🔹 Escalar la imagen para que se ajuste al label (opcional pero recomendado)
+            Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(
+                    200, 150, // Ajusta el tamaño según tus necesidades
+                    Image.SCALE_SMOOTH
+            );
+
+            // 🔹 Mostrar la imagen escalada
+            imagen.setIcon(new ImageIcon(imagenEscalada));
+            imagen.setText(""); // Limpiar cualquier texto
+
+        } catch (Exception ex) {
+            System.err.println("Error al cargar la imagen del vuelo: " + ex.getMessage());
+            imagen.setIcon(null);
+            imagen.setText("Error al cargar imagen");
+            imagen.setHorizontalAlignment(JLabel.CENTER);
+        }
+    };
 
 
     //----------Boton cancelar Alta vuelo------
@@ -1343,6 +1386,19 @@ public class EstacionTrabajo {
                     String destino = comboBoxCiudadDestinoARV.getSelectedItem().toString();
                     Calendar fechaCal = fechaAltaRutaVuelo.getCalendar();
                     String nicknameAerolinea = aerolineaVuelo.getSelectedItem().toString();
+                    byte[] foto = null;
+                    if (rutaImagenRVuelo != null && !rutaImagenRVuelo.isEmpty()) {
+                        try {
+                            foto = Files.readAllBytes(Paths.get(rutaImagenRVuelo));
+                            System.out.println("Imagen cargada correctamente: " + foto.length + " bytes");
+                        } catch (IOException ex) {
+                            System.err.println("Error al leer la imagen: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(altaRuta,
+                                    "Advertencia: No se pudo cargar la imagen seleccionada.\nLa ruta de vuelo se creará sin imagen.",
+                                    "Advertencia",
+                                    JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
 
                     // Seleccionar aerolínea
                     VueloHelper.seleccionarAerolinea(nicknameAerolinea);
@@ -1361,7 +1417,8 @@ public class EstacionTrabajo {
                             origen,
                             destino,
                             fechaCal,
-                            categoriasSeleccionadas
+                            categoriasSeleccionadas,
+                            foto
                     );
 
                     JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");
@@ -1413,16 +1470,20 @@ public class EstacionTrabajo {
                     String maxEjecutivo = asientoMaxEjecutivotxt.getText().trim();
                     Calendar fechaAltaCal = fechaAltaVuelo.getCalendar();
                     Calendar fechaVueloCal = fechaVuelo.getCalendar();
-//                    DTFecha fechaAlta = new DTFecha(
-//                            fechaAltaCal.get(Calendar.DAY_OF_MONTH),
-//                            fechaAltaCal.get(Calendar.MONTH) + 1,
-//                            fechaAltaCal.get(Calendar.YEAR)
-//                    );
-//                    DTFecha fechaVue = new DTFecha(
-//                            fechaVueloCal.get(Calendar.DAY_OF_MONTH),
-//                            fechaVueloCal.get(Calendar.MONTH) + 1,
-//                            fechaVueloCal.get(Calendar.YEAR)
-//                    );
+                    byte[] foto = null;
+                    if (rutaImagenVuelo != null && !rutaImagenVuelo.isEmpty()) {
+                        try {
+                            foto = Files.readAllBytes(Paths.get(rutaImagenVuelo));
+                            System.out.println("Imagen cargada correctamente: " + foto.length + " bytes");
+                        } catch (IOException ex) {
+                            System.err.println("Error al leer la imagen: " + ex.getMessage());
+                            JOptionPane.showMessageDialog(altaVuelo,
+                                    "Advertencia: No se pudo cargar la imagen seleccionada.\nEl vuelo se creará sin imagen.",
+                                    "Advertencia",
+                                    JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+
 
 
                     DTRutaVuelo ruta = (DTRutaVuelo) rutasVueloAltaVuelo.getSelectedItem();
@@ -1433,7 +1494,7 @@ public class EstacionTrabajo {
                     }
 
                     String hora = horaVuelotxt.getText().trim();
-                    VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaAltaCal, fechaVueloCal, maxTurista, maxEjecutivo, ruta);
+                    VueloHelper.ingresarVuelo(nombre, duracion, hora, fechaAltaCal, fechaVueloCal, maxTurista, maxEjecutivo, ruta, foto);
                     String nicknameAerolinea = (String) aerolinea.getSelectedItem();
                     sistema.seleccionarAerolinea(nicknameAerolinea);
                     sistema.darAltaVuelo();
@@ -1476,6 +1537,7 @@ public class EstacionTrabajo {
                 String nicknameAerolinea = (String) comboBoxAeroRVConsulta.getSelectedItem();
                 if (nombreRuta != null && nicknameAerolinea != null) {
                     mostrarDatosRuta(nicknameAerolinea, nombreRuta.getNombre());
+                    mostrarImagen(nombreRuta.getFoto(), labelImagenRVuelo);
                     // Llenar combo de vuelos asociados a esta ruta
                     List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(nombreRuta.getNombre());
                     cargandoVuelosRV = true;
@@ -1536,20 +1598,48 @@ public class EstacionTrabajo {
                 if (seleccionado instanceof DTVuelo) {
                     DTVuelo vueloSeleccionado = (DTVuelo) seleccionado;
 
+                    // 🔹 Crear panel principal con BorderLayout
+                    JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
+                    panelPrincipal.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                    // 🔹 Panel para la imagen (parte superior)
+                    byte[] fotoBytes = vueloSeleccionado.getFoto();
+                    if (fotoBytes != null && fotoBytes.length > 0) {
+                        try {
+                            ImageIcon iconoOriginal = new ImageIcon(fotoBytes);
+                            Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(
+                                    300, 200, Image.SCALE_SMOOTH
+                            );
+
+                            JLabel labelImagen = new JLabel(new ImageIcon(imagenEscalada));
+                            labelImagen.setHorizontalAlignment(JLabel.CENTER);
+                            panelPrincipal.add(labelImagen, BorderLayout.NORTH);
+
+                        } catch (Exception ex) {
+                            System.err.println("Error al cargar la imagen: " + ex.getMessage());
+                        }
+                    }
+
+                    // 🔹 Panel para los detalles textuales (parte inferior)
                     JPanel panelDetalles = new JPanel();
-                    panelDetalles.setLayout(new GridLayout(5, 1));
-                    panelDetalles.add(new JLabel("Nombre: " + vueloSeleccionado.getNombre()));
-                    panelDetalles.add(new JLabel("Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
-                    panelDetalles.add(new JLabel("Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
-                    panelDetalles.add(new JLabel("Duración: " + vueloSeleccionado.getDuracion().toString()));
-                    panelDetalles.add(new JLabel("Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
-                    panelDetalles.add(new JLabel("Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
-                    panelDetalles.add(new JLabel("Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
-                    panelDetalles.add(new JLabel("Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
+                    panelDetalles.setLayout(new GridLayout(8, 1, 5, 5));
+                    panelDetalles.setBorder(BorderFactory.createTitledBorder("Información del Vuelo"));
+                    panelDetalles.add(new JLabel(" Nombre: " + vueloSeleccionado.getNombre()));
+                    panelDetalles.add(new JLabel(" Fecha: " + vueloSeleccionado.getFechaVuelo().toString()));
+                    panelDetalles.add(new JLabel(" Hora: " + vueloSeleccionado.getHoraVuelo().toString()));
+                    panelDetalles.add(new JLabel(" Duración: " + vueloSeleccionado.getDuracion().toString()));
+                    panelDetalles.add(new JLabel(" Asientos Turista: " + vueloSeleccionado.getAsientosMaxTurista()));
+                    panelDetalles.add(new JLabel(" Asientos Ejecutivo: " + vueloSeleccionado.getAsientosMaxEjecutivo()));
+                    panelDetalles.add(new JLabel(" Fecha de Alta: " + vueloSeleccionado.getFechaAlta().toString()));
+                    panelDetalles.add(new JLabel(" Ruta Asociada: " + vueloSeleccionado.getRuta().getNombre()));
+
+                    panelPrincipal.add(panelDetalles, BorderLayout.CENTER);
+
+                    // 🔹 Mostrar el diálogo
                     JOptionPane.showMessageDialog(
                             null,
-                            panelDetalles,
-                            "Detalles del Vuelo",
+                            panelPrincipal,
+                            "Detalles del Vuelo - " + vueloSeleccionado.getNombre(),
                             JOptionPane.PLAIN_MESSAGE
                     );
                 }
@@ -1584,6 +1674,7 @@ public class EstacionTrabajo {
             }
         });
 
+
         comboBoxVuelosConsultaV.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1597,10 +1688,14 @@ public class EstacionTrabajo {
                     maxEjecutivoConsultaVtxt.setText(String.valueOf(v.getAsientosMaxEjecutivo()));
                     fechaAltaVueloConsultaVtxt.setText(v.getFechaAlta().toString());
                     cargarReservas(comboBoxReservasConsultaV, v.getNombre());
+                    mostrarImagen(v.getFoto(), labelImagenCVuelo);
+
                 } else {
                     comboBoxReservasConsultaV.removeAllItems();
                     VueloHelper.limpiarCampos(nombVueloConsultaVtxt, fechaVueloConsultaVtxt, horaVueloConsultaVtxt, duracionVueloConsultaVtxt, maxTuristaConsultaVtxt,
                             maxEjecutivoConsultaVtxt, fechaAltaVueloConsultaVtxt);
+                    mostrarImagen(null, labelImagenCVuelo);
+
                 }
 
             }
@@ -2295,5 +2390,31 @@ public class EstacionTrabajo {
         });
 
 
+        buttonImagenRVuelo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                // Filtro para que solo muestre imágenes
+                FileNameExtensionFilter filtro = new FileNameExtensionFilter(
+                        "Imágenes (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif");
+                fileChooser.setFileFilter(filtro);
+
+                int resultado = fileChooser.showOpenDialog(mainPrincipal);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivoSeleccionado = fileChooser.getSelectedFile();
+                    rutaImagenRVuelo = archivoSeleccionado.getAbsolutePath();
+
+                    System.out.println("Imagen seleccionada: " + rutaImagenRVuelo);
+
+                    // Mostrar mensaje de confirmación
+                    JOptionPane.showMessageDialog(mainPrincipal,
+                            "Imagen seleccionada correctamente:\n" + archivoSeleccionado.getName(),
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
     }
 }

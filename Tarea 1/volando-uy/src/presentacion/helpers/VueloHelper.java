@@ -87,7 +87,8 @@ public class VueloHelper {
             String origen,
             String destino,
             Calendar fechaCal,
-            List<String> categoriasSeleccionadas) throws Exception {
+            List<String> categoriasSeleccionadas,
+            byte [] foto) throws Exception {
 
         // ------------------- VALIDACIONES -------------------
         if (nombre.trim().isEmpty() || descripcion.trim().isEmpty()) {
@@ -176,7 +177,7 @@ public class VueloHelper {
                     destino,
                     fecha,
                     categoriasSeleccionadas,
-                    null
+                    foto
             );
             getSistema().registrarRuta();
         } catch (IllegalArgumentException e) {
@@ -298,7 +299,8 @@ public class VueloHelper {
             Calendar fechaVueloCal,
             String maxTurista,
             String maxEjecutivo,
-            DTRutaVuelo ruta
+            DTRutaVuelo ruta,
+            byte [] foto
     ) throws Exception {
 
         // ------------------- VALIDACIONES -------------------
@@ -456,12 +458,14 @@ public class VueloHelper {
                     maxEjecutivoInt,
                     fecha,
                     ruta,
-                    null
+                    foto
             );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+
 
     //----------LIMPIEZA-----------
     public static void limpiarCampos(JTextArea... campos) {
