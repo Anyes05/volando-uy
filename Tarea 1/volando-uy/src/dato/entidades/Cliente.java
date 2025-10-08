@@ -37,8 +37,8 @@ public class Cliente extends Usuario {
     }
 
     public Cliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNacimiento,
-                   String nacionalidad, TipoDoc tipoDoc, String numeroDocumento, byte[] foto) {
-        super(nickname, nombre, correo, foto);
+                   String nacionalidad, TipoDoc tipoDoc, String numeroDocumento, byte[] foto, String contrasena) {
+        super(nickname, nombre, correo, foto,  contrasena);
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
         this.nacionalidad = nacionalidad;
@@ -91,6 +91,7 @@ public class Cliente extends Usuario {
     public List<Reserva> getReservas() {
         return reservas;
     }
+
 
     public void setReservas(List<Reserva> reservas) {
         this.reservas = reservas;

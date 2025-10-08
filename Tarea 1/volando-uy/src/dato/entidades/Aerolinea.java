@@ -24,8 +24,8 @@ public class Aerolinea extends Usuario {
     public Aerolinea() {
     }
 
-    public Aerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb, byte[] foto) {
-        super(nickname, nombre, correo, foto);
+    public Aerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb, byte[] foto, String contrasena) {
+        super(nickname, nombre, correo, foto, contrasena);
         this.descripcion = descripcion;
         this.linkSitioWeb = linkSitioWeb;
     }

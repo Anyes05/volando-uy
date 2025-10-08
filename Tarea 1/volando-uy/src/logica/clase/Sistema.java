@@ -61,6 +61,20 @@ public class Sistema implements ISistema {
         return Instance;
     }
 
+    public static boolean validarContrasena(String contrasena) {
+        if (contrasena == null || contrasena.length() < 7) return false;
+        boolean tieneMayuscula = false;
+        boolean tieneNumero = false;
+
+        for (char c : contrasena.toCharArray()) {
+            if (Character.isUpperCase(c)) tieneMayuscula = true;
+            if (Character.isDigit(c)) tieneNumero = true;
+        }
+
+        return tieneMayuscula && tieneNumero;
+    }
+
+
     public static boolean esNombreValido(String nombre) {
         if (nombre == null) return false;
 
@@ -133,7 +147,7 @@ public class Sistema implements ISistema {
         return false;
     }
 
-    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento, byte[] foto) {
+    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento, byte[] foto, String contrasena) {
         if (existeNickname(nickname)) {
             throw new IllegalArgumentException("El nickname ya existe.");
         }
@@ -150,15 +164,19 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Debe subir una foto");
         }
 
+        if (!validarContrasena(contrasena)) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 7 caracteres, incluir una mayúscula y un número.");
+        }
+
         try {
             ClienteServicio clienteServicio = new ClienteServicio();
-            clienteServicio.crearCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento, foto);
+            clienteServicio.crearCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento, foto, contrasena);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear el cliente: " + e.getMessage());
         }
     }
 
-    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb) {
+    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb, byte[] foto, String contrasena) {
         if (existeNickname(nickname)) {
             throw new IllegalArgumentException("El nickname ya existe.");
         }
@@ -169,9 +187,17 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Nickname, nombre, correo o descripcion han sido ingresados incorrectamente, muy cortos o usan caracteres especiales");
         }
 
+        if (foto == null) {
+            throw new IllegalArgumentException("Debe subir una foto");
+        }
+
+        if (!validarContrasena(contrasena)) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 7 caracteres, incluir una mayúscula y un número.");
+        }
+
         try {
             AerolineaServicio aerolineaServicio = new AerolineaServicio();
-            aerolineaServicio.crearAerolinea(nickname, nombre, correo, descripcion, linkSitioWeb);
+            aerolineaServicio.crearAerolinea(nickname, nombre, correo, descripcion, linkSitioWeb, foto, contrasena);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear la aerolínea: " + e.getMessage());
         }
@@ -187,13 +213,13 @@ public class Sistema implements ISistema {
         // Obtener clientes
         List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
         for (dato.entidades.Cliente c : clientes) {
-            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo(), c.getFoto()));
+            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo(), c.getFoto(),c.getContrasena()));
         }
 
         // Obtener aerolíneas
         List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
         for (Aerolinea a : aerolineas) {
-            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo(), a.getFoto()));
+            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo(), a.getFoto(),a.getContrasena()));
         }
 
         if (lista.isEmpty()) {
@@ -227,7 +253,9 @@ public class Sistema implements ISistema {
                             c.getNumeroDocumento(),
                             c.getFechaNacimiento(),
                             c.getNacionalidad(),
-                            reservasDTO
+                            reservasDTO,
+                            c.getFoto(),
+                            c.getContrasena()
                     );
                 } else if (u instanceof Aerolinea a) {
                     List<DTRutaVuelo> rutasDTO = new ArrayList<>();
@@ -237,7 +265,7 @@ public class Sistema implements ISistema {
                                 rv.getDescripcion(),
                                 rv.getFechaAlta(),
                                 rv.getCostoBase(),
-                                new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
+                                new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(),a.getContrasena()),
                                 new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
                                 new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais()),
                                 rv.getFoto()
@@ -249,7 +277,9 @@ public class Sistema implements ISistema {
                             a.getCorreo(),
                             a.getDescripcion(),
                             a.getLinkSitioWeb(),
-                            rutasDTO
+                            rutasDTO,
+                            a.getFoto(),
+                            a.getContrasena()
                     );
                 }
             }
@@ -292,7 +322,9 @@ public class Sistema implements ISistema {
                     cliente.getNumeroDocumento(),
                     cliente.getFechaNacimiento(),
                     cliente.getNacionalidad(),
-                    new ArrayList<>()
+                    new ArrayList<>(),
+                    cliente.getFoto(),
+                    cliente.getContrasena()
             );
         }
         Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
@@ -303,7 +335,9 @@ public class Sistema implements ISistema {
                     aerolinea.getCorreo(),
                     aerolinea.getDescripcion(),
                     aerolinea.getLinkSitioWeb(),
-                    new ArrayList<>()
+                    new ArrayList<>(),
+                    aerolinea.getFoto(),
+                    aerolinea.getContrasena()
             );
         }
 
@@ -359,7 +393,7 @@ public class Sistema implements ISistema {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
         List<DTAerolinea> listarAerolineas = new ArrayList<>();
         for (Aerolinea a : aerolineaServicio.listarAerolineas()) {
-            listarAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>())); // Le pasé este último parametro de lista vacía porque necesitaba la lista para otro caso
+            listarAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(),a.getContrasena())); // Le pasé este último parametro de lista vacía porque necesitaba la lista para otro caso
         }
         return listarAerolineas;
     }
@@ -614,7 +648,7 @@ public class Sistema implements ISistema {
                     r.getDescripcion(),
                     r.getFechaAlta(),
                     r.getCostoBase(),
-                    new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>()),
+                    new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>(), aerolinea.getFoto(), aerolinea.getContrasena()),
                     new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
                     new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
                     r.getFoto()
@@ -644,7 +678,7 @@ public class Sistema implements ISistema {
                         rv.getDescripcion(),
                         rv.getFechaAlta(),
                         rv.getCostoBase(),
-                        new DTAerolinea(aerolineaSeleccionada.getNickname(), aerolineaSeleccionada.getNombre(), aerolineaSeleccionada.getCorreo(), aerolineaSeleccionada.getDescripcion(), aerolineaSeleccionada.getLinkSitioWeb(), new ArrayList<>()),
+                        new DTAerolinea(aerolineaSeleccionada.getNickname(), aerolineaSeleccionada.getNombre(), aerolineaSeleccionada.getCorreo(), aerolineaSeleccionada.getDescripcion(), aerolineaSeleccionada.getLinkSitioWeb(), new ArrayList<>(),aerolineaSeleccionada.getFoto(), aerolineaSeleccionada.getContrasena()),
                         new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
                         new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais()),
                         rv.getFoto()
@@ -799,7 +833,7 @@ public class Sistema implements ISistema {
                         r.getDescripcion(),
                         r.getFechaAlta(),
                         r.getCostoBase(),
-                        new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()),
+                        new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(), a.getContrasena()),
                         new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
                         new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
                         r.getFoto()
@@ -859,7 +893,9 @@ public class Sistema implements ISistema {
                     c.getNumeroDocumento(),
                     c.getFechaNacimiento(),
                     c.getNacionalidad(),
-                    new ArrayList<>() // Sin reservas para simplificar
+                    new ArrayList<>(), // Sin reservas para simplificar
+                    c.getFoto(),
+                    c.getContrasena()
             ));
         }
         return listaClientes;
@@ -1348,7 +1384,9 @@ public class Sistema implements ISistema {
                         c.getNumeroDocumento(),
                         c.getFechaNacimiento(),
                         c.getNacionalidad(),
-                        new ArrayList<>()
+                        new ArrayList<>(),
+                        c.getFoto(),
+                        c.getContrasena()
                 ));
             }
         }

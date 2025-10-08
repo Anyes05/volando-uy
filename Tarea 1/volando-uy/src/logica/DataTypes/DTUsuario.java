@@ -5,13 +5,15 @@ public class DTUsuario {
     private String nombre;
     private String correo;
     private byte[] foto;
+    private String contrasena;
 
 
-    public DTUsuario(String nickname, String nombre, String correo, byte[] foto) {
+    public DTUsuario(String nickname, String nombre, String correo, byte[] foto, String contrasena) {
         this.nickname = nickname;
         this.nombre = nombre;
         this.correo = correo;
         this.foto = foto;
+        this.contrasena = contrasena;
     }
 
     // Getters
@@ -28,6 +30,8 @@ public class DTUsuario {
     }
 
     public byte[] getFoto() { return this.foto; }
+
+    public String getContrasena() { return this.contrasena; }
 
 
     // MÉTODOS

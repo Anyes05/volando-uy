@@ -7,8 +7,8 @@ public class DTAerolinea extends DTUsuario {
     private String linkSitioWeb;
     private List<DTRutaVuelo> rutasVuelo;
 
-    public DTAerolinea(String nickname, String nombre, String correo, String descripcion, String linksitioweb, List<DTRutaVuelo> rutasVuelo) {
-        super(nickname, nombre, correo);
+    public DTAerolinea(String nickname, String nombre, String correo, String descripcion, String linksitioweb, List<DTRutaVuelo> rutasVuelo, byte[] foto, String contrasena) {
+        super(nickname, nombre, correo, foto, contrasena);
         this.descripcion = descripcion;
         this.linkSitioWeb = linksitioweb;
         this.rutasVuelo = rutasVuelo;
