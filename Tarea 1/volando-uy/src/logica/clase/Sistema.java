@@ -133,7 +133,7 @@ public class Sistema implements ISistema {
         return false;
     }
 
-    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
+    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento, byte[] foto) {
         if (existeNickname(nickname)) {
             throw new IllegalArgumentException("El nickname ya existe.");
         }
@@ -146,10 +146,13 @@ public class Sistema implements ISistema {
         if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(apellido) || !esNombreValido(nacionalidad)) {
             throw new IllegalArgumentException("El nickname, nombre, apellido o nacionalidad son demasiado cortos o contienen caracteres especiales");
         }
+        if (foto == null) {
+            throw new IllegalArgumentException("Debe subir una foto");
+        }
 
         try {
             ClienteServicio clienteServicio = new ClienteServicio();
-            clienteServicio.crearCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
+            clienteServicio.crearCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento, foto);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error al crear el cliente: " + e.getMessage());
         }

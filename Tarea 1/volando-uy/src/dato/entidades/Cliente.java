@@ -37,8 +37,8 @@ public class Cliente extends Usuario {
     }
 
     public Cliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNacimiento,
-                   String nacionalidad, TipoDoc tipoDoc, String numeroDocumento) {
-        super(nickname, nombre, correo);
+                   String nacionalidad, TipoDoc tipoDoc, String numeroDocumento, byte[] foto) {
+        super(nickname, nombre, correo, foto);
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
         this.nacionalidad = nacionalidad;

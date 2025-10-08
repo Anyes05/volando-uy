@@ -22,16 +22,20 @@ public class Usuario {
     @Column(name = "foto", columnDefinition = "bytea")
     private byte[] foto;
 
+    @Column(nullable = false)
+    private String contrasena;
+
 
     // Constructores
     public Usuario() {
     }  // Obligatorio para JPA
 
-    public Usuario(String nickname, String nombre, String correo, byte[] foto) {
+    public Usuario(String nickname, String nombre, String correo, byte[] foto, String contrasena) {
         this.nickname = nickname;
         this.nombre = nombre;
         this.correo = correo;
         this.foto = foto;
+        this.contrasena = contrasena;
     }
 
     // Getters y setters
@@ -63,5 +67,11 @@ public class Usuario {
         this.correo = correo;
     }
 
-    public byte[] getFoto() { return foto; }
+    public byte[] getFoto() { return this.foto; }
+
+    public String getContrasena() { return this.contrasena; }
+
+    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+
+    public void setFoto(byte[] foto) { this.foto = foto; }
 }

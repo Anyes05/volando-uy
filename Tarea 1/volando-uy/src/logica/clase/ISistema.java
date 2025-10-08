@@ -26,7 +26,7 @@ public interface ISistema {
     public void precargarSistemaCompleto();
 
     // ALTA USUARIO
-    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
+    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento, byte[] foto);
 
     public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb);
 
