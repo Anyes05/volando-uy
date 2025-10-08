@@ -4,11 +4,14 @@ public class DTUsuario {
     private String nickname;
     private String nombre;
     private String correo;
+    private byte[] foto;
 
-    public DTUsuario(String nickname, String nombre, String correo) {
+
+    public DTUsuario(String nickname, String nombre, String correo, byte[] foto) {
         this.nickname = nickname;
         this.nombre = nombre;
         this.correo = correo;
+        this.foto = foto;
     }
 
     // Getters
@@ -23,6 +26,9 @@ public class DTUsuario {
     public String getCorreo() {
         return this.correo;
     }
+
+    public byte[] getFoto() { return this.foto; }
+
 
     // MÉTODOS
     @Override

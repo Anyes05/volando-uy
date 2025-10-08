@@ -184,13 +184,13 @@ public class Sistema implements ISistema {
         // Obtener clientes
         List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
         for (dato.entidades.Cliente c : clientes) {
-            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo()));
+            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo(), c.getFoto()));
         }
 
         // Obtener aerolíneas
         List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
         for (Aerolinea a : aerolineas) {
-            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo()));
+            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo(), a.getFoto()));
         }
 
         if (lista.isEmpty()) {

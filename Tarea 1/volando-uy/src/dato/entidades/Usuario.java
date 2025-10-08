@@ -19,14 +19,19 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String correo;
 
+    @Column(name = "foto", columnDefinition = "bytea")
+    private byte[] foto;
+
+
     // Constructores
     public Usuario() {
     }  // Obligatorio para JPA
 
-    public Usuario(String nickname, String nombre, String correo) {
+    public Usuario(String nickname, String nombre, String correo, byte[] foto) {
         this.nickname = nickname;
         this.nombre = nombre;
         this.correo = correo;
+        this.foto = foto;
     }
 
     // Getters y setters
@@ -57,4 +62,6 @@ public class Usuario {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
+
+    public byte[] getFoto() { return foto; }
 }
