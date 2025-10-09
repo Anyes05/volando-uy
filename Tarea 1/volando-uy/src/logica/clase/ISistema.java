@@ -142,6 +142,22 @@ public interface ISistema {
 
     public void seleccionarRVPaquete(String nombreRuta);
 
+    // ACEPTAR/RECHAZAR RUTA DE VUELO
+    public List<DTAerolinea> listarAerolineasParaAdministracion();
+
+    public void seleccionarAerolineaParaAdministracion(String nickname);
+
+    public List<DTRutaVuelo> listarRutasIngresadas();
+
+    public void seleccionarRutaVueloParaAdministracion(String nombreRuta);
+
+    public void aceptarRutaVuelo();
+
+    public void rechazarRutaVuelo();
+
+    // RECARGAR RUTAS CON ESTADOS
+    public void recargarRutasConEstados();
+
 }
 
 
