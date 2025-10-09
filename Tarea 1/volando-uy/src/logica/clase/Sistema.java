@@ -43,6 +43,10 @@ public class Sistema implements ISistema {
     private String nicknameUsuarioAModificar;
     private String vueloSeleccionadoParaReserva; // Para recordar el vuelo seleccionado para reserva
     private RutaVuelo rutaVueloSeleccionada;
+    
+    // Variables para el caso de uso Aceptar/Rechazar Ruta de Vuelo
+    private String aerolineaSeleccionadaParaAdministracion;
+    private RutaVuelo rutaVueloSeleccionadaParaAdministracion;
 
     private Sistema() {
         paqueteVuelos = new ArrayList<>();
@@ -1482,6 +1486,138 @@ public class Sistema implements ISistema {
         // Limpiar selecciones y cancelar
         vueloSeleccionadoParaReserva = null;
         throw new IllegalStateException("SUCCESS: Caso de uso cancelado por el administrador. No se realizó ninguna reserva.");
+    }
+
+    // ACEPTAR/RECHAZAR RUTA DE VUELO
+
+    public List<DTAerolinea> listarAerolineasParaAdministracion() {
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        List<DTAerolinea> listaAerolineas = new ArrayList<>();
+        for (Aerolinea a : aerolineaServicio.listarAerolineas()) {
+            listaAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()));
+        }
+        return listaAerolineas;
+    }
+
+    public void seleccionarAerolineaParaAdministracion(String nickname) {
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+        if (aerolinea != null) {
+            aerolineaSeleccionadaParaAdministracion = nickname;
+        } else {
+            throw new IllegalArgumentException("No se encontró una aerolínea con el nickname: " + nickname);
+        }
+    }
+
+    public List<DTRutaVuelo> listarRutasIngresadas() {
+        if (aerolineaSeleccionadaParaAdministracion == null) {
+            throw new IllegalStateException("Debe seleccionar una aerolínea antes de listar las rutas ingresadas.");
+        }
+
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        List<RutaVuelo> rutasIngresadas = rutaVueloServicio.listarRutasPorAerolineaYEstado(
+                aerolineaSeleccionadaParaAdministracion, 
+                EstadoRutaVuelo.INGRESADA
+        );
+
+        List<DTRutaVuelo> listaRutasDTO = new ArrayList<>();
+        for (RutaVuelo r : rutasIngresadas) {
+            DTRutaVuelo dtRuta = new DTRutaVuelo(
+                    r.getNombre(),
+                    r.getDescripcion(),
+                    r.getFechaAlta(),
+                    r.getCostoBase(),
+                    new DTAerolinea(aerolineaSeleccionadaParaAdministracion, "", "", "", "", new ArrayList<>()),
+                    new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                    new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
+                    r.getFoto()
+            );
+            listaRutasDTO.add(dtRuta);
+        }
+
+        if (listaRutasDTO.isEmpty()) {
+            throw new IllegalStateException("No hay rutas de vuelo en estado 'Ingresada' para la aerolínea seleccionada.");
+        }
+
+        return listaRutasDTO;
+    }
+
+    public void seleccionarRutaVueloParaAdministracion(String nombreRuta) {
+        if (aerolineaSeleccionadaParaAdministracion == null) {
+            throw new IllegalStateException("Debe seleccionar una aerolínea antes de seleccionar una ruta.");
+        }
+
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        RutaVuelo ruta = rutaVueloServicio.buscarRutaVueloPorNombre(nombreRuta);
+        
+        if (ruta != null && ruta.getEstado() == EstadoRutaVuelo.INGRESADA) {
+            // Verificar que la ruta pertenece a la aerolínea seleccionada
+            boolean perteneceAAerolinea = false;
+            for (Aerolinea a : ruta.getAerolineas()) {
+                if (a.getNickname().equals(aerolineaSeleccionadaParaAdministracion)) {
+                    perteneceAAerolinea = true;
+                    break;
+                }
+            }
+            
+            if (perteneceAAerolinea) {
+                rutaVueloSeleccionadaParaAdministracion = ruta;
+            } else {
+                throw new IllegalArgumentException("La ruta seleccionada no pertenece a la aerolínea seleccionada.");
+            }
+        } else {
+            throw new IllegalArgumentException("No se encontró una ruta de vuelo con el nombre '" + nombreRuta + "' en estado 'Ingresada'.");
+        }
+    }
+
+    public void aceptarRutaVuelo() {
+        if (rutaVueloSeleccionadaParaAdministracion == null) {
+            throw new IllegalStateException("Debe seleccionar una ruta de vuelo antes de aceptarla.");
+        }
+
+        String nombreRuta = rutaVueloSeleccionadaParaAdministracion.getNombre();
+        
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        rutaVueloServicio.cambiarEstadoRutaVuelo(
+                rutaVueloSeleccionadaParaAdministracion.getId(), 
+                EstadoRutaVuelo.CONFIRMADA
+        );
+
+        // Limpiar selecciones
+        aerolineaSeleccionadaParaAdministracion = null;
+        rutaVueloSeleccionadaParaAdministracion = null;
+
+        throw new IllegalStateException("SUCCESS: La ruta de vuelo '" + nombreRuta + "' ha sido aceptada y su estado cambió a 'Confirmada'.");
+    }
+
+    public void rechazarRutaVuelo() {
+        if (rutaVueloSeleccionadaParaAdministracion == null) {
+            throw new IllegalStateException("Debe seleccionar una ruta de vuelo antes de rechazarla.");
+        }
+
+        String nombreRuta = rutaVueloSeleccionadaParaAdministracion.getNombre();
+        
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        rutaVueloServicio.cambiarEstadoRutaVuelo(
+                rutaVueloSeleccionadaParaAdministracion.getId(), 
+                EstadoRutaVuelo.RECHAZADA
+        );
+
+        // Limpiar selecciones
+        aerolineaSeleccionadaParaAdministracion = null;
+        rutaVueloSeleccionadaParaAdministracion = null;
+
+        throw new IllegalStateException("SUCCESS: La ruta de vuelo '" + nombreRuta + "' ha sido rechazada y su estado cambió a 'Rechazada'.");
+    }
+
+    // RECARGAR RUTAS CON ESTADOS
+    public void recargarRutasConEstados() {
+        try {
+            // Recargar solo las rutas con los nuevos estados
+            precargarRutasVuelo();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al recargar rutas con estados: " + e.getMessage(), e);
+        }
     }
 }
 

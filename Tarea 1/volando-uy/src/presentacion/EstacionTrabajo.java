@@ -267,6 +267,14 @@ public class EstacionTrabajo {
     private JComboBox comboBoxPasajerosReservaV;
     private JButton buttonAgregarPasajeroReservaV;
     private JButton buttonAceptarReservaVuelo;
+    
+    // Panel de Administración de Rutas de Vuelo
+    private JPanel adminRutasPanel;
+    private JComboBox adminRutasAerolineaCombo;
+    private JComboBox adminRutasRutaCombo;
+    private JButton adminRutasAceptarButton;
+    private JButton adminRutasRechazarButton;
+    private JButton adminRutasRecargarButton;
     private JButton buttonQuitarPasajeroReservaV;
     private JComboBox comboBoxReservasConsultaV;
     private JComboBox comboBoxAeropuertosAC;
@@ -445,6 +453,52 @@ public class EstacionTrabajo {
         }
         lista.setModel(modelo);
         lista.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    }
+
+    // Métodos para el panel de administración de rutas de vuelo
+    private void cargarAerolineasParaAdministracion() {
+        adminRutasAerolineaCombo.removeAllItems();
+        try {
+            for (DTAerolinea a : sistema.listarAerolineasParaAdministracion()) {
+                adminRutasAerolineaCombo.addItem(a.getNickname());
+            }
+            adminRutasAerolineaCombo.setSelectedIndex(-1);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar aerolíneas: " + e.getMessage(), 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void cargarRutasIngresadas() {
+        adminRutasRutaCombo.removeAllItems();
+        try {
+            String aerolineaSeleccionada = (String) adminRutasAerolineaCombo.getSelectedItem();
+            if (aerolineaSeleccionada != null && !aerolineaSeleccionada.isEmpty()) {
+                sistema.seleccionarAerolineaParaAdministracion(aerolineaSeleccionada);
+                List<DTRutaVuelo> rutasIngresadas = sistema.listarRutasIngresadas();
+                for (DTRutaVuelo r : rutasIngresadas) {
+                    adminRutasRutaCombo.addItem(r.getNombre());
+                }
+                adminRutasRutaCombo.setSelectedIndex(-1);
+                
+                // Solo mostrar mensaje si no hay rutas, pero no como error
+                if (rutasIngresadas.isEmpty()) {
+                    adminRutasRutaCombo.addItem("No hay rutas en estado 'Ingresada'");
+                    adminRutasRutaCombo.setEnabled(false);
+                } else {
+                    adminRutasRutaCombo.setEnabled(true);
+                }
+            }
+        } catch (Exception e) {
+            // Solo mostrar error si es un error real, no si simplemente no hay rutas
+            if (!e.getMessage().contains("No hay rutas de vuelo en estado 'Ingresada'")) {
+                JOptionPane.showMessageDialog(null, "Error al cargar rutas: " + e.getMessage(), 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                adminRutasRutaCombo.addItem("No hay rutas en estado 'Ingresada'");
+                adminRutasRutaCombo.setEnabled(false);
+            }
+        }
     }
 
     private void mostrarDatosRuta(String nicknameAerolinea, String nombreRuta) {
@@ -743,6 +797,32 @@ public class EstacionTrabajo {
                             cargarRutas(comBoxRutVueloConsultaRV, nicknameAerolinea);
                         }
                         parentPanel.add(consultaRutaVuelo);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
+                    case "Aceptar/Rechazar Ruta de Vuelo":
+                        parentPanel.removeAll();
+                        adminRutasAerolineaCombo.removeAllItems();
+                        adminRutasRutaCombo.removeAllItems();
+                        
+                        // Verificar si hay datos precargados
+                        try {
+                            List<DTAerolinea> aerolineas = sistema.listarAerolineasParaAdministracion();
+                            if (aerolineas.isEmpty()) {
+                                JOptionPane.showMessageDialog(null, 
+                                        "No hay aerolíneas en el sistema. Por favor, ejecute 'Precargar Sistema Completo' primero.",
+                                        "Información", JOptionPane.INFORMATION_MESSAGE);
+                                return;
+                            }
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, 
+                                    "Error al verificar datos del sistema. Por favor, ejecute 'Precargar Sistema Completo' primero.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        
+                        cargarAerolineasParaAdministracion();
+                        parentPanel.add(adminRutasPanel);
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
@@ -2457,6 +2537,125 @@ public class EstacionTrabajo {
                             "Imagen seleccionada correctamente:\n" + archivoSeleccionado.getName(),
                             "Éxito",
                             JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+    
+        // Listeners para el panel de administración de rutas de vuelo
+        adminRutasAerolineaCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String aerolineaSeleccionada = (String) adminRutasAerolineaCombo.getSelectedItem();
+                if (aerolineaSeleccionada != null && !aerolineaSeleccionada.isEmpty()) {
+                    cargarRutasIngresadas();
+                } else {
+                    adminRutasRutaCombo.removeAllItems();
+                }
+            }
+        });
+
+        adminRutasAceptarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String rutaSeleccionada = (String) adminRutasRutaCombo.getSelectedItem();
+                if (rutaSeleccionada == null || rutaSeleccionada.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta de vuelo.", 
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                try {
+                    sistema.seleccionarRutaVueloParaAdministracion(rutaSeleccionada);
+                    sistema.aceptarRutaVuelo();
+                    
+                    // Mostrar mensaje de éxito
+                    JOptionPane.showMessageDialog(null, 
+                            "La ruta de vuelo '" + rutaSeleccionada + "' ha sido aceptada exitosamente.",
+                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    
+                    // Recargar las rutas
+                    cargarRutasIngresadas();
+                    
+                } catch (IllegalStateException ex) {
+                    if (ex.getMessage() != null && ex.getMessage().startsWith("SUCCESS:")) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage().substring("SUCCESS:".length()),
+                                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        cargarRutasIngresadas();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        adminRutasRechazarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String rutaSeleccionada = (String) adminRutasRutaCombo.getSelectedItem();
+                if (rutaSeleccionada == null || rutaSeleccionada.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar una ruta de vuelo.", 
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Confirmar rechazo
+                int confirmacion = JOptionPane.showConfirmDialog(null,
+                        "¿Está seguro de que desea rechazar la ruta de vuelo '" + rutaSeleccionada + "'?",
+                        "Confirmar Rechazo", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    try {
+                        sistema.seleccionarRutaVueloParaAdministracion(rutaSeleccionada);
+                        sistema.rechazarRutaVuelo();
+                        
+                        // Mostrar mensaje de éxito
+                        JOptionPane.showMessageDialog(null, 
+                                "La ruta de vuelo '" + rutaSeleccionada + "' ha sido rechazada exitosamente.",
+                                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        
+                        // Recargar las rutas
+                        cargarRutasIngresadas();
+                        
+                    } catch (IllegalStateException ex) {
+                        if (ex.getMessage() != null && ex.getMessage().startsWith("SUCCESS:")) {
+                            JOptionPane.showMessageDialog(null, ex.getMessage().substring("SUCCESS:".length()),
+                                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            cargarRutasIngresadas();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(),
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        adminRutasRecargarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    sistema.recargarRutasConEstados();
+                    JOptionPane.showMessageDialog(null, 
+                            "Rutas recargadas exitosamente con diferentes estados.\n\n" +
+                            "Estados disponibles:\n" +
+                            "- INGRESADA: Montevideo-São Paulo, Montevideo-Lima, Montevideo-Miami, Buenos Aires-Córdoba, Lima-Cusco\n" +
+                            "- CONFIRMADA: Montevideo-Buenos Aires, Montevideo-Santiago, Montevideo-Madrid, Punta del Este-Buenos Aires, Santiago-Valparaíso\n" +
+                            "- RECHAZADA: Montevideo-Bogotá, São Paulo-Río de Janeiro",
+                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    
+                    // Recargar las aerolíneas y rutas
+                    cargarAerolineasParaAdministracion();
+                    
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al recargar rutas: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
