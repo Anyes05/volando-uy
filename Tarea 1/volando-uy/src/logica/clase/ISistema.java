@@ -26,9 +26,9 @@ public interface ISistema {
     public void precargarSistemaCompleto();
 
     // ALTA USUARIO
-    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
+    public void altaCliente(String nickname, String nombre, String correo, String apellido, DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento, byte[] foto, String contrasena);
 
-    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb);
+    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, String linkSitioWeb, byte[] foto, String contrasena);
 
     // ALTA CATEGORIA
     public void altaCategoria(String nombre);
