@@ -1575,7 +1575,9 @@ public class EstacionTrabajo {
                     cargandoVuelosRV = true;
                     vuelosConsultaRV.removeAllItems();
                     cargandoVuelosRV = false;
+                    mostrarImagen(null, labelImagenRVuelo);
                 }
+
             }
         });
 
