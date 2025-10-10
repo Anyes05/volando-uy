@@ -11,8 +11,8 @@ public class DTCliente extends DTUsuario {
     private String nacionalidad;
     private List<DTReserva> reserva;
 
-    public DTCliente(String nickname, String nombre, String correo, String apellido, TipoDoc tipoDocumento, String numeroDocumento, DTFecha fechaNacimiento, String nacionalidad, List<DTReserva> reserva) {
-        super(nickname, nombre, correo);
+    public DTCliente(String nickname, String nombre, String correo, String apellido, TipoDoc tipoDocumento, String numeroDocumento, DTFecha fechaNacimiento, String nacionalidad, List<DTReserva> reserva, byte[] foto, String contrasena) {
+        super(nickname, nombre, correo, foto, contrasena);
         this.apellido = apellido;
         this.tipoDocumento = tipoDocumento;
         this.numeroDocumento = numeroDocumento;

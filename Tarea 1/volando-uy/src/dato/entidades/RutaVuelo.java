@@ -7,6 +7,7 @@ import java.util.List;
 
 import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.EstadoRutaVuelo;
 import dato.converter.DTFechaConverter;
 
 import java.util.ArrayList;
@@ -42,6 +43,10 @@ public class RutaVuelo {
 
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoRutaVuelo estado;
 
     @Column(name = "foto", columnDefinition = "bytea")
     private byte[] foto;
@@ -91,6 +96,7 @@ public class RutaVuelo {
         this.descripcion = descripcion;
         this.costoBase = costoBase;
         this.fechaAlta = fechaAlta;
+        this.estado = EstadoRutaVuelo.INGRESADA; // Estado inicial por defecto
         this.costoEquipajeExtra = costoBase.getCostoEquipajeExtra();
         this.costoBaseEjecutivo = costoBase.getCostoEjecutivo();
         this.costoBaseTurista = costoBase.getCostoTurista();
@@ -220,5 +226,13 @@ public class RutaVuelo {
 
     public void setFoto(byte[] foto) {
         this.foto = foto;
+    }
+
+    public EstadoRutaVuelo getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoRutaVuelo estado) {
+        this.estado = estado;
     }
 }
