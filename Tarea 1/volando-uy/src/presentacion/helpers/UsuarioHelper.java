@@ -631,6 +631,9 @@ public class UsuarioHelper {
         int ano = cal.get(Calendar.YEAR);
         DTFecha fechaNac = new DTFecha(dia, mes, ano);
 
+        byte [] foto = null;
+        String contrasena = null;
+
         // Llamar a la función de Sistema
         getSistema().altaCliente(
                 nickname,
@@ -640,7 +643,9 @@ public class UsuarioHelper {
                 fechaNac,
                 nacionalidad,
                 tipoDocumento,
-                numeroDocumento
+                numeroDocumento,
+                foto,
+                contrasena
         );
     }
 
@@ -681,13 +686,17 @@ public class UsuarioHelper {
             throw new Exception("Datos de la aerolínea inválidos.");
         }
 
+        byte [] foto = null;
+        String contrasena = null;
         // Llamada al sistema
         getSistema().altaAerolinea(
                 nickname,
                 nombre,
                 correo,
                 descripcion,
-                sitioWeb
+                sitioWeb,
+                foto,
+                contrasena
         );
     }
 

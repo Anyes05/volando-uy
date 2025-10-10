@@ -777,7 +777,7 @@ public class Sistema implements ISistema {
         for (dato.entidades.Vuelo v : vuelos) {
             dato.entidades.RutaVuelo r = v.getRutaVuelo();
             if (r != null && r.getNombre().equalsIgnoreCase(nombreRutaVuelo)) {
-                DTAerolinea dtAerolinea = r.getAerolineas() != null ? new DTAerolinea(r.getAerolineas().get(0).getNickname(), r.getAerolineas().get(0).getNombre(), r.getAerolineas().get(0).getCorreo(), r.getAerolineas().get(0).getDescripcion(), r.getAerolineas().get(0).getLinkSitioWeb(), new ArrayList<>()) : null;
+                DTAerolinea dtAerolinea = r.getAerolineas() != null ? new DTAerolinea(r.getAerolineas().get(0).getNickname(), r.getAerolineas().get(0).getNombre(), r.getAerolineas().get(0).getCorreo(), r.getAerolineas().get(0).getDescripcion(), r.getAerolineas().get(0).getLinkSitioWeb(), new ArrayList<>(), r.getAerolineas().get(0).getFoto(), r.getAerolineas().get(0).getContrasena() ) : null;
                 DTRutaVuelo dtRuta = new DTRutaVuelo(
                         r.getNombre(),
                         r.getDescripcion(),
@@ -1494,7 +1494,7 @@ public class Sistema implements ISistema {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
         List<DTAerolinea> listaAerolineas = new ArrayList<>();
         for (Aerolinea a : aerolineaServicio.listarAerolineas()) {
-            listaAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>()));
+            listaAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(), a.getContrasena()));
         }
         return listaAerolineas;
     }
@@ -1527,7 +1527,7 @@ public class Sistema implements ISistema {
                     r.getDescripcion(),
                     r.getFechaAlta(),
                     r.getCostoBase(),
-                    new DTAerolinea(aerolineaSeleccionadaParaAdministracion, "", "", "", "", new ArrayList<>()),
+                    new DTAerolinea(aerolineaSeleccionadaParaAdministracion, "", "", "", "", new ArrayList<>(), null, ""),
                     new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
                     new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
                     r.getFoto()
