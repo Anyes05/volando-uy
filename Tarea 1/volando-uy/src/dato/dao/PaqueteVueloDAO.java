@@ -63,7 +63,8 @@ public class PaqueteVueloDAO {
                         aerolinea,
                         new DTCiudad(c.getRutaVuelo().getCiudadOrigen().getNombre(), c.getRutaVuelo().getCiudadOrigen().getPais()),
                         new DTCiudad(c.getRutaVuelo().getCiudadDestino().getNombre(), c.getRutaVuelo().getCiudadDestino().getPais()),
-                        c.getRutaVuelo().getFoto()
+                        c.getRutaVuelo().getFoto(),
+                        c.getRutaVuelo().getEstado()
                 ));
             }
         }

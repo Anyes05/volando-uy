@@ -16,8 +16,9 @@ public class DTRutaVuelo {
     private DTCiudad ciudadDestino;
     private List<Categoria> categorias;
     private byte[] foto;
+    EstadoRutaVuelo estado;
 
-    public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino, byte[] foto) {
+    public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino, byte[] foto, EstadoRutaVuelo estado) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaAlta = fechaAlta;
@@ -26,6 +27,7 @@ public class DTRutaVuelo {
         this.ciudadOrigen = ciudadOrigen;
         this.ciudadDestino = ciudadDestino;
         this.foto = foto;
+        this.estado = estado;
     }
 
     // Getters
@@ -68,6 +70,10 @@ public class DTRutaVuelo {
 
     public byte[] getFoto() {
         return foto;
+    }
+
+    public EstadoRutaVuelo getEstado() {
+        return estado;
     }
 
     // MÉTODOS

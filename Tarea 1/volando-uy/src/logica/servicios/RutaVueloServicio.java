@@ -15,17 +15,8 @@ import java.util.List;
 public class RutaVueloServicio {
     private RutaVueloDAO rutaVueloDAO = new RutaVueloDAO();
 
-    public void registrarRutaVuelo(String nombre, String descripcion, DTCostoBase DTCostoBase, DTFecha fechaAlta, Aerolinea aerolinea, Ciudad ciudadOrigen, Ciudad ciudadDestino, List<Categoria> categorias, byte[] foto)  {
-        RutaVuelo rv = new RutaVuelo(nombre, descripcion, DTCostoBase, fechaAlta, foto);
-        rv.setCiudadDestino(ciudadDestino);
-        rv.setCiudadOrigen(ciudadOrigen);
-        rv.getAerolineas().add(aerolinea); // Se asocia la aerolinea a la ruta de vuelo
-        rv.setCategorias(categorias);
-        rutaVueloDAO.guardar(rv);  // Se guarda en la BD
-    }
-
     // Método sobrecargado para registrar ruta con estado específico
-    public void registrarRutaVueloConEstado(String nombre, String descripcion, DTCostoBase DTCostoBase, DTFecha fechaAlta, Aerolinea aerolinea, Ciudad ciudadOrigen, Ciudad ciudadDestino, List<Categoria> categorias, byte[] foto, EstadoRutaVuelo estado)  {
+    public void registrarRutaVuelo(String nombre, String descripcion, DTCostoBase DTCostoBase, DTFecha fechaAlta, Aerolinea aerolinea, Ciudad ciudadOrigen, Ciudad ciudadDestino, List<Categoria> categorias, byte[] foto, EstadoRutaVuelo estado)  {
         RutaVuelo rv = new RutaVuelo(nombre, descripcion, DTCostoBase, fechaAlta, foto);
         rv.setCiudadDestino(ciudadDestino);
         rv.setCiudadOrigen(ciudadOrigen);
@@ -110,7 +101,7 @@ public class RutaVueloServicio {
                     EstadoRutaVuelo estado = (EstadoRutaVuelo) rutaData[11];
 
                     // Registrar la ruta con estado específico
-                    registrarRutaVueloConEstado(
+                    registrarRutaVuelo(
                             nombreRuta,
                             (String) rutaData[1], // descripcion
                             costoBase,

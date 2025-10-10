@@ -136,7 +136,6 @@ public interface ISistema {
 
     public String consultaPaqueteVueloRutasCantidadTipo();
 
-    public List<String> listarAerolineasRutaVuelo();
 
     public List<DTRutaVuelo> consultaPaqueteVueloRutas();
 

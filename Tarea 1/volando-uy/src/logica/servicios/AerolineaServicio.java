@@ -63,7 +63,8 @@ public class AerolineaServicio {
                     new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>(), aerolinea.getFoto(), aerolinea.getContrasena()),
                     new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
                     new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
-                    r.getFoto()
+                    r.getFoto(),
+                    r.getEstado()
             );
             rv.setCategorias(r.getCategorias());
             listaRutas.add(rv);

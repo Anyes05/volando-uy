@@ -536,6 +536,7 @@ public class EstacionTrabajo {
         }
         List<DTRutaVuelo> rutas = sistema.seleccionarAerolineaRet(nicknameAerolinea);
         for (DTRutaVuelo ruta : rutas) {
+            if (ruta.getEstado() == EstadoRutaVuelo.CONFIRMADA)
             comboRutas.addItem(ruta);
         }
         if (esConsulta) {
