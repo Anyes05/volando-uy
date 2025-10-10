@@ -297,8 +297,24 @@ public class EstacionTrabajo {
     private String rutaImagenRVuelo;
     private String rutaImagenPaquete;
     private JLabel labelImagenPaquete;
+    private JButton altaAerolineaSubirImagen;
+    private JButton altaClienteSubirImagen;
+    private JLabel altaClienteMostrarFoto;
+    private JLabel altaAerolineaMostrarFoto;
+    private JButton modificarAerolineaSubirImagen;
+    private JLabel modificarAerolineaMostrarFoto;
+    private JButton modificarClienteSubirImagen;
+    private JLabel modificarClienteMostrarFoto;
+    private JPasswordField modificarAerolineaContrasena;
+    private JPasswordField modificarAerolineaConfirmarContrasena;
+    private JPasswordField altaAerolineaContrasena;
+    private JPasswordField altaAerolineaConfirmarContrasena;
+    private JPasswordField altaClienteContrasena;
+    private JPasswordField altaClienteConfirmarContrasena;
+    private JPasswordField modificarClienteContrasena;
+    private JPasswordField modificarClienteConfirmarContrasena;
 
-
+    byte[] fotoSeleccionada = null;
     // Método helper para actualizar la lista de pasajeros en la interfaz
     private void actualizarListaPasajeros() {
         if (listaPasajerosReservaVJlist != null) {
@@ -1016,6 +1032,11 @@ public class EstacionTrabajo {
                 parentPanel.add(altaCliente);
                 parentPanel.repaint();
                 parentPanel.revalidate();
+                altaClienteContrasena.setText("");
+                altaClienteConfirmarContrasena.setText("");
+                altaClienteMostrarFoto.setIcon(null);
+                altaClienteMostrarFoto.setText("Sin imagen");
+
             }
         });
 
@@ -1027,6 +1048,12 @@ public class EstacionTrabajo {
                 parentPanel.add(principalVacio);
                 parentPanel.repaint();
                 parentPanel.revalidate();
+
+                altaClienteContrasena.setText("");
+                altaClienteConfirmarContrasena.setText("");
+                altaClienteMostrarFoto.setIcon(null);
+                altaClienteMostrarFoto.setText("Sin imagen");
+
             }
         });
 
@@ -1050,7 +1077,11 @@ public class EstacionTrabajo {
                             nacionalidadAltaCliente,
                             (TipoDoc) comboBoxAltaCliente.getSelectedItem(),
                             numeroDocAltaCliente,
-                            JCalendarAltaCliente
+                            JCalendarAltaCliente,
+                            altaClienteContrasena,
+                            altaClienteConfirmarContrasena,
+                            fotoSeleccionada
+
                     );
 
                     if (!valido) {
@@ -1066,7 +1097,9 @@ public class EstacionTrabajo {
                             nacionalidadAltaCliente.getText().trim(),
                             (TipoDoc) comboBoxAltaCliente.getSelectedItem(),
                             numeroDocAltaCliente.getText().trim(),
-                            JCalendarAltaCliente.getDate()
+                            JCalendarAltaCliente.getDate(),
+                            fotoSeleccionada,
+                            new String(altaClienteContrasena.getPassword()).trim()
                     );
 
                     JOptionPane.showMessageDialog(altaCliente, "Cliente creado con éxito.");
@@ -1080,7 +1113,10 @@ public class EstacionTrabajo {
                             nacionalidadAltaCliente,
                             numeroDocAltaCliente
                     );
-
+                    altaClienteContrasena.setText("");
+                    altaClienteConfirmarContrasena.setText("");
+                    altaClienteMostrarFoto.setIcon(null);
+                    altaClienteMostrarFoto.setText("Sin imagen");
                     UsuarioHelper.resetFormulario(comboBoxAltaCliente, JCalendarAltaCliente, nicknameAltaCliente);
 
                 } catch (Exception ex) {
@@ -1097,6 +1133,11 @@ public class EstacionTrabajo {
                 parentPanel.add(altaAerolinea);
                 parentPanel.repaint();
                 parentPanel.revalidate();
+                altaClienteContrasena.setText("");
+                altaClienteConfirmarContrasena.setText("");
+                altaAerolineaMostrarFoto.setIcon(null);
+                altaAerolineaMostrarFoto.setText("Sin imagen");
+
             }
         });
 
@@ -1108,6 +1149,10 @@ public class EstacionTrabajo {
                 parentPanel.add(principalVacio);
                 parentPanel.repaint();
                 parentPanel.revalidate();
+
+                altaAerolineaMostrarFoto.setIcon(null);
+                altaAerolineaMostrarFoto.setText("Sin imagen");
+
             }
         });
 
@@ -1121,7 +1166,10 @@ public class EstacionTrabajo {
                             altaAerolineaNombre.getText().trim(),
                             altaAerolineaCorreo.getText().trim(),
                             altaAerolineaLinkWeb.getText().trim(),
-                            altaAerolineaDescripcion.getText().trim()
+                            altaAerolineaDescripcion.getText().trim(),
+                            fotoSeleccionada,
+                            new String(altaAerolineaContrasena.getPassword()).trim(),
+                            new String(altaAerolineaConfirmarContrasena.getPassword()).trim()
                     );
 
                     JOptionPane.showMessageDialog(altaAerolinea, "Aerolínea creada con éxito.");
@@ -1130,7 +1178,8 @@ public class EstacionTrabajo {
                     UsuarioHelper.resetFormularioAerolinea(
                             altaAerolineaNickname, altaAerolineaNombre, altaAerolineaCorreo, altaAerolineaLinkWeb, altaAerolineaDescripcion
                     );
-
+                    altaAerolineaMostrarFoto.setIcon(null);
+                    altaAerolineaMostrarFoto.setText("Sin imagen");
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(altaAerolinea, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -1299,14 +1348,18 @@ public class EstacionTrabajo {
                             modificarClienteNacionalidad,
                             modificarClienteComboBox,
                             modificarClienteDocumento,
-                            modificarClienteJCalendar
+                            modificarClienteJCalendar,
+                            modificarClienteMostrarFoto,
+                            foto -> fotoSeleccionada = foto
                     );
                 } else if (tipo.equals("Aerolinea")) {
                     UsuarioHelper.cargarDatosAerolineaEnCampos(
                             nickname,
                             modificarAerolineaTextNombre,
                             modificarAerolineaTextArea,
-                            modificarAerolineaTextLink
+                            modificarAerolineaTextLink,
+                            modificarAerolineaMostrarFoto,
+                            foto -> fotoSeleccionada = foto
                     );
                 }
 
@@ -2659,6 +2712,57 @@ public class EstacionTrabajo {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error al recargar rutas: " + ex.getMessage(),
                             "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        altaClienteSubirImagen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen");
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png"));
+
+                int resultado = fileChooser.showOpenDialog(null);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivo = fileChooser.getSelectedFile();
+                    try {
+                        fotoSeleccionada = Files.readAllBytes(archivo.toPath()); // ✅ actualiza la global
+                        mostrarImagen(fotoSeleccionada, altaClienteMostrarFoto);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al cargar la imagen: " + ex.getMessage());
+                    }
+                } else {
+                    altaClienteMostrarFoto.setIcon(null);
+                    altaClienteMostrarFoto.setText("No hay imagen seleccionada");
+                    fotoSeleccionada = null; // ✅ opcional: limpiar si cancela
+                }
+            }
+        });
+
+        altaAerolineaSubirImagen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen");
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png"));
+
+                int resultado = fileChooser.showOpenDialog(null);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivo = fileChooser.getSelectedFile();
+                    try {
+                        fotoSeleccionada = Files.readAllBytes(archivo.toPath()); // ✅ sin "byte[]"
+                        mostrarImagen(fotoSeleccionada, altaAerolineaMostrarFoto);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al cargar la imagen: " + ex.getMessage());
+                        fotoSeleccionada = null; // opcional: limpiar si falla
+                    }
+                } else {
+                    altaAerolineaMostrarFoto.setIcon(null);
+                    altaAerolineaMostrarFoto.setText("No hay imagen seleccionada");
+                    fotoSeleccionada = null; // ✅ limpiar si cancela
                 }
             }
         });
