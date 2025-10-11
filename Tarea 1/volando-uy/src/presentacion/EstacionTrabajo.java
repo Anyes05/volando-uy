@@ -315,6 +315,8 @@ public class EstacionTrabajo {
     private JPasswordField modificarClienteConfirmarContrasena;
 
     byte[] fotoSeleccionada = null;
+    private String contrasenaActual = null;
+
     // Método helper para actualizar la lista de pasajeros en la interfaz
     private void actualizarListaPasajeros() {
         if (listaPasajerosReservaVJlist != null) {
@@ -973,8 +975,26 @@ public class EstacionTrabajo {
                         UsuarioHelper.cambiarPanel(parentPanel, altaUsuario);
                         break;
                     case "Modificar usuario":
+                        // Actualizar tabla y limpiar campos básicos
                         UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
                         UsuarioHelper.limpiarCampos(modificarUsuarioTextInput);
+                        UsuarioHelper.limpiarCampos(modificarClienteNombre, modificarClienteApellido, modificarClienteNacionalidad, modificarClienteDocumento);
+                        UsuarioHelper.limpiarCampos(modificarAerolineaTextNombre, modificarAerolineaTextLink);
+                        modificarAerolineaTextArea.setText("");
+
+                        // Limpiar contraseña
+                        modificarClienteContrasena.setText("");
+                        modificarClienteConfirmarContrasena.setText("");
+                        contrasenaActual = null;
+
+                        // Limpiar imagen
+                        fotoSeleccionada = null;
+                        modificarClienteMostrarFoto.setIcon(null);
+                        modificarClienteMostrarFoto.setText("Sin imagen");
+                        modificarAerolineaMostrarFoto.setIcon(null);
+                        modificarAerolineaMostrarFoto.setText("Sin imagen");
+
+                        // Mostrar panel y enfocar
                         parentPanel.add(modificarUsuario);
                         UsuarioHelper.cambiarPanel(parentPanel, modificarUsuario);
                         modificarUsuarioTextInput.requestFocus();
@@ -1325,6 +1345,7 @@ public class EstacionTrabajo {
         });
 
         /*----- MODIFICAR USUARIO -----*/
+
         modificarUsuarioAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1350,7 +1371,10 @@ public class EstacionTrabajo {
                             modificarClienteDocumento,
                             modificarClienteJCalendar,
                             modificarClienteMostrarFoto,
-                            foto -> fotoSeleccionada = foto
+                            foto -> fotoSeleccionada = foto,
+                            pass -> contrasenaActual = pass
+
+
                     );
                 } else if (tipo.equals("Aerolinea")) {
                     UsuarioHelper.cargarDatosAerolineaEnCampos(
@@ -1359,7 +1383,8 @@ public class EstacionTrabajo {
                             modificarAerolineaTextArea,
                             modificarAerolineaTextLink,
                             modificarAerolineaMostrarFoto,
-                            foto -> fotoSeleccionada = foto
+                            foto -> fotoSeleccionada = foto,
+                            pass -> contrasenaActual = pass
                     );
                 }
 
@@ -1370,23 +1395,46 @@ public class EstacionTrabajo {
         modificarUsuarioCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Limpiar campos básicos
                 UsuarioHelper.limpiarCampos(modificarUsuarioTextInput);
+
+                // Limpiar contraseña
+                modificarClienteContrasena.setText("");
+                modificarClienteConfirmarContrasena.setText("");
+                contrasenaActual = null;
+
+                // Limpiar imagen
+                fotoSeleccionada = null;
+                modificarClienteMostrarFoto.setIcon(null);
+                modificarClienteMostrarFoto.setText("Sin imagen");
+
+                // Actualizar tabla y volver al panel principal
                 UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
                 UsuarioHelper.cambiarPanel(parentPanel, principalVacio);
             }
         });
 
+
         modificarClienteGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    // Obtener contraseña escrita (si hay)
+                    String nuevaContrasena = new String(modificarClienteContrasena.getPassword()).trim();
+                    String contrasenaFinal = nuevaContrasena.isEmpty() ? contrasenaActual : nuevaContrasena;
+
+                    // Validar todos los campos
                     if (UsuarioHelper.modificarClienteValidar(
                             modificarClienteNombre,
                             modificarClienteApellido,
                             modificarClienteNacionalidad,
                             (TipoDoc) modificarClienteComboBox.getSelectedItem(),
-                            modificarClienteDocumento
+                            modificarClienteDocumento,
+                            fotoSeleccionada,
+                            modificarClienteContrasena,
+                            modificarClienteConfirmarContrasena
                     )) {
+                        // Guardar cambios
                         UsuarioHelper.guardarCambiosCliente(
                                 modificarUsuarioTextInput.getText().trim(),
                                 modificarClienteNombre.getText().trim(),
@@ -1394,8 +1442,12 @@ public class EstacionTrabajo {
                                 UsuarioHelper.convertirDTfecha(modificarClienteJCalendar),
                                 modificarClienteNacionalidad.getText().trim(),
                                 (TipoDoc) modificarClienteComboBox.getSelectedItem(),
-                                modificarClienteDocumento.getText().trim()
+                                modificarClienteDocumento.getText().trim(),
+                                fotoSeleccionada,
+                                contrasenaFinal
                         );
+
+                        // Limpiar campos
                         UsuarioHelper.limpiarCampos(
                                 modificarClienteNombre,
                                 modificarClienteApellido,
@@ -1403,6 +1455,13 @@ public class EstacionTrabajo {
                                 modificarClienteDocumento,
                                 modificarUsuarioTextInput
                         );
+                        modificarClienteContrasena.setText("");
+                        modificarClienteConfirmarContrasena.setText("");
+                        fotoSeleccionada = null;
+                        modificarClienteMostrarFoto.setIcon(null);
+                        modificarClienteMostrarFoto.setText("Sin imagen");
+
+                        // Reset y navegación
                         UsuarioHelper.resetFormulario(
                                 modificarClienteComboBox,
                                 modificarClienteJCalendar,
@@ -1448,23 +1507,40 @@ public class EstacionTrabajo {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    String nuevaContrasena = new String(modificarClienteContrasena.getPassword()).trim();
+                    String contrasenaFinal = nuevaContrasena.isEmpty() ? contrasenaActual : nuevaContrasena;
+
                     if (UsuarioHelper.modificarAerolineaValidar(
                             modificarAerolineaTextNombre,
                             modificarAerolineaTextLink,
-                            modificarAerolineaTextArea
+                            modificarAerolineaTextArea,
+                            fotoSeleccionada,
+                            modificarClienteContrasena,
+                            modificarClienteConfirmarContrasena
                     )) {
                         UsuarioHelper.guardarCambiosAerolinea(
                                 modificarUsuarioTextInput.getText().trim(),
                                 modificarAerolineaTextNombre.getText().trim(),
                                 modificarAerolineaTextArea.getText().trim(),
-                                modificarAerolineaTextLink.getText().trim()
+                                modificarAerolineaTextLink.getText().trim(),
+                                fotoSeleccionada,
+                                contrasenaFinal
                         );
+
                         UsuarioHelper.limpiarCampos(
                                 modificarAerolineaTextNombre,
                                 modificarAerolineaTextLink,
                                 modificarUsuarioTextInput
                         );
                         modificarAerolineaTextArea.setText("");
+                        modificarClienteContrasena.setText("");
+                        modificarClienteConfirmarContrasena.setText("");
+                        contrasenaActual = null;
+
+                        fotoSeleccionada = null;
+                        modificarAerolineaMostrarFoto.setIcon(null);
+                        modificarAerolineaMostrarFoto.setText("Sin imagen");
+
                         UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
                         UsuarioHelper.cambiarPanel(parentPanel, modificarUsuario);
                         modificarUsuarioTextInput.requestFocus();
@@ -1483,12 +1559,25 @@ public class EstacionTrabajo {
         modificarAerolineaCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Limpiar campos básicos
                 UsuarioHelper.limpiarCampos(
                         modificarAerolineaTextNombre,
                         modificarAerolineaTextLink,
                         modificarUsuarioTextInput
                 );
                 modificarAerolineaTextArea.setText("");
+
+                // Limpiar contraseña
+                modificarClienteContrasena.setText("");
+                modificarClienteConfirmarContrasena.setText("");
+                contrasenaActual = null;
+
+                // Limpiar imagen
+                fotoSeleccionada = null;
+                modificarAerolineaMostrarFoto.setIcon(null);
+                modificarAerolineaMostrarFoto.setText("Sin imagen");
+
+                // Actualizar tabla y volver al panel principal
                 UsuarioHelper.actualizarTablaUsuarios(modificarUsuariotable1);
                 UsuarioHelper.cambiarPanel(parentPanel, modificarUsuario);
                 modificarUsuarioTextInput.requestFocus();
@@ -2763,6 +2852,56 @@ public class EstacionTrabajo {
                     altaAerolineaMostrarFoto.setIcon(null);
                     altaAerolineaMostrarFoto.setText("No hay imagen seleccionada");
                     fotoSeleccionada = null; // ✅ limpiar si cancela
+                }
+            }
+        });
+
+        modificarClienteSubirImagen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen");
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png"));
+
+                int resultado = fileChooser.showOpenDialog(null);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivo = fileChooser.getSelectedFile();
+                    try {
+                        fotoSeleccionada = Files.readAllBytes(archivo.toPath()); // actualiza la global
+                        mostrarImagen(fotoSeleccionada, modificarClienteMostrarFoto);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al cargar la imagen: " + ex.getMessage());
+                    }
+                } else {
+                    modificarClienteMostrarFoto.setIcon(null);
+                    modificarClienteMostrarFoto.setText("No hay imagen seleccionada");
+                    fotoSeleccionada = null; // opcional: limpiar si cancela
+                }
+            }
+        });
+
+        modificarAerolineaSubirImagen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen");
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png"));
+
+                int resultado = fileChooser.showOpenDialog(null);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivo = fileChooser.getSelectedFile();
+                    try {
+                        fotoSeleccionada = Files.readAllBytes(archivo.toPath()); // actualiza la global
+                        mostrarImagen(fotoSeleccionada, modificarAerolineaMostrarFoto);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al cargar la imagen: " + ex.getMessage());
+                    }
+                } else {
+                    modificarAerolineaMostrarFoto.setIcon(null);
+                    modificarAerolineaMostrarFoto.setText("No hay imagen seleccionada");
+                    fotoSeleccionada = null; // opcional: limpiar si cancela
                 }
             }
         });
