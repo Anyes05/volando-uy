@@ -17,6 +17,7 @@ import java.awt.*;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
+import java.util.function.Consumer;
 
 import logica.servicios.*;
 
@@ -35,6 +36,42 @@ public class UsuarioHelper {
                 fecha.getMes(),
                 fecha.getAno());
     }
+
+    public static void mostrarImagen(byte[] fotoBytes, JLabel imagen) {
+        if (imagen == null) {
+            System.err.println("Warning: labelImagenConsultaVuelo no está inicializado");
+            return;
+        }
+
+        if (fotoBytes == null || fotoBytes.length == 0) {
+            // No hay imagen, mostrar mensaje o dejar vacío
+            imagen.setIcon(null);
+            imagen.setText("Sin imagen");
+            imagen.setHorizontalAlignment(JLabel.CENTER);
+            return;
+        }
+
+        try {
+            // 🔹 Convertir bytes a ImageIcon
+            ImageIcon iconoOriginal = new ImageIcon(fotoBytes);
+
+            // 🔹 Escalar la imagen para que se ajuste al label (opcional pero recomendado)
+            Image imagenEscalada = iconoOriginal.getImage().getScaledInstance(
+                    200, 150, // Ajusta el tamaño según tus necesidades
+                    Image.SCALE_SMOOTH
+            );
+
+            // 🔹 Mostrar la imagen escalada
+            imagen.setIcon(new ImageIcon(imagenEscalada));
+            imagen.setText(""); // Limpiar cualquier texto
+
+        } catch (Exception ex) {
+            System.err.println("Error al cargar la imagen del vuelo: " + ex.getMessage());
+            imagen.setIcon(null);
+            imagen.setText("Error al cargar imagen");
+            imagen.setHorizontalAlignment(JLabel.CENTER);
+        }
+    };
 
     public static Calendar convertirCalendarDesdeDTFecha(DTFecha fecha) {
         if (fecha == null) return null;
@@ -157,7 +194,9 @@ public class UsuarioHelper {
             DTFecha fechaNac,
             String nacionalidad,
             TipoDoc tipoDocumento,
-            String numeroDocumento
+            String numeroDocumento,
+            byte[] foto,
+            String contrasenaFinal
     ) {
         try {
             ClienteServicio clienteServicio = new ClienteServicio();
@@ -168,7 +207,7 @@ public class UsuarioHelper {
                 return;
             }
 
-            // Actualizar los campos
+            // Actualizar los campos básicos
             cliente.setNombre(nombre);
             cliente.setApellido(apellido);
             cliente.setFechaNacimiento(fechaNac);
@@ -176,7 +215,17 @@ public class UsuarioHelper {
             cliente.setTipoDoc(tipoDocumento);
             cliente.setNumeroDocumento(numeroDocumento);
 
-            // Persistir los cambios
+            // Actualizar foto si hay
+            if (foto != null && foto.length > 0) {
+                cliente.setFoto(foto);
+            }
+
+            // Actualizar contraseña si no está vacía
+            if (contrasenaFinal != null && !contrasenaFinal.trim().isEmpty()) {
+                cliente.setContrasena(contrasenaFinal.trim());
+            }
+
+            // Guardar cambios en base de datos
             clienteServicio.actualizarCliente(cliente);
 
             JOptionPane.showMessageDialog(null, "Datos del cliente modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -186,7 +235,14 @@ public class UsuarioHelper {
         }
     }
 
-    public static void guardarCambiosAerolinea(String nickname, String nombre, String descripcion, String linkSitioWeb) {
+    public static void guardarCambiosAerolinea(
+            String nickname,
+            String nombre,
+            String descripcion,
+            String linkSitioWeb,
+            byte[] foto,
+            String contrasenaFinal
+    ) {
         try {
             AerolineaServicio aerolineaServicio = new AerolineaServicio();
             dato.entidades.Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
@@ -196,12 +252,22 @@ public class UsuarioHelper {
                 return;
             }
 
-            // Actualizar los campos
+            // Actualizar los campos básicos
             aerolinea.setNombre(nombre);
             aerolinea.setDescripcion(descripcion);
             aerolinea.setLinkSitioWeb(linkSitioWeb);
 
-            // Persistir los cambios
+            // Actualizar foto si hay
+            if (foto != null && foto.length > 0) {
+                aerolinea.setFoto(foto);
+            }
+
+            // Actualizar contraseña si no está vacía
+            if (contrasenaFinal != null && !contrasenaFinal.trim().isEmpty()) {
+                aerolinea.setContrasena(contrasenaFinal.trim());
+            }
+
+            // Guardar cambios en base de datos
             aerolineaServicio.actualizarAerolinea(aerolinea);
 
             JOptionPane.showMessageDialog(null, "Datos de la aerolínea modificados correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -215,7 +281,10 @@ public class UsuarioHelper {
             String nickname,
             JTextField nombreField,
             JTextArea descripcionField,
-            JTextField sitioWebField
+            JTextField sitioWebField,
+            JLabel fotoLabel,
+            Consumer<byte[]> setFotoSeleccionada,
+            Consumer<String> setContrasenaActual
     ) {
         try {
             AerolineaServicio aerolineaServicio = new AerolineaServicio();
@@ -230,6 +299,18 @@ public class UsuarioHelper {
             descripcionField.setText(aero.getDescripcion());
             sitioWebField.setText(aero.getLinkSitioWeb());
 
+            byte[] foto = aero.getFoto();
+            if (foto != null && foto.length > 0) {
+                mostrarImagen(foto, fotoLabel);
+                setFotoSeleccionada.accept(foto);
+            } else {
+                fotoLabel.setIcon(null);
+                fotoLabel.setText("Sin imagen");
+                setFotoSeleccionada.accept(null);
+            }
+
+            setContrasenaActual.accept(aero.getContrasena());
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al cargar datos de la aerolínea: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -242,7 +323,10 @@ public class UsuarioHelper {
             JTextField nacionalidadField,
             JComboBox<TipoDoc> tipoDocCombo,
             JTextField documentoField,
-            JCalendar fechaNacimientoCalendar
+            JCalendar fechaNacimientoCalendar,
+            JLabel fotoLabel,
+            Consumer<byte[]> setFotoSeleccionada,
+            Consumer<String> setContrasenaActual
     ) {
         try {
             ClienteServicio clienteServicio = new ClienteServicio();
@@ -259,7 +343,18 @@ public class UsuarioHelper {
             tipoDocCombo.setSelectedItem(cliente.getTipoDoc());
             documentoField.setText(cliente.getNumeroDocumento());
 
-            // Setear fecha
+            // ✅ Foto
+            byte[] foto = cliente.getFoto();
+            if (foto != null && foto.length > 0) {
+                mostrarImagen(foto, fotoLabel);
+                setFotoSeleccionada.accept(foto);
+            } else {
+                fotoLabel.setIcon(null);
+                fotoLabel.setText("Sin imagen");
+                setFotoSeleccionada.accept(null);
+            }
+
+            // ✅ Fecha
             DTFecha fn = cliente.getFechaNacimiento();
             Calendar cal = convertirCalendarDesdeDTFecha(fn);
             if (cal != null) {
@@ -267,6 +362,9 @@ public class UsuarioHelper {
             } else {
                 fechaNacimientoCalendar.setDate(new Date());
             }
+
+            // ✅ Contraseña actual
+            setContrasenaActual.accept(cliente.getContrasena());
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error al cargar datos del cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -341,9 +439,11 @@ public class UsuarioHelper {
     public static boolean modificarAerolineaValidar(
             JTextField nombre,
             JTextField sitioWeb,
-            JTextArea descripcion
+            JTextArea descripcion,
+            byte[] fotoSeleccionada,
+            JPasswordField contrasena,
+            JPasswordField confirmar
     ) {
-
         String nombreTexto = nombre.getText().trim();
 
         if (nombreTexto.length() < 4) {
@@ -351,12 +451,11 @@ public class UsuarioHelper {
             return false;
         }
 
-        // Solo letras y espacios (sin símbolos ni números)
+        // Validar que el nombre solo contenga letras y espacios
         if (!nombreTexto.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
             JOptionPane.showMessageDialog(null, "El nombre solo puede contener letras y espacios, sin símbolos ni números.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
 
         // Validar sitio web
         String sitioText = sitioWeb.getText().trim();
@@ -371,6 +470,27 @@ public class UsuarioHelper {
             return false;
         }
 
+        // Validar foto
+        if (fotoSeleccionada == null || fotoSeleccionada.length == 0) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una imagen de perfil.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Validar contraseña solo si se escribió
+        String pass = new String(contrasena.getPassword()).trim();
+        String conf = new String(confirmar.getPassword()).trim();
+
+        if (!pass.isEmpty() || !conf.isEmpty()) {
+            if (pass.length() < 6 || !pass.matches(".*[A-Z].*") || !pass.matches(".*[0-9].*")) {
+                JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 6 caracteres, una mayúscula y un número.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            if (!pass.equals(conf)) {
+                JOptionPane.showMessageDialog(null, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -379,15 +499,17 @@ public class UsuarioHelper {
             JTextField apellido,
             JTextField nacionalidad,
             TipoDoc tipoDocumento,
-            JTextField numeroDocumento
+            JTextField numeroDocumento,
+            byte[] fotoSeleccionada,
+            JPasswordField contrasena,
+            JPasswordField confirmar
     ) {
         String nom = nombre.getText().trim();
         String ape = apellido.getText().trim();
         String nac = nacionalidad.getText().trim();
         String doc = numeroDocumento.getText().trim();
 
-
-        // Nombre y apellido solo letras
+        // ✅ Validar nombre, apellido, nacionalidad
         if (!nom.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
             JOptionPane.showMessageDialog(null, "El nombre solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -396,31 +518,26 @@ public class UsuarioHelper {
             JOptionPane.showMessageDialog(null, "El apellido solo puede contener letras y espacios.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
-        // Nacionalidad
         if (!nac.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
             JOptionPane.showMessageDialog(null, "La nacionalidad solo puede contener letras.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        // --- Validar documento según tipo ---
+        // ✅ Validar documento según tipo
         switch (tipoDocumento) {
-            case CI: // Cédula uruguaya
-                // Formato: 12345678 o 1.234.567-8
+            case CI:
                 if (!doc.matches("^[0-9]{7,8}$") && !doc.matches("^[0-9]{1,2}\\.[0-9]{3}\\.[0-9]{3}-[0-9]$")) {
                     JOptionPane.showMessageDialog(null, "Ingrese una CI uruguaya válida (ej: 12345678 o 1.234.567-8).", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
             case PASAPORTE:
-                // Letras + números, entre 6 y 9 caracteres
                 if (!doc.matches("^[A-Z0-9]{6,9}$")) {
                     JOptionPane.showMessageDialog(null, "Ingrese un pasaporte válido (ej: A1234567).", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 break;
             case DNI:
-                // 7-8 dígitos + opcional una letra
                 if (!doc.matches("^[0-9]{7,8}[A-Za-z]?$")) {
                     JOptionPane.showMessageDialog(null, "Ingrese un DNI válido (ej: 12345678 o 12345678A).", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -429,6 +546,27 @@ public class UsuarioHelper {
             default:
                 JOptionPane.showMessageDialog(null, "Seleccione un tipo de documento válido.", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
+        }
+
+        // ✅ Validar foto
+        if (fotoSeleccionada == null || fotoSeleccionada.length == 0) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una imagen de perfil.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // ✅ Validar contraseña solo si se escribió
+        String pass = new String(contrasena.getPassword()).trim();
+        String conf = new String(confirmar.getPassword()).trim();
+
+        if (!pass.isEmpty() || !conf.isEmpty()) {
+            if (pass.length() < 6 || !pass.matches(".*[A-Z].*") || !pass.matches(".*[0-9].*")) {
+                JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 6 caracteres, una mayúscula y un número.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            if (!pass.equals(conf)) {
+                JOptionPane.showMessageDialog(null, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
         }
 
         return true;
@@ -488,7 +626,11 @@ public class UsuarioHelper {
             JTextField nacionalidad,
             TipoDoc tipoDocumento,
             JTextField numeroDocumento,
-            JCalendar fechaNac
+            JCalendar fechaNac,
+            JPasswordField password,
+            JPasswordField confirmarPassword,
+            byte[] foto
+
     ) {
         String nick = nickname.getText().trim();
         String nom = nombre.getText().trim();
@@ -534,6 +676,26 @@ public class UsuarioHelper {
             return false;
         }
 
+        // Foto cargada
+        if (foto == null || foto.length == 0) {
+            JOptionPane.showMessageDialog(null, "Debe subir una imagen de perfil.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Contraseña
+        String pass = new String(password.getPassword()).trim();
+        String confirm = new String(confirmarPassword.getPassword()).trim();
+
+        if (pass.length() < 6 || !pass.matches(".*[A-Z].*") || !pass.matches(".*[0-9].*")) {
+            JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 6 caracteres, una mayúscula y un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!pass.equals(confirm)) {
+            JOptionPane.showMessageDialog(null, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
         // --- Validar documento según tipo ---
         switch (tipoDocumento) {
             case CI: // Cédula uruguaya
@@ -570,7 +732,11 @@ public class UsuarioHelper {
             JTextField nombre,
             JTextField correo,
             JTextField sitioWeb,
-            JTextArea descripcion
+            JTextArea descripcion,
+            JPasswordField password,
+            JPasswordField confirmarPassword,
+            byte[] foto
+
     ) {
         // Validar nickname
         if (nickname.getText().trim().length() < 4) {
@@ -610,6 +776,27 @@ public class UsuarioHelper {
             return false;
         }
 
+        // Validar imagen cargada
+        if (foto == null || foto.length == 0) {
+            JOptionPane.showMessageDialog(null, "Debe subir una imagen de la aerolínea.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Validar contraseña
+        String pass = new String(password.getPassword()).trim();
+        String confirm = new String(confirmarPassword.getPassword()).trim();
+
+        if (pass.length() < 6 || !pass.matches(".*[A-Z].*") || !pass.matches(".*[0-9].*")) {
+            JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 6 caracteres, una mayúscula y un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!pass.equals(confirm)) {
+            JOptionPane.showMessageDialog(null, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+
         return true;
     }
 
@@ -621,7 +808,9 @@ public class UsuarioHelper {
                                     String nacionalidad,
                                     TipoDoc tipoDocumento,
                                     String numeroDocumento,
-                                    Date fechaNacimiento) throws Exception {
+                                    Date fechaNacimiento,
+                                    byte[] foto,
+                                    String contrasena) throws Exception {
 
         // Convertir Date a DTFecha
         Calendar cal = Calendar.getInstance();
@@ -630,9 +819,6 @@ public class UsuarioHelper {
         int mes = cal.get(Calendar.MONTH) + 1;
         int ano = cal.get(Calendar.YEAR);
         DTFecha fechaNac = new DTFecha(dia, mes, ano);
-
-        byte [] foto = null;
-        String contrasena = null;
 
         // Llamar a la función de Sistema
         getSistema().altaCliente(
@@ -673,7 +859,11 @@ public class UsuarioHelper {
             String nombre,
             String correo,
             String sitioWeb,
-            String descripcion
+            String descripcion,
+            byte[] foto,
+            String contrasena,
+            String confirmarContrasena
+
     ) throws Exception {
         // Validaciones
         if (!validarAerolinea(
@@ -681,13 +871,14 @@ public class UsuarioHelper {
                 new JTextField(nombre),
                 new JTextField(correo),
                 new JTextField(sitioWeb),
-                new JTextArea(descripcion)
+                new JTextArea(descripcion),
+                new JPasswordField(contrasena),
+                new JPasswordField(confirmarContrasena),
+                foto
         )) {
             throw new Exception("Datos de la aerolínea inválidos.");
         }
 
-        byte [] foto = null;
-        String contrasena = null;
         // Llamada al sistema
         getSistema().altaAerolinea(
                 nickname,
