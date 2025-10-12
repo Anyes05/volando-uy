@@ -1,46 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<section class="form-section-pro">
-  <div class="form-card-pro">
-    <h2>Consulta de Vuelo</h2>
-
-    <!-- Controles: seleccionar aerolínea y mostrar rutas -->
-    <div class="controls-grid">
-      <div class="form-group">
-        <label for="selectAerolinea">Seleccionar aerolínea</label>
-        <select id="selectAerolinea">
-          <option value="">-- Elegir aerolínea --</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Rutas de Vuelo</label>
-        <div id="listaRutas" class="lista-rutas">Elija una aerolínea</div>
-      </div>
-    </div>
-
-    <!-- Vuelos -->
-    <div class="section-title">Vuelos disponibles</div>
-    <div id="listaVuelos" class="grid-vuelos"></div>
-
-    <!-- Detalle del vuelo -->
-    <div id="detalle-vuelo" class="detalle-card" style="display:none;">
-      <h3>Detalle del vuelo</h3>
-      <img id="vuelo-img" alt="Imagen vuelo">
-      <div id="vuelo-info"></div>
-    </div>
-
-    <!-- Reservas -->
-    <div id="reservas" class="detalle-card" style="display:none;">
-      <h3>Reservas</h3>
-      <div id="lista-reservas"></div>
-    </div>
-
-    <!-- Detalle reserva -->
-    <div id="detalle-reserva" class="detalle-card" style="display:none;">
-      <h3>Detalle de Reserva</h3>
-      <div id="detalleReserva"></div>
-    </div>
-  </div>
-</section>
+<jsp:include page="layout.jsp">
+  <jsp:param name="content" value="consultaVuelo-content.jsp" />
+</jsp:include>
