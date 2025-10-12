@@ -1,0 +1,479 @@
+/* Fondo general - específico para registro */
+#main-content.register-page {
+  min-height: calc(100vh - 120px);
+  background: linear-gradient(135deg, #3580A0, #2298CA, #01AAF5);
+  background-size: 300% 300%;
+  animation: gradientShift 8s ease infinite;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animación del fondo */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Efecto de partículas en el fondo */
+#main-content.register-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="stars" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="20" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="25" cy="35" r="1.5" fill="rgba(255,255,255,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23stars)"/></svg>');
+  opacity: 0.3;
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.form-box {
+  background: rgba(43, 48, 51, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  max-width: 650px;
+  margin: 2rem auto;
+  color: #eaf6fb;
+  position: relative;
+  z-index: 10;
+  animation: slideIn 0.6s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto de brillo en el borde */
+.form-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(45deg, #01AAF5, #2298CA, #3580A0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: subtract;
+  opacity: 0.7;
+}
+
+.form-box h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #01AAF5;
+  font-size: 28px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.form-box h2::before {
+  content: '';
+  width: 32px;
+  height: 32px;
+  background: url('img/logoAvionSolo.png') no-repeat center;
+  background-size: contain;
+  animation: planeFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes planeFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(5deg); }
+}
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #eaf6fb;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid rgba(1, 170, 245, 0.3);
+  border-radius: 12px;
+  background: rgba(50, 67, 75, 0.8);
+  color: #eaf6fb;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #01AAF5;
+  background: rgba(50, 67, 75, 0.9);
+  box-shadow: 0 0 0 3px rgba(1, 170, 245, 0.2);
+  transform: translateY(-2px);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: rgba(234, 246, 251, 0.6);
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23eaf6fb" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 40px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #01AAF5, #0288B6);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(1, 170, 245, 0.3);
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+button[type="submit"]:hover::before {
+  left: 100%;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(135deg, #0288B6, #01AAF5);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(1, 170, 245, 0.4);
+}
+
+button[type="submit"]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(1, 170, 245, 0.3);
+}
+
+/* Validación visual */
+.form-group input:valid,
+.form-group select:valid,
+.form-group textarea:valid {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.form-group input:invalid:not(:placeholder-shown),
+.form-group select:invalid:not(:placeholder-shown),
+.form-group textarea:invalid:not(:placeholder-shown) {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.input-error {
+  border-color: #f44336 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+.error-msg {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  font-weight: 500;
+}
+
+/* Efecto de carga en el botón */
+button[type="submit"].loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+button[type="submit"].loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design - Registro específico */
+@media (max-width: 1400px) {
+  .form-box {
+    max-width: 600px;
+    padding: 35px;
+  }
+  
+  .form-box h2 {
+    font-size: 26px;
+  }
+  
+  .form-box h2::before {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 1200px) {
+  #main-content.register-page {
+    padding: 15px;
+  }
+  
+  .form-box {
+    max-width: 550px;
+    padding: 30px;
+  }
+  
+  .form-box h2 {
+    font-size: 24px;
+    margin-bottom: 25px;
+  }
+  
+  .form-box h2::before {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .form-group {
+    margin-bottom: 18px;
+  }
+  
+  .form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  button[type="submit"] {
+    padding: 14px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 991px) {
+  #main-content.register-page {
+    padding: 12px;
+    min-height: calc(100vh - 100px);
+  }
+  
+  .form-box {
+    max-width: 500px;
+    padding: 25px;
+    border-radius: 16px;
+  }
+  
+  .form-box h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+  
+  .form-box h2::before {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+  
+  button[type="submit"] {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 767px) {
+  #main-content.register-page {
+    padding: 10px;
+    min-height: calc(100vh - 80px);
+  }
+  
+  .form-box {
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  .form-box h2 {
+    font-size: 20px;
+    margin-bottom: 18px;
+    gap: 8px;
+  }
+  
+  .form-box h2::before {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .form-group {
+    margin-bottom: 14px;
+  }
+  
+  .form-group label {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  
+  button[type="submit"] {
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  #main-content.register-page {
+    padding: 8px;
+    min-height: calc(100vh - 70px);
+  }
+  
+  .form-box {
+    padding: 16px;
+    border-radius: 10px;
+  }
+  
+  .form-box h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    gap: 6px;
+  }
+  
+  .form-box h2::before {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    font-size: 10px;
+    margin-bottom: 3px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+  
+  button[type="submit"] {
+    padding: 8px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+}
+
+/* Animaciones adicionales para campos condicionales */
+#campos-cliente,
+#campos-aerolinea {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}

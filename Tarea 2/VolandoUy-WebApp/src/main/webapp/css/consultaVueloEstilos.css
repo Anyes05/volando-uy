@@ -1,0 +1,165 @@
+/* Fondo */
+body {
+  background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #0a0f1c);
+  background-size: 400% 400%;
+  animation: gradientBG 18s ease infinite;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Card */
+.form-card-pro {
+  max-width: 1100px;
+  margin: 56px auto;
+  padding: 34px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px) saturate(160%);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Titles */
+.form-card-pro h2 {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg,#01AAF5,#00e0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.form-subtitle {
+  text-align:center;
+  font-size:14px;
+  color:#cfcfcf;
+  margin-bottom: 20px;
+}
+
+/* Controls grid */
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.form-group label {
+  display:block;
+  font-weight:600;
+  margin-bottom:8px;
+  color:#e6e6e6;
+}
+.form-group input, .form-group select {
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color:#fff;
+  font-size:14px;
+  box-sizing:border-box;
+}
+.form-group input:focus, .form-group select:focus {
+  outline:none;
+  box-shadow: 0 0 0 4px rgba(1,170,245,0.12);
+  border-color:#01AAF5;
+}
+
+/* Lista rutas */
+.lista-rutas {
+  min-height:48px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.ruta-pill {
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,0.04);
+  transition: transform .18s, background .18s;
+}
+.ruta-pill:hover { transform: translateY(-3px); background: rgba(1,170,245,0.12); }
+
+/* Grid vuelos (tarjetas) */
+.section-title {
+  margin-top: 10px;
+  color:#cfefff;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.grid-vuelos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
+}
+.vuelo-card {
+  background: rgba(255,255,255,0.04);
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.06);
+  cursor:pointer;
+  transition: transform .22s, box-shadow .22s;
+}
+.vuelo-card img {
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  display:block;
+}
+.vuelo-card .card-body {
+  padding:12px;
+}
+.vuelo-card h4 { margin:0 0 6px 0; font-size:16px; color:#fff; }
+.vuelo-card p { margin:0; color:#cfcfcf; font-size:13px; }
+.vuelo-card:hover { transform: translateY(-6px); box-shadow:0 12px 30px rgba(1,170,245,0.15); }
+
+/* Detalle / reservas / detalle reserva */
+.detalle-card {
+  margin-top: 22px;
+  padding:18px;
+  background: rgba(255,255,255,0.04);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.detalle-card h3 { margin:0 0 12px 0; color:#01AAF5; }
+#vuelo-img { width:100%; max-width:540px; border-radius:10px; display:block; margin-bottom:12px; }
+#vuelo-info p, #detalleReserva p { margin:6px 0; font-size:14px; color:#eaeef0; }
+
+/* Reserva cards */
+#lista-reservas { margin-top:8px; display:flex; flex-direction:column; gap:10px; }
+.reserva-card {
+  padding:12px;
+  border-radius:10px;
+  background: rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.04);
+  cursor:pointer;
+  transition: background .18s, transform .18s;
+}
+.reserva-card:hover {
+  background: rgba(1,170,245,0.14);
+  transform: translateY(-3px);
+}
+
+/* Responsive tweaks */
+@media (max-width:720px) {
+  .form-card-pro { padding:20px; margin: 18px; }
+  #vuelo-img { max-width:100%; }
+}
+
+.form-group select option {
+  color: #0b1b20;
+  background: #eaf6fb;
+}
+.form-group select option[disabled] {
+  color: rgba(15,20,24,0.6);
+  background: transparent;
+}
