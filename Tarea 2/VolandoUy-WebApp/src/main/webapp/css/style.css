@@ -1255,4 +1255,108 @@ a:focus, button:focus, input:focus { outline:3px solid rgba(1,170,245,0.22); out
     width: 32px;
     height: 32px;
   }
+
+}
+
+/* ==========================================
+   Usuario logueado - Diseño simple
+   ========================================== */
+.user-logged-in {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar-container {
+  position: relative;
+}
+
+.user-avatar-circle {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #01AAF5;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(1, 170, 245, 0.2);
+}
+
+.user-avatar-circle:hover {
+  border-color: #0056b3;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(1, 170, 245, 0.3);
+}
+
+.user-avatar-default {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+/* Botón de cerrar sesión - Mismo estilo que login/registro */
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+
+  /* Color personalizado */
+  background: #32434b;
+  box-shadow: 0 6px 18px rgba(50, 67, 75, 0.15);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  background: #3c4e57; /* tono un poco más claro para hover */
+  box-shadow: 0 8px 24px rgba(50, 67, 75, 0.25);
+}
+
+.logout-btn i {
+  font-size: 14px;
+}
+
+/* Responsive para usuario logueado */
+@media (max-width: 768px) {
+  .user-logged-in {
+    gap: 10px;
+  }
+
+  .user-avatar-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logout-btn .btn-text {
+    display: none;
+  }
+
+  .logout-btn {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-avatar-circle {
+    width: 35px;
+    height: 35px;
+    border-width: 2px;
+  }
+
+  .logout-btn {
+    padding: 10px;
+  }
 }
