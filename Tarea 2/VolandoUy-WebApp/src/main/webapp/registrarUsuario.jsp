@@ -1,3 +1,4 @@
+<!-- html -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -23,6 +24,24 @@
       <input type="email" id="correo" name="correo" required>
       <small class="error-msg"></small>
     </div>
+
+    <div class="form-group">
+      <label for="contrasena">Contraseña:</label>
+      <input type="password" id="contrasena" name="contrasena" required>
+      <small class="error-msg"></small>
+    </div>
+
+    <div class="form-group">
+      <label for="confirmarContrasena"> Confirmar contraseña:</label>
+      <input type="password" id="confirmarContrasena" name="confirmarContrasena" required>
+      <small class="error-msg"></small>
+    </div>
+
+    <!-- Foto -->
+     <div class="form-group full-width">
+       <label for="foto">Imagen de portada</label>
+       <input type="file" id="foto" name="foto" accept="image/*">
+     </div>
 
     <!-- Tipo de usuario -->
     <div class="form-group">
@@ -95,3 +114,80 @@
 
   </form>
 </section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tipoSelect = document.getElementById("tipo");
+    const camposCliente = document.getElementById("campos-cliente");
+    const camposAerolinea = document.getElementById("campos-aerolinea");
+
+    tipoSelect.addEventListener("change", () => {
+      const tipo = tipoSelect.value;
+      if (tipo === "cliente") {
+        camposCliente.style.display = "block";
+        camposAerolinea.style.display = "none";
+      } else if (tipo === "aerolinea") {
+        camposCliente.style.display = "none";
+        camposAerolinea.style.display = "block";
+      } else {
+        camposCliente.style.display = "none";
+        camposAerolinea.style.display = "none";
+      }
+    });
+
+    document.getElementById("form-registro").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const tipo = form.tipo.value;
+
+      if (form.contrasena.value !== form.confirmarContrasena.value) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      // construir FormData (incluye archivo si se seleccionó)
+      const formData = new FormData();
+      formData.append("nickname", form.nickname.value);
+      formData.append("nombre", form.nombre.value);
+      formData.append("correo", form.correo.value);
+      formData.append("tipo", tipo);
+      formData.append("contrasena", form.contrasena.value);
+      formData.append("confirmarContrasena", form.confirmarContrasena.value);
+
+      if (tipo === "cliente") {
+        formData.append("apellido", form.apellido.value);
+        formData.append("tipoDocumento", form.tipoDocumento.value);
+        formData.append("numeroDocumento", form.numeroDocumento.value);
+        formData.append("fechaNacimiento", form.fechaNacimiento.value);
+        formData.append("nacionalidad", form.nacionalidad.value);
+      } else if (tipo === "aerolinea") {
+        formData.append("descripcion", form.descripcion.value);
+        formData.append("linkSitioWeb", form.linkSitioWeb.value);
+      }
+
+      const fotoInput = document.getElementById("foto");
+      if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
+        formData.append("foto", fotoInput.files[0]);
+      }
+
+      try {
+        // NO establecer header Content-Type manualmente para FormData
+        const response = await fetch("<%= request.getContextPath() %>/api/usuarios", {
+          method: "POST",
+          body: formData
+        });
+
+        let result = {};
+        try { result = await response.json(); } catch (err) { /* no-json */ }
+
+        if (response.ok) {
+          alert(result.mensaje || "Operación completada.");
+        } else {
+          alert(result.error || ("Error: " + response.status));
+        }
+      } catch (error) {
+        alert("Error al registrar: " + error.message);
+      }
+    });
+  });
+</script>
