@@ -187,8 +187,8 @@ public class Sistema implements ISistema {
         if (existeCorreo(correo)) {
             throw new IllegalArgumentException("El correo electrónico ya existe.");
         }
-        if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(correo) || !esNombreValido(descripcion)) {
-            throw new IllegalArgumentException("Nickname, nombre, correo o descripcion han sido ingresados incorrectamente, muy cortos o usan caracteres especiales");
+        if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(descripcion)) {
+            throw new IllegalArgumentException("Nickname, nombre o descripcion han sido ingresados incorrectamente, muy cortos o usan caracteres especiales");
         }
 
         if (foto == null) {

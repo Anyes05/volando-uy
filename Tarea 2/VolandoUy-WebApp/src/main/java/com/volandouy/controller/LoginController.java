@@ -2,10 +2,13 @@
 package com.volandouy.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dato.entidades.Aerolinea;
 import logica.clase.Sistema;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTAerolinea;
+import logica.servicios.AerolineaServicio;
+import logica.servicios.ClienteServicio;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,8 +70,6 @@ public class LoginController extends HttpServlet {
             }
 
             // Verificar contraseña
-            // NOTA: DTUsuario debe tener un método getContrasena() o getPassword()
-            // Si no lo tiene, necesitarás agregarlo en el Servidor Central
             boolean passwordValida = false;
             try {
                 String storedPassword = usuarioEncontrado.getContrasena();
@@ -92,15 +93,8 @@ public class LoginController extends HttpServlet {
             session.setAttribute("usuarioLogueado", usuarioEncontrado.getNickname());
             session.setAttribute("nombreUsuario", usuarioEncontrado.getNombre());
             session.setAttribute("correoUsuario", usuarioEncontrado.getCorreo());
-
             // Si el usuario tiene foto, convertirla a Base64
 
-            // Guardar tipo de usuario (cliente o aerolínea)
-            if (usuarioEncontrado instanceof DTCliente) {
-                session.setAttribute("tipoUsuario", "cliente");
-            } else if (usuarioEncontrado instanceof DTAerolinea) {
-                session.setAttribute("tipoUsuario", "aerolinea");
-            }
 
             LOG.info("Usuario logueado exitosamente: " + usuarioEncontrado.getNickname());
 
@@ -120,9 +114,8 @@ public class LoginController extends HttpServlet {
             out.flush();
         }
     }
-    // ==========================
+
     // LOGOUT
-    // ==========================
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -135,7 +128,7 @@ public class LoginController extends HttpServlet {
                 LOG.info("Sesión cerrada correctamente");
             }
 
-            // Redirigir al inicio o login
+            // Redirigir al inicio
             response.sendRedirect(request.getContextPath() + "/inicio.jsp");
         } else {
             // Si llaman a /login por GET, redirigir al formulario
