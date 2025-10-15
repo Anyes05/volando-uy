@@ -2,10 +2,13 @@
 package com.volandouy.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dato.entidades.Aerolinea;
 import logica.clase.Sistema;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTAerolinea;
+import logica.servicios.AerolineaServicio;
+import logica.servicios.ClienteServicio;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -90,15 +93,8 @@ public class LoginController extends HttpServlet {
             session.setAttribute("usuarioLogueado", usuarioEncontrado.getNickname());
             session.setAttribute("nombreUsuario", usuarioEncontrado.getNombre());
             session.setAttribute("correoUsuario", usuarioEncontrado.getCorreo());
-
             // Si el usuario tiene foto, convertirla a Base64
 
-            // Guardar tipo de usuario (cliente o aerolínea)
-            if (usuarioEncontrado instanceof DTCliente) {
-                session.setAttribute("tipoUsuario", "cliente");
-            } else if (usuarioEncontrado instanceof DTAerolinea) {
-                session.setAttribute("tipoUsuario", "aerolinea");
-            }
 
             LOG.info("Usuario logueado exitosamente: " + usuarioEncontrado.getNickname());
 

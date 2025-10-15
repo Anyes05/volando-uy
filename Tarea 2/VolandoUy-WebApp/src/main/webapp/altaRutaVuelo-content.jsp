@@ -143,7 +143,8 @@
             // NO establecer header Content-Type manualmente para FormData
             const response = await fetch("<%= request.getContextPath() %>/api/rutas", {
               method: "POST",
-              body: formData
+              body: formData,
+              credentials: "include"
             });
 
             let result = {};
