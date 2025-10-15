@@ -2,6 +2,7 @@
 package com.volandouy.controller;
 
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoDoc;
 import logica.clase.Sistema;
 
 import java.io.IOException;
@@ -24,14 +25,18 @@ import javax.servlet.http.Part;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebServlet("/api/usuarios/*")
+
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, // 1MB
         maxFileSize = 5 * 1024 * 1024,    // 5MB
         maxRequestSize = 10 * 1024 * 1024) // 10MB
+
+
 public class UsuarioController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(UsuarioController.class.getName());
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Sistema sistema = Sistema.getInstance();
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -55,6 +60,7 @@ public class UsuarioController extends HttpServlet {
             String tipoDoc = null, numeroDoc = null, fechaNacimientoStr = null, contrasena = null, confirmarContrasena = null;
             String userType = null;
             byte[] fotoBytes = null;
+            String descripcion = null; String sitioWeb = null;
 
             if (contentType.contains("application/json")) {
                 Map<String, Object> body = objectMapper.readValue(request.getInputStream(), Map.class);
@@ -68,6 +74,8 @@ public class UsuarioController extends HttpServlet {
                 fechaNacimientoStr = trim((String) body.get("fechaNacimiento"));
                 contrasena = trim((String) body.get("contrasena"));
                 confirmarContrasena = trim((String) body.get("confirmarContrasena"));
+                descripcion = trim((String) body.get("descripcion"));
+                sitioWeb = trim((String) body.get("sitioWeb"));
                 userType = trim((String) body.get("tipo")); // cliente / aerolinea
             } else {
                 nickname = trim(request.getParameter("nickname"));
@@ -80,6 +88,8 @@ public class UsuarioController extends HttpServlet {
                 fechaNacimientoStr = trim(request.getParameter("fechaNacimiento"));
                 contrasena = trim(request.getParameter("contrasena"));
                 confirmarContrasena = trim(request.getParameter("confirmarContrasena"));
+                descripcion = trim(request.getParameter("descripcion"));
+                sitioWeb = trim(request.getParameter("sitioWeb"));
                 userType = trim(request.getParameter("tipo"));
 
                 Part fotoPart = null;
@@ -157,15 +167,19 @@ public class UsuarioController extends HttpServlet {
                     tipoDocEnum = null;
                 }
             }
+            if (tipoDocEnum == null && userType.equalsIgnoreCase("cliente")) {
+                LOG.info("Debe seleccionar un tipo de Documento válido.");
+                throw new IllegalArgumentException("Tipo de Documento inválido");
+            }
 
             // Llamada al sistema: envolver en log y capturar excepción para mostrar detalle en logs
             try {
-                LOG.info("Invocando sistema.altaCliente(...)");
-                sistema.altaCliente(nickname, nombre, correo, apellido, dtFecha, nacionalidad, tipoDocEnum, numeroDoc, fotoBytes, contrasena);
-                LOG.info("sistema.altaCliente() ejecutado sin lanzar excepción.");
-                response.setStatus(HttpServletResponse.SC_CREATED);
-                out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Cliente creado")));
-                return;
+                if ((userType.equalsIgnoreCase("cliente"))) {
+                    sistema.altaCliente(nickname, nombre, correo, apellido, dtFecha, nacionalidad, tipoDocEnum, numeroDoc, fotoBytes, contrasena);
+                }
+                else if (userType.equalsIgnoreCase("aerolinea")) {
+                    sistema.altaAerolinea(nickname, nombre, correo, descripcion, sitioWeb, fotoBytes, contrasena);
+                }
             } catch (Exception ex) {
                 // Log completo para diagnóstico
                 LOG.log(Level.SEVERE, "Error al invocar sistema.altaCliente", ex);

@@ -179,7 +179,10 @@
 
         let result = {};
         try { result = await response.json(); } catch (err) { /* no-json */ }
-
+        if (tipo == "Cliente" && (tipoDocumento != "DNI" || tipoDocumento != "Cédula" || tipoDocumento != "Pasaporte")) {
+          alert(result.mensaje || "Operacion no valida, seleccione un tipo de documento.");
+            return;
+        }
         if (response.ok) {
           alert(result.mensaje || "Operación completada.");
         } else {
