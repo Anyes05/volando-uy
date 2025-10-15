@@ -67,8 +67,6 @@ public class LoginController extends HttpServlet {
             }
 
             // Verificar contraseña
-            // NOTA: DTUsuario debe tener un método getContrasena() o getPassword()
-            // Si no lo tiene, necesitarás agregarlo en el Servidor Central
             boolean passwordValida = false;
             try {
                 String storedPassword = usuarioEncontrado.getContrasena();
@@ -120,9 +118,8 @@ public class LoginController extends HttpServlet {
             out.flush();
         }
     }
-    // ==========================
+
     // LOGOUT
-    // ==========================
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -135,7 +132,7 @@ public class LoginController extends HttpServlet {
                 LOG.info("Sesión cerrada correctamente");
             }
 
-            // Redirigir al inicio o login
+            // Redirigir al inicio
             response.sendRedirect(request.getContextPath() + "/inicio.jsp");
         } else {
             // Si llaman a /login por GET, redirigir al formulario
