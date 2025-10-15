@@ -66,17 +66,15 @@ public class Sistema implements ISistema {
     }
 
     public static boolean validarContrasena(String contrasena) {
-        if (contrasena == null || contrasena.length() < 7) return false;
-        boolean tieneMayuscula = false;
-        boolean tieneNumero = false;
+        if (contrasena == null || contrasena.length() < 6) return false;
 
-        for (char c : contrasena.toCharArray()) {
-            if (Character.isUpperCase(c)) tieneMayuscula = true;
-            if (Character.isDigit(c)) tieneNumero = true;
-        }
+        boolean tieneMayuscula = contrasena.matches(".*[A-Z].*");
+        boolean tieneMinuscula = contrasena.matches(".*[a-z].*");
+        boolean tieneNumero = contrasena.matches(".*\\d.*");
 
-        return tieneMayuscula && tieneNumero;
+        return tieneMayuscula && tieneMinuscula && tieneNumero;
     }
+
 
 
     public static boolean esNombreValido(String nombre) {
@@ -114,7 +112,7 @@ public class Sistema implements ISistema {
         return false;
     }
 
-    private boolean existeCorreo(String correo) {
+    private static boolean existeCorreo(String correo) {
         ClienteServicio clienteServicio = new ClienteServicio();
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
 
