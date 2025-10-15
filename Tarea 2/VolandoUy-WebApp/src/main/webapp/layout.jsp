@@ -34,16 +34,16 @@
   <aside class="sidebar" id="sidenav-1">
     <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
     <a href="inicio.jsp">Inicio</a>
-    <a href="consultaUsuario.jsp">Consulta de Usuario</a>
-    <a href="modificarUsuario.jsp">Modificar Perfil</a>
-    <a href="altaRutaVuelo.jsp">Alta Ruta de Vuelo</a>
-    <a href="consultaRutaVuelo.jsp">Consulta Ruta de Vuelo</a>
-    <a href="altaVuelo.jsp">Alta de Vuelo</a>
-    <a href="consultaVuelo.jsp">Consulta de Vuelos</a>
-    <a href="reserva.jsp">Reservar vuelo</a>
-    <a href="consultaReserva.jsp">Consulta de Reserva</a>
-    <a href="consultaPaquete.jsp">Consulta de Paquetes</a>
-    <a href="compraPaquete.jsp">Compra de Paquetes</a>
+      <a href="consultaUsuario.jsp">Consulta de Usuario</a>
+      <a href="modificarUsuario.jsp">Modificar Perfil</a>
+      <a href="altaRutaVuelo.jsp">Alta Ruta de Vuelo</a>
+      <a href="consultaRutaVuelo.jsp">Consulta Ruta de Vuelo</a>
+      <a href="altaVuelo.jsp">Alta de Vuelo</a>
+      <a href="consultaVuelo.jsp">Consulta de Vuelos</a>
+      <a href="reserva.jsp">Reservar vuelo</a>
+      <a href="consultaReserva.jsp">Consulta de Reserva</a>
+      <a href="consultaPaquete.jsp">Consulta de Paquetes</a>
+      <a href="compraPaquete.jsp">Compra de Paquetes</a>
   </aside>
 
   <!-- Main content -->
@@ -70,20 +70,56 @@
 
       <!-- Header icons -->
       <div class="header-icons">
-        <a href="inicioSesion.jsp" class="login-btn">
-          <i class="fas fa-user"></i>
-          <span class="btn-text">Iniciar sesión</span>
-        </a>
-        <a href="registrarUsuario.jsp" class="signup-btn">
-          <i class="fas fa-user-plus"></i>
-          <span class="btn-text">Registrarse</span>
-        </a>
+        <c:choose>
+          <c:when test="${not empty sessionScope.usuarioLogueado}">
+            <!-- Usuario logueado: mostrar foto y botón de cerrar sesión -->
+            <div class="user-logged-in">
+              <div class="user-avatar-container">
+                <c:choose>
+                  <c:when test="${not empty sessionScope.fotoUsuario}">
+                    <img src="data:image/jpeg;base64,${sessionScope.fotoUsuario}"
+                         alt="${sessionScope.nombreUsuario}"
+                         class="user-avatar-circle"
+                         title="${sessionScope.nombreUsuario}">
+                  </c:when>
+                  <c:otherwise>
+                    <div class="user-avatar-circle user-avatar-default" title="${sessionScope.nombreUsuario}">
+                      <i class="fas fa-user"></i>
+                    </div>
+                  </c:otherwise>
+                </c:choose>
+              </div>
+              <button onclick="cerrarSesion()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="btn-text">Cerrar Sesión</span>
+              </button>
+            </div>
+          </c:when>
+          <c:otherwise>
+            <!-- Usuario visitante: mostrar botones de login y registro -->
+            <a href="inicioSesion.jsp" class="login-btn">
+              <i class="fas fa-user"></i>
+              <span class="btn-text">Iniciar sesión</span>
+            </a>
+            <a href="registrarUsuario.jsp" class="signup-btn">
+              <i class="fas fa-user-plus"></i>
+              <span class="btn-text">Registrarse</span>
+            </a>
+          </c:otherwise>
+        </c:choose>
       </div>
     </header>
 
     <div id="main-content">
       <!-- Contenido específico de cada página -->
-      <jsp:include page="${param.content}" />
+      <c:choose>
+        <c:when test="${not empty param.content}">
+          <jsp:include page="${param.content}" />
+        </c:when>
+        <c:otherwise>
+          <jsp:include page="inicio.jsp" />
+        </c:otherwise>
+      </c:choose>
     </div>
 
     <!-- Beneficios -->
@@ -200,12 +236,10 @@
 
   <!-- Script: sidebar + carrusel (autoplay) -->
   <script>
-    // Elementos
     const sidebar = document.getElementById('sidenav-1');
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
 
-    // Abrir / cerrar sidebar (usa overlay que ya tenías)
     function openSidebar() {
       sidebar.classList.add('active');
       overlay.classList.add('active');
@@ -223,20 +257,26 @@
       else openSidebar();
     }
 
-    // Conecta el toggler (tu botón MDB) con la lógica
     menuBtn.addEventListener('click', (e) => {
       e.preventDefault();
       toggleSidebar();
     });
 
-    // Cerrar con ESC
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && sidebar.classList.contains('active')) closeSidebar();
     });
 
+    function cerrarSesion() {
+      if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+        window.location.href = '${pageContext.request.contextPath}/logout';
+
+      }
+    }
+
     /* ===== Carrusel ===== */
     function initCarousel() {
       const carousel = document.getElementById("carousel");
+
       const prevBtn = document.getElementById("prevBtn");
       const nextBtn = document.getElementById("nextBtn");
 
@@ -258,7 +298,7 @@
 
       function getStep() {
         const card = carousel.querySelector('.offer-card');
-        if (!card) return 235; // 220px + 15px gap
+        if (!card) return 235;
         const gapValue = getComputedStyle(carousel).gap || '15px';
         const gap = parseInt(gapValue, 10) || 15;
         return card.offsetWidth + gap;
@@ -283,7 +323,6 @@
         scrollToIndex(currentIndex);
       }
 
-      // Autoplay
       let autoplayTimer = null;
       const AUTOPLAY_DELAY = 4000;
 
@@ -299,24 +338,20 @@
         }
       }
 
-      // Event listeners para botones
       nextBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Next button clicked');
         stopAutoplay();
         scrollNext();
-        setTimeout(startAutoplay, 3000); // Reinicia después de 3 segundos
+        setTimeout(startAutoplay, 3000);
       });
 
       prevBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Prev button clicked');
         stopAutoplay();
         scrollPrev();
-        setTimeout(startAutoplay, 3000); // Reinicia después de 3 segundos
+        setTimeout(startAutoplay, 3000);
       });
 
-      // Event listeners para pausar/continuar autoplay
       carousel.addEventListener('mouseenter', stopAutoplay);
       carousel.addEventListener('mouseleave', startAutoplay);
       carousel.addEventListener('touchstart', () => { stopAutoplay(); }, {passive:true});
@@ -327,20 +362,15 @@
         setTimeout(startAutoplay, 500);
       });
 
-      // Iniciar autoplay después de un pequeño delay
       setTimeout(startAutoplay, 2000);
       console.log('Carousel initialized successfully');
     }
 
-    // Inicializar carrusel cuando el DOM esté listo
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initCarousel);
     } else {
       initCarousel();
     }
-
-    // El botón de reserva ahora usa onclick directo en el HTML
-
   </script>
 
 </body>
