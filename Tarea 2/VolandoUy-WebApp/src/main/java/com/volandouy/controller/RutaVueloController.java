@@ -19,6 +19,8 @@ import javax.servlet.http.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.DTRutaVuelo;
+import logica.DataTypes.EstadoRutaVuelo;
 import logica.clase.Sistema;
 
 /**
@@ -37,6 +39,64 @@ public class RutaVueloController extends HttpServlet {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Sistema sistema = Sistema.getInstance();
+
+    /**
+     * GET combinado:
+     * - Si pathInfo == null o "/" : devuelve la lista filtrada (no confirmadas) para la aerolínea del session (igual que tu primer doGet).
+     * - Si pathInfo == "/{nombre}" : scaffold que devuelve 404 (igual que tu segundo doGet).
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            String pathInfo = request.getPathInfo(); // / o /{nombre}
+
+            if (pathInfo == null || pathInfo.equals("/")) {
+                // validar sesión si corresponde (opcional)
+                HttpSession session = request.getSession(false);
+                String nickname = null;
+                if (session != null && session.getAttribute("usuarioLogueado") != null) {
+                    nickname = session.getAttribute("usuarioLogueado").toString();
+                }
+
+                // Obtener las rutas filtradas desde la lógica de negocio
+                List<DTRutaVuelo> rutas = new ArrayList<>();
+                try {
+                    rutas = sistema.seleccionarAerolineaRet(nickname);
+                } catch (Exception ex) {
+                    LOG.log(Level.WARNING, "Error al obtener rutas: " + ex.getMessage(), ex);
+                }
+
+                List<Map<String, Object>> outList = new ArrayList<>();
+                for (DTRutaVuelo r : rutas) {
+                    if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+                        outList.add(Map.of(
+                                "nombre", r.getNombre()
+                        ));
+                    }
+                }
+
+                out.print(objectMapper.writeValueAsString(outList));
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
+            } else {
+                String nombre = pathInfo.substring(1);
+                // Mantengo el scaffold que tenías: 404 (reemplazar por llamada real si quieres)
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada (scaffold)", "nombre", nombre)));
+                return;
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error /api/rutas GET", ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno")));
+        } finally {
+            out.flush();
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -146,7 +206,14 @@ public class RutaVueloController extends HttpServlet {
                     return;
                 }
             }
-
+            // ahora, usar los datos del session para detectar si el usuario logueado es una aerolinea, en caso de serlo, permitir la operacion
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("usuarioLogueado") == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "No autenticado")));
+                return;
+            }
+            String nickname = (String) session.getAttribute("usuarioLogueado");
 
 
             // --- Llamada a la lógica (caja negra) ---
@@ -159,7 +226,7 @@ public class RutaVueloController extends HttpServlet {
 
                 // Usamos los métodos que mostraste en tu código original:
                 LOG.info("Invocando sistema.ingresarDatosRuta(...)");
-                sistema.seleccionarAerolinea("latam");
+                sistema.seleccionarAerolinea(nickname);
                 sistema.ingresarDatosRuta(
                         nombre,
                         descripcion,
@@ -192,35 +259,6 @@ public class RutaVueloController extends HttpServlet {
                 return;
             }
 
-        } finally {
-            out.flush();
-        }
-    }
-
-    // Puedes mantener o adaptar doGet según lo necesites
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-
-        try {
-            String pathInfo = request.getPathInfo(); // / o /{nombre}
-            if (pathInfo == null || pathInfo.equals("/")) {
-                // TODO: reemplazar por llamada real a sistema para listar rutas
-                out.print(objectMapper.writeValueAsString(List.of()));
-                return;
-            } else {
-                String nombre = pathInfo.substring(1);
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada (scaffold)")));
-                return;
-            }
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor")));
-            LOG.log(Level.SEVERE, "Error en GET /api/rutas", e);
         } finally {
             out.flush();
         }
