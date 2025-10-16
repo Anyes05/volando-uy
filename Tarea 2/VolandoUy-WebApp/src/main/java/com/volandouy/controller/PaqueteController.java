@@ -1,10 +1,11 @@
 package com.volandouy.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,8 +13,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import logica.clase.Sistema;
+import logica.DataTypes.DTPaqueteVuelos;
+import logica.DataTypes.DTRutaVuelo;
 
 /**
  * Controlador para manejar las operaciones relacionadas con paquetes
@@ -21,19 +27,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebServlet("/api/paquetes/*")
 public class PaqueteController extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private List<Object> paquetes;
+    private static final Logger LOG = Logger.getLogger(PaqueteController.class.getName());
+    private final ObjectMapper objectMapper;
+    private final Sistema sistema = Sistema.getInstance();
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        cargarPaquetes();
+    public PaqueteController() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+        this.objectMapper.configure(SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL, true);
+        this.objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
+        request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         
@@ -42,38 +51,51 @@ public class PaqueteController extends HttpServlet {
         
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                // Devolver todos los paquetes
-                String json = objectMapper.writeValueAsString(paquetes);
-                out.print(json);
-            } else {
-                // Buscar paquete específico por ID
-                String idStr = pathInfo.substring(1); // Remover la barra inicial
-                int id = Integer.parseInt(idStr);
+                // GET /api/paquetes - Listar todos los paquetes
+                LOG.info("GET /api/paquetes - Listando paquetes");
+                try {
+                    List<DTPaqueteVuelos> paquetes = sistema.obtenerPaquetesNoComprados();
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(Map.of("paquetes", paquetes)));
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error al consultar paquetes", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
+                }
+            } else if (pathInfo.startsWith("/")) {
+                // GET /api/paquetes/{nombre} - Obtener paquete específico
+                String nombrePaquete = pathInfo.substring(1);
+                LOG.info("GET /api/paquetes/" + nombrePaquete + " - Consultando paquete específico");
                 
-                Object paquete = paquetes.stream()
-                    .filter(p -> {
-                        try {
-                            java.util.Map<String, Object> paqueteMap = objectMapper.convertValue(p, java.util.Map.class);
-                            return paqueteMap.get("id").equals(id);
-                        } catch (Exception e) {
-                            return false;
-                        }
-                    })
-                    .findFirst()
-                    .orElse(null);
-                
-                if (paquete != null) {
-                    String json = objectMapper.writeValueAsString(paquete);
-                    out.print(json);
-                } else {
+                try {
+                    // Seleccionar el paquete
+                    sistema.seleccionarPaquete(nombrePaquete);
+                    
+                    // Obtener datos del paquete
+                    DTPaqueteVuelos paquete = sistema.consultaPaqueteVuelo();
+                    
+                    // Obtener rutas del paquete
+                    List<DTRutaVuelo> rutas = sistema.consultaPaqueteVueloRutas();
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(Map.of(
+                        "paquete", paquete,
+                        "rutas", rutas
+                    )));
+                } catch (IllegalArgumentException ex) {
+                    LOG.warning("Paquete no encontrado: " + nombrePaquete);
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    out.print("{\"error\": \"Paquete no encontrado\"}");
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Paquete no encontrado: " + ex.getMessage())));
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error al consultar paquete: " + nombrePaquete, ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
                 }
             }
         } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error inesperado en PaqueteController", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"Error interno del servidor\"}");
-            e.printStackTrace();
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor")));
         }
         
         out.flush();
@@ -88,13 +110,10 @@ public class PaqueteController extends HttpServlet {
         
         try {
             // Leer el cuerpo de la petición
-            String body = request.getReader().lines().collect(Collectors.joining());
+            String body = request.getReader().lines().collect(java.util.stream.Collectors.joining());
             
             // Parsear el JSON del nuevo paquete
             Object nuevoPaquete = objectMapper.readValue(body, Object.class);
-            
-            // Agregar el nuevo paquete
-            paquetes.add(nuevoPaquete);
             
             response.setStatus(HttpServletResponse.SC_CREATED);
             PrintWriter out = response.getWriter();
@@ -107,24 +126,6 @@ public class PaqueteController extends HttpServlet {
             out.print("{\"error\": \"Error al procesar la petición\"}");
             out.flush();
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * Carga los paquetes desde el archivo JSON
-     */
-    private void cargarPaquetes() {
-        try {
-            InputStream inputStream = getServletContext().getResourceAsStream("/json/paquetes.json");
-            if (inputStream != null) {
-                paquetes = objectMapper.readValue(inputStream, new TypeReference<List<Object>>() {});
-                inputStream.close();
-            } else {
-                paquetes = new java.util.ArrayList<>();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            paquetes = new java.util.ArrayList<>();
         }
     }
 }

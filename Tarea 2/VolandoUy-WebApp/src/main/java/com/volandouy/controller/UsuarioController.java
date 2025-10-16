@@ -525,7 +525,7 @@ public class UsuarioController extends HttpServlet {
         try {
             if (dtUsuario instanceof DTCliente) {
                 DTCliente cliente = (DTCliente) dtUsuario;
-                datos.put("tipoUsuario", "cliente");
+                datos.put("tipo", "cliente");
                 datos.put("apellido", cliente.getApellido());
                 datos.put("nacionalidad", cliente.getNacionalidad());
                 datos.put("numeroDocumento", cliente.getNumeroDocumento());
@@ -545,13 +545,13 @@ public class UsuarioController extends HttpServlet {
 
             } else if (dtUsuario instanceof DTAerolinea) {
                 DTAerolinea aerolinea = (DTAerolinea) dtUsuario;
-                datos.put("tipoUsuario", "aerolinea");
+                datos.put("tipo", "aerolinea");
                 datos.put("descripcion", aerolinea.getDescripcion());
                 datos.put("sitioWeb", aerolinea.getLinkSitioWeb());
             }
         } catch (Exception e) {
             LOG.warning("Error al extraer datos específicos del usuario: " + e.getMessage());
-            datos.put("tipoUsuario", "desconocido");
+            datos.put("tipo", "desconocido");
         }
 
         return datos;

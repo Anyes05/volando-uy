@@ -69,7 +69,22 @@
         
         <div class="form-row">
           <label for="modificar-cliente-imagen-input">Imagen de perfil:</label>
-          <input type="file" id="modificar-cliente-imagen-input" name="imagen" accept="image/*">
+          <div class="file-upload-container">
+            <input type="file" id="modificar-cliente-imagen-input" name="imagen" accept="image/*" class="file-input">
+            <label for="modificar-cliente-imagen-input" class="file-upload-label">
+              <div class="file-upload-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span class="file-upload-text">Seleccionar imagen</span>
+                <span class="file-upload-hint">PNG, JPG, JPEG hasta 5MB</span>
+              </div>
+            </label>
+            <div class="file-preview" id="file-preview-cliente" style="display: none;">
+              <img id="preview-image-cliente" src="" alt="Vista previa">
+              <button type="button" class="remove-file-btn" onclick="removeFileCliente()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
         </div>
         
         <div class="form-actions">
@@ -109,7 +124,22 @@
         
         <div class="form-row">
           <label for="modificar-aerolinea-imagen-input">Imagen de perfil:</label>
-          <input type="file" id="modificar-aerolinea-imagen-input" name="imagen" accept="image/*">
+          <div class="file-upload-container">
+            <input type="file" id="modificar-aerolinea-imagen-input" name="imagen" accept="image/*" class="file-input">
+            <label for="modificar-aerolinea-imagen-input" class="file-upload-label">
+              <div class="file-upload-content">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span class="file-upload-text">Seleccionar imagen</span>
+                <span class="file-upload-hint">PNG, JPG, JPEG hasta 5MB</span>
+              </div>
+            </label>
+            <div class="file-preview" id="file-preview-aerolinea" style="display: none;">
+              <img id="preview-image-aerolinea" src="" alt="Vista previa">
+              <button type="button" class="remove-file-btn" onclick="removeFileAerolinea()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
         </div>
         
         <div class="form-actions">
@@ -129,6 +159,88 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  // Manejo del input de archivo para Cliente
+  const fileInputCliente = document.getElementById("modificar-cliente-imagen-input");
+  const filePreviewCliente = document.getElementById("file-preview-cliente");
+  const previewImageCliente = document.getElementById("preview-image-cliente");
+
+  if (fileInputCliente && filePreviewCliente && previewImageCliente) {
+    fileInputCliente.addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Validar tipo de archivo
+        if (!file.type.startsWith('image/')) {
+          alert('Por favor selecciona un archivo de imagen válido.');
+          fileInputCliente.value = '';
+          return;
+        }
+        
+        // Validar tamaño (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('El archivo es demasiado grande. Máximo 5MB.');
+          fileInputCliente.value = '';
+          return;
+        }
+
+        // Mostrar vista previa
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImageCliente.src = e.target.result;
+          filePreviewCliente.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Función para remover archivo de cliente
+    window.removeFileCliente = function() {
+      fileInputCliente.value = '';
+      filePreviewCliente.style.display = 'none';
+      previewImageCliente.src = '';
+    };
+  }
+
+  // Manejo del input de archivo para Aerolínea
+  const fileInputAerolinea = document.getElementById("modificar-aerolinea-imagen-input");
+  const filePreviewAerolinea = document.getElementById("file-preview-aerolinea");
+  const previewImageAerolinea = document.getElementById("preview-image-aerolinea");
+
+  if (fileInputAerolinea && filePreviewAerolinea && previewImageAerolinea) {
+    fileInputAerolinea.addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Validar tipo de archivo
+        if (!file.type.startsWith('image/')) {
+          alert('Por favor selecciona un archivo de imagen válido.');
+          fileInputAerolinea.value = '';
+          return;
+        }
+        
+        // Validar tamaño (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('El archivo es demasiado grande. Máximo 5MB.');
+          fileInputAerolinea.value = '';
+          return;
+        }
+
+        // Mostrar vista previa
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImageAerolinea.src = e.target.result;
+          filePreviewAerolinea.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Función para remover archivo de aerolínea
+    window.removeFileAerolinea = function() {
+      fileInputAerolinea.value = '';
+      filePreviewAerolinea.style.display = 'none';
+      previewImageAerolinea.src = '';
+    };
+  }
+
   // Solo ejecutar si el usuario está logueado
   const usuarioLogueado = '<c:out value="${sessionScope.usuarioLogueado}" default="" />';
   if (!usuarioLogueado || usuarioLogueado === '') {

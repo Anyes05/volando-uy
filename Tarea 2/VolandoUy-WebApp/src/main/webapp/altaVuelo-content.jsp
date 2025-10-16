@@ -55,7 +55,22 @@
 
       <div class="form-group full-width">
         <label for="foto">Imagen de portada</label>
-        <input type="file" id="foto" name="foto" accept="image/*">
+        <div class="file-upload-container">
+          <input type="file" id="foto" name="foto" accept="image/*" class="file-input">
+          <label for="foto" class="file-upload-label">
+            <div class="file-upload-content">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span class="file-upload-text">Seleccionar imagen</span>
+              <span class="file-upload-hint">PNG, JPG, JPEG hasta 5MB</span>
+            </div>
+          </label>
+          <div class="file-preview" id="file-preview" style="display: none;">
+            <img id="preview-image" src="" alt="Vista previa">
+            <button type="button" class="remove-file-btn" onclick="removeFile()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div id="formMessage" class="form-message full-width" style="display:none;color:#c00;"></div>
@@ -124,6 +139,48 @@
   })();
 </script>
 
+<script>
+  // Manejo del input de archivo para Alta Vuelo
+  const fileInput = document.getElementById("foto");
+  const filePreview = document.getElementById("file-preview");
+  const previewImage = document.getElementById("preview-image");
+
+  if (fileInput && filePreview && previewImage) {
+    fileInput.addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Validar tipo de archivo
+        if (!file.type.startsWith('image/')) {
+          alert('Por favor selecciona un archivo de imagen válido.');
+          fileInput.value = '';
+          return;
+        }
+        
+        // Validar tamaño (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('El archivo es demasiado grande. Máximo 5MB.');
+          fileInput.value = '';
+          return;
+        }
+
+        // Mostrar vista previa
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          filePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Función para remover archivo
+    window.removeFile = function() {
+      fileInput.value = '';
+      filePreview.style.display = 'none';
+      previewImage.src = '';
+    };
+  }
+</script>
 
 <script>
   document.getElementById("fechaAlta").valueAsDate = new Date();
