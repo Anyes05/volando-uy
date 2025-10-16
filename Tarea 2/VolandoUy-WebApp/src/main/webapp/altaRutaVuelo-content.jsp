@@ -75,8 +75,6 @@
         <select id="categorias" name="categorias" multiple>
           <option value="Internacional">Internacional</option>
           <option value="Regional">Regional</option>
-          <option value="Low Cost">Low Cost</option>
-          <option value="Premium">Premium</option>
         </select>
         <small class="hint">Puede seleccionar varias</small>
       </div>
@@ -116,47 +114,62 @@
     e.preventDefault();
     msgDiv.style.display = "none";
 
-    // validación básica en cliente (el servidor también valida)
-    const nombre = form.querySelector("[name='nombre']").value.trim();
-    const descripcion = form.querySelector("[name='descripcion']").value.trim();
-    const hora = form.querySelector("[name='horaSalida']").value;
-    const costoTurista = form.querySelector("[name='costoTurista']").value;
-    const costoEjecutivo = form.querySelector("[name='costoEjecutivo']").value;
-    const ciudadOrigen = form.querySelector("[name='ciudadOrigen']").value;
-    const ciudadDestino = form.querySelector("[name='ciudadDestino']").value;
+    // -- OBLIGATORIO: actualizar hidden con el texto (nombre) de la opción seleccionada --
+    const select = form.querySelector("[name='rutasvuelo']");
+    const hiddenNombre = document.getElementById('rutasvueloNombre');
+    if (select) {
+      const selectedOption = select.options[select.selectedIndex];
+      // preferimos data-nombre si existe, sino textContent
+      const nombreDeRuta = selectedOption ? (selectedOption.dataset.nombre || selectedOption.textContent || "") : "";
+      if (hiddenNombre) hiddenNombre.value = nombreDeRuta;
+    }
 
-    if (!nombre || !descripcion || !hora || !costoTurista || !costoEjecutivo || !ciudadOrigen || !ciudadDestino) {
-      showMessage("Complete los campos obligatorios");
+    // Ahora creamos formData (incluye el hidden con rutasvueloNombre)
+    const formData = new FormData(form);
+
+    // ... el resto de tu validación y envío sigue igual
+    const nombre = form.querySelector("[name='nombre']").value.trim();
+    const duracion = form.querySelector("[name='duracion']").value.trim();
+    const fecha = form.querySelector("[name='fechaAlta']").value;
+    const rutaSeleccionada = form.querySelector("[name='rutasvuelo']").value;
+    const horaSalida = form.querySelector("[name='horaSalida']").value;
+    const cantidadTurista = form.querySelector("[name='cantidadAsientosTuristas']").value;
+    const cantidadEjecutivo = form.querySelector("[name='cantidadAsientosEjecutivo']").value;
+
+    const duracionRegex = /^\d{1,2}:\d{2}$/;
+    if (!nombre || !duracion || !duracionRegex.test(duracion) || !fecha || !cantidadTurista || !cantidadEjecutivo || !rutaSeleccionada) {
+      showMessage("Complete los campos obligatorios y use formato de duración HH:MM");
       return;
     }
 
-    // construir FormData (maneja file y campos múltiples)
-    const formData = new FormData(form);
-
-    // Para select multiple: ya se agregan automáticamente los valores seleccionados con formData
-    // Enviar petición
     submitBtn.disabled = true;
     const originalText = submitBtn.textContent;
     submitBtn.textContent = "Guardando...";
 
     try {
-            // NO establecer header Content-Type manualmente para FormData
-            const response = await fetch("<%= request.getContextPath() %>/api/rutas", {
-              method: "POST",
-              body: formData,
-              credentials: "include"
-            });
+      const response = await fetch("<%= request.getContextPath() %>/api/vuelos", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
 
-            let result = {};
-            try { result = await response.json(); } catch (err) { /* no-json */ }
+      let result = {};
+      try { result = await response.json(); } catch (err) {}
 
-            if (response.ok) {
-              alert(result.mensaje || "Operación de Ruta completada.");
-            } else {
-              alert(result.error || ("Error de ruta: " + response.status));
-            }
-          } catch (error) {
-            alert("Error al registrar ruta: " + error.message);
-          }
+      if (response.ok) {
+        alert(result.mensaje || "Vuelo creado exitosamente.");
+        form.reset();
+        document.getElementById("fechaAlta").valueAsDate = new Date();
+        msgDiv.style.display = "none";
+      } else {
+        alert(result.error || ("Error al crear vuelo: " + response.status));
+      }
+    } catch (error) {
+      alert("Error al crear vuelo: " + (error.message || error));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
   });
+
 </script>

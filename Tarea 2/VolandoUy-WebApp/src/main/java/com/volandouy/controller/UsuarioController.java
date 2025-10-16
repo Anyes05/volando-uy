@@ -1,4 +1,3 @@
-
 package com.volandouy.controller;
 
 import logica.DataTypes.DTFecha;
@@ -69,7 +68,7 @@ public class UsuarioController extends HttpServlet {
 
         try {
             String pathInfo = request.getPathInfo();
-            
+
             if (pathInfo == null || pathInfo.equals("/")) {
                 // GET /api/usuarios - Listar todos los usuarios
                 try {
@@ -91,23 +90,23 @@ public class UsuarioController extends HttpServlet {
                 LOG.info("GET /api/usuarios/perfil - Iniciando proceso");
                 HttpSession session = request.getSession(false);
                 LOG.info("Session obtenida: " + (session != null ? "existe" : "null"));
-                
+
                 if (session == null || session.getAttribute("usuarioLogueado") == null) {
-                    LOG.warning("Sesión no válida - session: " + (session != null ? "existe" : "null") + 
-                               ", usuarioLogueado: " + (session != null ? session.getAttribute("usuarioLogueado") : "N/A"));
+                    LOG.warning("Sesión no válida - session: " + (session != null ? "existe" : "null") +
+                            ", usuarioLogueado: " + (session != null ? session.getAttribute("usuarioLogueado") : "N/A"));
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     out.print(objectMapper.writeValueAsString(Map.of("error", "Sesión no válida")));
                     return;
                 }
-                
+
                 String nickname = (String) session.getAttribute("usuarioLogueado");
                 LOG.info("Nickname obtenido de sesión: " + nickname);
-                
+
                 try {
                     LOG.info("Llamando a sistema.mostrarDatosUsuarioMod(" + nickname + ")");
                     var datosUsuario = sistema.mostrarDatosUsuarioMod(nickname);
                     LOG.info("Datos usuario obtenidos: " + (datosUsuario != null ? "existe" : "null"));
-                    
+
                     if (datosUsuario != null) {
                         // Crear Map con los datos necesarios para evitar referencias circulares
                         Map<String, Object> usuarioData = extraerDatosUsuario(datosUsuario);
@@ -163,7 +162,7 @@ public class UsuarioController extends HttpServlet {
         try {
             String pathInfo = request.getPathInfo();
             String nickname = null;
-            
+
             if (pathInfo != null && pathInfo.equals("/perfil")) {
                 // PUT /api/usuarios/perfil - Modificar perfil del usuario logueado
                 HttpSession session = request.getSession(false);
@@ -292,7 +291,7 @@ public class UsuarioController extends HttpServlet {
                 }
 
                 sistema.modificarDatosCliente(nombre, apellido, dtFecha, nacionalidad, tipoDocEnum, numeroDoc);
-                
+
                 // Actualizar foto si se proporcionó
                 if (fotoBytes != null && fotoBytes.length > 0) {
                     ClienteServicio clienteServicio = new ClienteServicio();
@@ -303,11 +302,11 @@ public class UsuarioController extends HttpServlet {
                         LOG.info("Foto actualizada para cliente: " + nickname);
                     }
                 }
-                
+
             } else {
                 // Es una aerolínea
                 sistema.modificarDatosAerolinea(nombre, descripcion, sitioWeb);
-                
+
                 // Actualizar foto si se proporcionó
                 if (fotoBytes != null && fotoBytes.length > 0) {
                     AerolineaServicio aerolineaServicio = new AerolineaServicio();
@@ -332,6 +331,8 @@ public class UsuarioController extends HttpServlet {
         }
     }
 
+
+    // Crear nuevo usuario (cliente o aerolínea)
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -496,17 +497,17 @@ public class UsuarioController extends HttpServlet {
 
     private static String trim(String s) { return s == null ? null : s.trim(); }
     private static boolean isEmpty(String s) { return s == null || s.isBlank(); }
-    
+
     private Map<String, Object> extraerDatosUsuario(DTUsuario dtUsuario) {
         if (dtUsuario == null) return null;
-        
+
         Map<String, Object> datos = new java.util.HashMap<>();
-        
+
         // Datos básicos de usuario
         datos.put("nickname", dtUsuario.getNickname());
         datos.put("nombre", dtUsuario.getNombre());
         datos.put("correo", dtUsuario.getCorreo());
-        
+
         // Convertir foto a base64 si existe
         if (dtUsuario.getFoto() != null) {
             try {
@@ -519,20 +520,20 @@ public class UsuarioController extends HttpServlet {
         } else {
             datos.put("foto", null);
         }
-        
+
         // Verificar tipo de usuario y extraer datos específicos
         try {
             if (dtUsuario instanceof DTCliente) {
                 DTCliente cliente = (DTCliente) dtUsuario;
-                datos.put("tipo", "cliente");
+                datos.put("tipoUsuario", "cliente");
                 datos.put("apellido", cliente.getApellido());
                 datos.put("nacionalidad", cliente.getNacionalidad());
                 datos.put("numeroDocumento", cliente.getNumeroDocumento());
-                
+
                 if (cliente.getTipoDocumento() != null) {
                     datos.put("tipoDocumento", cliente.getTipoDocumento().toString());
                 }
-                
+
                 if (cliente.getFechaNacimiento() != null) {
                     DTFecha fecha = cliente.getFechaNacimiento();
                     Map<String, Integer> fechaMap = new java.util.HashMap<>();
@@ -541,18 +542,18 @@ public class UsuarioController extends HttpServlet {
                     fechaMap.put("ano", fecha.getAno());
                     datos.put("fechaNacimiento", fechaMap);
                 }
-                
+
             } else if (dtUsuario instanceof DTAerolinea) {
                 DTAerolinea aerolinea = (DTAerolinea) dtUsuario;
-                datos.put("tipo", "aerolinea");
+                datos.put("tipoUsuario", "aerolinea");
                 datos.put("descripcion", aerolinea.getDescripcion());
                 datos.put("sitioWeb", aerolinea.getLinkSitioWeb());
             }
         } catch (Exception e) {
             LOG.warning("Error al extraer datos específicos del usuario: " + e.getMessage());
-            datos.put("tipo", "desconocido");
+            datos.put("tipoUsuario", "desconocido");
         }
-        
+
         return datos;
     }
 }

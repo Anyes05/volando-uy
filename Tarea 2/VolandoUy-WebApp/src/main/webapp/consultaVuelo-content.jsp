@@ -5,12 +5,12 @@
   <div class="form-card-pro">
     <h2>Consulta de Vuelo</h2>
 
-    <!-- Controles: seleccionar aerolínea y mostrar rutas -->
+    <!-- mostrar rutas -->
     <div class="controls-grid">
       <div class="form-group">
-        <label for="selectAerolinea">Seleccionar aerolínea</label>
-        <select id="selectAerolinea">
-          <option value="">-- Elegir aerolínea --</option>
+        <label for="selectRuta">Seleccionar Ruta de Vuelo</label>
+        <select id="selectRuta">
+          <option value=""> Elija la ruta </option>
         </select>
       </div>
 
