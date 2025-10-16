@@ -373,6 +373,42 @@
     }
   </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Si el servidor tiene usuario en sesión, inyectar esos datos en sessionStorage
+  <%-- Si hay usuario en sesión, se escriben los campos; si no, se limpian --%>
+  <c:choose>
+    <c:when test="${not empty sessionScope.usuarioLogueado}">
+      (function(){
+        try {
+          sessionStorage.setItem('usuarioLogueado', '<c:out value="${sessionScope.usuarioLogueado}" />');
+          sessionStorage.setItem('nombreUsuario', '<c:out value="${sessionScope.nombreUsuario}" />');
+          sessionStorage.setItem('tipoUsuario', '<c:out value="${sessionScope.tipoUsuario}" />');
+          // si guardas la foto en base64 en sesión, la ponemos también
+          <c:if test="${not empty sessionScope.fotoUsuario}">
+            sessionStorage.setItem('fotoUsuario', 'data:image/jpeg;base64,<c:out value="${sessionScope.fotoUsuario}" />');
+          </c:if>
+        } catch(e) {
+          console.warn('No se pudo setear sessionStorage desde sesión JSP:', e);
+        }
+      })();
+    </c:when>
+    <c:otherwise>
+      (function(){
+        try {
+          sessionStorage.removeItem('usuarioLogueado');
+          sessionStorage.removeItem('nombreUsuario');
+          sessionStorage.removeItem('tipoUsuario');
+          sessionStorage.removeItem('fotoUsuario');
+        } catch(e) {
+          /* ignore */
+        }
+      })();
+    </c:otherwise>
+  </c:choose>
+});
+</script>
+
 </body>
 
 </html>
