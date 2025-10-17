@@ -95,6 +95,8 @@ public class AeropuertoServicio {
 
                     // Crear el aeropuerto
                     Aeropuerto aeropuerto = new Aeropuerto(nombreAeropuerto, ciudad);
+                    // Agregar el aeropuerto a la lista de aeropuertos de la ciudad
+                    ciudad.agregarAeropuerto(aeropuerto);
                     aeropuertoDAO.guardar(aeropuerto);
                 }
             }
