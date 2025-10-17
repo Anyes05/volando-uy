@@ -16,6 +16,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import logica.DataTypes.DTFecha;
@@ -52,7 +53,8 @@ public class RutaVueloController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            String pathInfo = request.getPathInfo(); // / o /{nombre}
+            String pathInfo = request.getPathInfo();
+            String nicknameParam = request.getParameter("nick");
 
             if (pathInfo == null || pathInfo.equals("/")) {
                 // validar sesión si corresponde (opcional)
@@ -62,37 +64,41 @@ public class RutaVueloController extends HttpServlet {
                     nickname = session.getAttribute("usuarioLogueado").toString();
                 }
 
-                // Obtener las rutas filtradas desde la lógica de negocio
-                List<DTRutaVuelo> rutas = new ArrayList<>();
-                try {
-                    rutas = sistema.seleccionarAerolineaRet(nickname);
-                } catch (Exception ex) {
-                    LOG.log(Level.WARNING, "Error al obtener rutas: " + ex.getMessage(), ex);
-                }
+                if (pathInfo == null || pathInfo.equals("/")) {
+                    nickname = nicknameParam;
 
-                List<Map<String, Object>> outList = new ArrayList<>();
-                for (DTRutaVuelo r : rutas) {
-                    if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
-                        outList.add(Map.of(
-                                "nombre", r.getNombre()
-                        ));
+                    if (nickname == null || nickname.isBlank()) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Debe indicar una aerolínea")));
+                        return;
+                    }
+
+                    List<DTRutaVuelo> rutas;
+                    try {
+                        rutas = sistema.seleccionarAerolineaRet(nickname);
+                    } catch (Exception ex) {
+                        LOG.log(Level.SEVERE, "Error obteniendo rutas", ex);
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Error obteniendo rutas", "detail", ex.getMessage())));
+                        return;
+                    }
+
+                    List<Map<String, Object>> outList = new ArrayList<>();
+                    for (DTRutaVuelo r : rutas) {
+                        if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+                            outList.add(Map.of("nombre", r.getNombre()));
+                        }
+                    }
+
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(outList));
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    try (PrintWriter errOut = response.getWriter()) {
+                        errOut.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada")));
                     }
                 }
-
-                out.print(objectMapper.writeValueAsString(outList));
-                response.setStatus(HttpServletResponse.SC_OK);
-                return;
-            } else {
-                String nombre = pathInfo.substring(1);
-                // Mantengo el scaffold que tenías: 404 (reemplazar por llamada real si quieres)
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada (scaffold)", "nombre", nombre)));
-                return;
             }
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Error /api/rutas GET", ex);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno")));
         } finally {
             out.flush();
         }
@@ -120,7 +126,6 @@ public class RutaVueloController extends HttpServlet {
             String nombre = trim(request.getParameter("nombre"));
             String descripcionCorta = trim(request.getParameter("descripcionCorta"));
             String descripcion = trim(request.getParameter("descripcion"));
-            // tu input tiene name="horaSalida"
             String horaSalida = trim(request.getParameter("horaSalida"));
             String fechaAltaStr = trim(request.getParameter("fechaAlta"));
 
