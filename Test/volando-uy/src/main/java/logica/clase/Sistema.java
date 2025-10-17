@@ -66,15 +66,17 @@ public class Sistema implements ISistema {
     }
 
     public static boolean validarContrasena(String contrasena) {
-        if (contrasena == null || contrasena.length() < 6) return false;
+        if (contrasena == null || contrasena.length() < 7) return false;
+        boolean tieneMayuscula = false;
+        boolean tieneNumero = false;
 
-        boolean tieneMayuscula = contrasena.matches(".*[A-Z].*");
-        boolean tieneMinuscula = contrasena.matches(".*[a-z].*");
-        boolean tieneNumero = contrasena.matches(".*\\d.*");
+        for (char c : contrasena.toCharArray()) {
+            if (Character.isUpperCase(c)) tieneMayuscula = true;
+            if (Character.isDigit(c)) tieneNumero = true;
+        }
 
-        return tieneMayuscula && tieneMinuscula && tieneNumero;
+        return tieneMayuscula && tieneNumero;
     }
-
 
 
     public static boolean esNombreValido(String nombre) {
@@ -112,7 +114,7 @@ public class Sistema implements ISistema {
         return false;
     }
 
-    private static boolean existeCorreo(String correo) {
+    private boolean existeCorreo(String correo) {
         ClienteServicio clienteServicio = new ClienteServicio();
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
 
@@ -185,8 +187,8 @@ public class Sistema implements ISistema {
         if (existeCorreo(correo)) {
             throw new IllegalArgumentException("El correo electrónico ya existe.");
         }
-        if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(correo) || !esNombreValido(descripcion)) {
-            throw new IllegalArgumentException("Nickname, nombre, correo o descripcion han sido ingresados incorrectamente, muy cortos o usan caracteres especiales");
+        if (!esNombreValido(nickname) || !esNombreValido(nombre) || !esNombreValido(descripcion)) {
+            throw new IllegalArgumentException("Nickname, nombre o descripcion han sido ingresados incorrectamente, muy cortos o usan caracteres especiales");
         }
 
         if (foto == null) {
@@ -1253,7 +1255,7 @@ public class Sistema implements ISistema {
         if (rutaVueloSeleccionada == null) {
             throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
         }
-        if (rutaVueloSeleccionada.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+        if (rutaVueloSeleccionada.getEstado() != EstadoRutaVuelo.CONFIRMADA) {
             throw new IllegalStateException("Esta ruta de vuelo no esta disponible");
         }
         if (paqueteSeleccionado.isComprado()) {
