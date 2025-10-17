@@ -85,15 +85,25 @@ function mostrarPaquetes(lista) {
 
     // Convertir imagen de byte array a base64 si existe
     let imagenSrc = '';
+    console.log('Procesando imagen para paquete:', p.nombre, 'Foto length:', p.foto ? p.foto.length : 'null');
+    
     if (p.foto && p.foto.length > 0) {
       try {
-        const base64 = btoa(String.fromCharCode(...p.foto));
-        imagenSrc = `data:image/jpeg;base64,${base64}`;
+        // Verificar si es un array de bytes válido
+        if (Array.isArray(p.foto) || p.foto instanceof Uint8Array) {
+          const base64 = btoa(String.fromCharCode(...p.foto));
+          imagenSrc = `data:image/jpeg;base64,${base64}`;
+          console.log('Imagen convertida exitosamente para:', p.nombre);
+        } else {
+          console.warn('Formato de imagen no válido para:', p.nombre);
+          imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+        }
       } catch (e) {
-        console.warn('Error convirtiendo imagen:', e);
+        console.warn('Error convirtiendo imagen para', p.nombre, ':', e);
         imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
       }
     } else {
+      console.log('No hay imagen para paquete:', p.nombre);
       imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
     }
 
@@ -150,15 +160,25 @@ function mostrarDetalleEnInterfaz(paquete) {
 
   // Convertir imagen de byte array a base64 si existe
   let imagenSrc = '';
+  console.log('Procesando imagen para detalle del paquete:', paquete.nombre, 'Foto length:', paquete.foto ? paquete.foto.length : 'null');
+  
   if (paquete.foto && paquete.foto.length > 0) {
     try {
-      const base64 = btoa(String.fromCharCode(...paquete.foto));
-      imagenSrc = `data:image/jpeg;base64,${base64}`;
+      // Verificar si es un array de bytes válido
+      if (Array.isArray(paquete.foto) || paquete.foto instanceof Uint8Array) {
+        const base64 = btoa(String.fromCharCode(...paquete.foto));
+        imagenSrc = `data:image/jpeg;base64,${base64}`;
+        console.log('Imagen convertida exitosamente para detalle:', paquete.nombre);
+      } else {
+        console.warn('Formato de imagen no válido para detalle:', paquete.nombre);
+        imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+      }
     } catch (e) {
-      console.warn('Error convirtiendo imagen:', e);
+      console.warn('Error convirtiendo imagen para detalle', paquete.nombre, ':', e);
       imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
     }
   } else {
+    console.log('No hay imagen para detalle del paquete:', paquete.nombre);
     imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
   }
 
@@ -185,6 +205,8 @@ function mostrarDetalleEnInterfaz(paquete) {
         <p><strong>Origen:</strong> ${ruta.ciudadOrigen || 'N/A'}</p>
         <p><strong>Destino:</strong> ${ruta.ciudadDestino || 'N/A'}</p>
         <p><strong>Descripción:</strong> ${ruta.descripcion || 'Sin descripción'}</p>
+        <p><strong>Cantidad:</strong> ${ruta.cantidad || 0}</p>
+        <p><strong>Tipo de asiento:</strong> ${ruta.tipoAsiento || 'No especificado'}</p>
       `;
       cont.appendChild(item);
     });
