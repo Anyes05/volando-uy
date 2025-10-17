@@ -1255,7 +1255,7 @@ public class Sistema implements ISistema {
         if (rutaVueloSeleccionada == null) {
             throw new IllegalArgumentException("La ruta seleccionada no puede ser nula.");
         }
-        if (rutaVueloSeleccionada.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+        if (rutaVueloSeleccionada.getEstado() != EstadoRutaVuelo.CONFIRMADA) {
             throw new IllegalStateException("Esta ruta de vuelo no esta disponible");
         }
         if (paqueteSeleccionado.isComprado()) {

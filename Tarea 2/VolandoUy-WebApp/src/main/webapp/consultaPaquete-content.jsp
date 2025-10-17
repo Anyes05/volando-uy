@@ -4,7 +4,7 @@
 <div class="contenido-principal">
   <section class="search-box">
     <div class="search-header">
-      <h2><i class="fas fa-box-open"></i> Consulta de Paquetes</h2>
+      <h2><i class="fas fa-plane"></i> Consulta de Paquetes</h2>
       <p class="descripcion-consulta">Explora nuestros paquetes de vuelos disponibles y descubre las mejores ofertas para tu próximo viaje.</p>
     </div>
     
@@ -50,3 +50,5 @@
   <h3>Rutas incluidas</h3>
   <div id="paquete-cantidades" class="rutas-grid"></div>
 </section>
+
+<script src="static/js/consultaPaquete.js"></script>
