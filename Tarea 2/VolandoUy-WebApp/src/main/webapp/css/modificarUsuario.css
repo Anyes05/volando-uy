@@ -277,7 +277,8 @@
 }
 
 .form-row input,
-.form-row textarea {
+.form-row textarea,
+.form-row select {
   padding: 10px;
   border: 1px solid #2298ca;
   border-radius: 8px;
@@ -287,7 +288,8 @@
 }
 
 .form-row input:focus,
-.form-row textarea:focus {
+.form-row textarea:focus,
+.form-row select:focus {
   outline: none;
   border-color: #01aaf5;
   box-shadow: 0 0 0 2px rgba(1, 170, 245, 0.2);
