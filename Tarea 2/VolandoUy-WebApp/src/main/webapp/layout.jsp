@@ -77,13 +77,13 @@
               <div class="user-avatar-container">
                 <c:choose>
                   <c:when test="${not empty sessionScope.fotoUsuario}">
-                    <img src="data:image/jpeg;base64,${sessionScope.fotoUsuario}"
-                         alt="${sessionScope.nombreUsuario}"
+                    <img src="data:image/jpeg;base64,<c:out value="${sessionScope.fotoUsuario}" escapeXml="true" />"
+                         alt="<c:out value="${sessionScope.nombreUsuario}" escapeXml="true" />"
                          class="user-avatar-circle"
-                         title="${sessionScope.nombreUsuario}">
+                         title="<c:out value="${sessionScope.nombreUsuario}" escapeXml="true" />">
                   </c:when>
                   <c:otherwise>
-                    <div class="user-avatar-circle user-avatar-default" title="${sessionScope.nombreUsuario}">
+                    <div class="user-avatar-circle user-avatar-default" title="<c:out value="${sessionScope.nombreUsuario}" escapeXml="true" />">
                       <i class="fas fa-user"></i>
                     </div>
                   </c:otherwise>
@@ -114,7 +114,8 @@
       <!-- Contenido específico de cada página -->
       <c:choose>
         <c:when test="${not empty param.content}">
-          <jsp:include page="${param.content}" />
+          <c:set var="contentPage" value="${param.content}" />
+          <jsp:include page="${contentPage}" />
         </c:when>
         <c:otherwise>
           <jsp:include page="inicio.jsp" />
@@ -381,12 +382,12 @@ document.addEventListener('DOMContentLoaded', function() {
     <c:when test="${not empty sessionScope.usuarioLogueado}">
       (function(){
         try {
-          sessionStorage.setItem('usuarioLogueado', '<c:out value="${sessionScope.usuarioLogueado}" />');
-          sessionStorage.setItem('nombreUsuario', '<c:out value="${sessionScope.nombreUsuario}" />');
-          sessionStorage.setItem('tipoUsuario', '<c:out value="${sessionScope.tipoUsuario}" />');
+          sessionStorage.setItem('usuarioLogueado', '<c:out value="${sessionScope.usuarioLogueado}" escapeXml="true" />');
+          sessionStorage.setItem('nombreUsuario', '<c:out value="${sessionScope.nombreUsuario}" escapeXml="true" />');
+          sessionStorage.setItem('tipoUsuario', '<c:out value="${sessionScope.tipoUsuario}" escapeXml="true" />');
           // si guardas la foto en base64 en sesión, la ponemos también
           <c:if test="${not empty sessionScope.fotoUsuario}">
-            sessionStorage.setItem('fotoUsuario', 'data:image/jpeg;base64,<c:out value="${sessionScope.fotoUsuario}" />');
+            sessionStorage.setItem('fotoUsuario', 'data:image/jpeg;base64,<c:out value="${sessionScope.fotoUsuario}" escapeXml="true" />');
           </c:if>
         } catch(e) {
           console.warn('No se pudo setear sessionStorage desde sesión JSP:', e);

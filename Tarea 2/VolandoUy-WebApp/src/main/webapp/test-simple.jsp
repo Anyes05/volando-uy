@@ -1,57 +1,48 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Simple - VolandoUY</title>
-    <link rel="stylesheet" href="static/css/style.css">
-    <style>
-        .test-info {
-            background: #01AAF5;
-            color: white;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 8px;
-        }
-        .test-links {
-            background: #2B3033;
-            color: white;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 8px;
-        }
-        .test-links a {
-            color: #01AAF5;
-            text-decoration: none;
-            margin-right: 15px;
-        }
-        .test-links a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>Test Simple</title>
 </head>
 <body>
-    <div class="test-info">
-        <h1>Test Simple de CSS</h1>
-        <p>Si ves este texto con fondo azul (#01AAF5), el CSS inline está funcionando.</p>
-        <p>Si el fondo de la página es gris oscuro (#2B3033), el CSS externo está cargando.</p>
-        <p><strong>Context Path:</strong> ${pageContext.request.contextPath}</p>
-    </div>
+    <h1>Test Simple - Servidor Funcionando</h1>
+    <p>Si puedes ver esta página, el servidor está funcionando correctamente.</p>
+    <p>Fecha y hora: <%= new java.util.Date() %></p>
     
-    <div class="test-links">
-        <h2>Enlaces de Prueba</h2>
-        <p><a href="static/css/style.css" target="_blank">Ver CSS directamente</a></p>
-        <p><a href="debug-css.jsp">Debug CSS</a></p>
-        <p><a href="index.jsp">Página Principal</a></p>
-        <p><a href="consultaUsuario.jsp">Consulta Usuario</a></p>
-    </div>
+    <h2>Probar APIs:</h2>
+    <button onclick="testAerolineas()">Probar API Aerolíneas</button>
+    <button onclick="testRutas()">Probar API Rutas</button>
     
-    <div class="test-info">
-        <h2>Instrucciones</h2>
-        <p>1. Verifica que el fondo de la página sea gris oscuro</p>
-        <p>2. Haz clic en "Ver CSS directamente" para verificar que el archivo existe</p>
-        <p>3. Si el CSS no carga, revisa la consola del navegador (F12)</p>
-    </div>
+    <div id="resultado"></div>
+    
+    <script>
+    function testAerolineas() {
+        fetch('<%= request.getContextPath() %>/api/aerolineas')
+            .then(response => {
+                console.log('Status:', response.status);
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById('resultado').innerHTML = '<h3>Resultado Aerolíneas:</h3><pre>' + data + '</pre>';
+            })
+            .catch(error => {
+                document.getElementById('resultado').innerHTML = '<h3>Error Aerolíneas:</h3><pre>' + error + '</pre>';
+            });
+    }
+    
+    function testRutas() {
+        fetch('<%= request.getContextPath() %>/api/rutas')
+            .then(response => {
+                console.log('Status:', response.status);
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById('resultado').innerHTML = '<h3>Resultado Rutas:</h3><pre>' + data + '</pre>';
+            })
+            .catch(error => {
+                document.getElementById('resultado').innerHTML = '<h3>Error Rutas:</h3><pre>' + error + '</pre>';
+            });
+    }
+    </script>
 </body>
 </html>
