@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -54,78 +53,38 @@ public class RutaVueloController extends HttpServlet {
 
         try {
             String pathInfo = request.getPathInfo(); // / o /{nombre}
-            String nicknameParam = request.getParameter("aerolinea"); // <-- NUEVO
 
             if (pathInfo == null || pathInfo.equals("/")) {
+                // validar sesión si corresponde (opcional)
+                HttpSession session = request.getSession(false);
                 String nickname = null;
-
-                if (nicknameParam != null && !nicknameParam.isBlank()) {
-                    nickname = nicknameParam.trim();
-                } else {
-                    HttpSession session = request.getSession(false);
-                    if (session != null && session.getAttribute("usuarioLogueado") != null) {
-                        nickname = session.getAttribute("usuarioLogueado").toString();
-                    }
+                if (session != null && session.getAttribute("usuarioLogueado") != null) {
+                    nickname = session.getAttribute("usuarioLogueado").toString();
                 }
 
                 // Obtener las rutas filtradas desde la lógica de negocio
                 List<DTRutaVuelo> rutas = new ArrayList<>();
                 try {
                     rutas = sistema.seleccionarAerolineaRet(nickname);
-                    LOG.info("Rutas obtenidas exitosamente para aerolínea " + nickname + ": " + rutas.size());
                 } catch (Exception ex) {
-                    LOG.log(Level.SEVERE, "Error al obtener rutas para aerolínea " + nickname + ": " + ex.getMessage(), ex);
-                    // En caso de error, devolver lista vacía en lugar de fallar
-                    rutas = new ArrayList<>();
+                    LOG.log(Level.WARNING, "Error al obtener rutas: " + ex.getMessage(), ex);
                 }
 
                 List<Map<String, Object>> outList = new ArrayList<>();
                 for (DTRutaVuelo r : rutas) {
                     if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
-                        Map<String, Object> rutaMap = new HashMap<>();
-                        rutaMap.put("nombre", r.getNombre());
-                        rutaMap.put("descripcion", r.getDescripcion());
-                        rutaMap.put("fechaAlta", r.getFechaAlta() != null ? r.getFechaAlta().toString() : null);
-                        rutaMap.put("costoBase", r.getCostoBase());
-                        rutaMap.put("estado", r.getEstado() != null ? r.getEstado().toString() : null);
-                        
-                        // Información de ciudades
-                        if (r.getCiudadOrigen() != null) {
-                            Map<String, Object> origenMap = new HashMap<>();
-                            origenMap.put("nombre", r.getCiudadOrigen().getNombre());
-                            origenMap.put("pais", r.getCiudadOrigen().getPais());
-                            rutaMap.put("ciudadOrigen", origenMap);
-                        }
-                        
-                        if (r.getCiudadDestino() != null) {
-                            Map<String, Object> destinoMap = new HashMap<>();
-                            destinoMap.put("nombre", r.getCiudadDestino().getNombre());
-                            destinoMap.put("pais", r.getCiudadDestino().getPais());
-                            rutaMap.put("ciudadDestino", destinoMap);
-                        }
-                        
-                        // Categorías
-                        if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
-                            rutaMap.put("categorias", r.getCategorias());
-                        }
-                        
-                        outList.add(rutaMap);
+                        outList.add(Map.of(
+                                "nombre", r.getNombre()
+                        ));
                     }
                 }
 
-                try {
-                    String jsonResponse = objectMapper.writeValueAsString(outList);
-                    out.print(jsonResponse);
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    LOG.info("Respuesta JSON de rutas enviada exitosamente");
-                } catch (Exception jsonEx) {
-                    LOG.log(Level.SEVERE, "Error al serializar JSON de rutas: " + jsonEx.getMessage(), jsonEx);
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print("{\"error\":\"Error interno del servidor\"}");
-                }
+                out.print(objectMapper.writeValueAsString(outList));
+                response.setStatus(HttpServletResponse.SC_OK);
                 return;
             } else {
                 String nombre = pathInfo.substring(1);
+                // Mantengo el scaffold que tenías: 404 (reemplazar por llamada real si quieres)
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada (scaffold)", "nombre", nombre)));
                 return;
