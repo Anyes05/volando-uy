@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -18,8 +19,10 @@ import javax.servlet.http.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import logica.DataTypes.DTAerolinea;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTRutaVuelo;
+import logica.DataTypes.DTVuelo;
 import logica.DataTypes.EstadoRutaVuelo;
 import logica.clase.Sistema;
 
@@ -41,9 +44,10 @@ public class RutaVueloController extends HttpServlet {
     private final Sistema sistema = Sistema.getInstance();
 
     /**
-     * GET combinado:
-     * - Si pathInfo == null o "/" : devuelve la lista filtrada (no confirmadas) para la aerolínea del session (igual que tu primer doGet).
-     * - Si pathInfo == "/{nombre}" : scaffold que devuelve 404 (igual que tu segundo doGet).
+     * GET endpoints:
+     * - Si pathInfo == null o "/" : devuelve la lista de rutas confirmadas para la aerolínea especificada
+     * - Si pathInfo == "/{nombre}" : devuelve los detalles de una ruta específica
+     * - Si pathInfo == "/{nombre}/vuelos" : devuelve los vuelos de una ruta específica
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -52,41 +56,302 @@ public class RutaVueloController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            String pathInfo = request.getPathInfo(); // / o /{nombre}
+            String pathInfo = request.getPathInfo(); // / o /{nombre} o /{nombre}/vuelos
+            String nicknameParam = request.getParameter("aerolinea");
+            
+            LOG.info("PathInfo recibido: " + pathInfo);
+            LOG.info("Nickname param: " + nicknameParam);
 
             if (pathInfo == null || pathInfo.equals("/")) {
-                // validar sesión si corresponde (opcional)
-                HttpSession session = request.getSession(false);
-                String nickname = null;
-                if (session != null && session.getAttribute("usuarioLogueado") != null) {
-                    nickname = session.getAttribute("usuarioLogueado").toString();
-                }
-
-                // Obtener las rutas filtradas desde la lógica de negocio
-                List<DTRutaVuelo> rutas = new ArrayList<>();
-                try {
-                    rutas = sistema.seleccionarAerolineaRet(nickname);
-                } catch (Exception ex) {
-                    LOG.log(Level.WARNING, "Error al obtener rutas: " + ex.getMessage(), ex);
-                }
-
-                List<Map<String, Object>> outList = new ArrayList<>();
-                for (DTRutaVuelo r : rutas) {
-                    if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
-                        outList.add(Map.of(
-                                "nombre", r.getNombre()
-                        ));
-                    }
-                }
-
-                out.print(objectMapper.writeValueAsString(outList));
+                // GET /api/rutas - Lista rutas confirmadas de una aerolínea
+                LOG.info("Manejando lista de rutas");
+                handleGetRutas(nicknameParam, response, out);
+                return;
+            } else if (pathInfo.equals("/test")) {
+                // Endpoint de prueba
+                LOG.info("Endpoint de prueba llamado");
                 response.setStatus(HttpServletResponse.SC_OK);
+                out.print(objectMapper.writeValueAsString(Map.of("mensaje", "RutaVueloController funcionando correctamente")));
+                out.flush();
+                return;
+            } else if (pathInfo.equals("/test-aerolinea")) {
+                // Endpoint de prueba para una aerolínea específica
+                String testNickname = request.getParameter("nickname");
+                if (testNickname == null || testNickname.trim().isEmpty()) {
+                    testNickname = "pluna"; // Default para prueba
+                }
+                
+                LOG.info("Probando aerolínea: " + testNickname);
+                try {
+                    if (sistema == null) {
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+                        return;
+                    }
+                    
+                    List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(testNickname);
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("nickname", testNickname);
+                    result.put("rutasEncontradas", rutas != null ? rutas.size() : 0);
+                    result.put("rutas", rutas);
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(result));
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en test-aerolinea para " + testNickname, ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error en test", "detail", ex.getMessage(), "nickname", testNickname)));
+                } finally {
+                    out.flush();
+                }
+                return;
+            } else if (pathInfo.equals("/precargar")) {
+                // Endpoint para precargar el sistema
+                LOG.info("Endpoint de precarga llamado");
+                try {
+                    if (sistema == null) {
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+                        return;
+                    }
+                    
+                    LOG.info("Iniciando precarga del sistema...");
+                    sistema.precargarSistemaCompleto();
+                    
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("status", "OK");
+                    result.put("message", "Sistema precargado exitosamente");
+                    result.put("timestamp", java.time.LocalDateTime.now().toString());
+                    
+                    // Verificar que la precarga funcionó
+                    try {
+                        List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                        result.put("aerolineasDisponibles", aerolineas != null ? aerolineas.size() : 0);
+                        
+                        List<dato.entidades.Categoria> categorias = sistema.getCategorias();
+                        result.put("categoriasDisponibles", categorias != null ? categorias.size() : 0);
+                    } catch (Exception ex) {
+                        result.put("warning", "Precarga completada pero hay problemas verificando datos: " + ex.getMessage());
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(result));
+                    out.flush();
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en precarga del sistema", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error en precarga", "detail", ex.getMessage())));
+                    out.flush();
+                }
+                return;
+            } else if (pathInfo.equals("/health")) {
+                // Endpoint de salud
+                LOG.info("Endpoint de salud llamado");
+                try {
+                    Map<String, Object> healthInfo = new HashMap<>();
+                    healthInfo.put("status", "OK");
+                    healthInfo.put("timestamp", java.time.LocalDateTime.now().toString());
+                    healthInfo.put("sistemaInicializado", sistema != null);
+                    
+                    if (sistema != null) {
+                        try {
+                            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                            healthInfo.put("aerolineasDisponibles", aerolineas != null ? aerolineas.size() : 0);
+                        } catch (Exception ex) {
+                            healthInfo.put("errorAerolineas", ex.getMessage());
+                        }
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(healthInfo));
+                    out.flush();
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en endpoint de salud", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print("{\"status\":\"ERROR\",\"error\":\"" + ex.getMessage() + "\"}");
+                    out.flush();
+                }
+                return;
+            } else if (pathInfo.equals("/debug")) {
+                // Endpoint de debug para verificar el sistema
+                try {
+                    LOG.info("Verificando sistema...");
+                    boolean sistemaInicializado = sistema != null;
+                    LOG.info("Sistema inicializado: " + sistemaInicializado);
+                    
+                    Map<String, Object> debugInfo = new HashMap<>();
+                    debugInfo.put("sistemaInicializado", sistemaInicializado);
+                    debugInfo.put("timestamp", java.time.LocalDateTime.now().toString());
+                    
+                    if (sistema != null) {
+                        try {
+                            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                            debugInfo.put("aerolineasDisponibles", aerolineas.size());
+                            debugInfo.put("aerolineas", aerolineas.stream().map(a -> a.getNickname()).collect(java.util.stream.Collectors.toList()));
+                        } catch (Exception ex) {
+                            debugInfo.put("errorAerolineas", ex.getMessage());
+                        }
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(debugInfo));
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en debug", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error en debug", "detail", ex.getMessage())));
+                }
+                return;
+            } else if (pathInfo.equals("/diagnostico")) {
+                // Endpoint de diagnóstico completo
+                LOG.info("Endpoint de diagnóstico llamado");
+                try {
+                    Map<String, Object> diagnostico = new HashMap<>();
+                    diagnostico.put("timestamp", java.time.LocalDateTime.now().toString());
+                    diagnostico.put("sistemaInicializado", sistema != null);
+                    
+                    if (sistema != null) {
+                        // Probar listar aerolíneas
+                        try {
+                            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                            diagnostico.put("aerolineasCount", aerolineas != null ? aerolineas.size() : 0);
+                            
+                            if (aerolineas != null && !aerolineas.isEmpty()) {
+                                // Probar obtener rutas de la primera aerolínea
+                                DTAerolinea primeraAero = aerolineas.get(0);
+                                diagnostico.put("primeraAerolinea", primeraAero.getNickname());
+                                
+                                try {
+                                    List<DTRutaVuelo> rutasTest = sistema.listarRutaVuelo(primeraAero.getNickname());
+                                    diagnostico.put("rutasTestCount", rutasTest != null ? rutasTest.size() : 0);
+                                    
+                                    if (rutasTest != null && !rutasTest.isEmpty()) {
+                                        diagnostico.put("primeraRuta", rutasTest.get(0).getNombre());
+                                        diagnostico.put("primeraRutaEstado", rutasTest.get(0).getEstado().toString());
+                                    }
+                                } catch (Exception rutasEx) {
+                                    diagnostico.put("errorRutas", rutasEx.getMessage());
+                                    diagnostico.put("errorRutasTipo", rutasEx.getClass().getSimpleName());
+                                }
+                            }
+                        } catch (Exception aeroEx) {
+                            diagnostico.put("errorAerolineas", aeroEx.getMessage());
+                            diagnostico.put("errorAerolineasTipo", aeroEx.getClass().getSimpleName());
+                        }
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(diagnostico));
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en diagnóstico", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error en diagnóstico", "detail", ex.getMessage())));
+                }
+                return;
+            } else if (pathInfo.equals("/aerolineas")) {
+                // Listar aerolíneas disponibles
+                try {
+                    LOG.info("Listando aerolíneas disponibles");
+                    
+                    if (sistema == null) {
+                        LOG.severe("Sistema no inicializado");
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+                        return;
+                    }
+                    
+                    List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                    LOG.info("Aerolíneas encontradas: " + (aerolineas != null ? aerolineas.size() : 0));
+                    
+                    List<Map<String, Object>> result = new ArrayList<>();
+                    if (aerolineas != null) {
+                        for (DTAerolinea aero : aerolineas) {
+                            Map<String, Object> aeroMap = new HashMap<>();
+                            aeroMap.put("nickname", aero.getNickname());
+                            aeroMap.put("nombre", aero.getNombre());
+                            aeroMap.put("correo", aero.getCorreo());
+                            result.add(aeroMap);
+                        }
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    String jsonResponse = objectMapper.writeValueAsString(result);
+                    out.print(jsonResponse);
+                    LOG.info("Respuesta de aerolíneas enviada exitosamente");
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error al listar aerolíneas", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    try {
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Error al listar aerolíneas", "detail", ex.getMessage())));
+                    } catch (Exception jsonEx) {
+                        LOG.log(Level.SEVERE, "Error al serializar respuesta de error", jsonEx);
+                        out.print("{\"error\":\"Error interno del servidor\"}");
+                    }
+                } finally {
+                    out.flush();
+                }
+                return;
+            } else if (pathInfo.equals("/categorias")) {
+                // Listar categorías disponibles
+                try {
+                    LOG.info("Listando categorías disponibles");
+                    
+                    if (sistema == null) {
+                        LOG.severe("Sistema no inicializado");
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+                        return;
+                    }
+                    
+                    List<dato.entidades.Categoria> categoriasEntidades = sistema.getCategorias();
+                    List<String> categorias = new ArrayList<>();
+                    
+                    if (categoriasEntidades != null) {
+                        for (dato.entidades.Categoria cat : categoriasEntidades) {
+                            if (cat != null && cat.getNombre() != null) {
+                                categorias.add(cat.getNombre());
+                            }
+                        }
+                    }
+                    
+                    LOG.info("Categorías encontradas: " + categorias.size());
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    String jsonResponse = objectMapper.writeValueAsString(categorias);
+                    out.print(jsonResponse);
+                    LOG.info("Respuesta de categorías enviada exitosamente");
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error al listar categorías", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    try {
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Error al listar categorías", "detail", ex.getMessage())));
+                    } catch (Exception jsonEx) {
+                        LOG.log(Level.SEVERE, "Error al serializar respuesta de error", jsonEx);
+                        out.print("{\"error\":\"Error interno del servidor\"}");
+                    }
+                } finally {
+                    out.flush();
+                }
+                return;
+            } else if (pathInfo.equals("/por-categoria")) {
+                // GET /api/rutas/por-categoria?categoria=X - Lista rutas por categoría
+                String categoriaParam = request.getParameter("categoria");
+                LOG.info("Buscando rutas por categoría: " + categoriaParam);
+                handleGetRutasPorCategoria(categoriaParam, response, out);
                 return;
             } else {
-                String nombre = pathInfo.substring(1);
-                // Mantengo el scaffold que tenías: 404 (reemplazar por llamada real si quieres)
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada (scaffold)", "nombre", nombre)));
+                String[] pathParts = pathInfo.split("/");
+                LOG.info("Path parts: " + java.util.Arrays.toString(pathParts));
+                String nombreRuta = pathParts[1];
+                
+                if (pathParts.length >= 3 && "vuelos".equals(pathParts[2])) {
+                    // GET /api/rutas/{nombre}/vuelos - Lista vuelos de una ruta
+                    LOG.info("Manejando vuelos de ruta: " + nombreRuta);
+                    handleGetVuelosRuta(nombreRuta, response, out);
+                } else {
+                    // GET /api/rutas/{nombre} - Detalles de una ruta específica
+                    LOG.info("Manejando detalles de ruta: " + nombreRuta);
+                    handleGetRutaDetalle(nombreRuta, response, out);
+                }
                 return;
             }
         } catch (Exception ex) {
@@ -95,6 +360,360 @@ public class RutaVueloController extends HttpServlet {
             out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno")));
         } finally {
             out.flush();
+        }
+    }
+
+    /**
+     * GET /api/rutas - Lista rutas confirmadas de una aerolínea
+     */
+    private void handleGetRutas(String nicknameParam, HttpServletResponse response, PrintWriter out) throws IOException {
+        String nickname = nicknameParam;
+
+        if (nickname == null || nickname.trim().isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Debe especificar una aerolínea")));
+            return;
+        }
+
+        LOG.info("Buscando rutas para aerolínea: " + nickname);
+
+        // Verificar que el sistema esté inicializado
+        if (sistema == null) {
+            LOG.severe("Sistema no inicializado");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+            return;
+        }
+
+        // Obtener las rutas filtradas desde la lógica de negocio
+        List<DTRutaVuelo> rutas = new ArrayList<>();
+        try {
+            LOG.info("Llamando a sistema.listarRutaVuelo(" + nickname + ")");
+            
+            // Verificar que el sistema esté funcionando
+            if (sistema == null) {
+                LOG.severe("Sistema es null al intentar obtener rutas");
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+                return;
+            }
+            
+            // Intentar precargar el sistema si no tiene datos
+            try {
+                List<DTAerolinea> testAerolineas = sistema.listarAerolineas();
+                if (testAerolineas == null || testAerolineas.isEmpty()) {
+                    LOG.info("No hay aerolíneas cargadas, precargando sistema...");
+                    sistema.precargarSistemaCompleto();
+                }
+            } catch (Exception precargarEx) {
+                LOG.warning("Error al precargar sistema: " + precargarEx.getMessage());
+            }
+            
+            // Usar el mismo método que funciona en VueloController
+            rutas = sistema.listarRutaVuelo(nickname);
+            LOG.info("Rutas obtenidas exitosamente para aerolínea " + nickname + ": " + (rutas != null ? rutas.size() : 0));
+            
+            if (rutas == null) {
+                LOG.warning("sistema.listarRutaVuelo devolvió null para aerolínea: " + nickname);
+                rutas = new ArrayList<>();
+            }
+        } catch (IllegalArgumentException ex) {
+            LOG.warning("Aerolínea no encontrada: " + nickname + " - " + ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Aerolínea no encontrada", "detail", ex.getMessage())));
+            return;
+        } catch (IllegalStateException ex) {
+            LOG.warning("Error de estado al obtener rutas: " + ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error de estado", "detail", ex.getMessage())));
+            return;
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al obtener rutas para aerolínea " + nickname + ": " + ex.getMessage(), ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error al obtener rutas", "detail", ex.getMessage(), "type", ex.getClass().getSimpleName())));
+            return;
+        }
+
+        LOG.info("Procesando " + rutas.size() + " rutas para aerolínea " + nickname);
+        
+        List<Map<String, Object>> outList = new ArrayList<>();
+        for (DTRutaVuelo r : rutas) {
+            LOG.info("Procesando ruta: " + r.getNombre() + " - Estado: " + r.getEstado());
+            if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+                Map<String, Object> rutaMap = new HashMap<>();
+                rutaMap.put("nombre", r.getNombre());
+                rutaMap.put("descripcion", r.getDescripcion());
+                rutaMap.put("fechaAlta", r.getFechaAlta() != null ? r.getFechaAlta().toString() : null);
+                rutaMap.put("costoBase", r.getCostoBase());
+                rutaMap.put("estado", r.getEstado() != null ? r.getEstado().toString() : null);
+                
+                // Información de ciudades
+                if (r.getCiudadOrigen() != null) {
+                    Map<String, Object> origenMap = new HashMap<>();
+                    origenMap.put("nombre", r.getCiudadOrigen().getNombre());
+                    origenMap.put("pais", r.getCiudadOrigen().getPais());
+                    rutaMap.put("ciudadOrigen", origenMap);
+                }
+                
+                if (r.getCiudadDestino() != null) {
+                    Map<String, Object> destinoMap = new HashMap<>();
+                    destinoMap.put("nombre", r.getCiudadDestino().getNombre());
+                    destinoMap.put("pais", r.getCiudadDestino().getPais());
+                    rutaMap.put("ciudadDestino", destinoMap);
+                }
+                
+                // Categorías
+                if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
+                    rutaMap.put("categorias", r.getCategorias());
+                }
+                
+                // Imagen si existe
+                if (r.getFoto() != null && r.getFoto().length > 0) {
+                    String fotoBase64 = java.util.Base64.getEncoder().encodeToString(r.getFoto());
+                    rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
+                }
+                
+                outList.add(rutaMap);
+                LOG.info("Ruta confirmada agregada: " + r.getNombre());
+            } else {
+                LOG.info("Ruta " + r.getNombre() + " omitida - Estado: " + r.getEstado());
+            }
+        }
+
+        try {
+            String jsonResponse = objectMapper.writeValueAsString(outList);
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(jsonResponse);
+            LOG.info("Respuesta JSON de rutas enviada exitosamente: " + outList.size() + " rutas confirmadas de " + rutas.size() + " rutas totales");
+        } catch (Exception jsonEx) {
+            LOG.log(Level.SEVERE, "Error al serializar JSON de rutas: " + jsonEx.getMessage(), jsonEx);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            try {
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor")));
+            } catch (Exception finalEx) {
+                LOG.log(Level.SEVERE, "Error crítico al serializar respuesta de error", finalEx);
+                out.print("{\"error\":\"Error interno del servidor\"}");
+            }
+        } finally {
+            out.flush();
+        }
+    }
+
+    /**
+     * GET /api/rutas/{nombre} - Detalles de una ruta específica
+     */
+    private void handleGetRutaDetalle(String nombreRuta, HttpServletResponse response, PrintWriter out) throws IOException {
+        try {
+            DTRutaVuelo ruta = sistema.seleccionarRutaVueloRet(nombreRuta);
+            
+            if (ruta == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada")));
+                return;
+            }
+
+            Map<String, Object> rutaMap = new HashMap<>();
+            rutaMap.put("nombre", ruta.getNombre());
+            rutaMap.put("descripcion", ruta.getDescripcion());
+            rutaMap.put("fechaAlta", ruta.getFechaAlta() != null ? ruta.getFechaAlta().toString() : null);
+            rutaMap.put("costoBase", ruta.getCostoBase());
+            rutaMap.put("estado", ruta.getEstado() != null ? ruta.getEstado().toString() : null);
+            
+            // Información de ciudades
+            if (ruta.getCiudadOrigen() != null) {
+                Map<String, Object> origenMap = new HashMap<>();
+                origenMap.put("nombre", ruta.getCiudadOrigen().getNombre());
+                origenMap.put("pais", ruta.getCiudadOrigen().getPais());
+                rutaMap.put("ciudadOrigen", origenMap);
+            }
+            
+            if (ruta.getCiudadDestino() != null) {
+                Map<String, Object> destinoMap = new HashMap<>();
+                destinoMap.put("nombre", ruta.getCiudadDestino().getNombre());
+                destinoMap.put("pais", ruta.getCiudadDestino().getPais());
+                rutaMap.put("ciudadDestino", destinoMap);
+            }
+            
+            // Categorías
+            if (ruta.getCategorias() != null && !ruta.getCategorias().isEmpty()) {
+                rutaMap.put("categorias", ruta.getCategorias());
+            }
+            
+            // Imagen si existe
+            if (ruta.getFoto() != null && ruta.getFoto().length > 0) {
+                String fotoBase64 = java.util.Base64.getEncoder().encodeToString(ruta.getFoto());
+                rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
+            }
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(objectMapper.writeValueAsString(rutaMap));
+            
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al obtener detalles de ruta: " + nombreRuta, ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error al obtener detalles de la ruta")));
+        }
+    }
+
+    /**
+     * GET /api/rutas/por-categoria?categoria=X - Lista rutas por categoría
+     */
+    private void handleGetRutasPorCategoria(String categoriaParam, HttpServletResponse response, PrintWriter out) throws IOException {
+        if (categoriaParam == null || categoriaParam.trim().isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Debe especificar una categoría")));
+            return;
+        }
+
+        LOG.info("Buscando rutas para categoría: " + categoriaParam);
+
+        // Verificar que el sistema esté inicializado
+        if (sistema == null) {
+            LOG.severe("Sistema no inicializado");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+            return;
+        }
+
+        // Obtener las rutas filtradas por categoría desde la lógica de negocio
+        List<DTRutaVuelo> rutas = new ArrayList<>();
+        try {
+            LOG.info("Buscando rutas por categoría: " + categoriaParam);
+            
+            // Obtener todas las aerolíneas
+            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            
+            // Para cada aerolínea, obtener sus rutas y filtrar por categoría
+            for (DTAerolinea aero : aerolineas) {
+                try {
+                    List<DTRutaVuelo> rutasAerolinea = sistema.listarRutaVuelo(aero.getNickname());
+                    
+                    // Filtrar rutas que contengan la categoría especificada
+                    for (DTRutaVuelo ruta : rutasAerolinea) {
+                        if (ruta.getCategorias() != null && ruta.getCategorias().contains(categoriaParam)) {
+                            rutas.add(ruta);
+                        }
+                    }
+                } catch (Exception ex) {
+                    LOG.warning("Error obteniendo rutas de aerolínea " + aero.getNickname() + ": " + ex.getMessage());
+                }
+            }
+            
+            LOG.info("Rutas obtenidas exitosamente para categoría " + categoriaParam + ": " + rutas.size());
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al obtener rutas para categoría " + categoriaParam + ": " + ex.getMessage(), ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error al obtener rutas", "detail", ex.getMessage())));
+            return;
+        }
+
+        List<Map<String, Object>> outList = new ArrayList<>();
+        for (DTRutaVuelo r : rutas) {
+            if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+                Map<String, Object> rutaMap = new HashMap<>();
+                rutaMap.put("nombre", r.getNombre());
+                rutaMap.put("descripcion", r.getDescripcion());
+                rutaMap.put("fechaAlta", r.getFechaAlta() != null ? r.getFechaAlta().toString() : null);
+                rutaMap.put("costoBase", r.getCostoBase());
+                rutaMap.put("estado", r.getEstado() != null ? r.getEstado().toString() : null);
+                
+                // Información de ciudades
+                if (r.getCiudadOrigen() != null) {
+                    Map<String, Object> origenMap = new HashMap<>();
+                    origenMap.put("nombre", r.getCiudadOrigen().getNombre());
+                    origenMap.put("pais", r.getCiudadOrigen().getPais());
+                    rutaMap.put("ciudadOrigen", origenMap);
+                }
+                
+                if (r.getCiudadDestino() != null) {
+                    Map<String, Object> destinoMap = new HashMap<>();
+                    destinoMap.put("nombre", r.getCiudadDestino().getNombre());
+                    destinoMap.put("pais", r.getCiudadDestino().getPais());
+                    rutaMap.put("ciudadDestino", destinoMap);
+                }
+                
+                // Categorías
+                if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
+                    rutaMap.put("categorias", r.getCategorias());
+                }
+                
+                // Imagen si existe
+                if (r.getFoto() != null && r.getFoto().length > 0) {
+                    String fotoBase64 = java.util.Base64.getEncoder().encodeToString(r.getFoto());
+                    rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
+                }
+                
+                outList.add(rutaMap);
+            }
+        }
+
+        try {
+            String jsonResponse = objectMapper.writeValueAsString(outList);
+            out.print(jsonResponse);
+            response.setStatus(HttpServletResponse.SC_OK);
+            LOG.info("Respuesta JSON de rutas por categoría enviada exitosamente");
+        } catch (Exception jsonEx) {
+            LOG.log(Level.SEVERE, "Error al serializar JSON de rutas por categoría: " + jsonEx.getMessage(), jsonEx);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print("{\"error\":\"Error interno del servidor\"}");
+        }
+    }
+
+    /**
+     * GET /api/rutas/{nombre}/vuelos - Lista vuelos de una ruta específica
+     */
+    private void handleGetVuelosRuta(String nombreRuta, HttpServletResponse response, PrintWriter out) throws IOException {
+        try {
+            LOG.info("Buscando vuelos para ruta: " + nombreRuta);
+            
+            // Primero intentar con datos de prueba para verificar que el endpoint funciona
+            if ("test".equals(nombreRuta)) {
+                List<Map<String, Object>> testResult = new ArrayList<>();
+                Map<String, Object> testVuelo = new HashMap<>();
+                testVuelo.put("nombre", "Vuelo de Prueba");
+                testVuelo.put("fechaVuelo", "2024-01-15");
+                testVuelo.put("horaVuelo", "10:30");
+                testVuelo.put("duracion", "2:30");
+                testVuelo.put("asientosMaxTurista", 150);
+                testVuelo.put("asientosMaxEjecutivo", 20);
+                testVuelo.put("fechaAlta", "2024-01-01");
+                testResult.add(testVuelo);
+                
+                response.setStatus(HttpServletResponse.SC_OK);
+                out.print(objectMapper.writeValueAsString(testResult));
+                return;
+            }
+            
+            List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(nombreRuta);
+            LOG.info("Vuelos encontrados: " + vuelos.size());
+            
+            List<Map<String, Object>> result = new ArrayList<>();
+            for (DTVuelo vuelo : vuelos) {
+                Map<String, Object> vueloMap = new HashMap<>();
+                vueloMap.put("nombre", vuelo.getNombre());
+                vueloMap.put("fechaVuelo", vuelo.getFechaVuelo() != null ? vuelo.getFechaVuelo().toString() : null);
+                vueloMap.put("horaVuelo", vuelo.getHoraVuelo() != null ? vuelo.getHoraVuelo().toString() : null);
+                vueloMap.put("duracion", vuelo.getDuracion() != null ? vuelo.getDuracion().toString() : null);
+                vueloMap.put("asientosMaxTurista", vuelo.getAsientosMaxTurista());
+                vueloMap.put("asientosMaxEjecutivo", vuelo.getAsientosMaxEjecutivo());
+                vueloMap.put("fechaAlta", vuelo.getFechaAlta() != null ? vuelo.getFechaAlta().toString() : null);
+                
+                // Incluir foto si existe (convertir a base64 para JSON)
+                if (vuelo.getFoto() != null && vuelo.getFoto().length > 0) {
+                    String fotoBase64 = java.util.Base64.getEncoder().encodeToString(vuelo.getFoto());
+                    vueloMap.put("foto", "data:image/jpeg;base64," + fotoBase64);
+                }
+                
+                result.add(vueloMap);
+            }
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(objectMapper.writeValueAsString(result));
+            
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al obtener vuelos de ruta: " + nombreRuta, ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error al obtener vuelos", "detail", ex.getMessage())));
         }
     }
 

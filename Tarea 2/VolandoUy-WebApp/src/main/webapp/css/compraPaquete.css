@@ -87,6 +87,27 @@
   object-fit:cover;
   border-radius:8px;
   margin-bottom:10px;
+  transition: opacity 0.3s ease;
+  background: linear-gradient(135deg, rgba(1, 170, 245, 0.1), rgba(34, 152, 202, 0.1));
+}
+
+.paquete-card-compra img[src*="logoAvionSolo"] {
+  object-fit: contain;
+  background: rgba(1, 170, 245, 0.1);
+  padding: 20px;
+}
+
+.paquete-card-compra img:not([src]) {
+  background: linear-gradient(135deg, rgba(1, 170, 245, 0.1), rgba(34, 152, 202, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paquete-card-compra img:not([src])::before {
+  content: "📦";
+  font-size: 48px;
+  opacity: 0.5;
 }
 
 .paquete-card-compra h3{
@@ -116,6 +137,51 @@
   border-radius:4px;
   font-size:12px;
   font-weight:600;
+}
+
+/* Estilos para paquetes comprados */
+.paquete-card.comprado {
+  opacity: 0.7;
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+  border-color: var(--success);
+}
+
+.paquete-card.comprado:hover {
+  transform: none;
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+}
+
+.comprado-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--success);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-comprado {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: not-allowed;
+  font-weight: 600;
+  transition: all .2s;
+  opacity: 0.8;
+}
+
+.btn-comprado:hover {
+  background: #6c757d;
+  transform: none;
 }
 
 .detalle-compra{
@@ -155,6 +221,21 @@
   height:140px;
   object-fit:cover;
   border-radius:8px;
+  transition: opacity 0.3s ease;
+  background: linear-gradient(135deg, rgba(1, 170, 245, 0.1), rgba(34, 152, 202, 0.1));
+}
+
+.paquete-header img[src*="logoAvionSolo"] {
+  object-fit: contain;
+  background: rgba(1, 170, 245, 0.1);
+  padding: 20px;
+}
+
+.paquete-header img:not([src]) {
+  background: linear-gradient(135deg, rgba(1, 170, 245, 0.1), rgba(34, 152, 202, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .paquete-info h2{
@@ -420,4 +501,58 @@
   .contenido-principal{
     max-width:1400px;
   }
+}
+
+/* Indicador de carga */
+.cargando-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Prevenir parpadeo durante la carga */
+#main-content.loading {
+  opacity: 0.7;
+}
+
+#main-content.loading * {
+  pointer-events: none;
+}
+
+/* Reducir transiciones para evitar parpadeo */
+#lista-paquetes-compra,
+.detalle-compra,
+#sin-paquetes {
+  transition: none;
+}
+
+#lista-paquetes-compra.hidden,
+.detalle-compra.hidden,
+#sin-paquetes.hidden {
+  opacity: 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(1, 170, 245, 0.3);
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.cargando-container p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--muted);
 }

@@ -23,7 +23,6 @@
   <link rel="stylesheet" href="static/css/consultaPaquete.css">
   <link rel="stylesheet" href="static/css/compraPaquete.css">
   <link rel="stylesheet" href="static/css/registrarUsuario.css">
-  <link rel="stylesheet" href="static/css/login.css">
 </head>
 
 <body>
@@ -111,7 +110,7 @@
       </div>
     </header>
 
-    <div id="main-content" class="${param.content == 'inicioSesion-content.jsp' ? 'login-page' : (param.content == 'registrarUsuario-content.jsp' ? 'register-page' : '')}">
+    <div id="main-content">
       <!-- Contenido específico de cada página -->
       <c:choose>
         <c:when test="${not empty param.content}">

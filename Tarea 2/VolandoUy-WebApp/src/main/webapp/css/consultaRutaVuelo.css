@@ -715,3 +715,203 @@ input:focus {
     scroll-behavior: auto;
   }
 }
+
+/* ====== ESTILOS ADICIONALES PARA CONSULTA RUTA VUELO ====== */
+
+/* Imagen de placeholder para rutas sin imagen */
+.no-image {
+  width: 100%;
+  height: 200px;
+  background: rgba(42, 58, 66, 0.8);
+  border: 2px dashed rgba(1, 170, 245, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(234, 246, 251, 0.6);
+  margin-bottom: 1rem;
+}
+
+.no-image i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.no-image p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Estados de selección mejorados */
+.ruta-card.seleccionada {
+  border-color: #01aaf5;
+  background: linear-gradient(135deg, rgba(1, 170, 245, 0.15) 0%, #32434b 100%);
+  box-shadow: 0 8px 32px rgba(1, 170, 245, 0.4);
+  transform: translateY(-5px);
+}
+
+.ruta-card.seleccionada::before {
+  opacity: 1;
+}
+
+.vuelo-card.seleccionado {
+  background: rgba(1, 170, 245, 0.2);
+  border-color: #01aaf5;
+  box-shadow: 0 4px 16px rgba(1, 170, 245, 0.3);
+  transform: translateX(5px);
+}
+
+/* Mensajes de estado */
+.mensaje-vuelo {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(1, 170, 245, 0.1);
+  border: 1px solid rgba(1, 170, 245, 0.3);
+  border-radius: 10px;
+  color: #eaf6fb;
+  text-align: center;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.mensaje-vuelo.error {
+  background: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.3);
+  color: #ff6b6b;
+}
+
+/* Estados de carga */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(1, 170, 245, 0.3);
+  border-top: 2px solid #01aaf5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mejoras en el grid de rutas */
+.rutas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive para el grid de rutas */
+@media (max-width: 768px) {
+  .rutas-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Mejoras en las tarjetas de vuelo */
+.vuelo-card {
+  background: rgba(34, 152, 202, 0.1);
+  border: 1px solid rgba(34, 152, 202, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.vuelo-card:hover {
+  background: rgba(34, 152, 202, 0.15);
+  border-color: #01aaf5;
+  transform: translateX(5px);
+}
+
+.vuelo-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.vuelo-card p {
+  color: #eaf6fb;
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+/* Mejoras en el contenedor de vuelos */
+.vuelos-container {
+  min-height: 200px;
+  margin-bottom: 1.5rem;
+}
+
+/* Estados de error mejorados */
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  color: #eaf6fb;
+}
+
+.error-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #dc3545;
+  opacity: 0.8;
+}
+
+.error-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Mejoras en el placeholder de vuelos */
+.vuelos-placeholder {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #eaf6fb;
+  opacity: 0.7;
+}
+
+.vuelos-placeholder i {
+  font-size: 2rem;
+  color: #01aaf5;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.vuelos-placeholder p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Animaciones suaves para las transiciones */
+.ruta-card, .vuelo-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mejoras en el botón de consultar vuelo */
+.btn-consultar-vuelo:disabled {
+  background: rgba(42, 58, 66, 0.5);
+  border-color: rgba(85, 85, 85, 0.3);
+  color: rgba(234, 246, 251, 0.5);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-consultar-vuelo:disabled:hover {
+  background: rgba(42, 58, 66, 0.5);
+  transform: none;
+  box-shadow: none;
+}

@@ -2,7 +2,7 @@ const usuariosURL = '${pageContext.request.contextPath}/api/usuarios';
 let usuariosData = [];
 let usuarioActual = null;
 
-// 🔠 Función para quitar tildes/acentos
+//  Función para quitar tildes/acentos
 function quitarTildes(texto) {
   return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }

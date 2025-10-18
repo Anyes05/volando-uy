@@ -283,39 +283,10 @@ const controladorDeVista = {
             }
           }
 
-          // Si la vista es compraPaquete, cargar su JS y ejecutar init
+          // Si la vista es compraPaquete, el script se carga directamente en el JSP
+          // No necesita carga dinámica para evitar parpadeos
           if (url === "compraPaquete.jsp") {
-            const yaCargado = Array.from(document.scripts).some((s) =>
-              s.src.includes("js/compraPaquete.js")
-            );
-
-            const ejecutarInit = () => {
-              // Esperar a que el DOM esté completamente listo y los elementos existan
-              const esperarElemento = () => {
-                const listaPaquetes = document.getElementById("lista-paquetes-compra");
-                if (listaPaquetes) {
-                  if (typeof window.initCompraPaquete === "function") {
-                    window.initCompraPaquete();
-                  } else {
-                    console.warn("initCompraPaquete no está disponible.");
-                  }
-                } else {
-                  // Si el elemento no existe, esperar un poco más
-                  setTimeout(esperarElemento, 50);
-                }
-              };
-              setTimeout(esperarElemento, 100);
-            };
-
-            if (yaCargado) {
-              ejecutarInit();
-            } else {
-              const script = document.createElement("script");
-              script.src = "js/compraPaquete.js";
-              script.defer = true;
-              script.onload = ejecutarInit;
-              document.body.appendChild(script);
-            }
+            console.log("Página de compra de paquetes cargada - script incluido directamente en JSP");
           }
 
           // Si la vista es inicioSesión, no necesita JS adicional
@@ -323,6 +294,24 @@ const controladorDeVista = {
             console.log("Página de inicio de sesión cargada");
             // Agregar clase específica para el fondo del login
             contenedor.className = "login-page";
+            
+            // Asegurar que se carguen los estilos CSS del login
+            const loginCSS = document.querySelector('link[href*="login.css"]');
+            if (!loginCSS) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = 'css/login.css';
+              document.head.appendChild(link);
+              console.log('Estilos de login cargados dinámicamente');
+            }
+            
+            // Forzar recarga de estilos si ya existen pero no se aplican
+            setTimeout(() => {
+              const existingCSS = document.querySelector('link[href*="login.css"]');
+              if (existingCSS) {
+                existingCSS.href = existingCSS.href + '?v=' + Date.now();
+              }
+            }, 100);
           }
 
           // Si la vista es reserva.html, cargar su JS y ejecutar init (patrón igual al de arriba)

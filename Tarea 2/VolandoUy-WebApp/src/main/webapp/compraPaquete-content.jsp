@@ -18,8 +18,14 @@
   </section>
 </div>
 
+<!-- Indicador de carga -->
+<div id="cargando-paquetes" class="cargando-container">
+  <div class="spinner"></div>
+  <p>Cargando paquetes disponibles...</p>
+</div>
+
 <!-- Contenedor donde se listan los paquetes disponibles para compra -->
-<div id="lista-paquetes-compra" class="grid-list"></div>
+<div id="lista-paquetes-compra" class="grid-list" style="display: none;"></div>
 
 <!-- Mensaje si no hay paquetes disponibles -->
 <div id="sin-paquetes" class="mensaje-vacio" style="display: none;">
@@ -110,3 +116,5 @@
     </div>
   </div>
 </div>
+
+<script src="js/compraPaquete.js"></script>

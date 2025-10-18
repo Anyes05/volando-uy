@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico del Sistema - VolandoUY</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section.success {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .test-section.error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .loading {
+            color: #007bff;
+        }
+        .success-text {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error-text {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diagnóstico del Sistema - VolandoUY</h1>
+        
+        <div class="test-section" id="section1">
+            <h2>1. Estado del Sistema</h2>
+            <button onclick="testSistema()">Probar Estado del Sistema</button>
+            <div id="results1" class="results"></div>
+        </div>
+
+        <div class="test-section" id="section2">
+            <h2>2. Listar Aerolíneas</h2>
+            <button onclick="testAerolineas()">Probar Listar Aerolíneas</button>
+            <div id="results2" class="results"></div>
+        </div>
+
+        <div class="test-section" id="section3">
+            <h2>3. Precargar Sistema</h2>
+            <button onclick="testPrecargar()">Precargar Sistema</button>
+            <div id="results3" class="results"></div>
+        </div>
+
+        <div class="test-section" id="section4">
+            <h2>4. Obtener Rutas por Aerolínea</h2>
+            <button onclick="testRutasPorAerolinea()">Probar Rutas de PLUNA</button>
+            <div id="results4" class="results"></div>
+        </div>
+
+        <div class="test-section" id="section5">
+            <h2>5. Diagnóstico Completo</h2>
+            <button onclick="testDiagnosticoCompleto()">Ejecutar Diagnóstico Completo</button>
+            <div id="results5" class="results"></div>
+        </div>
+
+        <div class="test-section" id="section6">
+            <h2>6. Ejecutar Todas las Pruebas</h2>
+            <button onclick="ejecutarTodasLasPruebas()">Ejecutar Todas las Pruebas</button>
+        </div>
+    </div>
+
+    <script>
+        async function makeRequest(url, description) {
+            try {
+                console.log(`Haciendo petición a: ${url}`);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    data: data,
+                    description: description
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    status: 'ERROR',
+                    data: { error: error.message },
+                    description: description
+                };
+            }
+        }
+
+        function updateSection(sectionId, success) {
+            const section = document.getElementById(sectionId);
+            section.classList.remove('success', 'error');
+            section.classList.add(success ? 'success' : 'error');
+        }
+
+        function showResults(resultId, result) {
+            const resultElement = document.getElementById(resultId);
+            const statusText = result.success ? 'ÉXITO' : 'ERROR';
+            const statusClass = result.success ? 'success-text' : 'error-text';
+            
+            resultElement.innerHTML = `
+<span class="${statusClass}">${statusText}</span> - ${result.description}
+Status: ${result.status}
+
+${JSON.stringify(result.data, null, 2)}`;
+        }
+
+        async function testSistema() {
+            document.getElementById('results1').innerHTML = '<span class="loading">Probando...</span>';
+            const result = await makeRequest('/VolandoUy-WebApp/api/rutas/debug', 'Verificar estado del sistema');
+            showResults('results1', result);
+            updateSection('section1', result.success);
+        }
+
+        async function testAerolineas() {
+            document.getElementById('results2').innerHTML = '<span class="loading">Probando...</span>';
+            const result = await makeRequest('/VolandoUy-WebApp/api/rutas/aerolineas', 'Listar aerolíneas disponibles');
+            showResults('results2', result);
+            updateSection('section2', result.success);
+        }
+
+        async function testPrecargar() {
+            document.getElementById('results3').innerHTML = '<span class="loading">Precargando...</span>';
+            const result = await makeRequest('/VolandoUy-WebApp/api/rutas/precargar', 'Precargar datos del sistema');
+            showResults('results3', result);
+            updateSection('section3', result.success);
+        }
+
+        async function testRutasPorAerolinea() {
+            document.getElementById('results4').innerHTML = '<span class="loading">Probando...</span>';
+            const result = await makeRequest('/VolandoUy-WebApp/api/rutas?aerolinea=pluna', 'Obtener rutas de PLUNA');
+            showResults('results4', result);
+            updateSection('section4', result.success);
+        }
+
+        async function testDiagnosticoCompleto() {
+            document.getElementById('results5').innerHTML = '<span class="loading">Ejecutando diagnóstico...</span>';
+            const result = await makeRequest('/VolandoUy-WebApp/api/rutas/diagnostico', 'Diagnóstico completo del sistema');
+            showResults('results5', result);
+            updateSection('section5', result.success);
+        }
+
+        async function ejecutarTodasLasPruebas() {
+            console.log('Ejecutando todas las pruebas...');
+            
+            // Reset todas las secciones
+            for (let i = 1; i <= 5; i++) {
+                const section = document.getElementById(`section${i}`);
+                section.classList.remove('success', 'error');
+                document.getElementById(`results${i}`).innerHTML = '<span class="loading">Esperando...</span>';
+            }
+
+            // Ejecutar pruebas en secuencia
+            await testSistema();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testAerolineas();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testPrecargar();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testRutasPorAerolinea();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testDiagnosticoCompleto();
+            
+            console.log('Todas las pruebas completadas');
+        }
+
+        // Ejecutar diagnóstico automático al cargar la página
+        window.addEventListener('load', function() {
+            setTimeout(testDiagnosticoCompleto, 1000);
+        });
+    </script>
+</body>
+</html>

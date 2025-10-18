@@ -51,4 +51,4 @@
   <div id="paquete-cantidades" class="rutas-grid"></div>
 </section>
 
-<script src="static/js/consultaPaquete.js"></script>
+<script src="js/consultaPaquete.js"></script>
