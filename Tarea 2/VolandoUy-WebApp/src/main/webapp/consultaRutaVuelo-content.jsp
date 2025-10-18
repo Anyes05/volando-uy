@@ -74,3 +74,6 @@
   <h3>Paquete asociado</h3>
   <p id="detalle-paquete"></p>
 </section>
+
+<!-- Script específico para consulta de ruta de vuelo -->
+<script src="js/consultaRutaVuelo.js"></script>

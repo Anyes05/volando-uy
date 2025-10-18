@@ -37,67 +37,7 @@ function quitarTildes(texto) {
   return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-// Mostrar rutas en el contenedor
-function mostrarRutas(lista) {
-  const contenedor = document.getElementById("lista-rutas");
-  contenedor.innerHTML = "";
-
-  if (lista.length === 0) {
-    contenedor.innerHTML = "<p>No se encontraron rutas.</p>";
-    return;
-  }
-
-  // Calcular inicio y fin de la página
-  const start = (currentPage - 1) * cardsPerPage;
-  const end = start + cardsPerPage;
-  const paginaRutas = lista.slice(start, end);
-
-  paginaRutas.forEach((r) => {
-    const card = document.createElement("article");
-    card.classList.add("ruta-card");
-
-    card.innerHTML = `
-      <img src="${r.imagen}" alt="Imagen de ${r.ciudadDestino.nombre}" style="width:100%;max-width:400px;">
-      <h3>${r.nombre}</h3>
-      <p>${r.descripcion}</p>
-      <button class="btn-ver-mas">Ver más</button>
-      <div class="detalle-ruta" style="display:none; margin-top:10px;">
-        <p><strong>Aerolínea:</strong> ${r.aerolinea.nombre}</p>
-        <p><strong>Origen:</strong> ${r.ciudadOrigen.nombre} (${r.ciudadOrigen.aeropuerto})</p>
-        <p><strong>Destino:</strong> ${r.ciudadDestino.nombre} (${r.ciudadDestino.aeropuerto})</p>
-        <p><strong>Categorías:</strong> ${r.categorias.join(", ")}</p>
-        <p><strong>Costo base:</strong> $${r.costoBase}</p>
-        <p><strong>Fecha de alta:</strong> ${r.fechaAlta}</p>
-      </div>
-    `;
-
-    const btn = card.querySelector(".btn-ver-mas");
-    const detalle = card.querySelector(".detalle-ruta");
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const visible = detalle.style.display === "block";
-      detalle.style.display = visible ? "none" : "block";
-      btn.textContent = visible ? "Ver más" : "Ver menos";
-    });
-
-    card.addEventListener("click", () => {
-      document.querySelectorAll(".ruta-card").forEach(c => c.classList.remove("seleccionada"));
-      card.classList.add("seleccionada");
-      mostrarVuelosDeRuta(r.nombre);
-    });
-
-    contenedor.appendChild(card);
-  });
-
-  renderizarControles(lista.length);
-  
-  if (!lista.some(r => rutaSeleccionada && r.nombre === rutaSeleccionada.nombre)) {
-  rutaSeleccionada = null;
-  document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
-}
-
-}
+// La función mostrarRutas se define más adelante con funcionalidad completa
 // Cargar aerolíneas y categorías únicas
 function cargarFiltros(data) {
   const aerolineas = [...new Set(data.map(r => r.aerolinea?.nombre).filter(Boolean))].sort();
@@ -152,14 +92,38 @@ function filtrar() {
     );
   });
 
-  // 🔄 Si la ruta seleccionada ya no está en las filtradas, deseleccionarla
+  // 🔄 Si la ruta seleccionada ya no está en las filtradas, limpiar selección
   if (rutaSeleccionada && !filtradas.some(r => r.nombre === rutaSeleccionada.nombre)) {
-    rutaSeleccionada = null;
-    vueloSeleccionado = null;
-    document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
+    limpiarSeleccionVuelos();
   }
 
   mostrarRutas(filtradas);
+}
+
+// Función para limpiar la selección de vuelos y detalles
+function limpiarSeleccionVuelos() {
+  // Limpiar variables de selección
+  rutaSeleccionada = null;
+  vueloSeleccionado = null;
+  
+  // Limpiar contenedor de vuelos
+  const contenedorVuelos = document.getElementById("lista-vuelos");
+  contenedorVuelos.innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
+  
+  // Limpiar cualquier detalle de vuelo que pueda estar visible
+  const detalleVuelo = document.getElementById("detalle-vuelo");
+  if (detalleVuelo) {
+    detalleVuelo.style.display = "none";
+  }
+  
+  // Limpiar mensaje de vuelo
+  const mensajeVuelo = document.getElementById("mensaje-vuelo");
+  if (mensajeVuelo) {
+    mensajeVuelo.style.display = "none";
+    mensajeVuelo.textContent = "";
+  }
+  
+  console.log("Selección de vuelos limpiada");
 }
 
 function mostrarVuelosDeRuta(nombreRuta) {
@@ -173,6 +137,12 @@ function mostrarVuelosDeRuta(nombreRuta) {
   if (vuelosRuta.length === 0) {
     contenedor.innerHTML = "<p>No hay vuelos confirmados para esta ruta.</p>";
     vueloSeleccionado = null; // 🔄 deseleccionar si no hay vuelos
+    // Limpiar mensaje de vuelo si existe
+    const mensajeVuelo = document.getElementById("mensaje-vuelo");
+    if (mensajeVuelo) {
+      mensajeVuelo.style.display = "none";
+      mensajeVuelo.textContent = "";
+    }
     return;
   }
 
@@ -189,9 +159,18 @@ function mostrarVuelosDeRuta(nombreRuta) {
     `;
 
     card.addEventListener("click", () => {
-      document.querySelectorAll(".vuelo-card").forEach(c => c.classList.remove("seleccionado"));
-      card.classList.add("seleccionado");
-      vueloSeleccionado = v;
+      // Si este vuelo ya está seleccionado, deseleccionarlo
+      if (vueloSeleccionado && vueloSeleccionado.nombre === v.nombre) {
+        card.classList.remove("seleccionado");
+        vueloSeleccionado = null;
+        console.log("Vuelo deseleccionado");
+      } else {
+        // Seleccionar nuevo vuelo
+        document.querySelectorAll(".vuelo-card").forEach(c => c.classList.remove("seleccionado"));
+        card.classList.add("seleccionado");
+        vueloSeleccionado = v;
+        console.log("Vuelo seleccionado:", v.nombre);
+      }
     });
 
     contenedor.appendChild(card);
@@ -254,8 +233,7 @@ function mostrarRutas(lista) {
 
   if (lista.length === 0) {
     contenedor.innerHTML = "<p>No se encontraron rutas.</p>";
-    rutaSeleccionada = null; // 🔄 deseleccionar si no hay rutas
-    document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
+    limpiarSeleccionVuelos(); // 🔄 limpiar selección si no hay rutas
     return;
   }
 
@@ -293,19 +271,26 @@ function mostrarRutas(lista) {
     });
 
     card.addEventListener("click", () => {
-      document.querySelectorAll(".ruta-card").forEach(c => c.classList.remove("seleccionada"));
-      card.classList.add("seleccionada");
-      rutaSeleccionada = r;
-      mostrarVuelosDeRuta(r.nombre);
+      // Si esta ruta ya está seleccionada, deseleccionarla
+      if (rutaSeleccionada && rutaSeleccionada.nombre === r.nombre) {
+        // Deseleccionar ruta actual
+        card.classList.remove("seleccionada");
+        limpiarSeleccionVuelos();
+      } else {
+        // Seleccionar nueva ruta
+        document.querySelectorAll(".ruta-card").forEach(c => c.classList.remove("seleccionada"));
+        card.classList.add("seleccionada");
+        rutaSeleccionada = r;
+        mostrarVuelosDeRuta(r.nombre);
+      }
     });
 
     contenedor.appendChild(card);
   });
 
-  // 🔄 Si la ruta seleccionada ya no está en la página actual, la deseleccionamos
+  // 🔄 Si la ruta seleccionada ya no está en la página actual, limpiar selección
   if (!paginaRutas.some(r => rutaSeleccionada && r.nombre === rutaSeleccionada.nombre)) {
-    rutaSeleccionada = null;
-    document.getElementById("lista-vuelos").innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
+    limpiarSeleccionVuelos();
   }
 
   renderizarControles(lista.length);
