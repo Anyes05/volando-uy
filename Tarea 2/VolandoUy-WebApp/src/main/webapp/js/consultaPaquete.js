@@ -83,25 +83,15 @@ function mostrarPaquetes(lista) {
     card.classList.add('paquete-card');
     card.onclick = () => mostrarDetallePaquete(p);
 
-    // Convertir imagen de byte array a base64 si existe
+    // Procesar imagen que ya viene en Base64 desde el backend
     let imagenSrc = '';
-    console.log('Procesando imagen para paquete:', p.nombre, 'Foto length:', p.foto ? p.foto.length : 'null');
+    console.log('Procesando imagen para paquete:', p.nombre, 'Foto:', p.foto ? 'presente' : 'ausente');
+    console.log('Tipo de foto:', typeof p.foto, 'Valor:', p.foto);
     
-    if (p.foto && p.foto.length > 0) {
-      try {
-        // Verificar si es un array de bytes válido
-        if (Array.isArray(p.foto) || p.foto instanceof Uint8Array) {
-          const base64 = btoa(String.fromCharCode(...p.foto));
-          imagenSrc = `data:image/jpeg;base64,${base64}`;
-          console.log('Imagen convertida exitosamente para:', p.nombre);
-        } else {
-          console.warn('Formato de imagen no válido para:', p.nombre);
-          imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
-        }
-      } catch (e) {
-        console.warn('Error convirtiendo imagen para', p.nombre, ':', e);
-        imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
-      }
+    if (p.foto && p.foto.trim() !== '') {
+      // La foto ya viene en Base64 desde el backend
+      imagenSrc = `data:image/jpeg;base64,${p.foto}`;
+      console.log('Imagen Base64 encontrada para:', p.nombre);
     } else {
       console.log('No hay imagen para paquete:', p.nombre);
       imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
@@ -158,25 +148,15 @@ function mostrarDetalleEnInterfaz(paquete) {
   document.getElementById('lista-paquetes').style.display = 'none';
   detalle.style.display = 'block';
 
-  // Convertir imagen de byte array a base64 si existe
+  // Procesar imagen que ya viene en Base64 desde el backend
   let imagenSrc = '';
-  console.log('Procesando imagen para detalle del paquete:', paquete.nombre, 'Foto length:', paquete.foto ? paquete.foto.length : 'null');
+  console.log('Procesando imagen para detalle del paquete:', paquete.nombre, 'Foto:', paquete.foto ? 'presente' : 'ausente');
+  console.log('Tipo de foto:', typeof paquete.foto, 'Valor:', paquete.foto);
   
-  if (paquete.foto && paquete.foto.length > 0) {
-    try {
-      // Verificar si es un array de bytes válido
-      if (Array.isArray(paquete.foto) || paquete.foto instanceof Uint8Array) {
-        const base64 = btoa(String.fromCharCode(...paquete.foto));
-        imagenSrc = `data:image/jpeg;base64,${base64}`;
-        console.log('Imagen convertida exitosamente para detalle:', paquete.nombre);
-      } else {
-        console.warn('Formato de imagen no válido para detalle:', paquete.nombre);
-        imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
-      }
-    } catch (e) {
-      console.warn('Error convirtiendo imagen para detalle', paquete.nombre, ':', e);
-      imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
-    }
+  if (paquete.foto && paquete.foto.trim() !== '') {
+    // La foto ya viene en Base64 desde el backend
+    imagenSrc = `data:image/jpeg;base64,${paquete.foto}`;
+    console.log('Imagen Base64 encontrada para detalle:', paquete.nombre);
   } else {
     console.log('No hay imagen para detalle del paquete:', paquete.nombre);
     imagenSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzI0MzRiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2VhZjZmYiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
