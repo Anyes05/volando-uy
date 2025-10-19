@@ -24,17 +24,6 @@
         <textarea id="descripcion" name="descripcion" rows="4" placeholder="Detalles de la ruta, servicios incluidos..." required></textarea>
       </div>
 
-      <!-- Hora y Fecha -->
-      <div class="form-group">
-        <label for="hora">Hora de salida</label>
-        <!-- name debe coincidir con lo que espera el controlador: horaSalida -->
-        <input type="time" id="hora" name="horaSalida" required>
-      </div>
-      <div class="form-group">
-        <label for="fechaAlta">Fecha de alta</label>
-        <input type="date" id="fechaAlta" name="fechaAlta">
-      </div>
-
       <!-- Costos -->
       <div class="form-group">
         <label for="costoTurista">Costo Turista</label>
@@ -44,39 +33,38 @@
         <label for="costoEjecutivo">Costo Ejecutivo</label>
         <input type="number" id="costoEjecutivo" name="costoEjecutivo" min="0" step="0.01" placeholder="USD" required>
       </div>
-      <div class="form-group full-width">
+      <div class="form-group">
         <label for="costoEquipaje">Costo Equipaje Extra</label>
         <input type="number" id="costoEquipaje" name="costoEquipaje" min="0" step="0.01" placeholder="USD">
+      </div>
+      <div class="form-group">
+        <label for="fechaAlta">Fecha de alta</label>
+        <input type="date" id="fechaAlta" name="fechaAlta">
       </div>
 
       <!-- Ciudades -->
       <div class="form-group">
         <label for="ciudadOrigen">Ciudad Origen</label>
         <select id="ciudadOrigen" name="ciudadOrigen" required>
-          <option value="">Seleccione</option>
-          <option>Montevideo</option>
-          <option>Buenos Aires</option>
-          <option>San Pablo</option>
+          <option value="">Seleccione ciudad origen</option>
+          <!-- Las ciudades se cargarán dinámicamente -->
         </select>
       </div>
       <div class="form-group">
         <label for="ciudadDestino">Ciudad Destino</label>
         <select id="ciudadDestino" name="ciudadDestino" required>
-          <option value="">Seleccione</option>
-          <option>Madrid</option>
-          <option>Miami</option>
-          <option>Santiago</option>
+          <option value="">Seleccione ciudad destino</option>
+          <!-- Las ciudades se cargarán dinámicamente -->
         </select>
       </div>
 
       <!-- Categorías -->
       <div class="form-group full-width">
         <label for="categorias">Categorías</label>
-        <select id="categorias" name="categorias" multiple>
-          <option value="Internacional">Internacional</option>
-          <option value="Regional">Regional</option>
-        </select>
-        <small class="hint">Puede seleccionar varias</small>
+        <div id="categorias-container" class="categorias-checkbox-container">
+          <!-- Las categorías se cargarán dinámicamente aquí -->
+        </div>
+        <small class="hint">Seleccione las categorías que aplican a esta ruta</small>
       </div>
 
       <!-- Foto -->
@@ -110,6 +98,218 @@
     </form>
   </div>
 </section>
+
+<style>
+  /* Estilos para categorías - integrado con el diseño de la página */
+  .categorias-checkbox-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    padding: 0;
+    margin-top: 8px;
+  }
+
+  .categoria-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+    font-size: 13px;
+    backdrop-filter: blur(10px);
+  }
+
+  .categoria-checkbox-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(1, 170, 245, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .categoria-checkbox-item.selected {
+    background: rgba(1, 170, 245, 0.15);
+    border-color: #01aaf5;
+  }
+
+  .categoria-checkbox-item input[type="checkbox"] {
+    margin: 0;
+    margin-right: 8px;
+    width: 14px;
+    height: 14px;
+    accent-color: #01aaf5;
+    cursor: pointer;
+  }
+
+  .categoria-checkbox-item label {
+    margin: 0;
+    cursor: pointer;
+    font-weight: 500;
+    user-select: none;
+    flex: 1;
+    color: inherit;
+  }
+
+  .categorias-loading {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .categorias-checkbox-container {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+  }
+</style>
+
+<script>
+  // Cargar categorías dinámicamente
+  async function cargarCategorias() {
+    const container = document.getElementById('categorias-container');
+    
+    try {
+      container.innerHTML = '<div class="categorias-loading">Cargando categorías...</div>';
+      
+      const response = await fetch('<%= request.getContextPath() %>/api/rutas/categorias', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Error HTTP: ' + response.status);
+      }
+
+      const categorias = await response.json();
+      
+      if (!Array.isArray(categorias) || categorias.length === 0) {
+        container.innerHTML = '<div class="categorias-loading">No hay categorías disponibles</div>';
+        return;
+      }
+
+      // Crear checkboxes para cada categoría
+      container.innerHTML = '';
+      categorias.forEach((categoria, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'categoria-checkbox-item';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `categoria-${index}`;
+        checkbox.name = 'categorias';
+        checkbox.value = categoria;
+        
+        const label = document.createElement('label');
+        label.htmlFor = `categoria-${index}`;
+        label.textContent = categoria;
+        
+        // Event listeners para el estilo visual
+        checkbox.addEventListener('change', function() {
+          if (this.checked) {
+            itemDiv.classList.add('selected');
+          } else {
+            itemDiv.classList.remove('selected');
+          }
+        });
+        
+        itemDiv.addEventListener('click', function(e) {
+          if (e.target !== checkbox) {
+            checkbox.click();
+          }
+        });
+        
+        itemDiv.appendChild(checkbox);
+        itemDiv.appendChild(label);
+        container.appendChild(itemDiv);
+      });
+      
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+      container.innerHTML = '<div class="categorias-loading" style="color: #ff6b6b;">Error al cargar categorías</div>';
+    }
+  }
+
+  // Cargar ciudades dinámicamente
+  async function cargarCiudades() {
+    try {
+      console.log('Cargando ciudades...');
+      
+      const response = await fetch('<%= request.getContextPath() %>/api/rutas/ciudades', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Error HTTP: ' + response.status);
+      }
+
+      const ciudades = await response.json();
+      
+      if (!Array.isArray(ciudades) || ciudades.length === 0) {
+        console.warn('No hay ciudades disponibles');
+        return;
+      }
+
+      // Cargar ciudades origen
+      const selectOrigen = document.getElementById('ciudadOrigen');
+      const selectDestino = document.getElementById('ciudadDestino');
+      
+      // Limpiar opciones existentes (excepto la primera)
+      selectOrigen.innerHTML = '<option value="">Seleccione ciudad origen</option>';
+      selectDestino.innerHTML = '<option value="">Seleccione ciudad destino</option>';
+      
+      // Agregar ciudades a ambos selects
+      ciudades.forEach(ciudad => {
+        const optionOrigen = document.createElement('option');
+        optionOrigen.value = ciudad.nombre;
+        optionOrigen.textContent = ciudad.nombreCompleto;
+        selectOrigen.appendChild(optionOrigen);
+        
+        const optionDestino = document.createElement('option');
+        optionDestino.value = ciudad.nombre;
+        optionDestino.textContent = ciudad.nombreCompleto;
+        selectDestino.appendChild(optionDestino);
+      });
+      
+      // Agregar listener para filtrar destino cuando se seleccione origen
+      selectOrigen.addEventListener('change', function() {
+        const ciudadOrigenSeleccionada = this.value;
+        
+        // Recargar ciudades destino excluyendo la seleccionada como origen
+        selectDestino.innerHTML = '<option value="">Seleccione ciudad destino</option>';
+        
+        ciudades.forEach(ciudad => {
+          if (ciudad.nombre !== ciudadOrigenSeleccionada) {
+            const option = document.createElement('option');
+            option.value = ciudad.nombre;
+            option.textContent = ciudad.nombreCompleto;
+            selectDestino.appendChild(option);
+          }
+        });
+      });
+      
+      console.log('Ciudades cargadas exitosamente:', ciudades.length);
+      
+    } catch (error) {
+      console.error('Error al cargar ciudades:', error);
+    }
+  }
+
+  // Cargar datos al cargar la página
+  document.addEventListener('DOMContentLoaded', function() {
+    cargarCategorias();
+    cargarCiudades();
+  });
+</script>
 
 <script>
   // Manejo del input de archivo para Alta Ruta Vuelo
@@ -172,40 +372,40 @@
     e.preventDefault();
     msgDiv.style.display = "none";
 
-    // -- OBLIGATORIO: actualizar hidden con el texto (nombre) de la opción seleccionada --
-    const select = form.querySelector("[name='rutasvuelo']");
-    const hiddenNombre = document.getElementById('rutasvueloNombre');
-    if (select) {
-      const selectedOption = select.options[select.selectedIndex];
-      // preferimos data-nombre si existe, sino textContent
-      const nombreDeRuta = selectedOption ? (selectedOption.dataset.nombre || selectedOption.textContent || "") : "";
-      if (hiddenNombre) hiddenNombre.value = nombreDeRuta;
-    }
-
-    // Ahora creamos formData (incluye el hidden con rutasvueloNombre)
-    const formData = new FormData(form);
-
-    // ... el resto de tu validación y envío sigue igual
+    // Validar campos obligatorios
     const nombre = form.querySelector("[name='nombre']").value.trim();
-    const duracion = form.querySelector("[name='duracion']").value.trim();
-    const fecha = form.querySelector("[name='fechaAlta']").value;
-    const rutaSeleccionada = form.querySelector("[name='rutasvuelo']").value;
-    const horaSalida = form.querySelector("[name='horaSalida']").value;
-    const cantidadTurista = form.querySelector("[name='cantidadAsientosTuristas']").value;
-    const cantidadEjecutivo = form.querySelector("[name='cantidadAsientosEjecutivo']").value;
+    const descripcionCorta = form.querySelector("[name='descripcionCorta']").value.trim();
+    const descripcion = form.querySelector("[name='descripcion']").value.trim();
+    const costoTurista = form.querySelector("[name='costoTurista']").value;
+    const costoEjecutivo = form.querySelector("[name='costoEjecutivo']").value;
+    const costoEquipaje = form.querySelector("[name='costoEquipaje']").value;
+    const ciudadOrigen = form.querySelector("[name='ciudadOrigen']").value;
+    const ciudadDestino = form.querySelector("[name='ciudadDestino']").value;
+    const fechaAlta = form.querySelector("[name='fechaAlta']").value;
 
-    const duracionRegex = /^\d{1,2}:\d{2}$/;
-    if (!nombre || !duracion || !duracionRegex.test(duracion) || !fecha || !cantidadTurista || !cantidadEjecutivo || !rutaSeleccionada) {
-      showMessage("Complete los campos obligatorios y use formato de duración HH:MM");
+    // Validar que se haya seleccionado al menos una categoría
+    const categoriasSeleccionadas = Array.from(form.querySelectorAll('input[name="categorias"]:checked'));
+    
+    if (!nombre || !descripcionCorta || !descripcion || !costoTurista || !costoEjecutivo || !costoEquipaje || 
+        !ciudadOrigen || !ciudadDestino || !fechaAlta || categoriasSeleccionadas.length === 0) {
+      showMessage("Complete todos los campos obligatorios y seleccione al menos una categoría");
       return;
     }
+
+    // Validar que las ciudades origen y destino sean diferentes
+    if (ciudadOrigen === ciudadDestino) {
+      showMessage("La ciudad de origen y destino deben ser diferentes");
+      return;
+    }
+
+    const formData = new FormData(form);
 
     submitBtn.disabled = true;
     const originalText = submitBtn.textContent;
     submitBtn.textContent = "Guardando...";
 
     try {
-      const response = await fetch("<%= request.getContextPath() %>/api/vuelos", {
+      const response = await fetch("<%= request.getContextPath() %>/api/rutas", {
         method: "POST",
         body: formData,
         credentials: "include"
@@ -215,15 +415,16 @@
       try { result = await response.json(); } catch (err) {}
 
       if (response.ok) {
-        alert(result.mensaje || "Vuelo creado exitosamente.");
+        showMessage(result.mensaje || "Ruta de vuelo creada exitosamente.", false);
         form.reset();
         document.getElementById("fechaAlta").valueAsDate = new Date();
-        msgDiv.style.display = "none";
+        // Recargar categorías para limpiar selecciones
+        cargarCategorias();
       } else {
-        alert(result.error || ("Error al crear vuelo: " + response.status));
+        showMessage(result.error || ("Error al crear ruta de vuelo: " + response.status));
       }
     } catch (error) {
-      alert("Error al crear vuelo: " + (error.message || error));
+      showMessage("Error al crear ruta de vuelo: " + (error.message || error));
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
