@@ -70,14 +70,34 @@
         <!-- Pasajeros adicionales -->
         <div id="passengersContainer" class="full-width hidden">
           <label>Datos de pasajeros adicionales (sin contarte a ti)</label>
+          <div class="passenger-help">
+            <small><i class="fas fa-info-circle"></i> Completa los datos de cada acompañante. El nickname debe corresponder a un usuario registrado.</small>
+          </div>
           <div id="passengersList" class="passengers-list"></div>
+        </div>
+
+        <!-- Alerta de reserva existente -->
+        <div id="existingReservationAlert" class="alert-warning hidden">
+          <div class="alert-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div class="alert-text">
+              <h4>Ya tienes una reserva en este vuelo</h4>
+              <p>¿Qué deseas hacer?</p>
+              <div class="alert-actions">
+                <button id="btnCambiarAerolinea" class="btn-option">Cambiar aerolínea</button>
+                <button id="btnCambiarRuta" class="btn-option">Cambiar ruta</button>
+                <button id="btnCambiarVuelo" class="btn-option">Cambiar vuelo</button>
+                <button id="btnCancelarCaso" class="btn-option btn-cancel">Cancelar</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Forma de reserva -->
         <div class="field full-width">
           <label>Forma de reserva</label>
           <div class="radio-row">
-            <label class="radio-item"><input type="radio" name="payMode" value="normal"> Reserva normal</label>
+            <label class="radio-item"><input type="radio" name="payMode" value="normal" checked> Reserva normal</label>
             <label class="radio-item"><input type="radio" name="payMode" value="paquete"> Reserva con paquete</label>
           </div>
         </div>
@@ -86,9 +106,9 @@
         <div id="packageContainer" class="field full-width hidden">
           <label for="selPackage">Paquetes disponibles</label>
           <select id="selPackage" aria-label="Seleccionar paquete">
-            <option value="">No hay paquetes</option>
+            <option value="">No hay paquetes disponibles</option>
           </select>
-          <small class="hint">Se mostrarán paquetes que ya compraste</small>
+          <small class="hint">Se mostrarán paquetes vigentes con disponibilidad para esta ruta</small>
         </div>
       </div>
 
@@ -116,3 +136,6 @@
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 </section>
 </div>
+
+<!-- JavaScript específico para reservas -->
+<script src="js/reserva.js"></script>
