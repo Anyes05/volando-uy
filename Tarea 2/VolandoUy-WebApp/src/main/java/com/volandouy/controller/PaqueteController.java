@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +43,21 @@ public class PaqueteController extends HttpServlet {
         this.objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+    /**
+     * Convierte un array de bytes de foto a Base64 string
+     */
+    private String convertirFotoABase64(byte[] fotoBytes) {
+        if (fotoBytes == null || fotoBytes.length == 0) {
+            return null;
+        }
+        try {
+            return Base64.getEncoder().encodeToString(fotoBytes);
+        } catch (Exception e) {
+            LOG.warning("Error convirtiendo foto a Base64: " + e.getMessage());
+            return null;
+        }
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -75,7 +91,7 @@ public class PaqueteController extends HttpServlet {
                             "descuento", paquete.getDescuento(),
                             "costoTotal", costoTotal,
                             "fechaAlta", paquete.getFechaAlta() != null ? paquete.getFechaAlta().toString() : "",
-                            "foto", paquete.getFoto() != null ? paquete.getFoto() : new byte[0]
+                            "foto", convertirFotoABase64(paquete.getFoto())
                         );
                         paquetesSimples.add(paqueteSimple);
                     }
@@ -113,7 +129,7 @@ public class PaqueteController extends HttpServlet {
                         "descuento", paquete.getDescuento(),
                         "costoTotal", paquete.getCostoTotal(),
                         "fechaAlta", paquete.getFechaAlta() != null ? paquete.getFechaAlta().toString() : "",
-                        "foto", paquete.getFoto() != null ? paquete.getFoto() : new byte[0]
+                        "foto", convertirFotoABase64(paquete.getFoto())
                     );
                     
                     // Crear rutas simplificadas con cantidades

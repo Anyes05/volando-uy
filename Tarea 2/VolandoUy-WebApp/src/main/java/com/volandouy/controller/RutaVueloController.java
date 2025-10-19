@@ -65,7 +65,7 @@ public class RutaVueloController extends HttpServlet {
             if (pathInfo == null || pathInfo.equals("/")) {
                 // GET /api/rutas - Lista rutas confirmadas de una aerolínea
                 LOG.info("Manejando lista de rutas");
-                handleGetRutas(nicknameParam, response, out);
+                handleGetRutas(nicknameParam, request, response, out);
                 return;
             } else if (pathInfo.equals("/test")) {
                 // Endpoint de prueba
@@ -332,6 +332,52 @@ public class RutaVueloController extends HttpServlet {
                     out.flush();
                 }
                 return;
+            } else if (pathInfo.equals("/ciudades")) {
+                // Listar ciudades disponibles
+                try {
+                    LOG.info("Listando ciudades disponibles");
+                    
+                    if (sistema == null) {
+                        LOG.severe("Sistema no inicializado");
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+                        return;
+                    }
+                    
+                    List<logica.DataTypes.DTCiudad> ciudadesEntidades = sistema.listarCiudades();
+                    List<Map<String, String>> ciudades = new ArrayList<>();
+                    
+                    if (ciudadesEntidades != null) {
+                        for (logica.DataTypes.DTCiudad ciudad : ciudadesEntidades) {
+                            if (ciudad != null && ciudad.getNombre() != null) {
+                                Map<String, String> ciudadMap = new HashMap<>();
+                                ciudadMap.put("nombre", ciudad.getNombre());
+                                ciudadMap.put("pais", ciudad.getPais());
+                                ciudadMap.put("nombreCompleto", ciudad.getNombre() + ", " + ciudad.getPais());
+                                ciudades.add(ciudadMap);
+                            }
+                        }
+                    }
+                    
+                    LOG.info("Ciudades encontradas: " + ciudades.size());
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    String jsonResponse = objectMapper.writeValueAsString(ciudades);
+                    out.print(jsonResponse);
+                    LOG.info("Respuesta de ciudades enviada exitosamente");
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error al listar ciudades", ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    try {
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Error al listar ciudades", "detail", ex.getMessage())));
+                    } catch (Exception jsonEx) {
+                        LOG.log(Level.SEVERE, "Error al serializar respuesta de error", jsonEx);
+                        out.print("{\"error\":\"Error interno del servidor\"}");
+                    }
+                } finally {
+                    out.flush();
+                }
+                return;
             } else if (pathInfo.equals("/por-categoria")) {
                 // GET /api/rutas/por-categoria?categoria=X - Lista rutas por categoría
                 String categoriaParam = request.getParameter("categoria");
@@ -365,14 +411,29 @@ public class RutaVueloController extends HttpServlet {
 
     /**
      * GET /api/rutas - Lista rutas confirmadas de una aerolínea
+     * Si no se especifica el parámetro 'aerolinea', intenta usar la aerolínea de la sesión actual
+     * (útil para casos como alta de vuelo donde la aerolínea logueada solo ve sus propias rutas)
      */
-    private void handleGetRutas(String nicknameParam, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetRutas(String nicknameParam, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
         String nickname = nicknameParam;
 
         if (nickname == null || nickname.trim().isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Debe especificar una aerolínea")));
-            return;
+            // Intentar obtener la aerolínea de la sesión si no se especifica
+            HttpSession session = request.getSession(false);
+            
+            if (session != null && session.getAttribute("usuarioLogueado") != null) {
+                String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+                if ("aerolinea".equals(tipoUsuario)) {
+                    nickname = (String) session.getAttribute("usuarioLogueado");
+                    LOG.info("Usando aerolínea de la sesión: " + nickname);
+                }
+            }
+            
+            if (nickname == null || nickname.trim().isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Debe especificar una aerolínea o estar logueado como aerolínea")));
+                return;
+            }
         }
 
         LOG.info("Buscando rutas para aerolínea: " + nickname);
@@ -739,8 +800,6 @@ public class RutaVueloController extends HttpServlet {
             String nombre = trim(request.getParameter("nombre"));
             String descripcionCorta = trim(request.getParameter("descripcionCorta"));
             String descripcion = trim(request.getParameter("descripcion"));
-            // tu input tiene name="horaSalida"
-            String horaSalida = trim(request.getParameter("horaSalida"));
             String fechaAltaStr = trim(request.getParameter("fechaAlta"));
 
             // Convertir a float de forma segura SIN métodos auxiliares.
@@ -794,7 +853,6 @@ public class RutaVueloController extends HttpServlet {
             // LOG de depuración
             byte[] finalFotoBytes = fotoBytes;
             LOG.info(() -> "POST /api/rutas recibido. nombre=" + nombre
-                    + ", horaSalida=" + horaSalida
                     + ", fechaAlta=" + fechaAltaStr
                     + ", costoTurista=" + costoTurista
                     + ", costoEjecutivo=" + costoEjecutivo
@@ -805,7 +863,7 @@ public class RutaVueloController extends HttpServlet {
                     + ", fotoBytes=" + (finalFotoBytes == null ? 0 : finalFotoBytes.length));
 
             // --- Validaciones mínimas del servidor ---
-            if (isEmpty(nombre) || isEmpty(descripcion) || isEmpty(horaSalida)
+            if (isEmpty(nombre) || isEmpty(descripcion)
                     || costoTurista == 0f || costoEjecutivo == 0f
                     || isEmpty(ciudadOrigen) || isEmpty(ciudadDestino)) {
 
