@@ -370,7 +370,7 @@ public class ReservaController extends HttpServlet {
                     clienteMap.put("nickname", cliente.getNickname());
                     clienteMap.put("nombre", cliente.getNombre());
                     clienteMap.put("apellido", cliente.getApellido());
-                    clienteMap.put("email", cliente.getEmail());
+                    clienteMap.put("email", cliente.getCorreo());
                     clientesDisponibles.add(clienteMap);
                 }
             }
@@ -405,7 +405,7 @@ public class ReservaController extends HttpServlet {
                 clienteMap.put("nickname", cliente.getNickname());
                 clienteMap.put("nombre", cliente.getNombre());
                 clienteMap.put("apellido", cliente.getApellido());
-                clienteMap.put("email", cliente.getEmail());
+                clienteMap.put("email", cliente.getCorreo());
                 clientesDisponibles.add(clienteMap);
             }
             
@@ -728,7 +728,7 @@ public class ReservaController extends HttpServlet {
             
             // Buscar el cliente por email
             for (DTCliente cliente : clientes) {
-                if (cliente.getEmail().equalsIgnoreCase(email.trim())) {
+                if (cliente.getCorreo().equalsIgnoreCase(email.trim())) {
                     return cliente.getNickname(); // Devolver el nickname del cliente
                 }
             }
