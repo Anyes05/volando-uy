@@ -108,6 +108,24 @@ const controladorDeVista = {
             // Agregar clase específica para el fondo del registro
             contenedor.className = "register-page";
             
+            // Asegurar que se carguen los estilos CSS del registro
+            const registerCSS = document.querySelector('link[href*="registrarUsuario.css"]');
+            if (!registerCSS) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = 'static/css/registrarUsuario.css';
+              document.head.appendChild(link);
+              console.log('Estilos de registro cargados dinámicamente');
+            }
+            
+            // Forzar recarga de estilos si ya existen pero no se aplican
+            setTimeout(() => {
+              const existingCSS = document.querySelector('link[href*="registrarUsuario.css"]');
+              if (existingCSS) {
+                existingCSS.href = existingCSS.href + '?v=' + Date.now();
+              }
+            }, 100);
+            
             const ejecutarInit = () => {
               // Esperar a que el DOM esté completamente listo y los elementos existan
               const esperarElemento = () => {
@@ -300,7 +318,7 @@ const controladorDeVista = {
             if (!loginCSS) {
               const link = document.createElement('link');
               link.rel = 'stylesheet';
-              link.href = 'css/login.css';
+              link.href = 'static/css/login.css';
               document.head.appendChild(link);
               console.log('Estilos de login cargados dinámicamente');
             }
