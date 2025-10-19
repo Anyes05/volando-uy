@@ -635,19 +635,22 @@ public class Sistema implements ISistema {
         }
         for (RutaVuelo r : aerolinea.getRutasVuelo()) {
             if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
-            listaRutas.add(new DTRutaVuelo(
-                    r.getNombre(),
-                    r.getDescripcion(),
-                    r.getFechaAlta(),
-                    r.getCostoBase(),
-                    new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>(), aerolinea.getFoto(), aerolinea.getContrasena()),
-                    new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
-                    new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
-                    r.getFoto(),
-                    r.getEstado()
-            ));
-        }
+                DTRutaVuelo dtRuta = new DTRutaVuelo(
+                        r.getNombre(),
+                        r.getDescripcion(),
+                        r.getFechaAlta(),
+                        r.getCostoBase(),
+                        new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>(), aerolinea.getFoto(), aerolinea.getContrasena()),
+                        new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                        new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
+                        r.getFoto(),
+                        r.getEstado()
+                );
+                // Agregar las categorías a la ruta
+                dtRuta.setCategorias(r.getCategorias());
+                listaRutas.add(dtRuta);
             }
+        }
         return listaRutas;
     }
 
@@ -780,6 +783,8 @@ public class Sistema implements ISistema {
                         r.getFoto(),
                         r.getEstado()
                 );
+                // Agregar las categorías a la ruta
+                dtRuta.setCategorias(r.getCategorias());
                 DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta, v.getFoto());
                 listaDTVuelos.add(dtVuelo);
             }
@@ -825,7 +830,7 @@ public class Sistema implements ISistema {
         for (Aerolinea a : aerolineas) {
             for (RutaVuelo r : a.getRutasVuelo()) {
                 if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
-                    listaRutas.add(new DTRutaVuelo(
+                    DTRutaVuelo dtRuta = new DTRutaVuelo(
                             r.getNombre(),
                             r.getDescripcion(),
                             r.getFechaAlta(),
@@ -835,10 +840,12 @@ public class Sistema implements ISistema {
                             new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
                             r.getFoto(),
                             r.getEstado()
-                    ));
+                    );
+                    // Agregar las categorías a la ruta
+                    dtRuta.setCategorias(r.getCategorias());
+                    listaRutas.add(dtRuta);
                 }
             }
-
         }
         return listaRutas;
     }
