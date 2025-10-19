@@ -1,8 +1,5 @@
 package logica.clase;
-import dato.entidades.Aerolinea;
-import dato.entidades.Ciudad;
-import dato.entidades.RutaVuelo;
-import dato.entidades.Vuelo;
+import dato.entidades.*;
 import logica.DataTypes.*;
 import logica.clase.Sistema;
 
@@ -297,77 +294,249 @@ class SistemaTest {
 
     //RESERVA
     @Test
-    void testCrearPaquete() throws Exception {
+    void testDatoReserva() throws Exception {
         Sistema s = Sistema.getInstance();
 
-        // 1. Alta de aerolínea y selección
+        // --- Setup base ---
         s.altaAerolinea("aeroTest","TestAir","test@air.com","Desc","https://test.com",new byte[]{1},"Clave123");
         s.seleccionarAerolineaRet("aeroTest");
 
-        // 2. Alta de ciudades
         CiudadServicio cs = new CiudadServicio();
-        cs.registrarCiudad("MontevideoTest","Uruguay","AeropuertoMVD","Desc1","https://c1.com",new DTFecha(1,1,2024));
-        cs.registrarCiudad("BuenosAiresTest","Argentina","AeropuertoBUE","Desc2","https://c2.com",new DTFecha(2,2,2024));
+        cs.registrarCiudad("VillaRodriguezTest","Uruguay","AeropuertoVR","Desc1","https://c1.com",new DTFecha(1,1,2024));
+        cs.registrarCiudad("VillaPerezTest","Uruguay","AeropuertoVP","Desc2","https://c2.com",new DTFecha(2,2,2024));
 
-        // 3. Alta de categoría
         s.altaCategoria("CategoriaX");
-
-        // 4. Alta de ruta
-        s.ingresarDatosRuta("RutaDummy","Desc ruta",100,200,50,
-                "MontevideoTest","BuenosAiresTest",
+        s.ingresarDatosRuta("RutaAurora","Desc ruta",100,200,50,
+                "VillaRodriguezTest","VillaPerezTest",
                 new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{1});
         s.registrarRuta();
 
-        // Confirmar ruta
         RutaVueloServicio rs = new RutaVueloServicio();
-        RutaVuelo ruta = rs.buscarRutaVueloPorNombre("RutaDummy");
+        RutaVuelo ruta = rs.buscarRutaVueloPorNombre("RutaAurora");
         ruta.setEstado(EstadoRutaVuelo.CONFIRMADA);
 
-        // 5. Alta de vuelo
-        DTRutaVuelo dtRuta = new DTRutaVuelo(ruta.getNombre(),ruta.getDescripcion(),ruta.getFechaAlta(),
-                ruta.getCostoBase(),null,
+        DTRutaVuelo dtRuta = new DTRutaVuelo(
+                ruta.getNombre(),
+                ruta.getDescripcion(),
+                ruta.getFechaAlta(),
+                ruta.getCostoBase(),
+                null,
                 new DTCiudad(ruta.getCiudadOrigen().getNombre(),ruta.getCiudadOrigen().getPais()),
                 new DTCiudad(ruta.getCiudadDestino().getNombre(),ruta.getCiudadDestino().getPais()),
-                null,ruta.getEstado());
-        s.ingresarDatosVuelo("VueloDummy",new DTFecha(10,10,2025),new DTHora(12,30),new DTHora(2,0),
-                100,20,new DTFecha(9,9,2025),dtRuta,new byte[]{1});
+                null,
+                ruta.getEstado()
+        );
 
-        // Reforzar selección de aerolínea antes de dar de alta el vuelo
+        s.ingresarDatosVuelo("VueloAuroraTest",new DTFecha(10,10,2025),new DTHora(12,30),new DTHora(2,0),
+                100,20,new DTFecha(9,9,2025),dtRuta,new byte[]{1});
         s.seleccionarAerolineaRet("aeroTest");
         s.darAltaVuelo();
 
-        // 6. Precargar clientes
         ClienteServicio clienteServicio = new ClienteServicio();
-        clienteServicio.crearCliente(
-                "cliente1", "Nombre1", "mail1@test.com", "Apellido1",
-                new DTFecha(1,1,1990), "Uruguay", TipoDoc.CI, "12345678",
-                new byte[]{1}, "pass1"
-        );
-        clienteServicio.crearCliente(
-                "cliente2", "Nombre2", "mail2@test.com", "Apellido2",
-                new DTFecha(2,2,1992), "Argentina", TipoDoc.CI, "87654321",
-                new byte[]{1}, "pass2"
-        );
+        clienteServicio.crearCliente("cliente1","Nombre1","mail1@test.com","Apellido1",
+                new DTFecha(1,1,1990),"Uruguay",TipoDoc.CI,"12345678",new byte[]{1},"pass1");
 
-        // 7. Seleccionar vuelo para reserva
-        s.seleccionarVueloParaReserva("VueloDummy");
-
-        // 8. Pasajeros
-        List<String> pasajeros = new ArrayList<>();
-        s.nombresPasajes("cliente1", pasajeros);
-        s.nombresPasajes("cliente2", pasajeros);
-
-        // 9. Ejecutar reserva
-        Exception ex = assertThrows(IllegalStateException.class, () -> {
-            s.datosReserva(TipoAsiento.Turista,2,1,pasajeros,new DTFecha(15,10,2025));
+        // --- IF1: vueloSeleccionadoParaReserva == null ---
+        Exception ex1 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,List.of("cliente1"),new DTFecha(15,10,2025));
         });
+        System.out.println("IF1 -> " + ex1.getMessage());
+        assertTrue(ex1.getMessage().contains("Debe seleccionar un vuelo"));
 
-        assertTrue(ex.getMessage().startsWith("SUCCESS:"));
+        // --- IF3: pasajeros vacíos ---
+        s.seleccionarVueloParaReserva("VueloAuroraTest");
+        Exception ex3 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,List.of(),new DTFecha(15,10,2025));
+        });
+        System.out.println("IF3 -> " + ex3.getMessage());
+        assertTrue(ex3.getMessage().contains("No se ha seleccionado ningún pasajero"));
+
+        // --- IF4: cliente principal vacío ---
+        Exception ex4 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,List.of(""),new DTFecha(15,10,2025));
+        });
+        System.out.println("IF4 -> " + ex4.getMessage());
+        assertTrue(ex4.getMessage().contains("No se ha seleccionado un cliente principal"));
+
+        // --- IF5: cliente principal inexistente ---
+        Exception ex5 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,List.of("clienteInexistente"),new DTFecha(15,10,2025));
+        });
+        System.out.println("IF5 -> " + ex5.getMessage());
+        assertTrue(ex5.getMessage().contains("No se encontró el cliente principal"));
+
+        // --- IF6: duplicados en pasajeros ---
+        List<String> pasajerosDup = List.of("cliente1","cliente1");
+        Exception ex6 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,2,0,pasajerosDup,new DTFecha(15,10,2025));
+        });
+        System.out.println("IF6 -> " + ex6.getMessage());
+        assertTrue(ex6.getMessage().contains("pasajeros duplicados"));
+
+        // --- IF7: cantidad incorrecta (sobran pasajeros) ---
+        clienteServicio.crearCliente("cliente2","Nombre2","mail2@test.com","Apellido2",
+                new DTFecha(2,2,1992),"Uruguay",TipoDoc.CI,"87654321",new byte[]{2},"pass2");
+        List<String> pasajerosSobra = List.of("cliente1","cliente2");
+        Exception ex7 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,pasajerosSobra,new DTFecha(15,10,2025));
+        });
+        System.out.println("IF7 -> " + ex7.getMessage());
+        assertTrue(ex7.getMessage().contains("Agregó demasiados pasajeros"));
+
+        // --- ADMIN_REQUIRED: cliente ya tiene reserva en ese vuelo ---
+        List<String> pasajerosOkAdmin = new ArrayList<>();
+        s.nombresPasajes("cliente1", pasajerosOkAdmin);
+        Exception exAdmin1 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,pasajerosOkAdmin,new DTFecha(16,10,2025));
+        });
+        assertTrue(exAdmin1.getMessage().startsWith("SUCCESS:"), "Primera reserva debe ser SUCCESS");
+
+        Exception exAdmin2 = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,pasajerosOkAdmin,new DTFecha(17,10,2025));
+        });
+        System.out.println("ADMIN -> " + exAdmin2.getMessage());
+        assertTrue(exAdmin2.getMessage().contains("ADMIN_REQUIRED"));
+
+        // --- Asientos insuficientes ---
+        Exception exSeats = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,101,0,List.of("cliente2"),new DTFecha(18,10,2025));
+        });
+        System.out.println("SEATS -> " + exSeats.getMessage());
+        assertTrue(exSeats.getMessage().contains("No hay suficientes asientos turista"));
+
+        // --- Pasajero inexistente ---
+        List<String> pasajerosInexistente = List.of("cliente2","noExiste");
+        Exception exNoPasajero = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,2,0,pasajerosInexistente,new DTFecha(19,10,2025));
+        });
+        System.out.println("NO PASAJERO -> " + exNoPasajero.getMessage());
+        assertTrue(exNoPasajero.getMessage().contains("No se encontró el pasajero"));
+
+        // --- Flujo feliz ---
+        List<String> pasajerosOk = new ArrayList<>();
+        s.nombresPasajes("cliente2", pasajerosOk);
+        Exception exFinal = assertThrows(IllegalStateException.class, () -> {
+            s.datosReserva(TipoAsiento.Turista,1,0,pasajerosOk,new DTFecha(20,10,2025));
+        });
+        System.out.println("SUCCESS -> " + exFinal.getMessage());
+        assertTrue(exFinal.getMessage().startsWith("SUCCESS:"));
+    }
+
+    //SeleccionarrutaVuelo
+    @Test
+    void testSeleccionarRutaVuelo() throws Exception {
+        Sistema s = Sistema.getInstance();
+
+        // Setup aerolínea
+        s.altaAerolinea("aeroTest","TestAir","test@air.com","Desc","https://test.com",new byte[]{1},"Clave123");
+        s.seleccionarAerolineaRet("aeroTest");
+
+        // Ciudades inventadas para evitar duplicados
+        CiudadServicio cs = new CiudadServicio();
+        cs.registrarCiudad("VillaRodriguezTest","Uruguay","AeropuertoVR","Desc1","https://c1.com",new DTFecha(1,1,2024));
+        cs.registrarCiudad("VillaPerezTest","Uruguay","AeropuertoVP","Desc2","https://c2.com",new DTFecha(2,2,2024));
+
+        // Categoría y ruta
+        s.altaCategoria("CategoriaX");
+        s.ingresarDatosRuta(
+                "RutaAurora","Desc ruta",
+                100, // costoTurista
+                200, // costoEjecutivo
+                50,  // costoEquipajeExtra
+                "VillaRodriguezTest","VillaPerezTest",
+                new DTFecha(1,1,2025),
+                List.of("CategoriaX"),
+                new byte[]{1}
+        );
+        s.registrarRuta();
+
+        // Confirmar estado de la ruta (si tu API lo requiere vía servicio)
+        RutaVueloServicio rs = new RutaVueloServicio();
+        RutaVuelo ruta = rs.buscarRutaVueloPorNombre("RutaAurora");
+        ruta.setEstado(EstadoRutaVuelo.CONFIRMADA);
+
+        // Crear vuelo para esa ruta
+        DTRutaVuelo dtRuta = new DTRutaVuelo(
+                ruta.getNombre(),
+                ruta.getDescripcion(),
+                ruta.getFechaAlta(),
+                ruta.getCostoBase(),
+                null, // aerolínea DT opcional (tu método arma esto por dentro)
+                new DTCiudad(ruta.getCiudadOrigen().getNombre(), ruta.getCiudadOrigen().getPais()),
+                new DTCiudad(ruta.getCiudadDestino().getNombre(), ruta.getCiudadDestino().getPais()),
+                ruta.getFoto(),
+                ruta.getEstado()
+        );
+
+        s.ingresarDatosVuelo(
+                "VueloAuroraTest",
+                new DTFecha(10,10,2025),
+                new DTHora(12,30),
+                new DTHora(2,0),
+                100, // asientos turista
+                20,  // asientos ejecutivo
+                new DTFecha(9,9,2025),
+                dtRuta,
+                new byte[]{1}
+        );
+        s.seleccionarAerolineaRet("aeroTest");
+        s.darAltaVuelo();
+
+        // Ejecutar: seleccionar por nombre de ruta (case-insensitive)
+        List<DTVuelo> result = s.seleccionarRutaVuelo("rutaaurora");
+
+        // Validaciones del camino feliz
+        assertNotNull(result, "La lista no debe ser nula");
+        assertFalse(result.isEmpty(), "Debe devolver al menos un vuelo para la ruta buscada");
+
+        DTVuelo dt = result.get(0);
+        assertEquals("VueloAuroraTest", dt.getNombre(), "Nombre del vuelo debe coincidir");
+        assertNotNull(dt.getRuta(), "Debe mapear DTRutaVuelo");
+        assertEquals("RutaAurora", dt.getRuta().getNombre(), "Nombre de la ruta debe coincidir");
+        assertEquals("VillaRodriguezTest", dt.getRuta().getCiudadOrigen().getNombre(), "Origen correcto");
+        assertEquals("VillaPerezTest", dt.getRuta().getCiudadDestino().getNombre(), "Destino correcto");
+    }
+
+    //Mostrar datos usuario
+    @Test
+    void testMostrarDatosUsuarioMod() {
+        Sistema s = Sistema.getInstance();
+
+        // --- Alta de un cliente válido ---
+        assertDoesNotThrow(() -> s.altaCliente(
+                "nickCliente", "Juan", "cliente@mail.com", "Pérez",
+                new DTFecha(1,1,1990), "Uruguayo", TipoDoc.CI, "DOC123",
+                new byte[]{1}, "Clave123"
+        ));
+
+        // --- Alta de una aerolínea válida ---
+        assertDoesNotThrow(() -> s.altaAerolinea(
+                "nickAero", "AirTest", "aero@mail.com", "Descripcion",
+                "http://aero.com", new byte[]{1}, "Clave123"
+        ));
+
+        // --- Caso 1: Cliente ---
+        DTUsuario dtoCliente = s.mostrarDatosUsuarioMod("nickCliente");
+        assertTrue(dtoCliente instanceof DTCliente);
+        assertEquals("nickCliente", dtoCliente.getNickname());
+        assertEquals("cliente@mail.com", dtoCliente.getCorreo());
+
+        // --- Caso 2: Aerolínea ---
+        DTUsuario dtoAero = s.mostrarDatosUsuarioMod("nickAero");
+        assertTrue(dtoAero instanceof DTAerolinea);
+        assertEquals("nickAero", dtoAero.getNickname());
+        assertEquals("aero@mail.com", dtoAero.getCorreo());
+
+        // --- Caso 3: Usuario inexistente ---
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> {
+            s.mostrarDatosUsuarioMod("noExiste");
+        });
+        assertEquals("Usuario no encontrado", ex.getMessage());
     }
 
 
 
-
+    //LISTAR AEROLINEAS
 
 
 
@@ -410,6 +579,55 @@ class SistemaTest {
         assertThrows(IllegalArgumentException.class,()->s.altaCiudad("CiudadX","Uruguay","AeropuertoValido","","https://x.com",new DTFecha(2,2,2024))); //descripcion invalida
     }
 
+    @Test
+    void testListarCiudades() {
+        Sistema s = Sistema.getInstance();
+        CiudadServicio cs = new CiudadServicio();
+
+        // --- Caso 1: sin ciudades ---
+        List<DTCiudad> vacias = s.listarCiudades();
+        assertNotNull(vacias, "La lista no debe ser nula");
+        assertTrue(vacias.isEmpty(), "Debe estar vacía si no hay ciudades");
+
+        // --- Caso 2: con ciudades registradas ---
+        cs.registrarCiudad("MontevideoTest","Uruguay","AeropuertoCarrasco",
+                "Capital","http://mv.com",new DTFecha(1,1,2020));
+        cs.registrarCiudad("SaltoTest","Uruguay","AeropuertoSalto",
+                "Ciudad norte","http://salto.com",new DTFecha(2,2,2020));
+
+        List<DTCiudad> result = s.listarCiudades();
+        assertEquals(2, result.size(), "Debe devolver 2 ciudades");
+
+        // Validar que están las ciudades esperadas
+        assertTrue(result.stream().anyMatch(c -> c.getNombre().equals("MontevideoTest")));
+        assertTrue(result.stream().anyMatch(c -> c.getNombre().equals("SaltoTest")));
+    }
+
+    @Test
+    void testListarCiudadesDestino() {
+        Sistema s = Sistema.getInstance();
+
+        // --- Caso 1: lista vacía ---
+        List<DTCiudad> vacias = s.listarCiudadesDestino(new ArrayList<>(), "Montevideo");
+        assertNotNull(vacias);
+        assertTrue(vacias.isEmpty(), "Si no hay ciudades, debe devolver vacío");
+
+        // --- Caso 2: varias ciudades ---
+        List<DTCiudad> ciudades = new ArrayList<>();
+        ciudades.add(new DTCiudad("MontevideoTest","Uruguay"));
+        ciudades.add(new DTCiudad("SaltoTest","Uruguay"));
+        ciudades.add(new DTCiudad("PaysanduTest","Uruguay"));
+
+        List<DTCiudad> destinos = s.listarCiudadesDestino(ciudades, "montevideoTEST"); // case-insensitive
+        assertEquals(2, destinos.size(), "Debe excluir la ciudad de origen");
+
+        // Validar que no contiene la ciudad origen
+        assertFalse(destinos.stream().anyMatch(c -> c.getNombre().equalsIgnoreCase("MontevideoTest")));
+        assertTrue(destinos.stream().anyMatch(c -> c.getNombre().equals("SaltoTest")));
+        assertTrue(destinos.stream().anyMatch(c -> c.getNombre().equals("PaysanduTest")));
+    }
+
+   
 
 
 }

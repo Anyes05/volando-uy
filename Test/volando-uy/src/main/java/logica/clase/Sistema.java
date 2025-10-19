@@ -855,8 +855,17 @@ public class Sistema implements ISistema {
     }
 
     public void seleccionarVueloParaReserva(String nombreVuelo) {
-        this.vueloSeleccionadoParaReserva = nombreVuelo;
+        VueloServicio vs = new VueloServicio();
+        Vuelo vuelo = vs.buscarVueloPorNombre(nombreVuelo);
+
+        if (vuelo != null) {
+            this.vueloSeleccionadoParaReserva = nombreVuelo;
+        } else {
+            this.vueloSeleccionadoParaReserva = null;
+        }
     }
+
+
 
     public List<DTPasajero> pasajeros(String nombreCliente) {
         ClienteServicio clienteServicio = new ClienteServicio();
@@ -1222,15 +1231,25 @@ public class Sistema implements ISistema {
 
     public void seleccionarAerolineaPaquete(DTAerolinea DTaerolinea) {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
-        aerolineaSeleccionada = aerolineaServicio.buscarAerolineaPorNickname(DTaerolinea.getNickname());
+        if (DTaerolinea != null) {
+            aerolineaSeleccionada = aerolineaServicio.buscarAerolineaPorNickname(DTaerolinea.getNickname());
+        } else {
+            aerolineaSeleccionada = null;
+        }
     }
 
     public void seleccionarRutaVueloPaquete(String nombreRuta) {
-        for (RutaVuelo r : aerolineaSeleccionada.getRutasVuelo()) {
-            if (r.getNombre().equals(nombreRuta) && r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
-                rutaVueloSeleccionada = r;
+        rutaVueloSeleccionada = null; // limpiar estado previo
+
+        if (aerolineaSeleccionada != null) {
+            for (RutaVuelo r : aerolineaSeleccionada.getRutasVuelo()) {
+                if (r.getNombre().equals(nombreRuta) && r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+                    rutaVueloSeleccionada = r;
+                    break; // ya encontraste, no sigas
+                }
             }
         }
+
         if (rutaVueloSeleccionada == null) {
             throw new IllegalArgumentException("Ruta de vuelo no encontrada: " + nombreRuta);
         }
@@ -1556,6 +1575,7 @@ public class Sistema implements ISistema {
                 rutaVueloSeleccionadaParaAdministracion.getId(), 
                 EstadoRutaVuelo.CONFIRMADA
         );
+
 
         // Limpiar selecciones
         aerolineaSeleccionadaParaAdministracion = null;
