@@ -627,7 +627,97 @@ class SistemaTest {
         assertTrue(destinos.stream().anyMatch(c -> c.getNombre().equals("PaysanduTest")));
     }
 
-   
+    @Test
+    void testListarRutaVueloDeVuelo() throws Exception {
+        Sistema s = Sistema.getInstance();
 
+        // --- Paso 1: alta de aerolínea ---
+        s.altaAerolinea("aeroTest", "TestAir", "test@air.com", "Descripcion válida",
+                "https://test.com", new byte[]{1}, "Clave123");
+
+        // --- Paso 2: selección para registrar rutas ---
+        s.seleccionarAerolineaRet("aeroTest");
+
+        // --- Paso 3: alta de ciudades ---
+        CiudadServicio cs = new CiudadServicio();
+        cs.registrarCiudad("VillaRodriguezTest", "Uruguay", "AeropuertoVR", "Desc1",
+                "https://c1.com", new DTFecha(1, 1, 2024));
+        cs.registrarCiudad("VillaPerezTest", "Uruguay", "AeropuertoVP", "Desc2",
+                "https://c2.com", new DTFecha(2, 2, 2024));
+
+        // --- Paso 4: categoría y ruta ---
+        s.altaCategoria("CategoriaX");
+        s.ingresarDatosRuta("RutaAurora", "Desc ruta", 100, 200, 50,
+                "VillaRodriguezTest", "VillaPerezTest",
+                new DTFecha(1, 1, 2025), List.of("CategoriaX"), new byte[]{1});
+        s.registrarRuta();
+
+        // --- Paso 5: selección para administración y aceptación oficial ---
+        s.seleccionarAerolineaParaAdministracion("aeroTest");
+        s.seleccionarRutaVueloParaAdministracion("RutaAurora");
+        Exception ex = assertThrows(IllegalStateException.class, () -> {
+            s.aceptarRutaVuelo();
+        });
+        assertTrue(ex.getMessage().startsWith("SUCCESS:"), "La ruta debe ser aceptada correctamente");
+
+        // --- Paso 6: ejecutar método a testear ---
+        List<DTRutaVuelo> rutas = s.listarRutaVueloDeVuelo();
+
+        // --- Validaciones ---
+        assertNotNull(rutas, "La lista no debe ser nula");
+        assertFalse(rutas.isEmpty(), "Debe devolver al menos una ruta confirmada");
+        assertTrue(rutas.stream().anyMatch(r -> r.getNombre().equals("RutaAurora")),
+                "Debe contener la ruta 'RutaAurora'");
+    }
+
+    @Test
+    void testListarClientes() {
+        Sistema s = Sistema.getInstance();
+
+        // --- Alta de clientes ---
+        s.altaCliente("clientefulano", "Anaaaa", "anasda@test.com", "Goomemez",
+                new DTFecha(1,1,1990), "Uruguay", TipoDoc.CI, "12343258", new byte[]{1}, "Clave1321");
+
+        s.altaCliente("clientemengano", "Luisito", "luis@test.com", "Pérez",
+                new DTFecha(2,2,1992), "Uruguay", TipoDoc.CI, "87632321", new byte[]{2}, "Clave232112");
+
+        // --- Ejecutar método ---
+        List<DTCliente> clientes = s.listarClientes();
+
+        // --- Validaciones ---
+        assertNotNull(clientes, "La lista no debe ser nula");
+        assertEquals(2, clientes.size(), "Debe haber dos clientes registrados");
+
+        List<String> nicknames = clientes.stream().map(DTCliente::getNickname).toList();
+        assertTrue(nicknames.contains("clientefulano"));
+        assertTrue(nicknames.contains("clientemengano"));
+    }
+
+    @Test
+    void testPasajeros_excluyePrincipal() {
+        Sistema s = Sistema.getInstance();
+
+        // --- Alta de clientes válidos ---
+        s.altaCliente("clienteAna", "Analia", "analia@test.com", "Gomez",
+                new DTFecha(1, 1, 1990), "Uruguay", TipoDoc.CI, "CI123456", new byte[]{1}, "ClaveAna1");
+
+        s.altaCliente("clienteLuis", "Luisito", "luisito@test.com", "Perez",
+                new DTFecha(2, 2, 1992), "Uruguay", TipoDoc.CI, "CI876543", new byte[]{2}, "ClaveLuis2");
+
+        s.altaCliente("clienteSofia", "Sofia", "sofia@test.com", "Martinez",
+                new DTFecha(3, 3, 1993), "Uruguay", TipoDoc.CI, "CI112233", new byte[]{3}, "ClaveSofi3");
+
+        // --- Ejecutar método ---
+        List<DTPasajero> pasajeros = s.pasajeros("clienteLuis");
+
+        // --- Validaciones ---
+        assertNotNull(pasajeros, "La lista no debe ser nula");
+        assertEquals(2, pasajeros.size(), "Debe excluir al cliente principal");
+
+        List<String> nicknames = pasajeros.stream().map(DTPasajero::getNicknameCliente).toList();
+        assertTrue(nicknames.contains("clienteAna"));
+        assertTrue(nicknames.contains("clienteSofia"));
+        assertFalse(nicknames.contains("clienteLuis"), "No debe incluir al cliente principal");
+    }
 
 }
