@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="static/css/consultaPaquete.css">
   <link rel="stylesheet" href="static/css/compraPaquete.css">
   <link rel="stylesheet" href="static/css/registrarUsuario.css">
+  <link rel="stylesheet" href="static/css/login.css">
 </head>
 
 <body>

@@ -651,8 +651,18 @@ public class RutaVueloController extends HttpServlet {
                     
                     // Filtrar rutas que contengan la categoría especificada
                     for (DTRutaVuelo ruta : rutasAerolinea) {
-                        if (ruta.getCategorias() != null && ruta.getCategorias().contains(categoriaParam)) {
-                            rutas.add(ruta);
+                        if (ruta.getCategorias() != null) {
+                            // Verificar si alguna categoría de la ruta coincide con el parámetro
+                            boolean categoriaEncontrada = false;
+                            for (dato.entidades.Categoria categoria : ruta.getCategorias()) {
+                                if (categoria != null && categoriaParam.equals(categoria.getNombre())) {
+                                    categoriaEncontrada = true;
+                                    break;
+                                }
+                            }
+                            if (categoriaEncontrada) {
+                                rutas.add(ruta);
+                            }
                         }
                     }
                 } catch (Exception ex) {
