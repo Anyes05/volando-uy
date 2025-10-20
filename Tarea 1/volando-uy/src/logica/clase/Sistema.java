@@ -1654,17 +1654,49 @@ public class Sistema implements ISistema {
             // Si el paquete incluye la ruta y no ha vencido, agregarlo a la lista
             if (incluyeRuta && !vencido) {
                 System.out.println("DEBUG: Agregando paquete válido: " + paquete.getNombre());
-                DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
-                    paquete.getNombre(),
-                    paquete.getDescripcion(),
-                    paquete.getDiasValidos(),
-                    paquete.getDescuento(),
-                    paquete.getFechaAlta(),
-                    paquete.getFoto()
-                );
-                dtPaquete.setId(paquete.getId());
-                dtPaquete.setCostoTotal(paquete.getCostoTotal());
-                paquetesValidos.add(dtPaquete);
+                
+                // Buscar la cantidad disponible para esta ruta específica
+                int cantidadDisponible = 0;
+                for (Cantidad cantidad : paquete.getCantidad()) {
+                    if (cantidad.getRutaVuelo() != null && 
+                        cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(nombreRuta)) {
+                        cantidadDisponible += cantidad.getCant();
+                    }
+                }
+                
+                // Calcular cuánto ha usado este cliente específico de este paquete
+                UsoPaqueteServicio usoPaqueteServicio = new UsoPaqueteServicio();
+                List<UsoPaquete> usosCliente = usoPaqueteServicio.buscarPorCompraPaquete(compra);
+                int cantidadUsada = 0;
+                for (UsoPaquete uso : usosCliente) {
+                    if (uso.getCantidad().getRutaVuelo() != null && 
+                        uso.getCantidad().getRutaVuelo().getNombre().equalsIgnoreCase(nombreRuta)) {
+                        cantidadUsada += uso.getCantidadUsada();
+                    }
+                }
+                
+                // La cantidad disponible es la original menos lo que ya usó
+                cantidadDisponible = cantidadDisponible - cantidadUsada;
+                
+                // Solo agregar si hay cantidad disponible
+                if (cantidadDisponible > 0) {
+                    DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                        paquete.getNombre(),
+                        paquete.getDescripcion(),
+                        paquete.getDiasValidos(),
+                        paquete.getDescuento(),
+                        paquete.getFechaAlta(),
+                        paquete.getFoto()
+                    );
+                    dtPaquete.setId(paquete.getId());
+                    dtPaquete.setCostoTotal(paquete.getCostoTotal());
+                    // Agregar información de cantidad disponible
+                    dtPaquete.setCantidadDisponible(cantidadDisponible);
+                    paquetesValidos.add(dtPaquete);
+                    System.out.println("DEBUG: Cantidad disponible para ruta " + nombreRuta + ": " + cantidadDisponible);
+                } else {
+                    System.out.println("DEBUG: Paquete no tiene cantidad disponible para ruta " + nombreRuta);
+                }
             } else {
                 System.out.println("DEBUG: Paquete no válido - incluyeRuta: " + incluyeRuta + ", vencido: " + vencido);
             }
@@ -1692,6 +1724,190 @@ public class Sistema implements ISistema {
         System.out.println("DEBUG: Fecha hoy: " + hoy + ", vencimiento: " + fechaVencimiento + ", vencido: " + vencido);
         
         return vencido;
+    }
+    
+    // NUEVO MÉTODO: Reserva con paquete
+    public void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, Long paqueteId) {
+        if (vueloSeleccionadoParaReserva == null) {
+            throw new IllegalStateException("ERROR: Debe seleccionar un vuelo antes de realizar la reserva.");
+        }
+
+        // Usar un EntityManager compartido para toda la operación
+        jakarta.persistence.EntityManagerFactory emf = jakarta.persistence.Persistence.createEntityManagerFactory("volandouyPU");
+        jakarta.persistence.EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            VueloServicio vueloServicio = new VueloServicio();
+            ClienteServicio clienteServicio = new ClienteServicio();
+            CompraPaqueteServicio compraPaqueteServicio = new CompraPaqueteServicio();
+            UsoPaqueteServicio usoPaqueteServicio = new UsoPaqueteServicio();
+
+            dato.entidades.Vuelo vueloSeleccionado = vueloServicio.buscarVueloPorNombre(vueloSeleccionadoParaReserva);
+            if (vueloSeleccionado == null) {
+                throw new IllegalStateException("ERROR: No se encontró el vuelo seleccionado. Verifique que el vuelo existe en el sistema.");
+            }
+
+            // Validar que la lista de pasajeros no esté vacía
+            if (nombresPasajeros == null || nombresPasajeros.isEmpty()) {
+                throw new IllegalArgumentException("ERROR: No se ha seleccionado ningún pasajero. Debe seleccionar al menos un cliente.");
+            }
+
+            String nicknameClientePrincipal = nombresPasajeros.get(0);
+            if (nicknameClientePrincipal == null || nicknameClientePrincipal.trim().isEmpty()) {
+                throw new IllegalArgumentException("ERROR: No se ha seleccionado un cliente principal. Debe seleccionar un cliente de la tabla.");
+            }
+
+            Cliente clientePrincipal = clienteServicio.buscarClientePorNickname(nicknameClientePrincipal.trim());
+            if (clientePrincipal == null) {
+                throw new IllegalArgumentException("ERROR: No se encontró el cliente principal con nickname: " + nicknameClientePrincipal.trim() +
+                        ". Verifique que el cliente existe en el sistema.");
+            }
+
+            // Buscar la compra del paquete por el PaqueteVuelo y el cliente
+            List<CompraPaquete> comprasCliente = compraPaqueteServicio.buscarPorCliente(clientePrincipal);
+            System.out.println("DEBUG: Compras del cliente " + clientePrincipal.getNickname() + ": " + comprasCliente.size());
+            System.out.println("DEBUG: Buscando paquete con ID: " + paqueteId);
+            
+            CompraPaquete compraPaquete = null;
+            
+            for (CompraPaquete compra : comprasCliente) {
+                System.out.println("DEBUG: Compra ID: " + compra.getId() + ", PaqueteVuelo ID: " + compra.getPaqueteVuelo().getId());
+                if (compra.getPaqueteVuelo().getId().equals(paqueteId)) {
+                    compraPaquete = compra;
+                    System.out.println("DEBUG: Paquete encontrado!");
+                    break;
+                }
+            }
+            
+            if (compraPaquete == null) {
+                System.out.println("DEBUG: No se encontró el paquete con ID: " + paqueteId);
+                throw new IllegalArgumentException("ERROR: No se encontró el paquete con ID: " + paqueteId + " para el cliente: " + clientePrincipal.getNickname());
+            }
+
+            // Verificar que el paquete pertenece al cliente
+            if (!compraPaquete.getCliente().getId().equals(clientePrincipal.getId())) {
+                throw new IllegalArgumentException("ERROR: El paquete no pertenece al cliente principal.");
+            }
+
+            // Verificar que el paquete no ha vencido
+            if (paqueteVencido(compraPaquete.getVencimiento())) {
+                throw new IllegalArgumentException("ERROR: El paquete ha vencido.");
+            }
+
+            // Buscar la cantidad disponible para la ruta del vuelo
+            Cantidad cantidadDisponible = null;
+            for (Cantidad cantidad : compraPaquete.getPaqueteVuelo().getCantidad()) {
+                if (cantidad.getRutaVuelo() != null && 
+                    cantidad.getRutaVuelo().getId().equals(vueloSeleccionado.getRutaVuelo().getId()) &&
+                    cantidad.getTipoAsiento() == tipoAsiento) {
+                    cantidadDisponible = cantidad;
+                    break;
+                }
+            }
+
+            if (cantidadDisponible == null) {
+                throw new IllegalArgumentException("ERROR: No hay disponibilidad en el paquete para esta ruta y tipo de asiento.");
+            }
+
+            if (cantidadDisponible.getCant() < cantidadPasaje) {
+                throw new IllegalArgumentException("ERROR: No hay suficientes pasajes disponibles en el paquete. Disponibles: " + 
+                    cantidadDisponible.getCant() + ", Solicitados: " + cantidadPasaje);
+            }
+
+            // Verificar disponibilidad de asientos en el vuelo
+            if (tipoAsiento == TipoAsiento.Ejecutivo && vueloSeleccionado.getAsientosMaxEjecutivo() < cantidadPasaje) {
+                throw new IllegalStateException("ERROR: No hay suficientes asientos ejecutivos disponibles. Disponibles: " +
+                        vueloSeleccionado.getAsientosMaxEjecutivo() + ", Solicitados: " + cantidadPasaje);
+            }
+            if (tipoAsiento == TipoAsiento.Turista && vueloSeleccionado.getAsientosMaxTurista() < cantidadPasaje) {
+                throw new IllegalStateException("ERROR: No hay suficientes asientos turista disponibles. Disponibles: " +
+                        vueloSeleccionado.getAsientosMaxTurista() + ", Solicitados: " + cantidadPasaje);
+            }
+
+            // Calcular costo total (aunque se use paquete, para registro)
+            DTCostoBase costoBaseOriginal = vueloSeleccionado.getRutaVuelo().getCostoBase();
+            float costoTotal;
+            if (tipoAsiento == TipoAsiento.Ejecutivo) {
+                costoTotal = (costoBaseOriginal.getCostoEjecutivo() * cantidadPasaje) + (equipajeExtra * costoBaseOriginal.getCostoEquipajeExtra());
+            } else {
+                costoTotal = (costoBaseOriginal.getCostoTurista() * cantidadPasaje) + (equipajeExtra * costoBaseOriginal.getCostoEquipajeExtra());
+            }
+
+            // Crear la reserva normal
+            dato.entidades.CompraComun reserva = new dato.entidades.CompraComun(clientePrincipal, fechaReserva, tipoAsiento, equipajeExtra);
+            reserva.setVuelo(vueloSeleccionado);
+
+            // Crear una copia del costo base para la reserva (no modificar el original)
+            DTCostoBase costoBaseReserva = new DTCostoBase(
+                costoBaseOriginal.getCostoTurista(),
+                costoBaseOriginal.getCostoEjecutivo(),
+                costoBaseOriginal.getCostoEquipajeExtra()
+            );
+            costoBaseReserva.setCantidadEquipajeExtra(equipajeExtra);
+            costoBaseReserva.setCostoTotal(costoTotal);
+            reserva.setCostoReserva(costoBaseReserva);
+
+            // Persistir la reserva
+            em.persist(reserva);
+
+            // Crear los pasajes para cada pasajero
+            for (String nicknamePasajero : nombresPasajeros) {
+                Cliente pasajero = clienteServicio.buscarClientePorNickname(nicknamePasajero.trim());
+                if (pasajero != null) {
+                    dato.entidades.Pasaje pasaje = new dato.entidades.Pasaje(pasajero, reserva, tipoAsiento);
+                    // Establecer nombre y apellido del pasajero
+                    pasaje.setNombrePasajero(pasajero.getNombre());
+                    pasaje.setApellidoPasajero(pasajero.getApellido());
+                    // Calcular costo del pasaje
+                    DTCostoBase costoBase = vueloSeleccionado.getRutaVuelo().getCostoBase();
+                    int costoPasaje = (tipoAsiento == TipoAsiento.Ejecutivo) ? 
+                        (int) costoBase.getCostoEjecutivo() : (int) costoBase.getCostoTurista();
+                    pasaje.setCostoPasaje(costoPasaje);
+                    em.persist(pasaje);
+                }
+            }
+
+            // NO modificar las cantidades globales del paquete
+            // En su lugar, solo registrar el uso del paquete para este cliente específico
+            usoPaqueteServicio.registrarUso(compraPaquete, vueloSeleccionado, cantidadDisponible, cantidadPasaje, tipoAsiento, fechaReserva);
+
+            em.getTransaction().commit();
+
+            // Lanzar excepción especial con información de éxito
+            String mensajeExito = "¡RESERVA CON PAQUETE REALIZADA CON ÉXITO!\n\n" +
+                    "✓ Reserva creada con ID: " + reserva.getId() + "\n" +
+                    "✓ Cliente: " + clientePrincipal.getNombre() + " " + clientePrincipal.getApellido() + "\n" +
+                    "✓ Vuelo: " + vueloSeleccionado.getNombre() + "\n" +
+                    "✓ Tipo de asiento: " + tipoAsiento + "\n" +
+                    "✓ Cantidad de pasajes: " + cantidadPasaje + "\n" +
+                    "✓ Equipaje extra: " + equipajeExtra + " unidades\n" +
+                    "✓ Paquete utilizado: " + compraPaquete.getPaqueteVuelo().getNombre() + "\n" +
+                    "✓ Cantidad restante en paquete: " + cantidadDisponible.getCant() + "\n" +
+                    "✓ Pasajes agregados exitosamente a la reserva";
+
+            System.out.println("DEBUG: Lanzando excepción SUCCESS: " + mensajeExito);
+            throw new IllegalStateException("SUCCESS:" + mensajeExito);
+
+        } catch (IllegalStateException e) {
+            // Si es un mensaje de éxito, re-lanzarlo sin modificar
+            if (e.getMessage() != null && e.getMessage().startsWith("SUCCESS:")) {
+                throw e; // Re-lanzar la excepción de éxito sin modificar
+            }
+            // Si es un error real, procesarlo normalmente
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException("Error al crear reserva con paquete: " + e.getMessage(), e);
+        } finally {
+            em.close();
+        }
     }
 }
 

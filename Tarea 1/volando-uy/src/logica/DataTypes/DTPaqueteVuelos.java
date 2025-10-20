@@ -18,6 +18,7 @@ public class DTPaqueteVuelos {
     private List<dato.entidades.Cantidad> cantidad;
 
     private List<dato.entidades.RutaVuelo> rutas;
+    private int cantidadDisponible;
 
 
     public DTPaqueteVuelos(String nombre, String descripcion /*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto) {
@@ -125,5 +126,13 @@ public class DTPaqueteVuelos {
     
     public Long getId() {
         return id;
+    }
+    
+    public int getCantidadDisponible() {
+        return cantidadDisponible;
+    }
+    
+    public void setCantidadDisponible(int cantidadDisponible) {
+        this.cantidadDisponible = cantidadDisponible;
     }
 }

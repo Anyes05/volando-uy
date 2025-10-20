@@ -624,9 +624,10 @@ public class ReservaController extends HttpServlet {
                         return;
                     }
                     
-                    // Crear la reserva normal (el paquete se usa como forma de pago, pero la reserva es normal)
+                    // Crear la reserva con paquete usando el nuevo método específico
                     try {
-                        sistema.datosReserva(tipoAsientoEnum, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReserva);
+                        paqueteIdLong = Long.parseLong(paqueteId);
+                        sistema.datosReservaConPaquete(tipoAsientoEnum, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReserva, paqueteIdLong);
                         
                         // Si llegamos aquí sin excepción, algo inesperado pasó
                         // porque datosReserva siempre lanza IllegalStateException con SUCCESS: cuando es exitoso
