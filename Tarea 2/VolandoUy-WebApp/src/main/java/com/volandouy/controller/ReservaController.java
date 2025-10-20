@@ -625,16 +625,61 @@ public class ReservaController extends HttpServlet {
                     }
                     
                     // Crear la reserva normal (el paquete se usa como forma de pago, pero la reserva es normal)
-                    sistema.datosReserva(tipoAsientoEnum, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReserva);
-                    
-                    // Si llegamos aquí, la reserva se creó exitosamente
-                    Map<String, Object> resultado = new HashMap<>();
-                    resultado.put("mensaje", "Reserva con paquete creada exitosamente");
-                    resultado.put("tipoReserva", "paquete");
-                    resultado.put("paqueteId", paqueteId);
-                    
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(resultado));
+                    try {
+                        sistema.datosReserva(tipoAsientoEnum, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReserva);
+                        
+                        // Si llegamos aquí sin excepción, algo inesperado pasó
+                        // porque datosReserva siempre lanza IllegalStateException con SUCCESS: cuando es exitoso
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print("{\"error\": \"Error inesperado en la reserva con paquete\"}");
+                        return;
+                        
+                    } catch (IllegalStateException e) {
+                        // Verificar si es un mensaje de éxito especial (como en ReservaHelper)
+                        if (e.getMessage() != null && e.getMessage().startsWith("SUCCESS:")) {
+                            String mensajeExito = e.getMessage().substring(8); // Remover "SUCCESS:"
+                            
+                            // Respuesta exitosa
+                            Map<String, Object> respuesta = new HashMap<>();
+                            respuesta.put("success", true);
+                            respuesta.put("mensaje", "Reserva con paquete creada exitosamente");
+                            respuesta.put("detalles", mensajeExito);
+                            respuesta.put("fechaReserva", new java.util.Date().toString());
+                            respuesta.put("cliente", nicknameCliente);
+                            respuesta.put("vuelo", vueloNombre);
+                            respuesta.put("tipoReserva", "paquete");
+                            respuesta.put("paqueteId", paqueteId);
+
+                            response.setStatus(HttpServletResponse.SC_CREATED);
+                            out.print(objectMapper.writeValueAsString(respuesta));
+                            return;
+                            
+                        } else if (e.getMessage() != null && e.getMessage().startsWith("ADMIN_REQUIRED:")) {
+                            // Manejo de conflictos de reserva - cliente ya tiene reserva para este vuelo
+                            String mensajeConflicto = e.getMessage().substring(15); // Remover "ADMIN_REQUIRED:"
+                            
+                            Map<String, Object> conflictoRespuesta = new HashMap<>();
+                            conflictoRespuesta.put("conflicto", true);
+                            conflictoRespuesta.put("mensaje", "Ya existe una reserva para este vuelo");
+                            conflictoRespuesta.put("detalles", mensajeConflicto);
+                            conflictoRespuesta.put("cliente", nicknameCliente);
+                            conflictoRespuesta.put("vuelo", vueloNombre);
+                            
+                            response.setStatus(HttpServletResponse.SC_CONFLICT);
+                            out.print(objectMapper.writeValueAsString(conflictoRespuesta));
+                            return;
+                        } else {
+                            // Otros errores del sistema
+                            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                            out.print("{\"error\": \"" + e.getMessage() + "\"}");
+                            return;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        // Errores de validación de datos
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.print("{\"error\": \"" + e.getMessage() + "\"}");
+                        return;
+                    }
                     
                 } catch (NumberFormatException e) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

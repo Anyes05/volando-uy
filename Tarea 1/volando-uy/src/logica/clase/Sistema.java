@@ -1077,6 +1077,7 @@ public class Sistema implements ISistema {
                     "✓ Costo total: $" + costoTotal + "\n" +
                     "✓ Pasajes agregados exitosamente a la reserva";
 
+            System.out.println("DEBUG: Lanzando excepción SUCCESS: " + mensajeExito);
             throw new IllegalStateException("SUCCESS:" + mensajeExito);
 
         } catch (IllegalStateException e) {
@@ -1605,37 +1606,54 @@ public class Sistema implements ISistema {
 
     // OBTENER PAQUETES DEL CLIENTE QUE INCLUYEN UNA RUTA ESPECÍFICA
     public List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(String nicknameCliente, String nombreRuta) {
+        System.out.println("DEBUG: Buscando paquetes para cliente: " + nicknameCliente + ", ruta: " + nombreRuta);
+        
         ClienteServicio clienteServicio = new ClienteServicio();
         CompraPaqueteServicio compraPaqueteServicio = new CompraPaqueteServicio();
         
         // Buscar el cliente
         Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameCliente);
         if (cliente == null) {
+            System.out.println("DEBUG: Cliente no encontrado: " + nicknameCliente);
             throw new IllegalArgumentException("Cliente no encontrado: " + nicknameCliente);
         }
+        System.out.println("DEBUG: Cliente encontrado: " + cliente.getNickname());
         
         // Obtener todas las compras de paquetes del cliente
         List<CompraPaquete> comprasPaquetes = compraPaqueteServicio.buscarPorCliente(cliente);
+        System.out.println("DEBUG: Compras de paquetes encontradas: " + comprasPaquetes.size());
         
         List<DTPaqueteVuelos> paquetesValidos = new ArrayList<>();
         
         for (CompraPaquete compra : comprasPaquetes) {
             PaqueteVuelo paquete = compra.getPaqueteVuelo();
+            System.out.println("DEBUG: Procesando paquete: " + paquete.getNombre());
             
             // Verificar si el paquete incluye la ruta especificada
             boolean incluyeRuta = false;
             if (paquete.getCantidad() != null) {
+                System.out.println("DEBUG: Paquete tiene " + paquete.getCantidad().size() + " cantidades");
                 for (Cantidad cantidad : paquete.getCantidad()) {
-                    if (cantidad.getRutaVuelo() != null && 
-                        cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(nombreRuta)) {
-                        incluyeRuta = true;
-                        break;
+                    if (cantidad.getRutaVuelo() != null) {
+                        System.out.println("DEBUG: Cantidad tiene ruta: " + cantidad.getRutaVuelo().getNombre());
+                        if (cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(nombreRuta)) {
+                            incluyeRuta = true;
+                            System.out.println("DEBUG: Ruta encontrada en paquete!");
+                            break;
+                        }
                     }
                 }
+            } else {
+                System.out.println("DEBUG: Paquete no tiene cantidades");
             }
             
+            // Verificar vencimiento
+            boolean vencido = paqueteVencido(compra.getVencimiento());
+            System.out.println("DEBUG: Paquete vencido: " + vencido);
+            
             // Si el paquete incluye la ruta y no ha vencido, agregarlo a la lista
-            if (incluyeRuta && !paqueteVencido(compra.getVencimiento())) {
+            if (incluyeRuta && !vencido) {
+                System.out.println("DEBUG: Agregando paquete válido: " + paquete.getNombre());
                 DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
                     paquete.getNombre(),
                     paquete.getDescripcion(),
@@ -1647,15 +1665,21 @@ public class Sistema implements ISistema {
                 dtPaquete.setId(paquete.getId());
                 dtPaquete.setCostoTotal(paquete.getCostoTotal());
                 paquetesValidos.add(dtPaquete);
+            } else {
+                System.out.println("DEBUG: Paquete no válido - incluyeRuta: " + incluyeRuta + ", vencido: " + vencido);
             }
         }
         
+        System.out.println("DEBUG: Paquetes válidos encontrados: " + paquetesValidos.size());
         return paquetesValidos;
     }
     
     // Verificar si un paquete ha vencido
     private boolean paqueteVencido(DTFecha vencimiento) {
-        if (vencimiento == null) return false;
+        if (vencimiento == null) {
+            System.out.println("DEBUG: Vencimiento es null, paquete no vencido");
+            return false;
+        }
         
         java.time.LocalDate hoy = java.time.LocalDate.now();
         java.time.LocalDate fechaVencimiento = java.time.LocalDate.of(
@@ -1664,7 +1688,10 @@ public class Sistema implements ISistema {
             vencimiento.getDia()
         );
         
-        return hoy.isAfter(fechaVencimiento);
+        boolean vencido = hoy.isAfter(fechaVencimiento);
+        System.out.println("DEBUG: Fecha hoy: " + hoy + ", vencimiento: " + fechaVencimiento + ", vencido: " + vencido);
+        
+        return vencido;
     }
 }
 

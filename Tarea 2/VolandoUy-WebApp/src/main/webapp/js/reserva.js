@@ -30,6 +30,10 @@
   function init() {
     if (!selAirline) return; // No estamos en la página de reserva
 
+    console.log('DEBUG: Inicializando página de reserva');
+    console.log('DEBUG: selPackage encontrado:', !!selPackage);
+    console.log('DEBUG: packageContainer encontrado:', !!packageContainer);
+
     loadAirlines();
     setupEventListeners();
     setupPaymentModeListeners();
@@ -196,6 +200,12 @@
     seatType.addEventListener('change', updateSummary);
     qtyBaggage.addEventListener('change', updateSummary);
 
+    // Listener para el select de paquetes
+    selPackage.addEventListener('change', (e) => {
+      console.log('DEBUG: Paquete seleccionado:', e.target.value);
+      updateSummary();
+    });
+
     btnReserve.addEventListener('click', handleCreateReservation);
   }
 
@@ -203,17 +213,23 @@
     const payModeRadios = document.querySelectorAll('input[name="payMode"]');
     payModeRadios.forEach(radio => {
       radio.addEventListener('change', (e) => {
+        console.log('DEBUG: Modo de pago cambiado a:', e.target.value);
         if (e.target.value === 'paquete') {
+          console.log('DEBUG: Ruta seleccionada:', selectedRoute);
           // Solo cargar paquetes si ya se seleccionó una ruta
           if (selectedRoute) {
+            console.log('DEBUG: Cargando paquetes para ruta:', selectedRoute);
             loadClientPackagesForRoute(selectedRoute);
           } else {
+            console.log('DEBUG: No hay ruta seleccionada, mostrando mensaje');
             // Mostrar mensaje de que debe seleccionar ruta primero
             selPackage.innerHTML = '<option value="">Seleccione una ruta primero</option>';
           }
           packageContainer.classList.remove('hidden');
+          console.log('DEBUG: Contenedor de paquetes mostrado');
         } else {
           packageContainer.classList.add('hidden');
+          console.log('DEBUG: Contenedor de paquetes ocultado');
         }
         updateSummary();
       });
@@ -375,6 +391,8 @@
     const index = input.getAttribute('data-passenger-nickname');
     const validationDiv = document.querySelector(`[data-passenger-validation="${index}"]`);
     
+    console.log('DEBUG: Validando nickname:', nickname);
+    
     if (!nickname) {
       clearPassengerValidation(input);
       return;
@@ -393,6 +411,9 @@
         return response.json();
       })
       .then(data => {
+        console.log('DEBUG: Clientes recibidos del servidor:', data);
+        console.log('DEBUG: Buscando nickname:', nickname);
+        
         // Verificar si la respuesta es un array
         if (!Array.isArray(data)) {
           console.error('Respuesta inesperada del servidor:', data);
@@ -400,10 +421,15 @@
           return;
         }
         
+        console.log('DEBUG: Nicknames disponibles:', data.map(c => c.nickname));
+        
         const cliente = data.find(c => c.nickname && c.nickname.toLowerCase() === nickname.toLowerCase());
+        console.log('DEBUG: Cliente encontrado:', cliente);
+        
         if (cliente) {
           showPassengerValidation(input, `✓ ${cliente.nombre} ${cliente.apellido}`, 'success');
         } else {
+          console.log('DEBUG: Nickname no encontrado en la lista');
           showPassengerValidation(input, 'Nickname no registrado en el sistema', 'error');
         }
       })
@@ -439,13 +465,17 @@
 
   // ========== FUNCIONES DE UTILIDAD ==========
   function populateSelect(select, items, valueField, textField, defaultText) {
+    console.log('DEBUG: populateSelect called with:', {select, items, valueField, textField, defaultText});
     select.innerHTML = `<option value="">${defaultText}</option>`;
     items.forEach(item => {
+      console.log('DEBUG: Creating option for item:', item);
       const option = document.createElement('option');
       option.value = item[valueField];
       option.textContent = item[textField];
+      console.log('DEBUG: Option created:', {value: option.value, text: option.textContent});
       select.appendChild(option);
     });
+    console.log('DEBUG: Select populated. Total options:', select.options.length);
   }
 
   function enableReservationFields() {
@@ -643,6 +673,22 @@
     }
 
     const payMode = document.querySelector('input[name="payMode"]:checked')?.value || 'normal';
+    
+    // Validar selección de paquete si es necesario
+    let paqueteId = null;
+    if (payMode === 'paquete') {
+      paqueteId = selPackage.value;
+      console.log('DEBUG: Modo de pago: paquete');
+      console.log('DEBUG: Valor del select de paquete:', paqueteId);
+      console.log('DEBUG: Opciones disponibles en el select:', Array.from(selPackage.options).map(opt => ({value: opt.value, text: opt.text})));
+      console.log('DEBUG: Select visible:', !selPackage.classList.contains('hidden'));
+      console.log('DEBUG: Select disabled:', selPackage.disabled);
+      
+      if (!paqueteId || paqueteId === '') {
+        console.log('DEBUG: ERROR - No se seleccionó un paquete');
+        throw new Error('Debe seleccionar un paquete para continuar');
+      }
+    }
 
     return {
       vueloNombre: selectedFlight.nombre,
@@ -650,7 +696,7 @@
       cantidadPasajes: passengers,
       equipajeExtra: parseInt(qtyBaggage.value) || 0,
       formaPago: payMode,
-      paqueteId: payMode === 'paquete' ? selPackage.value : null,
+      paqueteId: paqueteId,
       pasajeros: additionalPassengers
     };
   }
@@ -667,11 +713,16 @@
     fetch(`/VolandoUy-WebApp/api/reservas/paquetes-cliente/${encodeURIComponent(rutaNombre)}`)
       .then(response => response.json())
       .then(paquetes => {
+        console.log('DEBUG: Paquetes recibidos del servidor:', paquetes);
+        
         if (paquetes.length === 0) {
           selPackage.innerHTML = '<option value="">No hay paquetes disponibles para esta ruta</option>';
           showToast('No tienes paquetes que incluyan esta ruta', 'warning');
         } else {
+          console.log('DEBUG: Poblando select con paquetes:', paquetes);
           populateSelect(selPackage, paquetes, 'id', 'nombre', 'Seleccione paquete');
+          console.log('DEBUG: Select poblado. Valor actual:', selPackage.value);
+          console.log('DEBUG: Opciones en el select:', Array.from(selPackage.options).map(opt => ({value: opt.value, text: opt.text})));
           showToast(`Se encontraron ${paquetes.length} paquete(s) disponibles`, 'success');
         }
         hideLoading(selPackage);
