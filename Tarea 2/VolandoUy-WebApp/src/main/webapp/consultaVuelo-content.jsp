@@ -218,7 +218,7 @@ function initConsultaVuelo() {
                 reservas.forEach(reserva => {
                     const div = document.createElement('div');
                     div.className = 'reserva-card';
-                    div.innerHTML = `<strong>\${reserva.cliente}</strong> — Fecha: \${reserva.fechaReserva} • Costo: $\${reserva.costoReserva}`;
+                    div.innerHTML = `<strong>\${reserva.cliente}</strong> — Fecha: \${reserva.fechaReserva} • Costo: \${formatearCostoReserva(reserva.costoReserva)}`;
                     div.addEventListener('click', () => mostrarDetalleReserva(reserva));
                     listaReservas.appendChild(div);
                 });
@@ -229,14 +229,86 @@ function initConsultaVuelo() {
             });
     }
 
+    // Función para formatear el costo de la reserva
+    function formatearCostoReserva(costoReserva) {
+        if (!costoReserva) return '$0';
+        
+        // Si es un número simple, devolverlo directamente
+        if (typeof costoReserva === 'number') {
+            return '$' + costoReserva;
+        }
+        
+        // Si es un string, parsearlo
+        if (typeof costoReserva === 'string') {
+            const parsed = parseFloat(costoReserva);
+            return '$' + (isNaN(parsed) ? 0 : parsed);
+        }
+        
+        // Si es un objeto DTCostoBase con estructura de costos
+        if (typeof costoReserva === 'object') {
+            // Si tiene costoTotal, usarlo
+            if (costoReserva.costoTotal !== undefined) {
+                return '$' + costoReserva.costoTotal;
+            }
+            
+            // Si tiene monto (estructura del JSON de ejemplo)
+            if (costoReserva.monto !== undefined) {
+                return '$' + costoReserva.monto + (costoReserva.moneda ? ' ' + costoReserva.moneda : '');
+            }
+            
+            // Si tiene costoTurista y costoEjecutivo, mostrar ambos
+            if (costoReserva.costoTurista !== undefined && costoReserva.costoEjecutivo !== undefined) {
+                const turista = costoReserva.costoTurista || 0;
+                const ejecutivo = costoReserva.costoEjecutivo || 0;
+                
+                if (ejecutivo > 0 && turista !== ejecutivo) {
+                    return '$' + turista + ' (Turista) / $' + ejecutivo + ' (Ejecutivo)';
+                } else {
+                    return '$' + turista;
+                }
+            }
+            
+            // Fallback: intentar obtener cualquier valor numérico
+            for (const key in costoReserva) {
+                if (typeof costoReserva[key] === 'number') {
+                    return '$' + costoReserva[key];
+                }
+            }
+        }
+        
+        // Fallback final
+        try {
+            const parsed = parseFloat(String(costoReserva));
+            return '$' + (isNaN(parsed) ? 0 : parsed);
+        } catch (e) {
+            console.warn('No se pudo parsear costoReserva:', costoReserva);
+            return '$0';
+        }
+    }
+
     // Función para mostrar detalle de reserva
     function mostrarDetalleReserva(reserva) {
         detalleReservaDiv.style.display = 'block';
+        
+        let pasajerosHtml = '';
+        if (reserva.pasajeros && reserva.pasajeros.length > 0) {
+            pasajerosHtml = '<h4>Pasajeros:</h4><ul>';
+            reserva.pasajeros.forEach(pasajero => {
+                pasajerosHtml += `<li><strong>${pasajero.nombre} ${pasajero.apellido}</strong>`;
+                if (pasajero.nickname) {
+                    pasajerosHtml += ` (${pasajero.nickname})`;
+                }
+                pasajerosHtml += '</li>';
+            });
+            pasajerosHtml += '</ul>';
+        }
+        
         detalleReservaInfo.innerHTML = `
             <p><strong>ID:</strong> \${reserva.id}</p>
             <p><strong>Cliente:</strong> \${reserva.cliente}</p>
             <p><strong>Fecha de reserva:</strong> \${reserva.fechaReserva}</p>
-            <p><strong>Costo:</strong> $\${reserva.costoReserva}</p>
+            <p><strong>Costo:</strong> \${formatearCostoReserva(reserva.costoReserva)}</p>
+            \${pasajerosHtml}
         `;
     }
 
