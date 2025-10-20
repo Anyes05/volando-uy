@@ -694,7 +694,7 @@ class SistemaTest {
     }
 
     @Test
-    void testPasajeros_excluyePrincipal() {
+    void testPasajeros() {
         Sistema s = Sistema.getInstance();
 
         // --- Alta de clientes válidos ---
@@ -718,6 +718,125 @@ class SistemaTest {
         assertTrue(nicknames.contains("clienteAna"));
         assertTrue(nicknames.contains("clienteSofia"));
         assertFalse(nicknames.contains("clienteLuis"), "No debe incluir al cliente principal");
+    }
+
+    @Test
+    void testMostrarDatosUsuario_conServicios() throws Exception {
+        Sistema s = Sistema.getInstance();
+
+        // --- Alta de cliente ---
+        assertDoesNotThrow(() -> s.altaCliente(
+                "nickClienteTest", "Juan", "cliente@test.com", "Pérez",
+                new DTFecha(1,1,1990), "Uruguayo", TipoDoc.CI, "DOC123",
+                new byte[]{1}, "Abcdef1"
+        ));
+
+        // --- Alta de aerolínea ---
+        assertDoesNotThrow(() -> s.altaAerolinea(
+                "nickAeroTest", "AirTest", "aero@test.com", "Descripcion",
+                "http://aero.com", new byte[]{1}, "Abcdef1"
+        ));
+
+        // --- Caso 1: Cliente ---
+        DTUsuario dtoCliente = s.mostrarDatosUsuario("nickClienteTest");
+        assertTrue(dtoCliente instanceof DTCliente);
+        DTCliente c = (DTCliente) dtoCliente;
+        assertEquals("nickClienteTest", c.getNickname());
+        assertEquals("cliente@test.com", c.getCorreo());
+
+        // --- Caso 2: Aerolínea ---
+        DTUsuario dtoAero = s.mostrarDatosUsuario("nickAeroTest");
+        assertTrue(dtoAero instanceof DTAerolinea);
+        DTAerolinea a = (DTAerolinea) dtoAero;
+        assertEquals("nickAeroTest", a.getNickname());
+        assertEquals("aero@test.com", a.getCorreo());
+
+        // --- Caso 3: Usuario inexistente ---
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> {
+            s.mostrarDatosUsuario("noExiste");
+        });
+        assertEquals("Usuario no encontrado", ex.getMessage());
+    }
+
+    @Test
+    void testListarAerolineas() throws Exception {
+        Sistema s = Sistema.getInstance();
+
+        // --- Alta de aerolíneas con nombres válidos ---
+        s.altaAerolinea("aerolineauno", "AerolíneaUno", "unooo@air.com", "Descripción Uno", "https://aerolineauno.com", new byte[]{1}, "Clave1123");
+        s.altaAerolinea("aerolineados", "AerolíneaDos", "dosss@air.com", "Descripción Dos", "https://aerolineados.com", new byte[]{2}, "Clave2123");
+
+        // --- Ejecutar método ---
+        List<DTAerolinea> lista = s.listarAerolineas();
+
+        // --- Validaciones ---
+        assertEquals(2, lista.size(), "Debe haber 2 aerolíneas");
+
+        DTAerolinea a1 = lista.stream().filter(a -> a.getNickname().equals("aerolineauno")).findFirst().orElse(null);
+        DTAerolinea a2 = lista.stream().filter(a -> a.getNickname().equals("aerolineados")).findFirst().orElse(null);
+
+        assertNotNull(a1, "Debe incluir aerolineauno");
+        assertNotNull(a2, "Debe incluir aerolineados");
+
+        assertEquals("AerolíneaUno", a1.getNombre());
+        assertEquals("AerolíneaDos", a2.getNombre());
+
+        assertTrue(a1.getRutasVuelo().isEmpty(), "Las rutas deben estar vacías");
+        assertTrue(a2.getRutasVuelo().isEmpty(), "Las rutas deben estar vacías");
+    }
+
+    @Test
+    void testSeleccionarRutaVueloRet() throws Exception {
+        Sistema s = Sistema.getInstance();
+
+        // --- Alta de aerolínea válida ---
+        s.altaAerolinea("aeroTest", "Aerolínea del Sur", "sur@air.com", "Descripción válida", "https://sur.com", new byte[]{1}, "Clave123");
+        s.seleccionarAerolinea("aeroTest"); // ✅ esto setea recuerdaAerolinea
+
+        // --- Ciudades necesarias ---
+        CiudadServicio cs = new CiudadServicio();
+        cs.registrarCiudad("CiudadOrigen", "Uruguay", "AeropO", "DescO", "https://o.com", new DTFecha(1, 1, 2024));
+        cs.registrarCiudad("CiudadDestino", "Uruguay", "AeropD", "DescD", "https://d.com", new DTFecha(2, 2, 2024));
+
+        // --- Categoría y ruta ---
+        s.altaCategoria("CategoriaX");
+        s.ingresarDatosRuta("RutaSur", "Ruta costera", 120, 250, 40,
+                "CiudadOrigen", "CiudadDestino",
+                new DTFecha(10, 10, 2025), List.of("CategoriaX"), new byte[]{1});
+        s.registrarRuta();
+
+        // --- Confirmar ruta y asociarla a la aerolínea ---
+        RutaVueloServicio rs = new RutaVueloServicio();
+        RutaVuelo ruta = rs.buscarRutaVueloPorNombre("RutaSur");
+        ruta.setEstado(EstadoRutaVuelo.CONFIRMADA);
+
+        AerolineaServicio as = new AerolineaServicio();
+        Aerolinea aero = as.buscarAerolineaPorNickname("aeroTest");
+        aero.getRutasVuelo().add(ruta); // ✅ asociación explícita
+
+        // --- Validar selección exitosa ---
+        s.seleccionarAerolinea("aeroTest");
+        DTRutaVuelo dtRuta = s.seleccionarRutaVueloRet("RutaSur");
+        assertNotNull(dtRuta, "Debe retornar un DTRutaVuelo");
+        assertEquals("RutaSur", dtRuta.getNombre());
+        assertEquals("CiudadOrigen", dtRuta.getCiudadOrigen().getNombre());
+        assertEquals("CiudadDestino", dtRuta.getCiudadDestino().getNombre());
+        assertEquals("aeroTest", dtRuta.getAerolinea().getNickname());
+
+        // --- Validar excepción si no existe la ruta ---
+        Exception exRuta = assertThrows(IllegalStateException.class, () -> {
+            s.seleccionarRutaVueloRet("RutaInexistente");
+        });
+        System.out.println("Ruta inexistente -> " + exRuta.getMessage());
+        assertEquals("No se encontró la ruta con el nombre: RutaInexistente", exRuta.getMessage());
+
+        // --- Validar excepción si no hay aerolínea seleccionada ---
+        s.seleccionarAerolinea(null); // limpia recuerdaAerolinea
+        Exception exSinAero = assertThrows(IllegalStateException.class, () -> {
+            s.seleccionarRutaVueloRet("RutaSur");
+        });
+        System.out.println("Sin aerolínea -> " + exSinAero.getMessage());
+        assertEquals("Debe seleccionar una aerolínea antes de seleccionar una ruta.", exSinAero.getMessage());
     }
 
 }

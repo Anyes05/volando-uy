@@ -233,7 +233,7 @@ public class Sistema implements ISistema {
         return lista;
     }
 
-    public DTUsuario mostrarDatosUsuario(String nickname) {
+    /*public DTUsuario mostrarDatosUsuario(String nickname) {
         for (Usuario u : usuarios) {
             if (u.getNickname().equals(nickname)) {
                 if (u instanceof Cliente c) { // me falta también los paquetes que compró.
@@ -289,6 +289,51 @@ public class Sistema implements ISistema {
                 }
             }
         }
+        throw new IllegalArgumentException("Usuario no encontrado");
+    }*/
+    public DTUsuario mostrarDatosUsuario(String nickname) {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+
+        Cliente c = clienteServicio.buscarClientePorNickname(nickname);
+        if (c != null) {
+            List<DTReserva> reservasDTO = new ArrayList<>();
+            for (Reserva r : c.getReservas()) {
+                if (r instanceof CompraPaquete cp) {
+                    reservasDTO.add(new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento()));
+                } else {
+                    DTReserva reserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
+                    reserva.setId(r.getId());
+                    reserva.setNickname(r.getCliente().getNickname());
+                    reservasDTO.add(reserva);
+                }
+            }
+            return new DTCliente(
+                    c.getNickname(), c.getNombre(), c.getCorreo(), c.getApellido(),
+                    c.getTipoDoc(), c.getNumeroDocumento(), c.getFechaNacimiento(),
+                    c.getNacionalidad(), reservasDTO, c.getFoto(), c.getContrasena()
+            );
+        }
+
+        Aerolinea a = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+        if (a != null) {
+            List<DTRutaVuelo> rutasDTO = new ArrayList<>();
+            for (RutaVuelo rv : a.getRutasVuelo()) {
+                rutasDTO.add(new DTRutaVuelo(
+                        rv.getNombre(), rv.getDescripcion(), rv.getFechaAlta(), rv.getCostoBase(),
+                        new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(),
+                                a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(), a.getContrasena()),
+                        new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
+                        new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais()),
+                        rv.getFoto(), rv.getEstado()
+                ));
+            }
+            return new DTAerolinea(
+                    a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(),
+                    a.getLinkSitioWeb(), rutasDTO, a.getFoto(), a.getContrasena()
+            );
+        }
+
         throw new IllegalArgumentException("Usuario no encontrado");
     }
 
