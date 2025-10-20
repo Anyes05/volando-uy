@@ -1,6 +1,7 @@
 package dato.entidades;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class Categoria {
         this.nombre = nombre;
     }
 
+    @JsonIgnore
     public List<RutaVuelo> getRutas() {
         return rutas;
     }

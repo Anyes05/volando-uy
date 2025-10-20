@@ -2,6 +2,7 @@ package dato.entidades;
 
 import dato.converter.DTCostoBaseConverter;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -172,6 +173,7 @@ public class RutaVuelo {
         this.ciudadDestino = ciudadDestino;
     }
 
+    @JsonIgnore
     public List<Categoria> getCategorias() {
         return categorias;
     }
@@ -180,6 +182,7 @@ public class RutaVuelo {
         this.categorias = categorias;
     }
 
+    @JsonIgnore
     public List<Vuelo> getVuelos() {
         return vuelos;
     }
@@ -188,6 +191,7 @@ public class RutaVuelo {
         this.vuelos = vuelos;
     }
 
+    @JsonIgnore
     public List<Aerolinea> getAerolineas() {
         return aerolineas;
     }
@@ -196,6 +200,7 @@ public class RutaVuelo {
         this.aerolineas = aerolineas;
     }
 
+    @JsonIgnore
     public List<Cantidad> getCantidad() {
         return cantidades;
     }

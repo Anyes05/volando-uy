@@ -63,9 +63,15 @@ public class RutaVueloController extends HttpServlet {
             LOG.info("Nickname param: " + nicknameParam);
 
             if (pathInfo == null || pathInfo.equals("/")) {
-                // GET /api/rutas - Lista rutas confirmadas de una aerolínea
+                // GET /api/rutas - Lista rutas confirmadas de una aerolínea o todas las rutas
                 LOG.info("Manejando lista de rutas");
-                handleGetRutas(nicknameParam, request, response, out);
+                if (nicknameParam == null || nicknameParam.trim().isEmpty()) {
+                    // Si no se especifica aerolínea, devolver todas las rutas
+                    handleGetTodasLasRutas(request, response, out);
+                } else {
+                    // Si se especifica aerolínea, devolver solo las de esa aerolínea
+                    handleGetRutas(nicknameParam, request, response, out);
+                }
                 return;
             } else if (pathInfo.equals("/test")) {
                 // Endpoint de prueba
@@ -410,6 +416,100 @@ public class RutaVueloController extends HttpServlet {
     }
 
     /**
+     * GET /api/rutas - Lista todas las rutas confirmadas de todas las aerolíneas
+     */
+    private void handleGetTodasLasRutas(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+        LOG.info("Obteniendo todas las rutas de todas las aerolíneas");
+
+        // Verificar que el sistema esté inicializado
+        if (sistema == null) {
+            LOG.severe("Sistema no inicializado");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+            return;
+        }
+
+        List<Map<String, Object>> todasLasRutas = new ArrayList<>();
+        
+        try {
+            // Obtener todas las aerolíneas
+            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            LOG.info("Aerolíneas encontradas: " + (aerolineas != null ? aerolineas.size() : 0));
+            
+            if (aerolineas != null) {
+                for (DTAerolinea aero : aerolineas) {
+                    try {
+                        List<DTRutaVuelo> rutasAerolinea = sistema.listarRutaVuelo(aero.getNickname());
+                        if (rutasAerolinea != null) {
+                            for (DTRutaVuelo r : rutasAerolinea) {
+                                if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+                                    Map<String, Object> rutaMap = new HashMap<>();
+                                    rutaMap.put("nombre", r.getNombre());
+                                    rutaMap.put("descripcion", r.getDescripcion());
+                                    rutaMap.put("fechaAlta", r.getFechaAlta() != null ? r.getFechaAlta().toString() : null);
+                                    rutaMap.put("costoBase", r.getCostoBase());
+                                    rutaMap.put("estado", r.getEstado() != null ? r.getEstado().toString() : null);
+                                    rutaMap.put("aerolinea", aero.getNickname()); // Agregar información de aerolínea
+                                    
+                                    // Información de ciudades
+                                    if (r.getCiudadOrigen() != null) {
+                                        Map<String, Object> origenMap = new HashMap<>();
+                                        origenMap.put("nombre", r.getCiudadOrigen().getNombre());
+                                        origenMap.put("pais", r.getCiudadOrigen().getPais());
+                                        rutaMap.put("ciudadOrigen", origenMap);
+                                    }
+                                    
+                                    if (r.getCiudadDestino() != null) {
+                                        Map<String, Object> destinoMap = new HashMap<>();
+                                        destinoMap.put("nombre", r.getCiudadDestino().getNombre());
+                                        destinoMap.put("pais", r.getCiudadDestino().getPais());
+                                        rutaMap.put("ciudadDestino", destinoMap);
+                                    }
+                                    
+                                    // Categorías - serializar solo nombres para evitar recursión
+                                    if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
+                                        List<String> nombresCategorias = new ArrayList<>();
+                                        for (dato.entidades.Categoria cat : r.getCategorias()) {
+                                            if (cat != null && cat.getNombre() != null) {
+                                                nombresCategorias.add(cat.getNombre());
+                                            }
+                                        }
+                                        rutaMap.put("categorias", nombresCategorias);
+                                    }
+                                    
+                                    // Imagen si existe
+                                    if (r.getFoto() != null && r.getFoto().length > 0) {
+                                        String fotoBase64 = java.util.Base64.getEncoder().encodeToString(r.getFoto());
+                                        rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
+                                    }
+                                    
+                                    todasLasRutas.add(rutaMap);
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        LOG.warning("Error obteniendo rutas de aerolínea " + aero.getNickname() + ": " + ex.getMessage());
+                    }
+                }
+            }
+            
+            LOG.info("Total de rutas confirmadas encontradas: " + todasLasRutas.size());
+            
+            String jsonResponse = objectMapper.writeValueAsString(todasLasRutas);
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(jsonResponse);
+            LOG.info("Respuesta JSON de todas las rutas enviada exitosamente");
+            
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al obtener todas las rutas: " + ex.getMessage(), ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Error al obtener todas las rutas", "detail", ex.getMessage())));
+        } finally {
+            out.flush();
+        }
+    }
+
+    /**
      * GET /api/rutas - Lista rutas confirmadas de una aerolínea
      * Si no se especifica el parámetro 'aerolinea', intenta usar la aerolínea de la sesión actual
      * (útil para casos como alta de vuelo donde la aerolínea logueada solo ve sus propias rutas)
@@ -523,9 +623,15 @@ public class RutaVueloController extends HttpServlet {
                     rutaMap.put("ciudadDestino", destinoMap);
                 }
                 
-                // Categorías
+                // Categorías - serializar solo nombres para evitar recursión
                 if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
-                    rutaMap.put("categorias", r.getCategorias());
+                    List<String> nombresCategorias = new ArrayList<>();
+                    for (dato.entidades.Categoria cat : r.getCategorias()) {
+                        if (cat != null && cat.getNombre() != null) {
+                            nombresCategorias.add(cat.getNombre());
+                        }
+                    }
+                    rutaMap.put("categorias", nombresCategorias);
                 }
                 
                 // Imagen si existe
@@ -595,9 +701,15 @@ public class RutaVueloController extends HttpServlet {
                 rutaMap.put("ciudadDestino", destinoMap);
             }
             
-            // Categorías
+            // Categorías - serializar solo nombres para evitar recursión
             if (ruta.getCategorias() != null && !ruta.getCategorias().isEmpty()) {
-                rutaMap.put("categorias", ruta.getCategorias());
+                List<String> nombresCategorias = new ArrayList<>();
+                for (dato.entidades.Categoria cat : ruta.getCategorias()) {
+                    if (cat != null && cat.getNombre() != null) {
+                        nombresCategorias.add(cat.getNombre());
+                    }
+                }
+                rutaMap.put("categorias", nombresCategorias);
             }
             
             // Imagen si existe
@@ -703,9 +815,15 @@ public class RutaVueloController extends HttpServlet {
                     rutaMap.put("ciudadDestino", destinoMap);
                 }
                 
-                // Categorías
+                // Categorías - serializar solo nombres para evitar recursión
                 if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
-                    rutaMap.put("categorias", r.getCategorias());
+                    List<String> nombresCategorias = new ArrayList<>();
+                    for (dato.entidades.Categoria cat : r.getCategorias()) {
+                        if (cat != null && cat.getNombre() != null) {
+                            nombresCategorias.add(cat.getNombre());
+                        }
+                    }
+                    rutaMap.put("categorias", nombresCategorias);
                 }
                 
                 // Imagen si existe

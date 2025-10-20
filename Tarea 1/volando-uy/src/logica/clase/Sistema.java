@@ -1405,6 +1405,8 @@ public class Sistema implements ISistema {
             compraPaquete.setCostoTotal(costo); // falta saber bien como se calcula el costo de un paquete.
             clienteSeleccionado.addReserva(compraPaquete);
             clienteSeleccionado.incrementarCantidadPaquetes();
+            // Persistir el incremento de cantidadPaquetes en el cliente
+            new ClienteServicio().actualizarCliente(clienteSeleccionado);
             paqueteSeleccionado.setComprado(true);
             paqueteSeleccionado.agregarCompraPaquete(compraPaquete);
             servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
@@ -1599,6 +1601,70 @@ public class Sistema implements ISistema {
         } catch (Exception e) {
             throw new RuntimeException("Error al recargar rutas con estados: " + e.getMessage(), e);
         }
+    }
+
+    // OBTENER PAQUETES DEL CLIENTE QUE INCLUYEN UNA RUTA ESPECÍFICA
+    public List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(String nicknameCliente, String nombreRuta) {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        CompraPaqueteServicio compraPaqueteServicio = new CompraPaqueteServicio();
+        
+        // Buscar el cliente
+        Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameCliente);
+        if (cliente == null) {
+            throw new IllegalArgumentException("Cliente no encontrado: " + nicknameCliente);
+        }
+        
+        // Obtener todas las compras de paquetes del cliente
+        List<CompraPaquete> comprasPaquetes = compraPaqueteServicio.buscarPorCliente(cliente);
+        
+        List<DTPaqueteVuelos> paquetesValidos = new ArrayList<>();
+        
+        for (CompraPaquete compra : comprasPaquetes) {
+            PaqueteVuelo paquete = compra.getPaqueteVuelo();
+            
+            // Verificar si el paquete incluye la ruta especificada
+            boolean incluyeRuta = false;
+            if (paquete.getCantidad() != null) {
+                for (Cantidad cantidad : paquete.getCantidad()) {
+                    if (cantidad.getRutaVuelo() != null && 
+                        cantidad.getRutaVuelo().getNombre().equalsIgnoreCase(nombreRuta)) {
+                        incluyeRuta = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Si el paquete incluye la ruta y no ha vencido, agregarlo a la lista
+            if (incluyeRuta && !paqueteVencido(compra.getVencimiento())) {
+                DTPaqueteVuelos dtPaquete = new DTPaqueteVuelos(
+                    paquete.getNombre(),
+                    paquete.getDescripcion(),
+                    paquete.getDiasValidos(),
+                    paquete.getDescuento(),
+                    paquete.getFechaAlta(),
+                    paquete.getFoto()
+                );
+                dtPaquete.setId(paquete.getId());
+                dtPaquete.setCostoTotal(paquete.getCostoTotal());
+                paquetesValidos.add(dtPaquete);
+            }
+        }
+        
+        return paquetesValidos;
+    }
+    
+    // Verificar si un paquete ha vencido
+    private boolean paqueteVencido(DTFecha vencimiento) {
+        if (vencimiento == null) return false;
+        
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        java.time.LocalDate fechaVencimiento = java.time.LocalDate.of(
+            vencimiento.getAno(),
+            vencimiento.getMes(), 
+            vencimiento.getDia()
+        );
+        
+        return hoy.isAfter(fechaVencimiento);
     }
 }
 

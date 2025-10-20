@@ -97,7 +97,7 @@ function initConsultaRutaVuelo() {
         try {
             console.log('Iniciando carga de rutas...');
             
-            const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
+            const response = await fetch('/VolandoUy-WebApp/api/rutas');
             
             if (!response.ok) {
                 throw new Error('Error HTTP: ' + response.status);

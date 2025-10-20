@@ -157,6 +157,8 @@ public interface ISistema {
     // RECARGAR RUTAS CON ESTADOS
     public void recargarRutasConEstados();
 
+    public List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(String nicknameCliente, String rutaNombre);
+
 }
 
 

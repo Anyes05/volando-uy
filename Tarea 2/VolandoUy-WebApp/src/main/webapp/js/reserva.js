@@ -176,6 +176,12 @@
       selectedRoute = e.target.value;
       resetFlightSelection();
       loadFlightsForRoute(selectedRoute);
+      
+      // Si está en modo paquete, cargar paquetes para esta ruta
+      const payMode = document.querySelector('input[name="payMode"]:checked');
+      if (payMode && payMode.value === 'paquete') {
+        loadClientPackagesForRoute(selectedRoute);
+      }
     });
 
     selFlight.addEventListener('change', (e) => {
@@ -198,7 +204,13 @@
     payModeRadios.forEach(radio => {
       radio.addEventListener('change', (e) => {
         if (e.target.value === 'paquete') {
-          loadClientPackages();
+          // Solo cargar paquetes si ya se seleccionó una ruta
+          if (selectedRoute) {
+            loadClientPackagesForRoute(selectedRoute);
+          } else {
+            // Mostrar mensaje de que debe seleccionar ruta primero
+            selPackage.innerHTML = '<option value="">Seleccione una ruta primero</option>';
+          }
           packageContainer.classList.remove('hidden');
         } else {
           packageContainer.classList.add('hidden');
@@ -644,15 +656,31 @@
   }
 
   // ========== FUNCIONES DE PAQUETES ==========
-  function loadClientPackages() {
-    fetch('/VolandoUy-WebApp/api/reservas/paquetes-cliente')
+  function loadClientPackagesForRoute(rutaNombre) {
+    if (!rutaNombre) {
+      selPackage.innerHTML = '<option value="">Seleccione una ruta primero</option>';
+      return;
+    }
+
+    showLoading(selPackage);
+    
+    fetch(`/VolandoUy-WebApp/api/reservas/paquetes-cliente/${encodeURIComponent(rutaNombre)}`)
       .then(response => response.json())
       .then(paquetes => {
-        populateSelect(selPackage, paquetes, 'id', 'nombre', 'Seleccione paquete');
+        if (paquetes.length === 0) {
+          selPackage.innerHTML = '<option value="">No hay paquetes disponibles para esta ruta</option>';
+          showToast('No tienes paquetes que incluyan esta ruta', 'warning');
+        } else {
+          populateSelect(selPackage, paquetes, 'id', 'nombre', 'Seleccione paquete');
+          showToast(`Se encontraron ${paquetes.length} paquete(s) disponibles`, 'success');
+        }
+        hideLoading(selPackage);
       })
       .catch(error => {
         console.error('Error al cargar paquetes:', error);
         selPackage.innerHTML = '<option value="">Error al cargar paquetes</option>';
+        hideLoading(selPackage);
+        showToast('Error al cargar paquetes del cliente', 'error');
       });
   }
 

@@ -13,6 +13,7 @@ public class DTPaqueteVuelos {
     private float costoTotal;
     private DTFecha fechaAlta;
     private byte[] foto;
+    private Long id;
 
     private List<dato.entidades.Cantidad> cantidad;
 
@@ -115,5 +116,9 @@ public class DTPaqueteVuelos {
 
     public byte[] getFoto() {
         return foto;
+    }
+
+
+    public void setId(Long id) {
     }
 }

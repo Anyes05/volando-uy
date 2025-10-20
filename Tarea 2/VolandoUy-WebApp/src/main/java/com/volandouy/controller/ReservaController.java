@@ -75,7 +75,18 @@ public class ReservaController extends HttpServlet {
                 handleGetDetalleVuelo(vueloNombre, request, response, out);
             } else if (pathInfo.startsWith("/paquetes-cliente")) {
                 // Obtener paquetes disponibles del cliente
-                handleGetPaquetesCliente(request, response, out);
+                if (pathInfo.contains("/")) {
+                    // Si hay parámetros, obtener paquetes filtrados por ruta
+                    String[] parts = pathInfo.split("/");
+                    if (parts.length >= 3) {
+                        String rutaNombre = parts[2];
+                        handleGetPaquetesClienteParaRuta(rutaNombre, request, response, out);
+                    } else {
+                        handleGetPaquetesCliente(request, response, out);
+                    }
+                } else {
+                    handleGetPaquetesCliente(request, response, out);
+                }
             } else if (pathInfo.equals("/usuarios")) {
                 // Listar todos los clientes disponibles para pasajeros
                 handleGetClientes(request, response, out);
@@ -313,21 +324,49 @@ public class ReservaController extends HttpServlet {
                 return;
             }
 
-            // Obtener paquetes del cliente - necesitaríamos una función en el sistema
-            // Por ahora simular algunos paquetes disponibles del cliente
-            List<Map<String, Object>> paquetesDisponibles = new ArrayList<>();
-            
-            // TODO: Implementar la función para obtener paquetes del cliente específico
-            // Esto requeriría una nueva función en el Sistema como:
-            // List<DTPaqueteVuelos> paquetesCliente = sistema.obtenerPaquetesCliente(nicknameCliente);
+            // Obtener todos los paquetes del cliente (sin filtro de ruta)
+            // Por ahora devolver lista vacía hasta implementar método específico
+            List<DTPaqueteVuelos> paquetesCliente = new ArrayList<>();
             
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(paquetesDisponibles));
+            out.print(objectMapper.writeValueAsString(paquetesCliente));
             
         } catch (Exception e) {
             LOG.severe("Error al obtener paquetes del cliente: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print("{\"error\": \"Error al obtener paquetes del cliente\"}");
+        }
+    }
+
+    /**
+     * Obtiene los paquetes del cliente que incluyen una ruta específica
+     */
+    private void handleGetPaquetesClienteParaRuta(String rutaNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+        try {
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print("{\"error\": \"Usuario no autenticado\"}");
+                return;
+            }
+
+            String nicknameCliente = (String) session.getAttribute("usuarioLogueado");
+            if (nicknameCliente == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print("{\"error\": \"Usuario no autenticado\"}");
+                return;
+            }
+
+            // Obtener paquetes del cliente que incluyen la ruta especificada
+            List<DTPaqueteVuelos> paquetesCliente = sistema.obtenerPaquetesClienteParaRuta(nicknameCliente, rutaNombre);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(objectMapper.writeValueAsString(paquetesCliente));
+            
+        } catch (Exception e) {
+            LOG.severe("Error al obtener paquetes del cliente para ruta: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print("{\"error\": \"Error al obtener paquetes del cliente para la ruta\"}");
         }
     }
 
@@ -541,9 +580,70 @@ public class ReservaController extends HttpServlet {
 
             // Crear la reserva usando el mismo método que en Swing
             if ("paquete".equals(formaPago) && paqueteId != null && !paqueteId.isEmpty()) {
-                // Reserva con paquete - TODO: Implementar cuando esté listo
-                response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
-                out.print("{\"error\": \"Reserva con paquete no implementada aún\"}");
+                // Reserva con paquete - implementar lógica de reserva con paquete
+                try {
+                    // Crear la fecha actual para la reserva
+                    java.time.LocalDate hoy = java.time.LocalDate.now();
+                    DTFecha fechaReserva = new DTFecha(hoy.getDayOfMonth(), hoy.getMonthValue(), hoy.getYear());
+                    
+                    // Validar que el paquete existe y pertenece al cliente
+                    Long paqueteIdLong = Long.parseLong(paqueteId);
+                    ClienteServicio clienteServicio = new ClienteServicio();
+                    CompraPaqueteServicio compraPaqueteServicio = new CompraPaqueteServicio();
+                    
+                    Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameCliente);
+                    List<CompraPaquete> comprasCliente = compraPaqueteServicio.buscarPorCliente(cliente);
+                    
+                    // Verificar que el cliente tiene este paquete
+                    boolean paqueteValido = false;
+                    CompraPaquete compraPaquete = null;
+                    for (CompraPaquete compra : comprasCliente) {
+                        if (compra.getPaqueteVuelo().getId().equals(paqueteIdLong)) {
+                            paqueteValido = true;
+                            compraPaquete = compra;
+                            break;
+                        }
+                    }
+                    
+                    if (!paqueteValido) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.print("{\"error\": \"El paquete seleccionado no pertenece al cliente o no existe\"}");
+                        return;
+                    }
+                    
+                    // Verificar que el paquete no ha vencido
+                    java.time.LocalDate fechaVencimiento = java.time.LocalDate.of(
+                        compraPaquete.getVencimiento().getAno(),
+                        compraPaquete.getVencimiento().getMes(),
+                        compraPaquete.getVencimiento().getDia()
+                    );
+                    
+                    if (hoy.isAfter(fechaVencimiento)) {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.print("{\"error\": \"El paquete seleccionado ha vencido\"}");
+                        return;
+                    }
+                    
+                    // Crear la reserva normal (el paquete se usa como forma de pago, pero la reserva es normal)
+                    sistema.datosReserva(tipoAsientoEnum, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReserva);
+                    
+                    // Si llegamos aquí, la reserva se creó exitosamente
+                    Map<String, Object> resultado = new HashMap<>();
+                    resultado.put("mensaje", "Reserva con paquete creada exitosamente");
+                    resultado.put("tipoReserva", "paquete");
+                    resultado.put("paqueteId", paqueteId);
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(resultado));
+                    
+                } catch (NumberFormatException e) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print("{\"error\": \"ID de paquete inválido\"}");
+                } catch (Exception e) {
+                    LOG.severe("Error al crear reserva con paquete: " + e.getMessage());
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print("{\"error\": \"Error al crear reserva con paquete: " + e.getMessage() + "\"}");
+                }
                 return;
             } else {
                 // Reserva normal - usar la misma función que usa Swing
