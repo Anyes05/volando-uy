@@ -181,6 +181,43 @@
         }
         if (response.ok) {
           alert(result.mensaje || "Operacion completada.");
+
+          // Iniciar sesión automáticamente después del registro exitoso
+          try {
+            const loginResponse = await fetch("<%= request.getContextPath() %>/login", {
+              method: "POST",
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: new URLSearchParams({
+                email: form.correo.value,
+                password: form.contrasena.value
+              })
+            });
+
+            const loginResult = await loginResponse.json().catch(() => ({}));
+
+            if (loginResponse.ok) {
+              // Guardar datos útiles en sessionStorage
+              if (loginResult.nickname) sessionStorage.setItem('usuarioLogueado', loginResult.nickname);
+              if (loginResult.nombre) sessionStorage.setItem('nombreUsuario', loginResult.nombre);
+              if (loginResult.correo) sessionStorage.setItem('correoUsuario', loginResult.correo);
+              if (loginResult.tipo) sessionStorage.setItem('tipoUsuario', loginResult.tipo);
+              if (loginResult.foto) sessionStorage.setItem('fotoUsuario', loginResult.foto);
+
+              // Redirigir al inicio con sesión iniciada
+              window.location.href = "<%= request.getContextPath() %>/inicio.jsp";
+            } else {
+              // Si falla el login automático, redirigir a la página de login
+              alert("Registro exitoso. Por favor, inicia sesión manualmente.");
+              window.location.href = "<%= request.getContextPath() %>/inicioSesion.jsp";
+            }
+          } catch (loginError) {
+            console.error('Error en login automático:', loginError);
+            alert("Registro exitoso. Por favor, inicia sesión manualmente.");
+            window.location.href = "<%= request.getContextPath() %>/inicioSesion.jsp";
+          }
         } else {
           alert(result.error || ("Error: " + response.status));
         }
