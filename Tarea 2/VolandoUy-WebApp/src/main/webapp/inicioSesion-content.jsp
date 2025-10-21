@@ -4,27 +4,27 @@
       <img src="${pageContext.request.contextPath}/static/img/logoAvionSolo.png" alt="VolandoUY" class="logo-img">
       VolandoUY
     </h1>
-    <h2>Iniciar Sesión</h2>
+    <h2>Iniciar Sesi&oacute;n</h2>
 
     <form id="login-form" action="${pageContext.request.contextPath}/login" method="post">
       <div class="input-group">
-        <label for="email">Correo Electronico</label>
+        <label for="email">Correo Electr&oacute;nico</label>
         <input type="email" id="email" name="email" placeholder="tu@email.com" required>
       </div>
 
       <div class="input-group">
-        <label for="password">Contrasena</label>
-        <input type="password" id="password" name="password" placeholder="Tu contrasena" required>
+        <label for="password">Contrase&ntilde;a</label>
+        <input type="password" id="password" name="password" placeholder="Tu contrase&ntilde;a" required>
       </div>
 
       <button type="submit" class="btn-login">
-        <i class="fas fa-sign-in-alt"></i> Iniciar Sesion
+        <i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n
       </button>
     </form>
 
     <div class="extra-links">
-      <a href="registrarUsuario.jsp">¿No tienes cuenta? Registrate</a>
-      <a href="#">¿Olvidaste tu contrasena?</a>
+      <a href="registrarUsuario.jsp">&iquest;No tienes cuenta? Reg&iacute;strate</a>
+      <a href="#">&iquest;Olvidaste tu contrase&ntilde;a?</a>
     </div>
   </div>
 </div>
@@ -40,7 +40,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
   // Mostrar estado de carga
   submitBtn.disabled = true;
   submitBtn.classList.add('loading');
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesion...';
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesi&oacute;n...';
 
   try {
     const response = await fetch('${pageContext.request.contextPath}/login', {
@@ -69,24 +69,24 @@ document.getElementById('login-form').addEventListener('submit', async function(
       // Restaurar boton y redirigir
       submitBtn.disabled = false;
       submitBtn.classList.remove('loading');
-      submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesion';
+      submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
 
       alert('¡Bienvenido ' + (result.nombre || '') + '!');
       window.location.href = '${pageContext.request.contextPath}/inicio.jsp';
     } else {
       // Mostrar error y restaurar boton
-      const msg = result.mensaje || result.error || 'Error al iniciar sesion';
+      const msg = result.mensaje || result.error || 'Error al iniciar sesi&oacute;n';
       alert(msg);
       submitBtn.disabled = false;
       submitBtn.classList.remove('loading');
-      submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesion';
+      submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('Error de conexion: ' + (error.message || error));
+    alert('Error de conexi&oacute;n: ' + (error.message || error));
     submitBtn.disabled = false;
     submitBtn.classList.remove('loading');
-    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesion';
+    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
   }
 });
 </script>
