@@ -69,8 +69,22 @@ function initConsultaVuelo() {
     // Función para cargar aerolíneas
     function cargarAerolineas() {
         fetch('/VolandoUy-WebApp/api/vuelos/aerolineas')
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json();
+            })
             .then(aerolineas => {
+                console.log('Aerolíneas recibidas:', aerolineas);
+                console.log('Tipo de aerolíneas:', typeof aerolineas);
+                console.log('Es array:', Array.isArray(aerolineas));
+                
+                if (!Array.isArray(aerolineas)) {
+                    throw new Error('Los datos recibidos no son un array');
+                }
+                
                 selectAerolinea.innerHTML = '<option value="">-- Elegir aerolínea --</option>';
                 aerolineas.forEach(aero => {
                     const option = document.createElement('option');
@@ -81,7 +95,7 @@ function initConsultaVuelo() {
             })
             .catch(error => {
                 console.error('Error al cargar aerolíneas:', error);
-                listaRutas.innerHTML = 'Error al cargar aerolíneas';
+                selectAerolinea.innerHTML = '<option value="">Error al cargar aerolíneas</option>';
             });
     }
 
@@ -97,8 +111,22 @@ function initConsultaVuelo() {
 
         // Cargar rutas de la aerolínea seleccionada
         fetch(`/VolandoUy-WebApp/api/vuelos/rutas/\${nickname}`)
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status para rutas:', response.status);
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json();
+            })
             .then(rutas => {
+                console.log('Rutas recibidas:', rutas);
+                console.log('Tipo de rutas:', typeof rutas);
+                console.log('Es array:', Array.isArray(rutas));
+                
+                if (!Array.isArray(rutas)) {
+                    throw new Error('Los datos recibidos no son un array');
+                }
+                
                 if (rutas.length === 0) {
                     listaRutas.innerHTML = 'No hay rutas confirmadas para esta aerolínea';
                     return;
@@ -121,7 +149,7 @@ function initConsultaVuelo() {
             })
             .catch(error => {
                 console.error('Error al cargar rutas:', error);
-                listaRutas.innerHTML = 'Error al cargar rutas';
+                listaRutas.innerHTML = 'Error al cargar rutas: ' + error.message;
             });
     });
 
@@ -215,10 +243,10 @@ function initConsultaVuelo() {
                     return;
                 }
 
-                reservas.forEach(reserva => {
+                reservas.forEach((reserva) => {
                     const div = document.createElement('div');
                     div.className = 'reserva-card';
-                    div.innerHTML = `<strong>\${reserva.cliente}</strong> — Fecha: \${reserva.fechaReserva} • Costo: \${formatearCostoReserva(reserva.costoReserva)}`;
+                    div.innerHTML = '<strong>' + reserva.cliente + '</strong> — Fecha: ' + reserva.fechaReserva + ' • Costo: ' + formatearCostoReserva(reserva.costoReserva);
                     div.addEventListener('click', () => mostrarDetalleReserva(reserva));
                     listaReservas.appendChild(div);
                 });
@@ -293,23 +321,25 @@ function initConsultaVuelo() {
         let pasajerosHtml = '';
         if (reserva.pasajeros && reserva.pasajeros.length > 0) {
             pasajerosHtml = '<h4>Pasajeros:</h4><ul>';
-            reserva.pasajeros.forEach(pasajero => {
-                pasajerosHtml += `<li><strong>${pasajero.nombre} ${pasajero.apellido}</strong>`;
+            reserva.pasajeros.forEach((pasajero) => {
+                const nombre = pasajero.nombre || '';
+                const apellido = pasajero.apellido || '';
+                
+                pasajerosHtml += '<li><strong>' + nombre + ' ' + apellido + '</strong>';
                 if (pasajero.nickname) {
-                    pasajerosHtml += ` (${pasajero.nickname})`;
+                    pasajerosHtml += ' (' + pasajero.nickname + ')';
                 }
                 pasajerosHtml += '</li>';
             });
             pasajerosHtml += '</ul>';
         }
         
-        detalleReservaInfo.innerHTML = `
-            <p><strong>ID:</strong> \${reserva.id}</p>
-            <p><strong>Cliente:</strong> \${reserva.cliente}</p>
-            <p><strong>Fecha de reserva:</strong> \${reserva.fechaReserva}</p>
-            <p><strong>Costo:</strong> \${formatearCostoReserva(reserva.costoReserva)}</p>
-            \${pasajerosHtml}
-        `;
+        detalleReservaInfo.innerHTML = 
+            '<p><strong>ID:</strong> ' + reserva.id + '</p>' +
+            '<p><strong>Cliente:</strong> ' + reserva.cliente + '</p>' +
+            '<p><strong>Fecha de reserva:</strong> ' + reserva.fechaReserva + '</p>' +
+            '<p><strong>Costo:</strong> ' + formatearCostoReserva(reserva.costoReserva) + '</p>' +
+            pasajerosHtml;
     }
 
     // Función para limpiar secciones al cambiar aerolínea

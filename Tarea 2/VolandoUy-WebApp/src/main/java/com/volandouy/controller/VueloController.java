@@ -25,7 +25,9 @@ import logica.DataTypes.DTHora;
 import logica.DataTypes.DTRutaVuelo;
 import logica.DataTypes.DTVuelo;
 import logica.DataTypes.DTVueloReserva;
+import logica.DataTypes.EstadoRutaVuelo;
 import logica.clase.Sistema;
+import logica.servicios.ReservaServicio;
 
 @WebServlet("/api/vuelos/*")
 @MultipartConfig(
@@ -232,6 +234,10 @@ public class VueloController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        LOG.info("=== DOGET VUELO CONTROLLER ===");
+        LOG.info("Request URI: " + request.getRequestURI());
+        LOG.info("Path Info: " + request.getPathInfo());
+        
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
@@ -317,7 +323,9 @@ public class VueloController extends HttpServlet {
      */
     private void handleGetAerolineas(HttpServletResponse response, PrintWriter out) throws IOException {
         try {
+            LOG.info("=== HANDLE GET AEROLINEAS ===");
             List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            LOG.info("Aerolíneas obtenidas: " + (aerolineas != null ? aerolineas.size() : "null"));
             
             List<Map<String, Object>> result = new ArrayList<>();
             for (DTAerolinea aero : aerolineas) {
@@ -349,29 +357,32 @@ public class VueloController extends HttpServlet {
             
             List<Map<String, Object>> result = new ArrayList<>();
             for (DTRutaVuelo ruta : rutas) {
-                Map<String, Object> rutaMap = new HashMap<>();
-                rutaMap.put("nombre", ruta.getNombre());
-                rutaMap.put("descripcion", ruta.getDescripcion());
-                rutaMap.put("fechaAlta", ruta.getFechaAlta() != null ? ruta.getFechaAlta().toString() : null);
-                rutaMap.put("costoBase", ruta.getCostoBase());
-                rutaMap.put("estado", ruta.getEstado() != null ? ruta.getEstado().toString() : null);
-                
-                // Información de ciudades
-                if (ruta.getCiudadOrigen() != null) {
-                    Map<String, Object> origenMap = new HashMap<>();
-                    origenMap.put("nombre", ruta.getCiudadOrigen().getNombre());
-                    origenMap.put("pais", ruta.getCiudadOrigen().getPais());
-                    rutaMap.put("ciudadOrigen", origenMap);
+                // Solo mostrar rutas confirmadas para consulta de vuelos
+                if (ruta.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+                    Map<String, Object> rutaMap = new HashMap<>();
+                    rutaMap.put("nombre", ruta.getNombre());
+                    rutaMap.put("descripcion", ruta.getDescripcion());
+                    rutaMap.put("fechaAlta", ruta.getFechaAlta() != null ? ruta.getFechaAlta().toString() : null);
+                    rutaMap.put("costoBase", ruta.getCostoBase());
+                    rutaMap.put("estado", ruta.getEstado() != null ? ruta.getEstado().toString() : null);
+                    
+                    // Información de ciudades
+                    if (ruta.getCiudadOrigen() != null) {
+                        Map<String, Object> origenMap = new HashMap<>();
+                        origenMap.put("nombre", ruta.getCiudadOrigen().getNombre());
+                        origenMap.put("pais", ruta.getCiudadOrigen().getPais());
+                        rutaMap.put("ciudadOrigen", origenMap);
+                    }
+                    
+                    if (ruta.getCiudadDestino() != null) {
+                        Map<String, Object> destinoMap = new HashMap<>();
+                        destinoMap.put("nombre", ruta.getCiudadDestino().getNombre());
+                        destinoMap.put("pais", ruta.getCiudadDestino().getPais());
+                        rutaMap.put("ciudadDestino", destinoMap);
+                    }
+                    
+                    result.add(rutaMap);
                 }
-                
-                if (ruta.getCiudadDestino() != null) {
-                    Map<String, Object> destinoMap = new HashMap<>();
-                    destinoMap.put("nombre", ruta.getCiudadDestino().getNombre());
-                    destinoMap.put("pais", ruta.getCiudadDestino().getPais());
-                    rutaMap.put("ciudadDestino", destinoMap);
-                }
-                
-                result.add(rutaMap);
             }
             
             response.setStatus(HttpServletResponse.SC_OK);
@@ -480,6 +491,40 @@ public class VueloController extends HttpServlet {
                         reservaMap.put("cliente", vueloReserva.getReserva().getNickname());
                         reservaMap.put("fechaReserva", vueloReserva.getReserva().getFechaReserva() != null ? vueloReserva.getReserva().getFechaReserva().toString() : null);
                         reservaMap.put("costoReserva", vueloReserva.getReserva().getCostoReserva());
+                        
+                        // Incluir información de pasajeros si está disponible
+                        try {
+                            // Obtener la reserva real de la base de datos para acceder a los pasajeros
+                            ReservaServicio reservaServicio = new ReservaServicio();
+                            dato.entidades.Reserva reservaReal = reservaServicio.buscarPorId(vueloReserva.getReserva().getId());
+                            if (reservaReal != null && reservaReal.getPasajeros() != null && !reservaReal.getPasajeros().isEmpty()) {
+                                List<Map<String, Object>> pasajerosData = new ArrayList<>();
+                                for (dato.entidades.Pasaje pasaje : reservaReal.getPasajeros()) {
+                                    String nombre = pasaje.getNombrePasajero();
+                                    String apellido = pasaje.getApellidoPasajero();
+                                    
+                                    // Si los campos específicos están vacíos, usar datos del cliente
+                                    if (nombre == null || nombre.trim().isEmpty()) {
+                                        nombre = pasaje.getPasajero() != null ? pasaje.getPasajero().getNombre() : "N/A";
+                                    }
+                                    if (apellido == null || apellido.trim().isEmpty()) {
+                                        apellido = pasaje.getPasajero() != null ? pasaje.getPasajero().getApellido() : "N/A";
+                                    }
+                                    
+                                    Map<String, Object> pasajeroData = new HashMap<>();
+                                    pasajeroData.put("nombre", nombre != null ? nombre.trim() : "");
+                                    pasajeroData.put("apellido", apellido != null ? apellido.trim() : "");
+                                    pasajeroData.put("nickname", pasaje.getPasajero() != null ? pasaje.getPasajero().getNickname() : null);
+                                    pasajeroData.put("tipoAsiento", pasaje.getTipoAsiento() != null ? pasaje.getTipoAsiento().toString() : null);
+                                    
+                                    pasajerosData.add(pasajeroData);
+                                }
+                                reservaMap.put("pasajeros", pasajerosData);
+                            }
+                        } catch (Exception e) {
+                            LOG.log(Level.WARNING, "Error obteniendo pasajeros de reserva: " + e.getMessage(), e);
+                        }
+                        
                         result.add(reservaMap);
                     }
                     
@@ -491,6 +536,40 @@ public class VueloController extends HttpServlet {
                         reservaMap.put("cliente", vueloReserva.getReserva().getNickname());
                         reservaMap.put("fechaReserva", vueloReserva.getReserva().getFechaReserva() != null ? vueloReserva.getReserva().getFechaReserva().toString() : null);
                         reservaMap.put("costoReserva", vueloReserva.getReserva().getCostoReserva());
+                        
+                        // Incluir información de pasajeros si está disponible
+                        try {
+                            // Obtener la reserva real de la base de datos para acceder a los pasajeros
+                            ReservaServicio reservaServicio = new ReservaServicio();
+                            dato.entidades.Reserva reservaReal = reservaServicio.buscarPorId(vueloReserva.getReserva().getId());
+                            if (reservaReal != null && reservaReal.getPasajeros() != null && !reservaReal.getPasajeros().isEmpty()) {
+                                List<Map<String, Object>> pasajerosData = new ArrayList<>();
+                                for (dato.entidades.Pasaje pasaje : reservaReal.getPasajeros()) {
+                                    String nombre = pasaje.getNombrePasajero();
+                                    String apellido = pasaje.getApellidoPasajero();
+                                    
+                                    // Si los campos específicos están vacíos, usar datos del cliente
+                                    if (nombre == null || nombre.trim().isEmpty()) {
+                                        nombre = pasaje.getPasajero() != null ? pasaje.getPasajero().getNombre() : "N/A";
+                                    }
+                                    if (apellido == null || apellido.trim().isEmpty()) {
+                                        apellido = pasaje.getPasajero() != null ? pasaje.getPasajero().getApellido() : "N/A";
+                                    }
+                                    
+                                    Map<String, Object> pasajeroData = new HashMap<>();
+                                    pasajeroData.put("nombre", nombre != null ? nombre.trim() : "");
+                                    pasajeroData.put("apellido", apellido != null ? apellido.trim() : "");
+                                    pasajeroData.put("nickname", pasaje.getPasajero() != null ? pasaje.getPasajero().getNickname() : null);
+                                    pasajeroData.put("tipoAsiento", pasaje.getTipoAsiento() != null ? pasaje.getTipoAsiento().toString() : null);
+                                    
+                                    pasajerosData.add(pasajeroData);
+                                }
+                                reservaMap.put("pasajeros", pasajerosData);
+                            }
+                        } catch (Exception e) {
+                            LOG.log(Level.WARNING, "Error obteniendo pasajeros de reserva: " + e.getMessage(), e);
+                        }
+                        
                         result.add(reservaMap);
                     }
                 }

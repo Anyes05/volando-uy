@@ -56,9 +56,6 @@
         <p>Selecciona una ruta para ver sus vuelos disponibles</p>
       </div>
     </div>
-    <button id="btn-agregar-vuelo" class="btn-consultar-vuelo">
-      <i class="fas fa-search"></i> Consultar vuelo
-    </button>
     <p id="mensaje-vuelo" class="mensaje-vuelo"></p>
   </aside>
 </div>
@@ -74,6 +71,152 @@
   <h3>Paquete asociado</h3>
   <p id="detalle-paquete"></p>
 </section>
+
+<!-- Estilos para el panel de detalles del vuelo -->
+<style>
+.detalle-vuelo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-vuelo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  z-index: 0;
+}
+
+.detalle-vuelo > * {
+  position: relative;
+  z-index: 1;
+}
+
+.detalle-vuelo-header h3 {
+  color: white;
+  margin-bottom: 15px;
+  font-size: 1.3em;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.detalle-vuelo-info {
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.detalle-vuelo-info p {
+  margin: 8px 0;
+  color: white;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.detalle-vuelo-info strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.seccion-reservas {
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.seccion-reservas h4 {
+  color: white;
+  margin: 0 0 15px 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.detalle-reserva {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.detalle-reserva h4 {
+  color: white;
+  margin: 0 0 10px 0;
+  font-size: 1em;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.reserva-card {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.reserva-card:hover {
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.reserva-card:active {
+  transform: translateY(0);
+}
+
+.detalle-reserva-info {
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.detalle-reserva-info p {
+  margin: 5px 0;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.detalle-reserva-info ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.detalle-reserva-info li {
+  margin: 5px 0;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.detalle-reserva-info strong {
+  color: #fff;
+  font-weight: 700;
+}
+</style>
 
 <!-- Script específico para consulta de ruta de vuelo -->
 <script src="js/consultaRutaVuelo.js"></script>
