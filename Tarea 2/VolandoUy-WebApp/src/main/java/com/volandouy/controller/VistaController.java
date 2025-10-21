@@ -134,9 +134,8 @@ public class VistaController extends HttpServlet {
         try {
             switch (vista) {
                 case "consultaUsuario.jsp":
-                    // TODO: Cargar usuarios usando servicios de la librería externa
-                    request.setAttribute("usuarios", new java.util.ArrayList<>());
-                    request.setAttribute("totalUsuarios", 0);
+                    // Los datos se cargan desde JavaScript usando la API REST
+                    // No se necesitan datos específicos del servidor aquí
                     break;
                     
                 case "registrarUsuario.jsp":

@@ -234,61 +234,75 @@ public class Sistema implements ISistema {
     }
 
     public DTUsuario mostrarDatosUsuario(String nickname) {
-        for (Usuario u : usuarios) {
-            if (u.getNickname().equals(nickname)) {
-                if (u instanceof Cliente c) { // me falta también los paquetes que compró.
-                    List<DTReserva> reservasDTO = new ArrayList<>();
-                    for (Reserva r : c.getReservas()) {
-                        if (r instanceof CompraPaquete cp) {
-                            reservasDTO.add(new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento()));
-                        } else {
-                            DTReserva reserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
-                            reserva.setId(r.getId());
-                            reserva.setNickname(r.getCliente().getNickname());
-                            reservasDTO.add(reserva);
-                        }
+        // Usar los servicios para obtener datos de la base de datos en lugar de la lista en memoria
+        ClienteServicio clienteServicio = new ClienteServicio();
+        AerolineaServicio aerolineaServicio = new AerolineaServicio();
+        
+        // Buscar cliente en la base de datos
+        Cliente cliente = clienteServicio.buscarClientePorNickname(nickname);
+        if (cliente != null) {
+            List<DTReserva> reservasDTO = new ArrayList<>();
+            for (Reserva r : cliente.getReservas()) {
+                if (r instanceof CompraPaquete cp) {
+                    DTCompraPaquete compraPaquete = new DTCompraPaquete(cp.getFechaReserva(), cp.getCostoReserva(), cp.getVencimiento());
+                    compraPaquete.setId(cp.getId());
+                    compraPaquete.setNickname(cp.getCliente().getNickname());
+                    // Incluir el nombre del paquete
+                    if (cp.getPaqueteVuelo() != null) {
+                        compraPaquete.setNombrePaquete(cp.getPaqueteVuelo().getNombre());
                     }
-                    return new DTCliente(
-                            c.getNickname(),
-                            c.getNombre(),
-                            c.getCorreo(),
-                            c.getApellido(),
-                            c.getTipoDoc(),
-                            c.getNumeroDocumento(),
-                            c.getFechaNacimiento(),
-                            c.getNacionalidad(),
-                            reservasDTO,
-                            c.getFoto(),
-                            c.getContrasena()
-                    );
-                } else if (u instanceof Aerolinea a) {
-                    List<DTRutaVuelo> rutasDTO = new ArrayList<>();
-                    for (dato.entidades.RutaVuelo rv : a.getRutasVuelo()) {
-                        rutasDTO.add(new DTRutaVuelo(
-                                rv.getNombre(),
-                                rv.getDescripcion(),
-                                rv.getFechaAlta(),
-                                rv.getCostoBase(),
-                                new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(),a.getContrasena()),
-                                new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
-                                new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais()),
-                                rv.getFoto(),
-                                rv.getEstado()
-                        ));
-                    }
-                    return new DTAerolinea(
-                            a.getNickname(),
-                            a.getNombre(),
-                            a.getCorreo(),
-                            a.getDescripcion(),
-                            a.getLinkSitioWeb(),
-                            rutasDTO,
-                            a.getFoto(),
-                            a.getContrasena()
-                    );
+                    reservasDTO.add(compraPaquete);
+                } else {
+                    DTReserva reserva = new DTReserva(r.getFechaReserva(), r.getCostoReserva());
+                    reserva.setId(r.getId());
+                    reserva.setNickname(r.getCliente().getNickname());
+                    reservasDTO.add(reserva);
                 }
             }
+            return new DTCliente(
+                    cliente.getNickname(),
+                    cliente.getNombre(),
+                    cliente.getCorreo(),
+                    cliente.getApellido(),
+                    cliente.getTipoDoc(),
+                    cliente.getNumeroDocumento(),
+                    cliente.getFechaNacimiento(),
+                    cliente.getNacionalidad(),
+                    reservasDTO,
+                    cliente.getFoto(),
+                    cliente.getContrasena()
+            );
         }
+        
+        // Buscar aerolínea en la base de datos
+        Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
+        if (aerolinea != null) {
+            List<DTRutaVuelo> rutasDTO = new ArrayList<>();
+            for (dato.entidades.RutaVuelo rv : aerolinea.getRutasVuelo()) {
+                rutasDTO.add(new DTRutaVuelo(
+                        rv.getNombre(),
+                        rv.getDescripcion(),
+                        rv.getFechaAlta(),
+                        rv.getCostoBase(),
+                        new DTAerolinea(aerolinea.getNickname(), aerolinea.getNombre(), aerolinea.getCorreo(), aerolinea.getDescripcion(), aerolinea.getLinkSitioWeb(), new ArrayList<>(), aerolinea.getFoto(), aerolinea.getContrasena()),
+                        new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
+                        new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais()),
+                        rv.getFoto(),
+                        rv.getEstado()
+                ));
+            }
+            return new DTAerolinea(
+                    aerolinea.getNickname(),
+                    aerolinea.getNombre(),
+                    aerolinea.getCorreo(),
+                    aerolinea.getDescripcion(),
+                    aerolinea.getLinkSitioWeb(),
+                    rutasDTO,
+                    aerolinea.getFoto(),
+                    aerolinea.getContrasena()
+            );
+        }
+        
         throw new IllegalArgumentException("Usuario no encontrado");
     }
 
@@ -633,8 +647,9 @@ public class Sistema implements ISistema {
         if (aerolinea == null) {
             throw new IllegalArgumentException("No se encontró una aerolínea con el nickname: " + nombreAerolinea);
         }
+        // Devolver TODAS las rutas (confirmadas, ingresadas y rechazadas)
+        // El controlador se encargará de filtrar según quién esté consultando
         for (RutaVuelo r : aerolinea.getRutasVuelo()) {
-            if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
                 DTRutaVuelo dtRuta = new DTRutaVuelo(
                         r.getNombre(),
                         r.getDescripcion(),
@@ -649,7 +664,6 @@ public class Sistema implements ISistema {
                 // Agregar las categorías a la ruta
                 dtRuta.setCategorias(r.getCategorias());
                 listaRutas.add(dtRuta);
-            }
         }
         return listaRutas;
     }

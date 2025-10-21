@@ -22,6 +22,24 @@ function initConsultaRutaVuelo() {
         return;
     }
 
+    // Verificar si hay una ruta seleccionada desde otra vista
+    const rutaSeleccionadaStorage = sessionStorage.getItem('rutaSeleccionada');
+    if (rutaSeleccionadaStorage) {
+        try {
+            const rutaData = JSON.parse(rutaSeleccionadaStorage);
+            console.log('Ruta seleccionada encontrada:', rutaData);
+            
+            // Limpiar el sessionStorage
+            sessionStorage.removeItem('rutaSeleccionada');
+            
+            // Guardar el nombre de la ruta para seleccionarla después de cargar
+            window.rutaASeleccionar = rutaData.nombre;
+        } catch (error) {
+            console.error('Error al parsear ruta seleccionada:', error);
+            sessionStorage.removeItem('rutaSeleccionada');
+        }
+    }
+
     // Cargar datos iniciales
     cargarAerolineas();
     cargarCategorias();
@@ -260,6 +278,24 @@ function initConsultaRutaVuelo() {
 
             listaRutas.appendChild(card);
         });
+        
+        // Si hay una ruta para seleccionar automáticamente (viene de sessionStorage)
+        if (window.rutaASeleccionar) {
+            const rutaParaSeleccionar = rutas.find(r => r.nombre === window.rutaASeleccionar);
+            if (rutaParaSeleccionar) {
+                console.log('Seleccionando automáticamente la ruta:', window.rutaASeleccionar);
+                // Buscar la tarjeta de la ruta y hacer click en ella
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.ruta-card');
+                    cards.forEach(card => {
+                        if (card.textContent.includes(window.rutaASeleccionar)) {
+                            card.click();
+                        }
+                    });
+                    window.rutaASeleccionar = null; // Limpiar la variable
+                }, 100);
+            }
+        }
     }
 
     // Función helper para formatear los costos de la ruta

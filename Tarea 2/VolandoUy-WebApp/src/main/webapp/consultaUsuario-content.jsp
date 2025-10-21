@@ -1,6 +1,6 @@
 <section class="search-box">
   <h2>Consulta de Usuario</h2>
-  <p class="descripcion-consulta">Total de usuarios registrados: <strong>${totalUsuarios}</strong></p>
+  <p class="descripcion-consulta">Total de usuarios registrados: <strong id="total-usuarios">Cargando...</strong></p>
   <form id="filtro-usuarios">
     <div class="filtro-row">
       <label>Tipo de usuario:</label>
@@ -18,58 +18,24 @@
   </form>
 </section>
 
+<!-- Mensaje de carga -->
+<div id="loading-message" style="display: none;">
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando usuarios...</p>
+  </div>
+</div>
+
 <!-- Contenedor donde se listan los usuarios -->
 <div id="lista-usuarios">
-  <c:choose>
-    <c:when test="${not empty usuarios}">
-      <div class="usuarios-grid">
-        <c:forEach var="usuario" items="${usuarios}">
-          <div class="usuario-card" data-usuario-id="${usuario.id}" data-tipo="${usuario.getClass().simpleName}">
-            <div class="usuario-card-header">
-              <img src="static/img/logoAvionSolo.png" alt="Imagen del usuario" class="usuario-avatar">
-              <div class="usuario-card-info">
-                <h4>${usuario.nombre}</h4>
-                <p class="usuario-nickname">@${usuario.nickname}</p>
-                <p class="usuario-email">${usuario.correo}</p>
-              </div>
-            </div>
-            <div class="usuario-card-body">
-              <c:choose>
-                <c:when test="${usuario.getClass().simpleName == 'Cliente'}">
-                  <p class="usuario-tipo cliente">Cliente</p>
-                  <p class="usuario-detalle">Paquetes: ${usuario.cantidadPaquetes}</p>
-                </c:when>
-                <c:when test="${usuario.getClass().simpleName == 'Aerolinea'}">
-                  <p class="usuario-tipo aerolinea">Aerolínea</p>
-                  <p class="usuario-detalle">${usuario.descripcion}</p>
-                </c:when>
-                <c:otherwise>
-                  <p class="usuario-tipo">Usuario</p>
-                </c:otherwise>
-              </c:choose>
-            </div>
-            <div class="usuario-card-actions">
-              <button class="btn-ver-detalle" onclick="verDetalleUsuario(${usuario.id})">
-                Ver Detalle
-              </button>
-            </div>
-          </div>
-        </c:forEach>
-      </div>
-    </c:when>
-    <c:otherwise>
-      <div class="no-usuarios">
-        <i class="fas fa-users"></i>
-        <h3>No hay usuarios registrados</h3>
-        <p>No se encontraron usuarios en el sistema.</p>
-      </div>
-    </c:otherwise>
-  </c:choose>
+  <!-- Se llena dinámicamente con JavaScript -->
 </div>
 
 <!-- Detalle de usuario (se muestra al hacer clic en un usuario) -->
 <section class="detalle-usuario" style="display: none">
-  <button class="close-detail-btn" onclick="volverALista()" aria-label="Cerrar detalle">×</button>
+  <button class="close-detail-btn" onclick="volverALista()" aria-label="Cerrar detalle">
+    <i class="fas fa-times"></i>
+  </button>
   <div class="usuario-header">
     <img id="usuario-imagen" src="" alt="Imagen del usuario">
     <div class="usuario-info">
@@ -80,24 +46,40 @@
   
   <div class="usuario-tabs">
     <button class="tab-btn active" data-tab="perfil">Perfil</button>
-    <button class="tab-btn" data-tab="rutas">Rutas de Vuelo</button>
+    <button class="tab-btn" data-tab="actividad">Actividad</button>
   </div>
 
   <div class="tab-content" id="tab-perfil">
     <div class="perfil-details">
       <p><strong>Nickname:</strong> <span id="perfil-nickname"></span></p>
-      <p><strong>Nombre:</strong> <span id="perfil-nombre"></span> <i class="fas fa-edit"></i></p>
+      <p><strong>Nombre:</strong> <span id="perfil-nombre"></span></p>
       <p><strong>E-mail:</strong> <span id="perfil-email"></span></p>
-      <p><strong>Sitio web:</strong> <span id="perfil-sitio"></span> <i class="fas fa-external-link-alt"></i></p>
-      <p><strong>Descripción:</strong> <span id="perfil-descripcion"></span> <i class="fas fa-edit"></i></p>
+      <p id="perfil-apellido" style="display: none;"><strong>Apellido:</strong> <span></span></p>
+      <p id="perfil-nacionalidad" style="display: none;"><strong>Nacionalidad:</strong> <span></span></p>
+      <p id="perfil-documento" style="display: none;"><strong>Documento:</strong> <span></span></p>
+      <p id="perfil-fecha-nacimiento" style="display: none;"><strong>Fecha de Nacimiento:</strong> <span></span></p>
+      <p id="perfil-sitio" style="display: none;"><strong>Sitio web:</strong> <span></span></p>
+      <p id="perfil-descripcion" style="display: none;"><strong>Descripción:</strong> <span></span></p>
     </div>
   </div>
 
-  <div class="tab-content" id="tab-rutas" style="display: none">
-    <div id="rutas-content">
+  <div class="tab-content" id="tab-actividad" style="display: none">
+    <div id="actividad-content">
       <!-- Se llena dinámicamente según el tipo de usuario -->
     </div>
   </div>
 </section>
+
+<!-- Modal para mostrar detalle de ruta/vuelo/paquete -->
+<div id="modal-detalle" class="modal-detalle" style="display: none;">
+  <div class="modal-content">
+    <button class="close-modal-btn" onclick="cerrarModalDetalle()" aria-label="Cerrar modal">
+      <i class="fas fa-times"></i>
+    </button>
+    <div id="modal-body">
+      <!-- Se llena dinámicamente con el detalle -->
+    </div>
+  </div>
+</div>
 
 <script src="static/js/consultaUsuario.js"></script>

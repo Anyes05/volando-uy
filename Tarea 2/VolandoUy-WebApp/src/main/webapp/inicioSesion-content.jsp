@@ -1,4 +1,4 @@
-<div class="login-container" style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 200px); padding: 20px;">
+<div class="login-container">
   <div class="login-box">
     <h1>
       <img src="${pageContext.request.contextPath}/static/img/logoAvionSolo.png" alt="VolandoUY" class="logo-img">

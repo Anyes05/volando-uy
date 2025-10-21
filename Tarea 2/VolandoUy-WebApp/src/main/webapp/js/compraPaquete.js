@@ -29,21 +29,10 @@ async function cargarInformacionCliente() {
             clienteActual = data;
             actualizarInformacionCliente(data);
         } else if (response.status === 401) {
-            // Usuario no autenticado, redirigir al login usando el controlador de vista
-            if (typeof controladorDeVista !== 'undefined' && controladorDeVista.cargar) {
-                // Asegurar que se carguen los estilos CSS del login
-                const loginCSS = document.querySelector('link[href*="login.css"]');
-                if (!loginCSS) {
-                    const link = document.createElement('link');
-                    link.rel = 'stylesheet';
-                    link.href = 'css/login.css';
-                    document.head.appendChild(link);
-                    console.log('Estilos de login cargados dinámicamente desde compra paquete');
-                }
-                controladorDeVista.cargar('inicioSesion.jsp');
-            } else {
-                window.location.href = '/VolandoUy-WebApp/vista/inicioSesion';
-            }
+            // Usuario no autenticado, redirigir al login
+            console.log('Usuario no autenticado, redirigiendo al login...');
+            // Usar la ruta correcta que incluye el layout
+            window.location.href = '/VolandoUy-WebApp/inicioSesion.jsp';
         } else {
             console.error('Error al cargar información del cliente:', response.statusText);
         }

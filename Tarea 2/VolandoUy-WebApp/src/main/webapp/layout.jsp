@@ -111,7 +111,7 @@
       </div>
     </header>
 
-    <div id="main-content">
+    <div id="main-content" class="${param.content == 'inicioSesion-content.jsp' ? 'login-page' : ''}">
       <!-- Contenido específico de cada página -->
       <c:choose>
         <c:when test="${not empty param.content}">

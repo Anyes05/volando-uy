@@ -24,9 +24,12 @@ async function cargarPaquetes() {
     
     mostrarPaquetes(paquetesData);
     cargarFiltros(paquetesData);
+    
+    return Promise.resolve();
   } catch (error) {
     console.error('Error cargando paquetes:', error);
     mostrarError('Error al cargar los paquetes. Por favor, intente nuevamente.');
+    return Promise.reject(error);
   }
 }
 
@@ -256,6 +259,33 @@ function volverAListaPaquetes() {
 // Función de inicialización
 function initConsultaPaquete() {
   console.log('Inicializando consulta de paquetes...');
+  
+  // Verificar si hay un paquete seleccionado desde otra vista
+  const paqueteSeleccionado = sessionStorage.getItem('paqueteSeleccionado');
+  if (paqueteSeleccionado) {
+    try {
+      const paquete = JSON.parse(paqueteSeleccionado);
+      console.log('Paquete seleccionado encontrado:', paquete);
+      
+      // Limpiar el sessionStorage
+      sessionStorage.removeItem('paqueteSeleccionado');
+      
+      // Cargar paquetes primero y luego mostrar el detalle
+      cargarPaquetes().then(() => {
+        // Esperar un momento para que se carguen los paquetes
+        setTimeout(() => {
+          mostrarDetallePaquete(paquete);
+        }, 300);
+      });
+      
+      return;
+    } catch (error) {
+      console.error('Error al parsear paquete seleccionado:', error);
+      sessionStorage.removeItem('paqueteSeleccionado');
+    }
+  }
+  
+  // Si no hay paquete seleccionado, cargar normalmente
   cargarPaquetes();
 }
 

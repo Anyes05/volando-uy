@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Usuario - anita20182005</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .result { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px;
+        }
+        .error { 
+            background-color: #ffebee; 
+            border-color: #f44336; 
+            color: #c62828;
+        }
+        .success { 
+            background-color: #e8f5e8; 
+            border-color: #4caf50; 
+            color: #2e7d32;
+        }
+        .warning {
+            background-color: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+        pre { 
+            background-color: #f5f5f5; 
+            padding: 10px; 
+            overflow-x: auto; 
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+        h1 {
+            color: #1976d2;
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        .endpoint-info {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug de Usuario - anita20182005</h1>
+        <p>Este endpoint te mostrará exactamente qué está pasando con tus reservas y paquetes.</p>
+        
+        <div class="endpoint-info">
+            <strong>Endpoints disponibles:</strong><br>
+            • <code>/VolandoUy-WebApp/api/usuarios/test</code> - Endpoint simple<br>
+            • <code>/VolandoUy-WebApp/api/usuarios/check-reservas?nickname=anita20182005</code> - Verificar reservas<br>
+            • <code>/VolandoUy-WebApp/api/usuarios/verificar-bd?nickname=anita20182005</code> - Verificar BD<br>
+            • <code>/VolandoUy-WebApp/api/usuarios/debug?nickname=anita20182005</code> - Debug completo
+        </div>
+        
+        <div id="results">
+            <div class="loading">Cargando información de debug...</div>
+        </div>
+    </div>
+    
+    <script>
+        async function testDebugEndpoint() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Iniciando pruebas de debug...</div>';
+            
+            try {
+                // 1. Probar endpoint simple
+                console.log('=== PRUEBA 1: Endpoint Simple ===');
+                const testResponse = await fetch('/VolandoUy-WebApp/api/usuarios/test');
+                console.log('Test response:', testResponse.status);
+                
+                if (testResponse.ok) {
+                    const testData = await testResponse.json();
+                    console.log('Test data:', testData);
+                    
+                    resultsDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Endpoint Simple Funcionando</h3>
+                            <p><strong>Status:</strong> ${testResponse.status}</p>
+                            <p><strong>Response:</strong></p>
+                            <pre>${JSON.stringify(testData, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(`Endpoint simple falló: HTTP ${testResponse.status}`);
+                }
+                
+                // 2. Probar endpoint de verificación de reservas
+                console.log('=== PRUEBA 2: Verificación de Reservas ===');
+                const checkUrl = '/VolandoUy-WebApp/api/usuarios/check-reservas?nickname=anita20182005';
+                console.log('Check URL:', checkUrl);
+                
+                const checkResponse = await fetch(checkUrl);
+                console.log('Check response:', checkResponse.status);
+                
+                if (checkResponse.ok) {
+                    const checkData = await checkResponse.json();
+                    console.log('Check data:', checkData);
+                    
+                    const reservasCount = checkData.reservas_count || 0;
+                    const statusClass = reservasCount > 0 ? 'success' : 'warning';
+                    
+                    resultsDiv.innerHTML += `
+                        <div class="result ${statusClass}">
+                            <h3>🔍 Verificación de Reservas</h3>
+                            <p><strong>Status:</strong> ${checkResponse.status}</p>
+                            <p><strong>Reservas encontradas:</strong> ${reservasCount}</p>
+                            <p><strong>mostrarDatosUsuario:</strong> ${checkData.mostrarDatosUsuario || 'N/A'}</p>
+                            <p><strong>mostrarDatosUsuarioMod:</strong> ${checkData.mostrarDatosUsuarioMod || 'N/A'}</p>
+                            <p><strong>Detalle de reservas:</strong></p>
+                            <pre>${JSON.stringify(checkData.reservas_detalle || 'N/A', null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML += `
+                        <div class="result error">
+                            <h3>❌ Error en Check-Reservas</h3>
+                            <p><strong>Status:</strong> ${checkResponse.status}</p>
+                            <p>No se pudo verificar las reservas</p>
+                        </div>
+                    `;
+                }
+                
+                // 3. Probar endpoint de verificación de BD
+                console.log('=== PRUEBA 3: Verificación de Base de Datos ===');
+                const bdUrl = '/VolandoUy-WebApp/api/usuarios/verificar-bd?nickname=anita20182005';
+                console.log('BD URL:', bdUrl);
+                
+                const bdResponse = await fetch(bdUrl);
+                console.log('BD response:', bdResponse.status);
+                
+                if (bdResponse.ok) {
+                    const bdData = await bdResponse.json();
+                    console.log('BD data:', bdData);
+                    
+                    const usuarioExiste = bdData.usuario_existe === true;
+                    const statusClass = usuarioExiste ? 'success' : 'error';
+                    
+                    resultsDiv.innerHTML += `
+                        <div class="result ${statusClass}">
+                            <h3>🔍 Verificación de Base de Datos</h3>
+                            <p><strong>Status:</strong> ${bdResponse.status}</p>
+                            <p><strong>Usuario existe:</strong> ${usuarioExiste}</p>
+                            <p><strong>Tipo de usuario:</strong> ${bdData.tipo_usuario || 'N/A'}</p>
+                            <p><strong>Es cliente:</strong> ${bdData.es_cliente || 'N/A'}</p>
+                            <p><strong>mostrarDatosUsuario funciona:</strong> ${bdData.mostrarDatosUsuario_funciona || 'N/A'}</p>
+                            <p><strong>Reservas en mostrarDatosUsuario:</strong> ${bdData.reservas_en_mostrarDatosUsuario || 0}</p>
+                            <p><strong>Diagnóstico:</strong> ${bdData.diagnostico || 'N/A'}</p>
+                            <p><strong>Response completa:</strong></p>
+                            <pre>${JSON.stringify(bdData, null, 2)}</pre>
+                        </div>
+                    `;
+                    
+                    // Análisis automático
+                    if (bdData.mostrarDatosUsuario_funciona === false) {
+                        resultsDiv.innerHTML += `
+                            <div class="result error">
+                                <h3>📋 Análisis del Problema</h3>
+                                <p><strong>Diagnóstico:</strong> El método mostrarDatosUsuario NO está funcionando.</p>
+                                <p><strong>Causa:</strong> El método depende de una lista de usuarios que no está inicializada correctamente.</p>
+                                <p><strong>Solución:</strong> Usar solo mostrarDatosUsuarioMod (que sabemos que funciona) y crear las reservas manualmente.</p>
+                            </div>
+                        `;
+                    } else if (bdData.reservas_en_mostrarDatosUsuario === 0) {
+                        resultsDiv.innerHTML += `
+                            <div class="result warning">
+                                <h3>📋 Análisis del Problema</h3>
+                                <p><strong>Diagnóstico:</strong> El método mostrarDatosUsuario funciona, pero NO encuentra reservas.</p>
+                                <p><strong>Posibles causas:</strong></p>
+                                <ul>
+                                    <li>Las reservas no están asociadas correctamente en la base de datos</li>
+                                    <li>El método no está cargando las reservas correctamente</li>
+                                    <li>Las reservas existen pero con un formato diferente</li>
+                                </ul>
+                                <p><strong>Solución:</strong> Verificar la estructura de la base de datos y las asociaciones.</p>
+                            </div>
+                        `;
+                    }
+                    
+                } else {
+                    resultsDiv.innerHTML += `
+                        <div class="result error">
+                            <h3>❌ Error en Verificación de BD</h3>
+                            <p><strong>Status:</strong> ${bdResponse.status}</p>
+                            <p>No se pudo verificar la base de datos</p>
+                        </div>
+                    `;
+                }
+                
+                // 4. Probar endpoint de debug original
+                console.log('=== PRUEBA 4: Debug Original ===');
+                const url = '/VolandoUy-WebApp/api/usuarios/debug?nickname=anita20182005';
+                console.log('URL:', url);
+                
+                const response = await fetch(url);
+                console.log('Response recibida:', response);
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Data recibida:', data);
+                    
+                    resultsDiv.innerHTML += `
+                        <div class="result success">
+                            <h3>🔍 Debug Usuario (anita20182005)</h3>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Response:</strong></p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML += `
+                        <div class="result error">
+                            <h3>❌ Error en Debug Original</h3>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p>No se pudo obtener el debug completo</p>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error completo:', error);
+                resultsDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Tipo de error:</strong> ${error.name}</p>
+                        <p><strong>Stack trace:</strong></p>
+                        <pre>${error.stack}</pre>
+                        <p>Esto indica que hay un problema con el servidor o el endpoint.</p>
+                        <p><strong>Pasos para diagnosticar:</strong></p>
+                        <ol>
+                            <li>Abre la consola del navegador (F12) y revisa los logs</li>
+                            <li>Verifica que el servidor esté ejecutándose</li>
+                            <li>Comprueba que el endpoint esté disponible</li>
+                        </ol>
+                    </div>
+                `;
+            }
+        }
+        
+        // Ejecutar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', testDebugEndpoint);
+    </script>
+</body>
+</html>

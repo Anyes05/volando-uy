@@ -159,25 +159,39 @@ public class LoginController extends HttpServlet {
         try {
             // Primero: intentar obtener datos extendidos desde el sistema
             DTUsuario datosExtendidos = sistema.mostrarDatosUsuarioMod(usuario.getNickname());
+            
+            if (datosExtendidos != null) {
+                // Si devuelve un objeto con apellido => cliente
+                try {
+                    String apellido = (String) datosExtendidos.getClass()
+                            .getMethod("getApellido")
+                            .invoke(datosExtendidos);
+                    if (apellido != null) tipo = "cliente";
+                } catch (NoSuchMethodException ignored) {}
 
-            // Si devuelve un objeto con apellido => cliente
-            try {
-                String apellido = (String) datosExtendidos.getClass()
-                        .getMethod("getApellido")
-                        .invoke(datosExtendidos);
-                if (apellido != null) tipo = "cliente";
-            } catch (NoSuchMethodException ignored) {}
-
-            // Si devuelve un objeto con descripción => aerolínea
-            try {
-                String descripcion = (String) datosExtendidos.getClass()
-                        .getMethod("getDescripcion")
-                        .invoke(datosExtendidos);
-                if (descripcion != null) tipo = "aerolinea";
-            } catch (NoSuchMethodException ignored) {}
+                // Si devuelve un objeto con descripción => aerolínea
+                try {
+                    String descripcion = (String) datosExtendidos.getClass()
+                            .getMethod("getDescripcion")
+                            .invoke(datosExtendidos);
+                    if (descripcion != null) tipo = "aerolinea";
+                } catch (NoSuchMethodException ignored) {}
+            } else {
+                LOG.warning("mostrarDatosUsuarioMod devolvió null para usuario: " + usuario.getNickname());
+            }
 
         } catch (Exception e) {
-            LOG.info("No se pudo determinar tipoUsuario: " + e.getMessage());
+            LOG.warning("Error al determinar tipoUsuario para " + usuario.getNickname() + ": " + e.getMessage());
+            // Intentar determinar el tipo usando instanceof como fallback
+            try {
+                if (usuario instanceof DTCliente) {
+                    tipo = "cliente";
+                } else if (usuario instanceof DTAerolinea) {
+                    tipo = "aerolinea";
+                }
+            } catch (Exception fallbackError) {
+                LOG.warning("Error en fallback de tipoUsuario: " + fallbackError.getMessage());
+            }
         }
 
         session.setAttribute("tipoUsuario", tipo);

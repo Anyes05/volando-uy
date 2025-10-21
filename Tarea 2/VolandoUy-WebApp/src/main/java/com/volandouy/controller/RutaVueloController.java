@@ -597,16 +597,52 @@ public class RutaVueloController extends HttpServlet {
 
         LOG.info("Procesando " + rutas.size() + " rutas para aerolínea " + nickname);
         
+        // Determinar si es la aerolínea logueada viendo sus propias rutas
+        boolean esAerolineaLogueada = false;
+        HttpSession session = request.getSession(false);
+        LOG.info("=== VERIFICACIÓN DE AEROLÍNEA LOGUEADA ===");
+        LOG.info("Nickname solicitado: " + nickname);
+        LOG.info("Session existe: " + (session != null));
+        if (session != null && session.getAttribute("usuarioLogueado") != null) {
+            String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+            String usuarioLogueado = (String) session.getAttribute("usuarioLogueado");
+            LOG.info("Tipo usuario en sesión: " + tipoUsuario);
+            LOG.info("Usuario logueado en sesión: " + usuarioLogueado);
+            LOG.info("¿Es aerolínea? " + "aerolinea".equals(tipoUsuario));
+            LOG.info("¿Nickname coincide? " + nickname.equals(usuarioLogueado));
+            if ("aerolinea".equals(tipoUsuario) && nickname.equals(usuarioLogueado)) {
+                esAerolineaLogueada = true;
+                LOG.info("✓ Es la aerolínea logueada viendo sus propias rutas - mostrando TODAS las rutas");
+            } else {
+                LOG.info("✗ NO es la aerolínea logueada - solo se mostrarán rutas CONFIRMADAS");
+            }
+        } else {
+            LOG.info("No hay sesión activa o usuario logueado");
+        }
+        LOG.info("esAerolineaLogueada = " + esAerolineaLogueada);
+        LOG.info("=========================================");
+        
         List<Map<String, Object>> outList = new ArrayList<>();
         for (DTRutaVuelo r : rutas) {
             LOG.info("Procesando ruta: " + r.getNombre() + " - Estado: " + r.getEstado());
-            if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
+            
+            // Si es la aerolínea logueada viendo sus propias rutas, mostrar todas (INGRESADA, CONFIRMADA, RECHAZADA)
+            // Si no, solo mostrar las confirmadas
+            boolean debeMostrar = esAerolineaLogueada || r.getEstado() == EstadoRutaVuelo.CONFIRMADA;
+            
+            if (debeMostrar) {
                 Map<String, Object> rutaMap = new HashMap<>();
                 rutaMap.put("nombre", r.getNombre());
                 rutaMap.put("descripcion", r.getDescripcion());
                 rutaMap.put("fechaAlta", r.getFechaAlta() != null ? r.getFechaAlta().toString() : null);
                 rutaMap.put("costoBase", r.getCostoBase());
                 rutaMap.put("estado", r.getEstado() != null ? r.getEstado().toString() : null);
+                
+                // Información de aerolínea
+                if (r.getAerolinea() != null) {
+                    rutaMap.put("aerolineaNickname", r.getAerolinea().getNickname());
+                    rutaMap.put("aerolineaNombre", r.getAerolinea().getNombre());
+                }
                 
                 // Información de ciudades
                 if (r.getCiudadOrigen() != null) {
@@ -671,7 +707,8 @@ public class RutaVueloController extends HttpServlet {
      */
     private void handleGetRutaDetalle(String nombreRuta, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            DTRutaVuelo ruta = sistema.seleccionarRutaVueloRet(nombreRuta);
+            // Buscar la ruta en todas las aerolíneas
+            DTRutaVuelo ruta = buscarRutaEnTodasLasAerolineas(nombreRuta);
             
             if (ruta == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -685,6 +722,12 @@ public class RutaVueloController extends HttpServlet {
             rutaMap.put("fechaAlta", ruta.getFechaAlta() != null ? ruta.getFechaAlta().toString() : null);
             rutaMap.put("costoBase", ruta.getCostoBase());
             rutaMap.put("estado", ruta.getEstado() != null ? ruta.getEstado().toString() : null);
+            
+            // Información de aerolínea
+            if (ruta.getAerolinea() != null) {
+                rutaMap.put("aerolineaNickname", ruta.getAerolinea().getNickname());
+                rutaMap.put("aerolineaNombre", ruta.getAerolinea().getNombre());
+            }
             
             // Información de ciudades
             if (ruta.getCiudadOrigen() != null) {
@@ -1066,6 +1109,45 @@ public class RutaVueloController extends HttpServlet {
 
         } finally {
             out.flush();
+        }
+    }
+
+    /**
+     * Busca una ruta por nombre en todas las aerolíneas
+     */
+    private DTRutaVuelo buscarRutaEnTodasLasAerolineas(String nombreRuta) {
+        try {
+            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            if (aerolineas == null || aerolineas.isEmpty()) {
+                LOG.warning("No hay aerolíneas disponibles para buscar la ruta");
+                return null;
+            }
+            
+            for (DTAerolinea aerolinea : aerolineas) {
+                try {
+                    // Seleccionar la aerolínea temporalmente
+                    sistema.seleccionarAerolinea(aerolinea.getNickname());
+                    
+                    // Buscar la ruta en esta aerolínea
+                    DTRutaVuelo ruta = sistema.seleccionarRutaVueloRet(nombreRuta);
+                    if (ruta != null) {
+                        LOG.info("Ruta encontrada en aerolínea: " + aerolinea.getNickname());
+                        return ruta;
+                    }
+                } catch (IllegalStateException e) {
+                    // Continuar buscando en la siguiente aerolínea
+                    continue;
+                } catch (Exception e) {
+                    LOG.warning("Error al buscar ruta en aerolínea " + aerolinea.getNickname() + ": " + e.getMessage());
+                    continue;
+                }
+            }
+            
+            LOG.warning("Ruta no encontrada en ninguna aerolínea: " + nombreRuta);
+            return null;
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error al buscar ruta en todas las aerolíneas", e);
+            return null;
         }
     }
 

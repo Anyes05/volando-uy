@@ -2,6 +2,7 @@ package logica.DataTypes;
 
 public class DTCompraPaquete extends DTReserva {
     private DTFecha vencimiento;
+    private String nombrePaquete;
 
     public DTCompraPaquete(DTFecha fechaReserva, DTCostoBase costoReserva, DTFecha vencimiento) {
         super(fechaReserva, costoReserva);
@@ -13,5 +14,12 @@ public class DTCompraPaquete extends DTReserva {
         return vencimiento;
     }
 
+    public String getNombrePaquete() {
+        return nombrePaquete;
+    }
+
     //Setters
+    public void setNombrePaquete(String nombrePaquete) {
+        this.nombrePaquete = nombrePaquete;
+    }
 }

@@ -5,6 +5,9 @@ import logica.DataTypes.TipoDoc;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTAerolinea;
+import logica.DataTypes.DTReserva;
+import logica.DataTypes.DTCompraPaquete;
+import logica.DataTypes.DTRutaVuelo;
 import logica.clase.Sistema;
 import logica.servicios.ClienteServicio;
 import logica.servicios.AerolineaServicio;
@@ -16,6 +19,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,16 +76,43 @@ public class UsuarioController extends HttpServlet {
             String pathInfo = request.getPathInfo();
 
             if (pathInfo == null || pathInfo.equals("/")) {
-                // GET /api/usuarios - Listar todos los usuarios
+                // GET /api/usuarios - Listar todos los usuarios con información completa
                 try {
-                    var usuarios = sistema.consultarUsuarios();
+                    List<Map<String, Object>> usuariosCompletos = new ArrayList<>();
+                    
+                    // Obtener clientes
+                    List<DTCliente> clientes = sistema.listarClientes();
+                    for (DTCliente cliente : clientes) {
+                        Map<String, Object> usuarioMap = new HashMap<>();
+                        usuarioMap.put("nickname", cliente.getNickname());
+                        usuarioMap.put("nombre", cliente.getNombre());
+                        usuarioMap.put("correo", cliente.getCorreo());
+                        usuarioMap.put("foto", cliente.getFoto());
+                        usuarioMap.put("tipo", "cliente");
+                        usuarioMap.put("apellido", cliente.getApellido());
+                        usuarioMap.put("nacionalidad", cliente.getNacionalidad());
+                        usuarioMap.put("numeroDocumento", cliente.getNumeroDocumento());
+                        usuarioMap.put("tipoDocumento", cliente.getTipoDocumento() != null ? cliente.getTipoDocumento().toString() : null);
+                        usuarioMap.put("fechaNacimiento", cliente.getFechaNacimiento());
+                        usuariosCompletos.add(usuarioMap);
+                    }
+                    
+                    // Obtener aerolíneas
+                    List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                    for (DTAerolinea aerolinea : aerolineas) {
+                        Map<String, Object> usuarioMap = new HashMap<>();
+                        usuarioMap.put("nickname", aerolinea.getNickname());
+                        usuarioMap.put("nombre", aerolinea.getNombre());
+                        usuarioMap.put("correo", aerolinea.getCorreo());
+                        usuarioMap.put("foto", aerolinea.getFoto());
+                        usuarioMap.put("tipo", "aerolinea");
+                        usuarioMap.put("descripcion", aerolinea.getDescripcion());
+                        usuarioMap.put("sitioWeb", aerolinea.getLinkSitioWeb());
+                        usuariosCompletos.add(usuarioMap);
+                    }
+                    
                     response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(Map.of("usuarios", usuarios)));
-                } catch (IllegalStateException ex) {
-                    // No hay usuarios registrados
-                    LOG.info("No hay usuarios registrados en el sistema");
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(Map.of("usuarios", new java.util.ArrayList<>(), "mensaje", "No hay usuarios registrados")));
+                    out.print(objectMapper.writeValueAsString(Map.of("usuarios", usuariosCompletos)));
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error al consultar usuarios", ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -128,22 +161,387 @@ public class UsuarioController extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
                 }
+            } else if (pathInfo.equals("/debug")) {
+                // GET /api/usuarios/debug - Endpoint de debug para verificar mostrarDatosUsuario
+                String nickname = request.getParameter("nickname");
+                if (nickname == null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Parámetro nickname requerido")));
+                    return;
+                }
+                
+                try {
+                    LOG.info("=== DEBUG: Probando mostrarDatosUsuario para: " + nickname + " ===");
+                    
+                    // Probar mostrarDatosUsuarioMod
+                    var datosMod = sistema.mostrarDatosUsuarioMod(nickname);
+                    LOG.info("mostrarDatosUsuarioMod resultado: " + (datosMod != null ? "OK" : "NULL"));
+                    
+                    // Probar mostrarDatosUsuario
+                    var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                    LOG.info("mostrarDatosUsuario resultado: " + (datosCompletos != null ? "OK" : "NULL"));
+                    
+                    Map<String, Object> debugInfo = new HashMap<>();
+                    debugInfo.put("nickname", nickname);
+                    debugInfo.put("mostrarDatosUsuarioMod", datosMod != null ? "OK" : "NULL");
+                    debugInfo.put("mostrarDatosUsuario", datosCompletos != null ? "OK" : "NULL");
+                    
+                    if (datosCompletos instanceof DTCliente) {
+                        DTCliente cliente = (DTCliente) datosCompletos;
+                        debugInfo.put("tipo", "DTCliente");
+                        debugInfo.put("reservas_count", cliente.getReserva() != null ? cliente.getReserva().size() : 0);
+                        debugInfo.put("reservas", cliente.getReserva());
+                    } else if (datosCompletos instanceof DTAerolinea) {
+                        debugInfo.put("tipo", "DTAerolinea");
+                    } else {
+                        debugInfo.put("tipo", datosCompletos != null ? datosCompletos.getClass().getSimpleName() : "NULL");
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(debugInfo));
+                    
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en debug endpoint: " + ex.getMessage(), ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error en debug: " + ex.getMessage())));
+                }
+            } else if (pathInfo.equals("/test")) {
+                // GET /api/usuarios/test - Endpoint simple de prueba
+                response.setStatus(HttpServletResponse.SC_OK);
+                out.print(objectMapper.writeValueAsString(Map.of(
+                    "message", "Endpoint de usuarios funcionando correctamente",
+                    "timestamp", System.currentTimeMillis(),
+                    "servlet", "UsuarioController"
+                )));
+            } else if (pathInfo.equals("/check-reservas")) {
+                // GET /api/usuarios/check-reservas?nickname=anita20182005 - Verificar reservas específicamente
+                String nickname = request.getParameter("nickname");
+                if (nickname == null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Parámetro nickname requerido")));
+                    return;
+                }
+                
+                try {
+                    LOG.info("=== CHECK RESERVAS: Verificando reservas para: " + nickname + " ===");
+                    
+                    // Probar mostrarDatosUsuarioMod
+                    var datosMod = sistema.mostrarDatosUsuarioMod(nickname);
+                    LOG.info("mostrarDatosUsuarioMod: " + (datosMod != null ? "OK" : "NULL"));
+                    
+                    // Probar mostrarDatosUsuario
+                    var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                    LOG.info("mostrarDatosUsuario: " + (datosCompletos != null ? "OK" : "NULL"));
+                    
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("nickname", nickname);
+                    result.put("mostrarDatosUsuarioMod", datosMod != null ? "OK" : "NULL");
+                    result.put("mostrarDatosUsuario", datosCompletos != null ? "OK" : "NULL");
+                    
+                    if (datosCompletos instanceof DTCliente) {
+                        DTCliente cliente = (DTCliente) datosCompletos;
+                        result.put("tipo", "DTCliente");
+                        result.put("reservas_count", cliente.getReserva() != null ? cliente.getReserva().size() : 0);
+                        
+                        if (cliente.getReserva() != null && !cliente.getReserva().isEmpty()) {
+                            List<Map<String, Object>> reservasInfo = new ArrayList<>();
+                            for (DTReserva reserva : cliente.getReserva()) {
+                                Map<String, Object> reservaInfo = new HashMap<>();
+                                reservaInfo.put("id", reserva.getId());
+                                reservaInfo.put("tipo", reserva.getClass().getSimpleName());
+                                reservaInfo.put("fechaReserva", reserva.getFechaReserva() != null ? reserva.getFechaReserva().toString() : null);
+                                reservaInfo.put("costoReserva", reserva.getCostoReserva());
+                                reservasInfo.add(reservaInfo);
+                            }
+                            result.put("reservas_detalle", reservasInfo);
+                        } else {
+                            result.put("reservas_detalle", "ARRAY_VACIO");
+                        }
+                    } else {
+                        result.put("tipo", datosCompletos != null ? datosCompletos.getClass().getSimpleName() : "NULL");
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(result));
+                    
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en check-reservas: " + ex.getMessage(), ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error: " + ex.getMessage())));
+                }
+            } else if (pathInfo.equals("/verificar-bd")) {
+                // GET /api/usuarios/verificar-bd?nickname=anita20182005 - Verificar directamente en BD
+                String nickname = request.getParameter("nickname");
+                if (nickname == null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Parámetro nickname requerido")));
+                    return;
+                }
+                
+                try {
+                    LOG.info("=== VERIFICAR BD: Verificando reservas en BD para: " + nickname + " ===");
+                    
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("nickname", nickname);
+                    
+                    // Verificar si el usuario existe en la BD
+                    try {
+                        var datosMod = sistema.mostrarDatosUsuarioMod(nickname);
+                        result.put("usuario_existe", datosMod != null);
+                        result.put("tipo_usuario", datosMod != null ? datosMod.getClass().getSimpleName() : "NO_ENCONTRADO");
+                        
+                        if (datosMod instanceof DTCliente) {
+                            result.put("es_cliente", true);
+                            result.put("apellido", ((DTCliente) datosMod).getApellido());
+                            result.put("nacionalidad", ((DTCliente) datosMod).getNacionalidad());
+                        } else {
+                            result.put("es_cliente", false);
+                        }
+                    } catch (Exception e) {
+                        result.put("usuario_existe", false);
+                        result.put("error_usuario", e.getMessage());
+                    }
+                    
+                    // Verificar método mostrarDatosUsuario
+                    try {
+                        var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                        result.put("mostrarDatosUsuario_funciona", datosCompletos != null);
+                        
+                        if (datosCompletos instanceof DTCliente) {
+                            DTCliente cliente = (DTCliente) datosCompletos;
+                            result.put("reservas_en_mostrarDatosUsuario", cliente.getReserva() != null ? cliente.getReserva().size() : 0);
+                        }
+                    } catch (Exception e) {
+                        result.put("mostrarDatosUsuario_funciona", false);
+                        result.put("error_mostrarDatosUsuario", e.getMessage());
+                    }
+                    
+                    result.put("diagnostico", "Verificación completa de BD completada");
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(objectMapper.writeValueAsString(result));
+                    
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error en verificar-bd: " + ex.getMessage(), ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error: " + ex.getMessage())));
+                }
             } else {
                 // GET /api/usuarios/{nickname} - Obtener datos específicos de un usuario
                 String nickname = pathInfo.substring(1); // Remover el '/' inicial
                 try {
+                    LOG.info("Intentando obtener datos del usuario: " + nickname);
+                    
+                    // Usar mostrarDatosUsuarioMod como fallback seguro
                     var datosUsuario = sistema.mostrarDatosUsuarioMod(nickname);
+                    LOG.info("Datos del usuario obtenidos: " + (datosUsuario != null ? "OK" : "NULL"));
+                    
                     if (datosUsuario != null) {
+                        LOG.info("Extrayendo datos del usuario...");
+                        Map<String, Object> usuarioData = extraerDatosUsuario(datosUsuario);
+                        
+                        // Para aerolíneas, intentar obtener todas las rutas
+                        if (datosUsuario instanceof DTAerolinea) {
+                            try {
+                                LOG.info("Intentando obtener todas las rutas de la aerolínea: " + nickname);
+                                var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                                if (datosCompletos instanceof DTAerolinea) {
+                                    DTAerolinea aerolineaCompleta = (DTAerolinea) datosCompletos;
+                                    int numRutas = aerolineaCompleta.getRutasVuelo() != null ? aerolineaCompleta.getRutasVuelo().size() : 0;
+                                    LOG.info("Rutas obtenidas con mostrarDatosUsuario: " + numRutas);
+                                    
+                                    // Procesar rutas
+                                    if (aerolineaCompleta.getRutasVuelo() != null && !aerolineaCompleta.getRutasVuelo().isEmpty()) {
+                                        List<Map<String, Object>> rutasData = new ArrayList<>();
+                                        for (DTRutaVuelo ruta : aerolineaCompleta.getRutasVuelo()) {
+                                            Map<String, Object> rutaMap = new HashMap<>();
+                                            rutaMap.put("nombre", ruta.getNombre());
+                                            rutaMap.put("descripcion", ruta.getDescripcion());
+                                            rutaMap.put("fechaAlta", ruta.getFechaAlta() != null ? ruta.getFechaAlta().toString() : null);
+                                            rutaMap.put("costoBase", ruta.getCostoBase());
+                                            rutaMap.put("estado", ruta.getEstado() != null ? ruta.getEstado().toString() : null);
+                                            
+                                            // Información de ciudades
+                                            if (ruta.getCiudadOrigen() != null) {
+                                                Map<String, Object> origenMap = new HashMap<>();
+                                                origenMap.put("nombre", ruta.getCiudadOrigen().getNombre());
+                                                origenMap.put("pais", ruta.getCiudadOrigen().getPais());
+                                                rutaMap.put("ciudadOrigen", origenMap);
+                                            }
+                                            
+                                            if (ruta.getCiudadDestino() != null) {
+                                                Map<String, Object> destinoMap = new HashMap<>();
+                                                destinoMap.put("nombre", ruta.getCiudadDestino().getNombre());
+                                                destinoMap.put("pais", ruta.getCiudadDestino().getPais());
+                                                rutaMap.put("ciudadDestino", destinoMap);
+                                            }
+                                            
+                                            rutasData.add(rutaMap);
+                                        }
+                                        usuarioData.put("rutas", rutasData);
+                                        LOG.info("Rutas procesadas y agregadas: " + rutasData.size());
+                                    }
+                                }
+                            } catch (Exception e) {
+                                LOG.log(Level.SEVERE, "Error al procesar rutas de la aerolínea: " + e.getMessage(), e);
+                            }
+                        }
+                        
+                        // Para clientes, usar método alternativo que funciona
+                        if (datosUsuario instanceof DTCliente) {
+                            try {
+                                LOG.info("Usando método alternativo para obtener reservas del cliente: " + nickname);
+                                
+                                // Crear DTCliente con reservas usando el método que sabemos que funciona
+                                DTCliente clienteConReservas = null;
+                                
+                                // Intentar con mostrarDatosUsuario primero
+                                try {
+                                    LOG.info("Llamando a sistema.mostrarDatosUsuario para: " + nickname);
+                                    var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                                    LOG.info("Respuesta de mostrarDatosUsuario: " + (datosCompletos != null ? "OK" : "NULL"));
+                                    if (datosCompletos instanceof DTCliente) {
+                                        clienteConReservas = (DTCliente) datosCompletos;
+                                        int numReservas = clienteConReservas.getReserva() != null ? clienteConReservas.getReserva().size() : 0;
+                                        LOG.info("Reservas obtenidas con mostrarDatosUsuario: " + numReservas);
+                                        if (numReservas > 0) {
+                                            LOG.info("Primera reserva: " + clienteConReservas.getReserva().get(0).getClass().getSimpleName());
+                                        }
+                                    } else {
+                                        LOG.warning("mostrarDatosUsuario no devolvió un DTCliente, devolvió: " + 
+                                                  (datosCompletos != null ? datosCompletos.getClass().getSimpleName() : "null"));
+                                    }
+                                } catch (Exception e) {
+                                    LOG.log(Level.SEVERE, "mostrarDatosUsuario falló para " + nickname + ": " + e.getMessage(), e);
+                                    e.printStackTrace();
+                                }
+                                
+                                // Si no funcionó, intentar con el método mostrarDatosUsuarioMod que ya tenemos
+                                if (clienteConReservas == null) {
+                                    LOG.info("mostrarDatosUsuario no devolvió datos, intentando con mostrarDatosUsuarioMod");
+                                    clienteConReservas = (DTCliente) datosUsuario;
+                                }
+                                
+                                // Procesar reservas y paquetes
+                                List<Map<String, Object>> reservasData = new ArrayList<>();
+                                List<Map<String, Object>> paquetesData = new ArrayList<>();
+                                
+                                if (clienteConReservas.getReserva() != null && !clienteConReservas.getReserva().isEmpty()) {
+                                    LOG.info("Procesando " + clienteConReservas.getReserva().size() + " reservas...");
+                                    
+                                    for (DTReserva reserva : clienteConReservas.getReserva()) {
+                                        if (reserva instanceof DTCompraPaquete) {
+                                            DTCompraPaquete compraPaquete = (DTCompraPaquete) reserva;
+                                            Map<String, Object> paqueteMap = new HashMap<>();
+                                            paqueteMap.put("id", compraPaquete.getId());
+                                            paqueteMap.put("fechaCompra", compraPaquete.getFechaReserva() != null ? compraPaquete.getFechaReserva().toString() : null);
+                                            // Extraer el costo total del objeto DTCostoBase
+                                            Object costoReservaObj = compraPaquete.getCostoReserva();
+                                            float costoTotal = 0.0f;
+                                            if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                                                costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                                            } else if (costoReservaObj instanceof Number) {
+                                                costoTotal = ((Number) costoReservaObj).floatValue();
+                                            }
+                                            paqueteMap.put("costoTotal", costoTotal);
+                                            paqueteMap.put("vencimiento", compraPaquete.getVencimiento() != null ? compraPaquete.getVencimiento().toString() : null);
+                                            paqueteMap.put("nickname", compraPaquete.getNickname());
+                                            paquetesData.add(paqueteMap);
+                                            LOG.info("Paquete agregado: " + compraPaquete.getId());
+                                        } else {
+                                            Map<String, Object> reservaMap = new HashMap<>();
+                                            reservaMap.put("id", reserva.getId());
+                                            reservaMap.put("fechaReserva", reserva.getFechaReserva() != null ? reserva.getFechaReserva().toString() : null);
+                                            // Extraer el costo total del objeto DTCostoBase
+                                            Object costoReservaObj = reserva.getCostoReserva();
+                                            float costoTotal = 0.0f;
+                                            if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                                                costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                                            } else if (costoReservaObj instanceof Number) {
+                                                costoTotal = ((Number) costoReservaObj).floatValue();
+                                            }
+                                            reservaMap.put("costoReserva", costoTotal);
+                                            reservaMap.put("nickname", reserva.getNickname());
+                                            reservasData.add(reservaMap);
+                                            LOG.info("Reserva agregada: " + reserva.getId());
+                                        }
+                                    }
+                                } else {
+                                    LOG.info("No hay reservas para procesar - arrays vacíos");
+                                    
+                                    // Intentar obtener reservas directamente desde el sistema como fallback
+                                    try {
+                                        LOG.info("Intentando obtener reservas directamente desde el sistema...");
+                                        var datosCompletosFallback = sistema.mostrarDatosUsuario(nickname);
+                                        if (datosCompletosFallback instanceof DTCliente) {
+                                            DTCliente clienteFallback = (DTCliente) datosCompletosFallback;
+                                            if (clienteFallback.getReserva() != null && !clienteFallback.getReserva().isEmpty()) {
+                                                LOG.info("Reservas encontradas en fallback: " + clienteFallback.getReserva().size());
+                                                for (DTReserva reserva : clienteFallback.getReserva()) {
+                                                    if (reserva instanceof DTCompraPaquete) {
+                                                        DTCompraPaquete compraPaquete = (DTCompraPaquete) reserva;
+                                                        Map<String, Object> paqueteMap = new HashMap<>();
+                                                        paqueteMap.put("id", compraPaquete.getId());
+                                                        paqueteMap.put("fechaCompra", compraPaquete.getFechaReserva() != null ? compraPaquete.getFechaReserva().toString() : null);
+                                                        // Extraer el costo total del objeto DTCostoBase
+                                                        Object costoReservaObj = compraPaquete.getCostoReserva();
+                                                        float costoTotal = 0.0f;
+                                                        if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                                                            costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                                                        } else if (costoReservaObj instanceof Number) {
+                                                            costoTotal = ((Number) costoReservaObj).floatValue();
+                                                        }
+                                                        paqueteMap.put("costoTotal", costoTotal);
+                                                        paqueteMap.put("vencimiento", compraPaquete.getVencimiento() != null ? compraPaquete.getVencimiento().toString() : null);
+                                                        paqueteMap.put("nickname", compraPaquete.getNickname());
+                                                        paquetesData.add(paqueteMap);
+                                                    } else {
+                                                        Map<String, Object> reservaMap = new HashMap<>();
+                                                        reservaMap.put("id", reserva.getId());
+                                                        reservaMap.put("fechaReserva", reserva.getFechaReserva() != null ? reserva.getFechaReserva().toString() : null);
+                                                        // Extraer el costo total del objeto DTCostoBase
+                                                        Object costoReservaObj = reserva.getCostoReserva();
+                                                        float costoTotal = 0.0f;
+                                                        if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                                                            costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                                                        } else if (costoReservaObj instanceof Number) {
+                                                            costoTotal = ((Number) costoReservaObj).floatValue();
+                                                        }
+                                                        reservaMap.put("costoReserva", costoTotal);
+                                                        reservaMap.put("nickname", reserva.getNickname());
+                                                        reservasData.add(reservaMap);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } catch (Exception fallbackError) {
+                                        LOG.warning("Error en fallback de reservas: " + fallbackError.getMessage());
+                                    }
+                                }
+                                
+                                usuarioData.put("reservas", reservasData);
+                                usuarioData.put("paquetes", paquetesData);
+                                LOG.info("Reservas procesadas: " + reservasData.size() + ", Paquetes procesados: " + paquetesData.size());
+                                
+                            } catch (Exception e) {
+                                LOG.log(Level.SEVERE, "Error al procesar reservas del cliente: " + e.getMessage(), e);
+                                usuarioData.put("reservas", new ArrayList<>());
+                                usuarioData.put("paquetes", new ArrayList<>());
+                            }
+                        }
+                        
+                        LOG.info("Datos extraídos exitosamente");
                         response.setStatus(HttpServletResponse.SC_OK);
-                        out.print(objectMapper.writeValueAsString(datosUsuario));
+                        out.print(objectMapper.writeValueAsString(usuarioData));
                     } else {
+                        LOG.warning("Usuario no encontrado: " + nickname);
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario no encontrado")));
                     }
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error al obtener datos del usuario: " + nickname, ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor")));
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
                 }
             }
         } finally {
@@ -543,11 +941,75 @@ public class UsuarioController extends HttpServlet {
                     datos.put("fechaNacimiento", fechaMap);
                 }
 
+                // Incluir reservas del cliente (incluyendo paquetes comprados)
+                if (cliente.getReserva() != null && !cliente.getReserva().isEmpty()) {
+                    List<Map<String, Object>> reservasData = new ArrayList<>();
+                    List<Map<String, Object>> paquetesData = new ArrayList<>();
+                    
+                    for (DTReserva reserva : cliente.getReserva()) {
+                        Map<String, Object> reservaMap = new HashMap<>();
+                        reservaMap.put("id", reserva.getId());
+                        reservaMap.put("fechaReserva", reserva.getFechaReserva() != null ? reserva.getFechaReserva().toString() : null);
+                        reservaMap.put("costoReserva", reserva.getCostoReserva());
+                        reservaMap.put("nickname", reserva.getNickname());
+                        
+                        // Verificar si es una compra de paquete
+                        if (reserva instanceof DTCompraPaquete) {
+                            DTCompraPaquete compraPaquete = (DTCompraPaquete) reserva;
+                            Map<String, Object> paqueteMap = new HashMap<>();
+                            paqueteMap.put("id", compraPaquete.getId());
+                            paqueteMap.put("nombrePaquete", compraPaquete.getNombrePaquete());
+                            paqueteMap.put("fechaCompra", compraPaquete.getFechaReserva() != null ? compraPaquete.getFechaReserva().toString() : null);
+                            paqueteMap.put("costoTotal", compraPaquete.getCostoReserva());
+                            paqueteMap.put("vencimiento", compraPaquete.getVencimiento() != null ? compraPaquete.getVencimiento().toString() : null);
+                            paqueteMap.put("nickname", compraPaquete.getNickname());
+                            paquetesData.add(paqueteMap);
+                        } else {
+                            reservasData.add(reservaMap);
+                        }
+                    }
+                    
+                    datos.put("reservas", reservasData);
+                    datos.put("paquetes", paquetesData);
+                }
+
             } else if (dtUsuario instanceof DTAerolinea) {
                 DTAerolinea aerolinea = (DTAerolinea) dtUsuario;
                 datos.put("tipo", "aerolinea");
                 datos.put("descripcion", aerolinea.getDescripcion());
                 datos.put("sitioWeb", aerolinea.getLinkSitioWeb());
+                
+                // Incluir rutas de vuelo de la aerolínea
+                if (aerolinea.getRutasVuelo() != null && !aerolinea.getRutasVuelo().isEmpty()) {
+                    List<Map<String, Object>> rutasData = new ArrayList<>();
+                    for (DTRutaVuelo ruta : aerolinea.getRutasVuelo()) {
+                        Map<String, Object> rutaMap = new HashMap<>();
+                        rutaMap.put("nombre", ruta.getNombre());
+                        rutaMap.put("descripcion", ruta.getDescripcion());
+                        rutaMap.put("fechaAlta", ruta.getFechaAlta() != null ? ruta.getFechaAlta().toString() : null);
+                        rutaMap.put("costoBase", ruta.getCostoBase());
+                        rutaMap.put("estado", ruta.getEstado() != null ? ruta.getEstado().toString() : null);
+                        
+                        // Información de ciudades
+                        if (ruta.getCiudadOrigen() != null) {
+                            Map<String, Object> origenMap = new HashMap<>();
+                            origenMap.put("nombre", ruta.getCiudadOrigen().getNombre());
+                            origenMap.put("pais", ruta.getCiudadOrigen().getPais());
+                            rutaMap.put("ciudadOrigen", origenMap);
+                        }
+                        
+                        if (ruta.getCiudadDestino() != null) {
+                            Map<String, Object> destinoMap = new HashMap<>();
+                            destinoMap.put("nombre", ruta.getCiudadDestino().getNombre());
+                            destinoMap.put("pais", ruta.getCiudadDestino().getPais());
+                            rutaMap.put("ciudadDestino", destinoMap);
+                        }
+                        
+                        rutasData.add(rutaMap);
+                    }
+                    datos.put("rutas", rutasData);
+                    LOG.info("Rutas de aerolínea agregadas: " + rutasData.size());
+                }
             }
         } catch (Exception e) {
             LOG.warning("Error al extraer datos específicos del usuario: " + e.getMessage());
