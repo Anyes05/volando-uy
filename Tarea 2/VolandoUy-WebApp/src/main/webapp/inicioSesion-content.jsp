@@ -8,8 +8,8 @@
 
     <form id="login-form" action="${pageContext.request.contextPath}/login" method="post">
       <div class="input-group">
-        <label for="email">Correo Electr&oacute;nico</label>
-        <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+        <label for="email">Correo o Usuario</label>
+        <input type="text" id="email" name="email" placeholder="tu@email.com o nickname" required>
       </div>
 
       <div class="input-group">
@@ -71,7 +71,6 @@ document.getElementById('login-form').addEventListener('submit', async function(
       submitBtn.classList.remove('loading');
       submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
 
-      alert('¡Bienvenido ' + (result.nombre || '') + '!');
       window.location.href = '${pageContext.request.contextPath}/inicio.jsp';
     } else {
       // Mostrar error y restaurar boton
