@@ -591,7 +591,7 @@
       } else if (data && data.mensaje) {
         showToast('¡Reserva creada exitosamente!', 'success');
         setTimeout(() => {
-          window.location.href = '/VolandoUy-WebApp/consultaReserva';
+          window.location.href = '/VolandoUy-WebApp/inicio.jsp';
         }, 2000);
       }
     })
