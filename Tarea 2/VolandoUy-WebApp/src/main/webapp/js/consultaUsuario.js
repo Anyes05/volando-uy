@@ -992,7 +992,7 @@ async function mostrarDetalleVueloEnModal(vueloNombre) {
             <h4>Reserva #${reserva.id}</h4>
             <p><strong>Cliente:</strong> ${reserva.cliente || 'N/A'}</p>
             <p><strong>Fecha de reserva:</strong> ${reserva.fechaReserva || 'N/A'}</p>
-            <p><strong>Costo:</strong> $${reserva.costoReserva || 0}</p>
+            <p><strong>Costo:</strong> $${(reserva.costoReserva || 0).toFixed(2)}</p>
           </div>
         `;
       });

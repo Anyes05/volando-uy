@@ -490,7 +490,15 @@ public class VueloController extends HttpServlet {
                         reservaMap.put("id", vueloReserva.getReserva().getId());
                         reservaMap.put("cliente", vueloReserva.getReserva().getNickname());
                         reservaMap.put("fechaReserva", vueloReserva.getReserva().getFechaReserva() != null ? vueloReserva.getReserva().getFechaReserva().toString() : null);
-                        reservaMap.put("costoReserva", vueloReserva.getReserva().getCostoReserva());
+                        // Extraer el costo total del objeto DTCostoBase
+                        Object costoReservaObj = vueloReserva.getReserva().getCostoReserva();
+                        float costoTotal = 0.0f;
+                        if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                            costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                        } else if (costoReservaObj instanceof Number) {
+                            costoTotal = ((Number) costoReservaObj).floatValue();
+                        }
+                        reservaMap.put("costoReserva", costoTotal);
                         
                         // Incluir información de pasajeros si está disponible
                         try {
@@ -535,7 +543,15 @@ public class VueloController extends HttpServlet {
                         reservaMap.put("id", vueloReserva.getReserva().getId());
                         reservaMap.put("cliente", vueloReserva.getReserva().getNickname());
                         reservaMap.put("fechaReserva", vueloReserva.getReserva().getFechaReserva() != null ? vueloReserva.getReserva().getFechaReserva().toString() : null);
-                        reservaMap.put("costoReserva", vueloReserva.getReserva().getCostoReserva());
+                        // Extraer el costo total del objeto DTCostoBase
+                        Object costoReservaObj = vueloReserva.getReserva().getCostoReserva();
+                        float costoTotal = 0.0f;
+                        if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                            costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                        } else if (costoReservaObj instanceof Number) {
+                            costoTotal = ((Number) costoReservaObj).floatValue();
+                        }
+                        reservaMap.put("costoReserva", costoTotal);
                         
                         // Incluir información de pasajeros si está disponible
                         try {
