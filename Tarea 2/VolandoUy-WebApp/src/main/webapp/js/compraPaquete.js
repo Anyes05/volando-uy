@@ -7,6 +7,7 @@ let clienteActual = null;
 
 // Inicializar la página
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔥 COMPRA PAQUETE JS CARGADO - FUNCIONANDO 🔥');
     console.log('DOM cargado, inicializando página de compra de paquetes');
     
     console.log('Elementos disponibles:', {
@@ -202,6 +203,21 @@ function crearCardPaquete(paquete) {
     
     card.className = cardClass;
     
+    // Calcular precios para mostrar correctamente
+    const precioConDescuento = paquete.costoTotal;
+    const descuentoPorcentaje = paquete.descuento || 0;
+    
+    // Regla de tres: Si precioConDescuento = (100-descuento)%, entonces precioOriginal = 100%
+    const precioOriginal = descuentoPorcentaje > 0 
+        ? (precioConDescuento * 100) / (100 - descuentoPorcentaje)
+        : precioConDescuento;
+    
+    // Crear el HTML del precio dependiendo si hay descuento o no
+    const precioHTML = descuentoPorcentaje > 0 
+        ? `<span class="precio-original">$${Math.round(precioOriginal)}</span>
+           <span class="costo">$${Math.round(precioConDescuento)}</span>`
+        : `<span class="costo">$${Math.round(precioConDescuento)}</span>`;
+    
     card.innerHTML = `
         <div class="paquete-imagen">
             <img src="${imagenSrc}" alt="${paquete.nombre}" onerror="this.src='/VolandoUy-WebApp/img/logoAvionSolo.png'" loading="lazy">
@@ -213,7 +229,7 @@ function crearCardPaquete(paquete) {
             <div class="paquete-details">
                 <span class="dias-validos"><i class="fas fa-calendar"></i> ${paquete.diasValidos} días</span>
                 <span class="descuento"><i class="fas fa-percentage"></i> ${paquete.descuento}% desc.</span>
-                <span class="costo"><i class="fas fa-dollar-sign"></i> $${paquete.costoTotal}</span>
+                <div class="precio-container">${precioHTML}</div>
             </div>
         </div>
         <div class="paquete-acciones">
@@ -310,6 +326,11 @@ function mostrarDetalleCompra(paquete) {
 
 // Actualizar detalle del paquete en la interfaz
 function actualizarDetallePaquete(paquete) {
+    console.log('=== EJECUTANDO actualizarDetallePaquete ===');
+    console.log('Paquete:', paquete.nombre);
+    console.log('Costo Total (con descuento):', paquete.costoTotal);
+    console.log('Descuento %:', paquete.descuento);
+    
     const elementos = {
         'paquete-compra-imagen': convertirImagenABase64(paquete.foto),
         'paquete-compra-nombre': paquete.nombre,
@@ -337,16 +358,41 @@ function actualizarDetallePaquete(paquete) {
     });
     
     // Actualizar resumen de compra
+    // El costoTotal que viene del backend ya tiene el descuento aplicado
+    // Usamos regla de tres para calcular el precio original
+    const precioConDescuento = paquete.costoTotal;
+    const descuentoPorcentaje = paquete.descuento || 0;
+    
+    // Regla de tres: Si precioConDescuento = (100-descuento)%, entonces precioOriginal = 100%
+    // precioOriginal = (precioConDescuento * 100) / (100 - descuento)
+    const precioOriginal = descuentoPorcentaje > 0 
+        ? (precioConDescuento * 100) / (100 - descuentoPorcentaje)
+        : precioConDescuento;
+    
+    const ahorroMonetario = precioOriginal - precioConDescuento;
+    
+    console.log('Precio con descuento:', precioConDescuento);
+    console.log('Descuento %:', descuentoPorcentaje);
+    console.log('Precio original calculado (regla de 3):', precioOriginal);
+    console.log('Ahorro monetario:', ahorroMonetario);
+    
     const resumenElementos = {
         'resumen-nombre': paquete.nombre,
-        'resumen-precio-original': `$${paquete.costoTotal}`,
-        'resumen-descuento': `${paquete.descuento}%`,
-        'resumen-total': `$${paquete.costoTotal}`
+        'resumen-precio-original': `$${Math.round(precioOriginal)}`,
+        'resumen-descuento': descuentoPorcentaje > 0 ? `-$${Math.round(ahorroMonetario)} (${descuentoPorcentaje}%)` : `${descuentoPorcentaje}%`,
+        'resumen-total': `$${Math.round(precioConDescuento)}`
     };
+    
+    console.log('Valores del resumen:', resumenElementos);
     
     Object.entries(resumenElementos).forEach(([id, valor]) => {
         const elemento = document.getElementById(id);
-        if (elemento) elemento.textContent = valor;
+        if (elemento) {
+            console.log(`Actualizando ${id} con valor: ${valor}`);
+            elemento.textContent = valor;
+        } else {
+            console.warn(`No se encontró elemento con ID: ${id}`);
+        }
     });
     
     // Cargar rutas del paquete

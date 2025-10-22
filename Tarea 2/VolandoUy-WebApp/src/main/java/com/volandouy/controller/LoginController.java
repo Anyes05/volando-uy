@@ -41,25 +41,32 @@ public class LoginController extends HttpServlet {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
 
-            LOG.info("Intento de login para email: " + email);
-
             if (email == null || email.isBlank() || password == null || password.isBlank()) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print(objectMapper.writeValueAsString(Map.of("error", "Email y contraseña son obligatorios")));
                 return;
             }
 
-            // Buscar usuario por correo
+            // Buscar usuario por correo o nickname
             List<DTUsuario> usuarios = sistema.consultarUsuarios();
             DTUsuario usuarioEncontrado = usuarios.stream()
-                    .filter(u -> u.getCorreo() != null && u.getCorreo().equalsIgnoreCase(email))
+                    .filter(u -> {
+                        // Buscar por correo
+                        if (u.getCorreo() != null && u.getCorreo().equalsIgnoreCase(email)) {
+                            return true;
+                        }
+                        // Buscar por nickname
+                        if (u.getNickname() != null && u.getNickname().equalsIgnoreCase(email)) {
+                            return true;
+                        }
+                        return false;
+                    })
                     .findFirst()
                     .orElse(null);
 
             if (usuarioEncontrado == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 out.print(objectMapper.writeValueAsString(Map.of("error", "Credenciales inválidas")));
-                LOG.info("Usuario no encontrado para email: " + email);
                 return;
             }
 
@@ -68,7 +75,6 @@ public class LoginController extends HttpServlet {
             if (storedPassword == null || !storedPassword.equals(password)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 out.print(objectMapper.writeValueAsString(Map.of("error", "Credenciales inválidas")));
-                LOG.info("Contraseña inválida para usuario: " + usuarioEncontrado.getNickname());
                 return;
             }
 
@@ -79,14 +85,17 @@ public class LoginController extends HttpServlet {
             LOG.info("Usuario logueado exitosamente: " + usuarioEncontrado.getNickname());
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(Map.of(
-                    "mensaje", "Login exitoso",
-                    "nickname", session.getAttribute("usuarioLogueado"),
-                    "nombre", session.getAttribute("nombreUsuario"),
-                    "correo", session.getAttribute("correoUsuario"),
-                    "foto", session.getAttribute("fotoUsuario"),
-                    "tipoUsuario", session.getAttribute("tipoUsuario")
-            )));
+            
+            // Crear Map manualmente para manejar valores null
+            Map<String, Object> responseData = new java.util.HashMap<>();
+            responseData.put("mensaje", "Login exitoso");
+            responseData.put("nickname", session.getAttribute("usuarioLogueado"));
+            responseData.put("nombre", session.getAttribute("nombreUsuario"));
+            responseData.put("correo", session.getAttribute("correoUsuario"));
+            responseData.put("foto", session.getAttribute("fotoUsuario"));
+            responseData.put("tipoUsuario", session.getAttribute("tipoUsuario"));
+            
+            out.print(objectMapper.writeValueAsString(responseData));
 
         } catch (Exception e) {
             LOG.severe("Error en login: " + e.getMessage());
@@ -120,14 +129,16 @@ public class LoginController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         if (session != null && session.getAttribute("usuarioLogueado") != null) {
-            out.print(objectMapper.writeValueAsString(Map.of(
-                    "sesionActiva", true,
-                    "nickname", session.getAttribute("usuarioLogueado"),
-                    "nombre", session.getAttribute("nombreUsuario"),
-                    "correo", session.getAttribute("correoUsuario"),
-                    "foto", session.getAttribute("fotoUsuario"),
-                    "tipoUsuario", session.getAttribute("tipoUsuario")
-            )));
+            // Crear Map manualmente para manejar valores null
+            Map<String, Object> responseData = new java.util.HashMap<>();
+            responseData.put("sesionActiva", true);
+            responseData.put("nickname", session.getAttribute("usuarioLogueado"));
+            responseData.put("nombre", session.getAttribute("nombreUsuario"));
+            responseData.put("correo", session.getAttribute("correoUsuario"));
+            responseData.put("foto", session.getAttribute("fotoUsuario"));
+            responseData.put("tipoUsuario", session.getAttribute("tipoUsuario"));
+            
+            out.print(objectMapper.writeValueAsString(responseData));
         } else {
             out.print(objectMapper.writeValueAsString(Map.of("sesionActiva", false)));
         }
