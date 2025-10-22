@@ -449,12 +449,12 @@ function mostrarRutasPaquete(rutas) {
 // Confirmar compra
 async function confirmarCompra() {
     if (!paqueteSeleccionado) {
-        alert('No hay paquete seleccionado');
+        showToast('No hay paquete seleccionado', 'warning');
         return;
     }
     
     if (!clienteActual) {
-        alert('No hay cliente autenticado');
+        showToast('No hay cliente autenticado', 'warning');
         return;
     }
     
@@ -485,15 +485,15 @@ async function confirmarCompra() {
             // Ya compró el paquete
             const data = await response.json();
             mostrarMensajeYaComprado();
-            alert('Ya has comprado este paquete anteriormente. Puedes seleccionar otro paquete.');
+            showToast('Ya has comprado este paquete anteriormente. Puedes seleccionar otro paquete.', 'warning');
         } else {
             const errorData = await response.json();
-            alert('Error al realizar la compra: ' + (errorData.error || 'Error desconocido'));
+            showToast('Error al realizar la compra: ' + (errorData.error || 'Error desconocido'), 'error');
         }
         
     } catch (error) {
         console.error('Error al confirmar compra:', error);
-        alert('Error al realizar la compra. Por favor, intenta nuevamente.');
+        showToast('Error al realizar la compra. Por favor, intenta nuevamente.', 'error');
     } finally {
         if (btnComprar) {
             btnComprar.disabled = false;

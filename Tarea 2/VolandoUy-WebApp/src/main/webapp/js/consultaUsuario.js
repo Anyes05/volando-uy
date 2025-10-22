@@ -243,14 +243,14 @@ async function cargarDetalleUsuarioDesdeAPI(nickname) {
       console.log("Usuario actual configurado:", usuarioActual);
       mostrarDetalleUsuarioCompleto(usuarioActual);
     } else if (response.status === 404) {
-      alert('Usuario no encontrado: ' + nickname);
+      showToast('Usuario no encontrado: ' + nickname, 'error');
     } else {
       const errorData = await response.json();
-      alert('Error al cargar usuario: ' + (errorData.error || 'Error desconocido'));
+      showToast('Error al cargar usuario: ' + (errorData.error || 'Error desconocido'), 'error');
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('Error al cargar el detalle del usuario');
+    showToast('Error al cargar el detalle del usuario', 'error');
   }
 }
 

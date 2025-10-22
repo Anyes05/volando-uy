@@ -151,14 +151,14 @@
       if (file) {
         // Validar tipo de archivo
         if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido.');
+          showToast('Por favor selecciona un archivo de imagen válido.', 'warning');
           fileInput.value = '';
           return;
         }
         
         // Validar tamaño (5MB)
         if (file.size > 5 * 1024 * 1024) {
-          alert('El archivo es demasiado grande. Máximo 5MB.');
+          showToast('El archivo es demasiado grande. Máximo 5MB.', 'warning');
           fileInput.value = '';
           return;
         }
@@ -230,15 +230,15 @@
       try { result = await response.json(); } catch (err) {}
 
       if (response.ok) {
-        alert(result.mensaje || "Vuelo creado exitosamente.");
+        showToast(result.mensaje || "Vuelo creado exitosamente.", "success");
         form.reset();
         document.getElementById("fechaAlta").valueAsDate = new Date();
         msgDiv.style.display = "none";
       } else {
-        alert(result.error || ("Error al crear vuelo: " + response.status));
+        showToast(result.error || ("Error al crear vuelo: " + response.status), "error");
       }
     } catch (error) {
-      alert("Error al crear vuelo: " + (error.message || error));
+      showToast("Error al crear vuelo: " + (error.message || error), "error");
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;

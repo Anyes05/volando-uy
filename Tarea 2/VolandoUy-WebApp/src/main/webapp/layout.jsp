@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="static/css/compraPaquete.css">
   <link rel="stylesheet" href="static/css/registrarUsuario.css">
   <link rel="stylesheet" href="static/css/login.css">
+  <link rel="stylesheet" href="css/errorHandler.css">
 </head>
 
 <body>
@@ -235,6 +236,9 @@
 
   </div>
 
+  <!-- Sistema de manejo de errores estético -->
+  <script src="js/errorHandler.js"></script>
+
   <!-- Script: sidebar + carrusel (autoplay) -->
   <script>
     const sidebar = document.getElementById('sidenav-1');
@@ -268,10 +272,12 @@
     });
 
     function cerrarSesion() {
-      if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-        window.location.href = '${pageContext.request.contextPath}/logout';
-
-      }
+      showConfirm('¿Estás seguro de que quieres cerrar sesión?', 'Cerrar Sesión', ['Sí, cerrar sesión', 'Cancelar'])
+        .then(option => {
+          if (option === 0) {
+            window.location.href = '${pageContext.request.contextPath}/logout';
+          }
+        });
     }
 
     /* ===== Carrusel ===== */
