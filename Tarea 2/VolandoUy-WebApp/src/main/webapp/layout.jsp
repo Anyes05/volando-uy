@@ -34,17 +34,122 @@
   <!-- Sidebar -->
   <aside class="sidebar" id="sidenav-1">
     <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
-    <a href="inicio.jsp">Inicio</a>
-      <a href="consultaUsuario.jsp">Consulta de Usuario</a>
-      <a href="modificarUsuario.jsp">Modificar Perfil</a>
-      <a href="altaRutaVuelo.jsp">Alta Ruta de Vuelo</a>
-      <a href="consultaRutaVuelo.jsp">Consulta Ruta de Vuelo</a>
-      <a href="altaVuelo.jsp">Alta de Vuelo</a>
-      <a href="consultaVuelo.jsp">Consulta de Vuelos</a>
-      <a href="reserva.jsp">Reservar vuelo</a>
-      <a href="consultaReserva.jsp">Consulta de Reserva</a>
-      <a href="consultaPaquete.jsp">Consulta de Paquetes</a>
-      <a href="compraPaquete.jsp">Compra de Paquetes</a>
+    
+    <!-- Inicio - siempre visible -->
+    <a href="inicio.jsp" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Inicio</span>
+    </a>
+
+    <!-- Navegación para visitantes -->
+    <c:if test="${empty sessionScope.usuarioLogueado}">
+      <div class="nav-section">
+        <h3 class="nav-section-title">Acceso</h3>
+        <a href="inicioSesion.jsp" class="nav-item">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Iniciar Sesión</span>
+        </a>
+        <a href="registrarUsuario.jsp" class="nav-item">
+          <i class="fas fa-user-plus"></i>
+          <span>Registrarse</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <h3 class="nav-section-title">Consultas</h3>
+        <a href="consultaUsuario.jsp" class="nav-item">
+          <i class="fas fa-search"></i>
+          <span>Consulta de Usuario</span>
+        </a>
+        <a href="consultaRutaVuelo.jsp" class="nav-item">
+          <i class="fas fa-route"></i>
+          <span>Consulta de Rutas</span>
+        </a>
+        <a href="consultaVuelo.jsp" class="nav-item">
+          <i class="fas fa-plane"></i>
+          <span>Consulta de Vuelos</span>
+        </a>
+        <a href="consultaPaquete.jsp" class="nav-item">
+          <i class="fas fa-box"></i>
+          <span>Consulta de Paquetes</span>
+        </a>
+      </div>
+    </c:if>
+
+    <!-- Navegación para usuarios logueados -->
+    <c:if test="${not empty sessionScope.usuarioLogueado}">
+      <!-- Usuario -->
+      <div class="nav-section">
+        <h3 class="nav-section-title">Mi Cuenta</h3>
+        <a href="consultaUsuario.jsp" class="nav-item">
+          <i class="fas fa-user"></i>
+          <span>Mi Perfil</span>
+        </a>
+        <c:if test="${sessionScope.tipoUsuario == 'cliente' || sessionScope.tipoUsuario == 'aerolinea'}">
+          <a href="modificarUsuario.jsp" class="nav-item">
+            <i class="fas fa-edit"></i>
+            <span>Modificar Perfil</span>
+          </a>
+        </c:if>
+      </div>
+
+      <!-- Vuelos -->
+      <div class="nav-section">
+        <h3 class="nav-section-title">Vuelos</h3>
+        <a href="consultaRutaVuelo.jsp" class="nav-item">
+          <i class="fas fa-route"></i>
+          <span>Consulta de Rutas</span>
+        </a>
+        <a href="consultaVuelo.jsp" class="nav-item">
+          <i class="fas fa-plane"></i>
+          <span>Consulta de Vuelos</span>
+        </a>
+        
+        <!-- Opciones específicas para aerolíneas -->
+        <c:if test="${sessionScope.tipoUsuario == 'aerolinea'}">
+          <a href="altaRutaVuelo.jsp" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Alta de Ruta</span>
+          </a>
+          <a href="altaVuelo.jsp" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Alta de Vuelo</span>
+          </a>
+        </c:if>
+        
+        <!-- Opciones específicas para clientes -->
+        <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
+          <a href="reserva.jsp" class="nav-item">
+            <i class="fas fa-calendar-check"></i>
+            <span>Reservar Vuelo</span>
+          </a>
+        </c:if>
+      </div>
+
+      <!-- Reservas -->
+      <div class="nav-section">
+        <h3 class="nav-section-title">Reservas</h3>
+        <a href="consultaReserva.jsp" class="nav-item">
+          <i class="fas fa-list-alt"></i>
+          <span>Consulta de Reservas</span>
+        </a>
+      </div>
+
+      <!-- Paquetes -->
+      <div class="nav-section">
+        <h3 class="nav-section-title">Paquetes</h3>
+        <a href="consultaPaquete.jsp" class="nav-item">
+          <i class="fas fa-box"></i>
+          <span>Consulta de Paquetes</span>
+        </a>
+        <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
+          <a href="compraPaquete.jsp" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Compra de Paquetes</span>
+          </a>
+        </c:if>
+      </div>
+    </c:if>
   </aside>
 
   <!-- Main content -->
@@ -73,27 +178,50 @@
       <div class="header-icons">
         <c:choose>
           <c:when test="${not empty sessionScope.usuarioLogueado}">
-            <!-- Usuario logueado: mostrar foto y botón de cerrar sesión -->
+            <!-- Usuario logueado: mostrar foto con menú desplegable -->
             <div class="user-logged-in">
-              <div class="user-avatar-container">
-                <c:choose>
-                  <c:when test="${not empty sessionScope.fotoUsuario}">
-                    <img src="data:image/jpeg;base64,${sessionScope.fotoUsuario}"
-                         alt="${sessionScope.nombreUsuario}"
-                         class="user-avatar-circle"
-                         title="${sessionScope.nombreUsuario}">
-                  </c:when>
-                  <c:otherwise>
-                    <div class="user-avatar-circle user-avatar-default" title="${sessionScope.nombreUsuario}">
-                      <i class="fas fa-user"></i>
-                    </div>
-                  </c:otherwise>
-                </c:choose>
+              <div class="user-profile-dropdown">
+                <div class="user-avatar-container" onclick="toggleUserMenu()">
+                  <c:choose>
+                    <c:when test="${not empty sessionScope.fotoUsuario}">
+                      <img src="data:image/jpeg;base64,${sessionScope.fotoUsuario}"
+                           alt="${sessionScope.nombreUsuario}"
+                           class="user-avatar-circle"
+                           title="${sessionScope.nombreUsuario}">
+                    </c:when>
+                    <c:otherwise>
+                      <div class="user-avatar-circle user-avatar-default" title="${sessionScope.nombreUsuario}">
+                        <i class="fas fa-user"></i>
+                      </div>
+                    </c:otherwise>
+                  </c:choose>
+                  <i class="fas fa-chevron-down dropdown-arrow"></i>
+                </div>
+                
+                <!-- Menú desplegable del usuario -->
+                <div class="user-dropdown-menu" id="userDropdownMenu">
+                  <div class="user-info">
+                    <div class="user-name">${sessionScope.nombreUsuario}</div>
+                    <div class="user-type">${sessionScope.tipoUsuario}</div>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <a href="consultaUsuario.jsp" class="dropdown-item">
+                    <i class="fas fa-user"></i>
+                    <span>Mi Perfil</span>
+                  </a>
+                  <c:if test="${sessionScope.tipoUsuario == 'cliente' || sessionScope.tipoUsuario == 'aerolinea'}">
+                    <a href="modificarUsuario.jsp" class="dropdown-item">
+                      <i class="fas fa-edit"></i>
+                      <span>Modificar Perfil</span>
+                    </a>
+                  </c:if>
+                  <div class="dropdown-divider"></div>
+                  <button onclick="cerrarSesion()" class="dropdown-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </div>
               </div>
-              <button onclick="cerrarSesion()" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="btn-text">Cerrar Sesión</span>
-              </button>
             </div>
           </c:when>
           <c:otherwise>
@@ -270,9 +398,42 @@
     function cerrarSesion() {
       if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
         window.location.href = '${pageContext.request.contextPath}/logout';
-
       }
     }
+
+    // Función para manejar el menú desplegable del usuario
+    function toggleUserMenu() {
+      const dropdown = document.getElementById('userDropdownMenu');
+      if (dropdown) {
+        dropdown.classList.toggle('show');
+      }
+    }
+
+    // Cerrar menú desplegable al hacer clic fuera
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('userDropdownMenu');
+      const avatarContainer = document.querySelector('.user-avatar-container');
+      
+      if (dropdown && avatarContainer && !avatarContainer.contains(event.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    // Detectar si el sidebar necesita scroll
+    function checkSidebarScroll() {
+      const sidebar = document.getElementById('sidenav-1');
+      if (sidebar) {
+        if (sidebar.scrollHeight > sidebar.clientHeight) {
+          sidebar.classList.add('scrollable');
+        } else {
+          sidebar.classList.remove('scrollable');
+        }
+      }
+    }
+
+    // Verificar scroll al cargar y al redimensionar
+    document.addEventListener('DOMContentLoaded', checkSidebarScroll);
+    window.addEventListener('resize', checkSidebarScroll);
 
     /* ===== Carrusel ===== */
     function initCarousel() {
@@ -413,3 +574,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </body>
 
 </html>
+
