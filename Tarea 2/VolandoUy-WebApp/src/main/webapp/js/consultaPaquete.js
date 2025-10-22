@@ -104,8 +104,8 @@ function mostrarPaquetes(lista) {
       <img src="${imagenSrc}" alt="${p.nombre}">
       <h3>${p.nombre || 'Sin nombre'}</h3>
       <p>${p.descripcion || 'Sin descripción'}</p>
-      <p class="descuento"><strong>Descuento:</strong> ${p.descuento || 0}%</p>
-      <p class="costo"><strong>Costo total:</strong> $${p.costoTotal || 0}</p>
+      <p class="descuento"><strong>Descuento:</strong> ${(p.descuento || 0)}%</p>
+      <p class="costo"><strong>Costo total:</strong> $${(p.costoTotal || 0)}</p>
     `;
 
     contenedor.appendChild(card);
@@ -169,9 +169,9 @@ function mostrarDetalleEnInterfaz(paquete) {
   document.getElementById('paquete-nombre').textContent = paquete.nombre || 'Sin nombre';
   document.getElementById('paquete-descripcion').textContent = paquete.descripcion || 'Sin descripción';
   document.getElementById('paquete-dias').textContent = paquete.diasValidos || 'No especificado';
-  document.getElementById('paquete-descuento').textContent = paquete.descuento || 0;
+  document.getElementById('paquete-descuento').textContent = (paquete.descuento || 0) + '%';
   document.getElementById('paquete-fecha').textContent = paquete.fechaAlta || '';
-  document.getElementById('paquete-costo').textContent = paquete.costoTotal || 0;
+  document.getElementById('paquete-costo').textContent = '$' + (paquete.costoTotal || 0);
 
   const cont = document.getElementById('paquete-cantidades');
   cont.innerHTML = '';

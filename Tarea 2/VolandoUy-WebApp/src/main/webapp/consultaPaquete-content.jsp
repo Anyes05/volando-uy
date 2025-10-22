@@ -42,13 +42,13 @@
 
   <div class="paquete-details">
     <p><strong>Días válidos:</strong> <span id="paquete-dias"></span></p>
-    <p><strong>Descuento:</strong> <span id="paquete-descuento"></span>%</p>
+    <p><strong>Descuento:</strong> <span id="paquete-descuento"></span></p>
     <p><strong>Fecha de alta:</strong> <span id="paquete-fecha"></span></p>
-    <p><strong>Costo total:</strong> $<span id="paquete-costo"></span></p>
+    <p><strong>Costo total:</strong> <span id="paquete-costo"></span></p>
   </div>
 
   <h3>Rutas incluidas</h3>
   <div id="paquete-cantidades" class="rutas-grid"></div>
 </section>
 
-<script src="js/consultaPaquete.js?v=4"></script>
+<script src="js/consultaPaquete.js?v=5"></script>
