@@ -34,7 +34,7 @@ public class VueloServicio {
     }
 
     // Método para precargar vuelos
-    public void precargarVuelos() throws VuelosException {
+    public void precargarVuelos() {
         // Datos de vuelos de ejemplo
         Object[][] vuelosData = {
                 // {nombre, diaFecha, mesFecha, añoFecha, horaHora, minutoHora, duracionHora, duracionMinuto, asientosTurista, asientosEjecutivo, nombreRuta}

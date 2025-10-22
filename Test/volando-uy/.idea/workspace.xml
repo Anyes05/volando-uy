@@ -5,17 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8254dba4-4ca9-4a6a-9485-0579c7f8c94d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/pmd-ruleset.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PMDPlugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PMDPlugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkstyleProyecto.xml" beforeDir="false" afterPath="$PROJECT_DIR$/checkstyleProyecto.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/CategoriaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/CategoriaDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/ClienteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/ClienteDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/CompraComunDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/CompraComunDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/CompraPaqueteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/CompraPaqueteDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/VueloDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/VueloDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Aeropuerto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Aeropuerto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Cantidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Cantidad.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/logica/clase/Sistema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/clase/Sistema.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/AeropuertoServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/AeropuertoServicio.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/VueloServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/VueloServicio.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +46,7 @@
     "JUnit.SistemaTest.executor": "Run",
     "Maven.volando-uy [org.apache.maven.plugins:maven-checkstyle-plugin:3.1.2:check].executor": "Run",
     "Maven.volando-uy [org.apache.maven.plugins:maven-checkstyle-plugin:3.6.0:check].executor": "Run",
+    "Maven.volando-uy [pmd:check...].executor": "Run",
     "Maven.volando-uy [test].executor": "Run",
     "Maven.volando-uy [verify].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
@@ -60,13 +57,18 @@
     "git-widget-placeholder": "Guzman",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "preferences.sourceCode.JAVA"
+    "settings.editor.selected.configurable": "PMD"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\guzma\Desktop\Volando.uy\Test\volando-uy" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn pmd:check -Dpmd.rulesetFiles=pmd-ruleset.xml" />
+    </option>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>

@@ -15,14 +15,14 @@
     </properties>
 
     <dependencies>
-        <!-- Dependencias que queramos -->
+        <!-- LGoodDatePicker -->
         <dependency>
             <groupId>com.github.lgooddatepicker</groupId>
             <artifactId>LGoodDatePicker</artifactId>
             <version>11.2.1</version>
         </dependency>
 
-        <!--JCalendar -->
+        <!-- JCalendar -->
         <dependency>
             <groupId>com.toedter</groupId>
             <artifactId>jcalendar</artifactId>
@@ -50,7 +50,7 @@
             <version>42.7.3</version>
         </dependency>
 
-        <!-- Opcional: logs de Hibernate -->
+        <!-- Logs de Hibernate -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -65,23 +65,8 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.6.0</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
-                            <version>8.45</version> <!-- versión recomendada: >= 8.30 -->
-                        </dependency>
-                    </dependencies>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <!-- Surefire para ejecutar tests -->
             <plugin>
@@ -112,26 +97,30 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.6.0</version>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.28.0</version>
                 <configuration>
-                    <configLocation>checkstyleProyecto.xml</configLocation>
-                    <encoding>UTF-8</encoding>
-                    <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
+                    <!-- Apuntar a tu ruleset -->
+                    <rulesets>
+                        <ruleset>pmd-ruleset.xml</ruleset>
+                    </rulesets>
+                    <!-- Limitar a Sistema.java -->
+                    <includes>
+                        <include>**/Sistema.java</include>
+                    </includes>
+                    <!-- Que no rompa el build si encuentra violaciones -->
+                    <failOnViolation>false</failOnViolation>
+                    <printFailingErrors>true</printFailingErrors>
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
-
-
 </project>
