@@ -9,5 +9,13 @@
         <module name="EmptyCatchBlock"/>
         <module name="GenericWhitespace"/>
         <module name="IllegalCatch"/>
+        <module name="RightCurly"/>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="MethodParamPad"/>
+        <module name="UnnecessaryParentheses"/>
+        <module name="VisibilityModifier"/>
+        <module name="WhitespaceAfter"/>
+        <module name="UnusedImports"/>
     </module>
 </module>

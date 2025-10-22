@@ -2,9 +2,6 @@ package dato.dao;
 
 import dato.entidades.Cliente;
 import jakarta.persistence.TypedQuery;
-
-import java.util.List;
-
 import jakarta.persistence.EntityManager;
 
 public class ClienteDAO extends GenericDAO<Cliente> {

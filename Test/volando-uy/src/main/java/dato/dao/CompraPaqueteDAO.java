@@ -4,12 +4,10 @@ import dato.entidades.CompraPaquete;
 import dato.entidades.PaqueteVuelo;
 import jakarta.persistence.TypedQuery;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import dato.entidades.Cliente;
 import logica.DataTypes.DTFecha;
-import logica.DataTypes.TipoAsiento;
 import jakarta.persistence.EntityManager;
 import logica.excepciones.PaqueteException;
 

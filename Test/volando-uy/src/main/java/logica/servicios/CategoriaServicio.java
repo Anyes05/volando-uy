@@ -4,7 +4,6 @@ import dato.dao.CategoriaDAO;
 import dato.entidades.Categoria;
 
 import java.util.List;
-import java.util.ArrayList;
 
 public class CategoriaServicio {
     private CategoriaDAO categoriaDAO = new CategoriaDAO();

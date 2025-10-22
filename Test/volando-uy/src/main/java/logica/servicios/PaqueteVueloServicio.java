@@ -2,10 +2,8 @@ package logica.servicios;
 
 import dato.entidades.PaqueteVuelo;
 import dato.dao.PaqueteVueloDAO;
-import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTRutaVuelo;
-import logica.DataTypes.TipoAsiento;
 import logica.excepciones.PaqueteException;
 
 import java.util.List;

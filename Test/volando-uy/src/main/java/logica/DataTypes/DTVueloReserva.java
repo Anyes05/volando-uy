@@ -1,8 +1,8 @@
 package logica.DataTypes;
 
 public class DTVueloReserva {// Armar según corresponda
-    DTVuelo vuelo;
-    DTReserva reserva;
+    private DTVuelo vuelo;
+    private DTReserva reserva;
 
     public DTVueloReserva(DTVuelo vuelo, DTReserva reserva) {
         this.vuelo = vuelo;

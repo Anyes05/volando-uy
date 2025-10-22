@@ -7,10 +7,7 @@ import dato.entidades.Ciudad;
 import dato.entidades.RutaVuelo;
 import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
-import logica.DataTypes.DTHora;
 import logica.DataTypes.EstadoRutaVuelo;
-import logica.excepciones.RutasException;
-
 import java.util.List;
 
 public class RutaVueloServicio {
@@ -33,7 +30,7 @@ public class RutaVueloServicio {
     }
 
     // Método para precargar rutas de vuelo
-    public void precargarRutasVuelo() throws RutasException {
+    public void precargarRutasVuelo() {
             // Datos de rutas de vuelo comunes con diferentes estados
             Object[][] rutasData = {
                     // {nombre, descripcion, costoTurista, costoEjecutivo, costoEquipajeExtra, ciudadOrigen, paisOrigen, ciudadDestino, paisDestino, aerolineaNickname, categoria, estado}

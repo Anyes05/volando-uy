@@ -6,9 +6,7 @@ import dato.entidades.Vuelo;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTHora;
 import logica.excepciones.VuelosException;
-
 import java.util.List;
-import java.util.ArrayList;
 
 public class VueloServicio {
     private VueloDAO vueloDAO = new VueloDAO();

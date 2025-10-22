@@ -11,9 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import logica.DataTypes.TipoAsiento;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "cantidad")

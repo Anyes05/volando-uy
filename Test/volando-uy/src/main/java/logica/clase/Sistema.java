@@ -10,7 +10,6 @@ import dato.entidades.RutaVuelo;
 import dato.entidades.Usuario;
 import dato.entidades.Vuelo;
 import jakarta.persistence.PersistenceException;
-import jakarta.persistence.RollbackException;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoDoc;
 import logica.DataTypes.DTUsuario;
@@ -242,13 +241,13 @@ public class Sistema implements ISistema {
         // Obtener clientes
         List<dato.entidades.Cliente> clientes = clienteServicio.listarClientes();
         for (dato.entidades.Cliente c : clientes) {
-            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo(), c.getFoto(),c.getContrasena()));
+            lista.add(new DTUsuario(c.getNickname(), c.getNombre(), c.getCorreo(), c.getFoto(), c.getContrasena()));
         }
 
         // Obtener aerolíneas
         List<Aerolinea> aerolineas = aerolineaServicio.listarAerolineas();
         for (Aerolinea a : aerolineas) {
-            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo(), a.getFoto(),a.getContrasena()));
+            lista.add(new DTUsuario(a.getNickname(), a.getNombre(), a.getCorreo(), a.getFoto(), a.getContrasena()));
         }
 
         if (lista.isEmpty()) {
@@ -468,7 +467,7 @@ public class Sistema implements ISistema {
         AerolineaServicio aerolineaServicio = new AerolineaServicio();
         List<DTAerolinea> listarAerolineas = new ArrayList<>();
         for (Aerolinea a : aerolineaServicio.listarAerolineas()) {
-            listarAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(),a.getContrasena())); // Le pasé este último parametro de lista vacía porque necesitaba la lista para otro caso
+            listarAerolineas.add(new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(), a.getContrasena())); // Le pasé este último parametro de lista vacía porque necesitaba la lista para otro caso
         }
         return listarAerolineas;
     }
@@ -648,7 +647,7 @@ public class Sistema implements ISistema {
     }
 
     // PRECARGA DE AEROPUERTOS
-    public void precargarAeropuertos() {
+    public void precargarAeropuertos(){
         AeropuertoServicio aeropuertoServicio = new AeropuertoServicio();
         aeropuertoServicio.precargarAeropuertos();
     }
@@ -742,7 +741,7 @@ public class Sistema implements ISistema {
                         rv.getDescripcion(),
                         rv.getFechaAlta(),
                         rv.getCostoBase(),
-                        new DTAerolinea(aerolineaSeleccionada.getNickname(), aerolineaSeleccionada.getNombre(), aerolineaSeleccionada.getCorreo(), aerolineaSeleccionada.getDescripcion(), aerolineaSeleccionada.getLinkSitioWeb(), new ArrayList<>(),aerolineaSeleccionada.getFoto(), aerolineaSeleccionada.getContrasena()),
+                        new DTAerolinea(aerolineaSeleccionada.getNickname(), aerolineaSeleccionada.getNombre(), aerolineaSeleccionada.getCorreo(), aerolineaSeleccionada.getDescripcion(), aerolineaSeleccionada.getLinkSitioWeb(), new ArrayList<>(), aerolineaSeleccionada.getFoto(), aerolineaSeleccionada.getContrasena()),
                         new DTCiudad(rv.getCiudadOrigen().getNombre(), rv.getCiudadOrigen().getPais()),
                         new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais()),
                         rv.getFoto(),
@@ -1128,7 +1127,7 @@ public class Sistema implements ISistema {
                 pasaje.setPasajero(pasajero);
                 pasaje.setReserva(reserva);
                 pasaje.setTipoAsiento(tipoAsiento);
-                pasaje.setCostoPasaje((int) costoIndividualPasaje);// Establecer el costo del pasaje
+                pasaje.setCostoPasaje((int) costoIndividualPasaje); // Establecer el costo del pasaje
 
                 // Establecer la relación bidireccional
                 reserva.getPasajeros().add(pasaje);

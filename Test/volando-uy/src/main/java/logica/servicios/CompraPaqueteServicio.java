@@ -5,10 +5,7 @@ import dato.entidades.Cliente;
 import dato.entidades.CompraPaquete;
 import dato.entidades.PaqueteVuelo;
 import logica.DataTypes.DTFecha;
-import logica.DataTypes.TipoAsiento;
 import logica.excepciones.PaqueteException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class CompraPaqueteServicio {

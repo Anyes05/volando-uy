@@ -5,8 +5,6 @@ import dato.entidades.Aeropuerto;
 import dato.entidades.Ciudad;
 import dato.dao.CiudadDAO;
 import logica.DataTypes.DTFecha;
-import logica.excepciones.AeropuertoException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class AeropuertoServicio {
     }
 
     // Método para precargar aeropuertos con validación de transacciones
-    public void precargarAeropuertos() throws AeropuertoException {
+    public void precargarAeropuertos() {
         // Lista de aeropuertos principales de Uruguay y países vecinos
         String[][] aeropuertosData = {
                 // Uruguay

@@ -9,7 +9,6 @@ import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
 import jakarta.persistence.EntityManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CompraComunDAO extends GenericDAO<CompraComun> {

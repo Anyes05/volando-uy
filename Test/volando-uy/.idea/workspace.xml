@@ -5,45 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8254dba4-4ca9-4a6a-9485-0579c7f8c94d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checkstyleProyecto.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/logica/excepciones/AerolineaException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/logica/excepciones/AeropuertoException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/logica/excepciones/ClienteException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/logica/excepciones/PaqueteException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/logica/excepciones/RutasException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/logica/excepciones/VuelosException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkstyleProyecto.xml" beforeDir="false" afterPath="$PROJECT_DIR$/checkstyleProyecto.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/CategoriaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/CategoriaDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/ClienteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/ClienteDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/CompraComunDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/CompraComunDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/CompraPaqueteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/CompraPaqueteDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/PasajeDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/PasajeDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Aerolinea.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Aerolinea.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dato/dao/VueloDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/dao/VueloDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Aeropuerto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Aeropuerto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Cantidad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Cantidad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Categoria.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Categoria.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Ciudad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Ciudad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Cliente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/CompraComun.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/CompraComun.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/CompraPaquete.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/CompraPaquete.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/PaqueteVuelo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/PaqueteVuelo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Pasaje.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Pasaje.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Reserva.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Reserva.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/RutaVuelo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/RutaVuelo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Usuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Usuario.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dato/entidades/Vuelo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dato/entidades/Vuelo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/clase/ISistema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/clase/ISistema.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/logica/clase/Sistema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/clase/Sistema.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/AerolineaServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/AerolineaServicio.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/AeropuertoServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/AeropuertoServicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/CategoriaServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/CategoriaServicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/ClienteServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/ClienteServicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/CompraPaqueteServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/CompraPaqueteServicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/PaqueteVueloServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/PaqueteVueloServicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/PasajeServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/PasajeServicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/RutaVueloServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/RutaVueloServicio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/logica/servicios/VueloServicio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/logica/servicios/VueloServicio.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

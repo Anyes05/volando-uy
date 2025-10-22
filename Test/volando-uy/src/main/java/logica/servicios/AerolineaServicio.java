@@ -75,7 +75,7 @@ public class AerolineaServicio {
     }
 
     // Método para precargar aerolíneas
-    public void precargarAerolineas() throws AerolineaException {
+    public void precargarAerolineas() {
             // Datos de aerolíneas reales y ficticias
             Object[][] aerolineasData = {
                     // {nickname, nombre, correo, descripcion, linkSitioWeb, foto, contrasena}

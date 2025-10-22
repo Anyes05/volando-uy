@@ -1,9 +1,6 @@
 package logica.DataTypes;
 
 import dato.entidades.Categoria;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DTRutaVuelo {
@@ -16,7 +13,7 @@ public class DTRutaVuelo {
     private DTCiudad ciudadDestino;
     private List<Categoria> categorias;
     private byte[] foto;
-    EstadoRutaVuelo estado;
+    private EstadoRutaVuelo estado;
 
     public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino, byte[] foto, EstadoRutaVuelo estado) {
         this.nombre = nombre;

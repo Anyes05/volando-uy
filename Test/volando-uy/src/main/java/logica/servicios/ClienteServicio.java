@@ -52,7 +52,7 @@ public class ClienteServicio {
     }
 
     // Método para precargar clientes
-    public void precargarClientes() throws ClienteException {
+    public void precargarClientes() {
         // Datos de clientes de prueba
         Object[][] clientesData = {
                 // {nickname, nombre, correo, apellido, dia, mes, año, nacionalidad, tipoDoc, numeroDoc, foto, contraseña}
