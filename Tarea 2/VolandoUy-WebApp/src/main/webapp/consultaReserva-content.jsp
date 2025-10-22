@@ -78,17 +78,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initConsultaReserva() {
     console.log('Inicializando consulta de reservas...');
-    console.log('URL actual:', window.location.href);
-    console.log('Elementos del DOM disponibles:');
-    console.log('- info-inicial:', document.getElementById('info-inicial'));
-    console.log('- mensaje-error:', document.getElementById('mensaje-error'));
     
-    // Verificar que los elementos necesarios existen
-    const elementosRequeridos = [
-        'info-inicial',
-        'mensaje-error',
+    // Limpiar estado inicial
+    limpiarInterfaz();
+    
+    // Cargar información inicial
+    cargarInfoInicial();
+}
+
+function limpiarInterfaz() {
+    // Ocultar todas las secciones
+    const secciones = [
         'lista-rutas-aerolinea',
-        'seleccion-aerolinea',
+        'seleccion-aerolinea', 
         'seleccion-ruta',
         'lista-vuelos',
         'lista-reservas',
@@ -96,17 +98,77 @@ function initConsultaReserva() {
         'detalle-reserva'
     ];
     
-    elementosRequeridos.forEach(id => {
+    secciones.forEach(id => {
         const elemento = document.getElementById(id);
-        if (!elemento) {
-            console.error('Elemento requerido no encontrado:', id);
-        } else {
-            console.log('Elemento encontrado:', id);
+        if (elemento) {
+            elemento.style.display = 'none';
+            elemento.classList.remove('show', 'fade-in');
         }
     });
     
-    // Cargar información inicial
-    cargarInfoInicial();
+    // Limpiar contenido de listas
+    const listas = ['listaRutas', 'listaVuelos', 'listaReservas', 'reservaCliente', 'detalleReserva'];
+    listas.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.innerHTML = '';
+        }
+    });
+    
+    // Limpiar selects
+    const selects = ['selectAerolinea', 'selectRuta'];
+    selects.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.innerHTML = '<option value="">-- Seleccionar --</option>';
+            elemento.value = '';
+        }
+    });
+    
+    // Ocultar mensajes de error
+    const mensajeError = document.getElementById('mensaje-error');
+    if (mensajeError) {
+        mensajeError.style.display = 'none';
+    }
+}
+
+function limpiarSeccionesDependientes(secciones) {
+    secciones.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.style.display = 'none';
+            elemento.classList.remove('show', 'fade-in');
+            
+            // Limpiar contenido específico
+            if (id === 'seleccion-ruta') {
+                const selectRuta = document.getElementById('selectRuta');
+                if (selectRuta) {
+                    selectRuta.innerHTML = '<option value="">-- Seleccionar --</option>';
+                    selectRuta.value = '';
+                }
+            } else if (id === 'lista-vuelos') {
+                const listaVuelos = document.getElementById('listaVuelos');
+                if (listaVuelos) {
+                    listaVuelos.innerHTML = '';
+                }
+            } else if (id === 'lista-reservas') {
+                const listaReservas = document.getElementById('listaReservas');
+                if (listaReservas) {
+                    listaReservas.innerHTML = '';
+                }
+            } else if (id === 'reserva-cliente') {
+                const reservaCliente = document.getElementById('reservaCliente');
+                if (reservaCliente) {
+                    reservaCliente.innerHTML = '';
+                }
+            } else if (id === 'detalle-reserva') {
+                const detalleReserva = document.getElementById('detalleReserva');
+                if (detalleReserva) {
+                    detalleReserva.innerHTML = '';
+                }
+            }
+        }
+    });
 }
 
 async function cargarInfoInicial() {
@@ -145,6 +207,12 @@ async function cargarInfoInicial() {
             mostrarWarning(info.warning);
         }
         
+        // Ocultar el spinner de carga
+        const loadingInfo = document.getElementById('loading-info');
+        if (loadingInfo) {
+            loadingInfo.style.display = 'none';
+        }
+        
         if (info.tipoUsuario === 'aerolinea') {
             // Mostrar rutas directamente para aerolíneas
             mostrarRutasAerolinea(info.rutas || []);
@@ -157,6 +225,13 @@ async function cargarInfoInicial() {
         
     } catch (error) {
         console.error('Error al cargar información inicial:', error);
+        
+        // Ocultar el spinner de carga en caso de error
+        const loadingInfo = document.getElementById('loading-info');
+        if (loadingInfo) {
+            loadingInfo.style.display = 'none';
+        }
+        
         mostrarError('Error al cargar la información inicial: ' + error.message);
     }
 }
@@ -165,17 +240,20 @@ function mostrarRutasAerolinea(rutas) {
     const listaRutas = document.getElementById('listaRutas');
     const seccionRutas = document.getElementById('lista-rutas-aerolinea');
     
+    // Limpiar contenido anterior
+    listaRutas.innerHTML = '';
+    
     if (rutas.length === 0) {
-        listaRutas.innerHTML = '<p>No hay rutas disponibles.</p>';
+        listaRutas.innerHTML = '<div class="text-center"><p>No hay rutas disponibles.</p></div>';
     } else {
-        listaRutas.innerHTML = '';
-        rutas.forEach(ruta => {
+        rutas.forEach((ruta, index) => {
             const card = document.createElement('div');
-            card.className = 'ruta-card';
+            card.className = 'ruta-card fade-in';
+            card.style.animationDelay = `${index * 0.1}s`;
             card.innerHTML = 
                 '<div class="card-body">' +
                     '<h4>' + (ruta.nombre || 'Sin nombre') + '</h4>' +
-                    '<p>' + (ruta.ciudadOrigen || 'Sin origen') + ' → ' + (ruta.ciudadDestino || 'Sin destino') + '</p>' +
+                    '<p><strong>Ruta:</strong> ' + (ruta.ciudadOrigen || 'Sin origen') + ' → ' + (ruta.ciudadDestino || 'Sin destino') + '</p>' +
                     '<p>' + (ruta.descripcion || 'Sin descripción') + '</p>' +
                 '</div>';
             card.addEventListener('click', () => seleccionarRuta(ruta));
@@ -183,28 +261,44 @@ function mostrarRutasAerolinea(rutas) {
         });
     }
     
+    // Mostrar con animación
     seccionRutas.style.display = 'block';
+    seccionRutas.classList.add('show', 'fade-in');
 }
 
 function mostrarAerolineas(aerolineas) {
     const selectAerolinea = document.getElementById('selectAerolinea');
     const seccionAerolinea = document.getElementById('seleccion-aerolinea');
     
+    // Limpiar contenido anterior
     selectAerolinea.innerHTML = '<option value="">-- Elegir aerolínea --</option>';
-    aerolineas.forEach(aerolinea => {
-        const option = document.createElement('option');
-        option.value = aerolinea.nickname;
-        option.textContent = aerolinea.nombre;
-        selectAerolinea.appendChild(option);
-    });
     
-    selectAerolinea.addEventListener('change', (e) => {
-        if (e.target.value) {
-            cargarRutasAerolinea(e.target.value);
-        }
-    });
+    if (aerolineas && aerolineas.length > 0) {
+        aerolineas.forEach(aerolinea => {
+            const option = document.createElement('option');
+            option.value = aerolinea.nickname;
+            option.textContent = aerolinea.nombre;
+            selectAerolinea.appendChild(option);
+        });
+        
+        // Agregar event listener solo una vez
+        selectAerolinea.removeEventListener('change', handleAerolineaChange);
+        selectAerolinea.addEventListener('change', handleAerolineaChange);
+    } else {
+        selectAerolinea.innerHTML = '<option value="">No hay aerolíneas disponibles</option>';
+    }
     
+    // Mostrar con animación
     seccionAerolinea.style.display = 'block';
+    seccionAerolinea.classList.add('show', 'fade-in');
+}
+
+function handleAerolineaChange(e) {
+    if (e.target.value) {
+        // Limpiar secciones dependientes
+        limpiarSeccionesDependientes(['seleccion-ruta', 'lista-vuelos', 'lista-reservas', 'reserva-cliente', 'detalle-reserva']);
+        cargarRutasAerolinea(e.target.value);
+    }
 }
 
 async function cargarRutasAerolinea(aerolineaNickname) {
@@ -304,26 +398,31 @@ function mostrarVuelos(vuelos) {
     const listaVuelos = document.getElementById('listaVuelos');
     const seccionVuelos = document.getElementById('lista-vuelos');
     
+    // Limpiar contenido anterior
+    listaVuelos.innerHTML = '';
+    
     if (vuelos.length === 0) {
-        listaVuelos.innerHTML = '<p>No hay vuelos disponibles para esta ruta.</p>';
+        listaVuelos.innerHTML = '<div class="text-center"><p>No hay vuelos disponibles para esta ruta.</p></div>';
     } else {
-        listaVuelos.innerHTML = '';
-        vuelos.forEach(vuelo => {
+        vuelos.forEach((vuelo, index) => {
             const card = document.createElement('div');
-            card.className = 'vuelo-card';
+            card.className = 'vuelo-card fade-in';
+            card.style.animationDelay = `${index * 0.1}s`;
             card.innerHTML = 
                 '<div class="card-body">' +
                     '<h4>' + (vuelo.nombre || 'Sin nombre') + '</h4>' +
-                    '<p>Fecha: ' + (vuelo.fechaVuelo || 'Sin fecha') + ' ' + (vuelo.horaVuelo || 'Sin hora') + '</p>' +
-                    '<p>Duración: ' + (vuelo.duracion || 'Sin duración') + '</p>' +
-                    '<p>Asientos: ' + (vuelo.asientosMaxTurista || 0) + ' Turista, ' + (vuelo.asientosMaxEjecutivo || 0) + ' Ejecutivo</p>' +
+                    '<p><strong>Fecha:</strong> ' + (vuelo.fechaVuelo || 'Sin fecha') + ' ' + (vuelo.horaVuelo || 'Sin hora') + '</p>' +
+                    '<p><strong>Duración:</strong> ' + (vuelo.duracion || 'Sin duración') + '</p>' +
+                    '<p><strong>Asientos:</strong> ' + (vuelo.asientosMaxTurista || 0) + ' Turista, ' + (vuelo.asientosMaxEjecutivo || 0) + ' Ejecutivo</p>' +
                 '</div>';
             card.addEventListener('click', () => seleccionarVuelo(vuelo));
             listaVuelos.appendChild(card);
         });
     }
     
+    // Mostrar con animación
     seccionVuelos.style.display = 'block';
+    seccionVuelos.classList.add('show', 'fade-in');
 }
 
 async function seleccionarVuelo(vuelo) {
@@ -371,21 +470,24 @@ function mostrarReservasVuelo(reservas) {
     const listaReservas = document.getElementById('listaReservas');
     const seccionReservas = document.getElementById('lista-reservas');
     
+    // Limpiar contenido anterior
+    listaReservas.innerHTML = '';
+    
     if (reservas.length === 0) {
-        listaReservas.innerHTML = '<p>No hay reservas para este vuelo.</p>';
+        listaReservas.innerHTML = '<div class="text-center"><p>No hay reservas para este vuelo.</p></div>';
     } else {
-        listaReservas.innerHTML = '';
-        reservas.forEach(reserva => {
+        reservas.forEach((reserva, index) => {
             console.log('Creando card para reserva:', reserva);
             const card = document.createElement('div');
-            card.className = 'reserva-card';
+            card.className = 'reserva-card fade-in';
+            card.style.animationDelay = `${index * 0.1}s`;
             card.innerHTML = 
                 '<div class="card-body">' +
                     '<h4>Reserva #' + (reserva.id || 'Sin ID') + '</h4>' +
-                    '<p>Cliente: ' + (reserva.nicknameCliente || 'Sin cliente') + '</p>' +
-                    '<p>Fecha de reserva: ' + (reserva.fechaReserva || 'Sin fecha') + '</p>' +
-                    '<p>Vuelo: ' + (reserva.vueloNombre || 'Sin vuelo') + '</p>' +
-                    '<p>Fecha de vuelo: ' + (reserva.fechaVuelo || 'Sin fecha') + ' ' + (reserva.horaVuelo || 'Sin hora') + '</p>' +
+                    '<p><strong>Cliente:</strong> ' + (reserva.nicknameCliente || 'Sin cliente') + '</p>' +
+                    '<p><strong>Fecha de reserva:</strong> ' + (reserva.fechaReserva || 'Sin fecha') + '</p>' +
+                    '<p><strong>Vuelo:</strong> ' + (reserva.vueloNombre || 'Sin vuelo') + '</p>' +
+                    '<p><strong>Fecha de vuelo:</strong> ' + (reserva.fechaVuelo || 'Sin fecha') + ' ' + (reserva.horaVuelo || 'Sin hora') + '</p>' +
                 '</div>';
             card.addEventListener('click', () => {
                 console.log('Aerolínea hizo clic en reserva:', reserva.id);
@@ -395,7 +497,9 @@ function mostrarReservasVuelo(reservas) {
         });
     }
     
+    // Mostrar con animación
     seccionReservas.style.display = 'block';
+    seccionReservas.classList.add('show', 'fade-in');
 }
 
 async function cargarReservaCliente(vueloNombre) {
@@ -424,24 +528,30 @@ function mostrarReservaCliente(reserva) {
     const reservaCliente = document.getElementById('reservaCliente');
     const seccionReserva = document.getElementById('reserva-cliente');
     
+    // Limpiar contenido anterior
+    reservaCliente.innerHTML = '';
+    
     if (reserva === null) {
-        reservaCliente.innerHTML = '<p>No tienes una reserva para este vuelo.</p>';
+        reservaCliente.innerHTML = '<div class="text-center"><p>No tienes una reserva para este vuelo.</p></div>';
     } else {
-        reservaCliente.innerHTML = 
-            '<div class="reserva-card">' +
-                '<div class="card-body">' +
-                    '<h4>Mi Reserva #' + (reserva.id || 'Sin ID') + '</h4>' +
-                    '<p>Fecha de reserva: ' + (reserva.fechaReserva || 'Sin fecha') + '</p>' +
-                    '<p>Vuelo: ' + (reserva.vueloNombre || 'Sin vuelo') + '</p>' +
-                    '<p>Fecha de vuelo: ' + (reserva.fechaVuelo || 'Sin fecha') + ' ' + (reserva.horaVuelo || 'Sin hora') + '</p>' +
-                '</div>' +
+        const card = document.createElement('div');
+        card.className = 'reserva-card fade-in';
+        card.innerHTML = 
+            '<div class="card-body">' +
+                '<h4>Mi Reserva #' + (reserva.id || 'Sin ID') + '</h4>' +
+                '<p><strong>Fecha de reserva:</strong> ' + (reserva.fechaReserva || 'Sin fecha') + '</p>' +
+                '<p><strong>Vuelo:</strong> ' + (reserva.vueloNombre || 'Sin vuelo') + '</p>' +
+                '<p><strong>Fecha de vuelo:</strong> ' + (reserva.fechaVuelo || 'Sin fecha') + ' ' + (reserva.horaVuelo || 'Sin hora') + '</p>' +
             '</div>';
         
         // Agregar evento de clic para mostrar detalle
-        reservaCliente.addEventListener('click', () => mostrarDetalleReserva(reserva.id));
+        card.addEventListener('click', () => mostrarDetalleReserva(reserva.id));
+        reservaCliente.appendChild(card);
     }
     
+    // Mostrar con animación
     seccionReserva.style.display = 'block';
+    seccionReserva.classList.add('show', 'fade-in');
 }
 
 async function mostrarDetalleReserva(reservaId) {
@@ -464,46 +574,46 @@ async function mostrarDetalleReserva(reservaId) {
 
 function mostrarDetalleEnInterfaz(detalle) {
     console.log('Mostrando detalle completo:', detalle);
-    console.log('Detalle.pasajeros:', detalle.pasajeros);
-    console.log('Tipo de detalle.pasajeros:', typeof detalle.pasajeros);
-    console.log('Es array?', Array.isArray(detalle.pasajeros));
-    if (detalle.pasajeros) {
-        console.log('Longitud de pasajeros:', detalle.pasajeros.length);
-        console.log('Contenido de pasajeros:', detalle.pasajeros);
-    }
     
     const detalleReserva = document.getElementById('detalleReserva');
     const seccionDetalle = document.getElementById('detalle-reserva');
     
-    detalleReserva.innerHTML = 
-        '<div class="detalle-completo">' +
-            '<h4>Información de la Reserva</h4>' +
-            '<p><strong>ID:</strong> ' + (detalle.id || 'Sin ID') + '</p>' +
-            '<p><strong>Cliente:</strong> ' + (detalle.nicknameCliente || 'Sin cliente') + '</p>' +
-            '<p><strong>Fecha de reserva:</strong> ' + (detalle.fechaReserva || 'Sin fecha') + '</p>' +
-            '<p><strong>Costo:</strong> ' + (detalle.costoReserva ? (detalle.costoReserva.costoTotal || 'N/A') : 'N/A') + '</p>' +
-            
-            '<h4>Información del Vuelo</h4>' +
-            '<p><strong>Nombre:</strong> ' + (detalle.vuelo.nombre || 'Sin nombre') + '</p>' +
-            '<p><strong>Fecha:</strong> ' + (detalle.vuelo.fechaVuelo || 'Sin fecha') + '</p>' +
-            '<p><strong>Hora:</strong> ' + (detalle.vuelo.horaVuelo || 'Sin hora') + '</p>' +
-            '<p><strong>Duración:</strong> ' + (detalle.vuelo.duracion || 'Sin duración') + '</p>' +
-            
-            '<h4>Información de la Ruta</h4>' +
-            '<p><strong>Nombre:</strong> ' + (detalle.ruta.nombre || 'Sin nombre') + '</p>' +
-            '<p><strong>Descripción:</strong> ' + (detalle.ruta.descripcion || 'Sin descripción') + '</p>' +
-            '<p><strong>Origen:</strong> ' + (detalle.ruta.ciudadOrigen || 'Sin origen') + '</p>' +
-            '<p><strong>Destino:</strong> ' + (detalle.ruta.ciudadDestino || 'Sin destino') + '</p>' +
-            
-            '<h4>Información de la Aerolínea</h4>' +
-            '<p><strong>Nombre:</strong> ' + (detalle.aerolinea.nombre || 'Sin nombre') + '</p>' +
-            '<p><strong>Descripción:</strong> ' + (detalle.aerolinea.descripcion || 'Sin descripción') + '</p>' +
-            
-            '<h4>Pasajeros</h4>' +
-            '<p>' + obtenerTextoPasajeros(detalle.pasajeros) + '</p>' +
-        '</div>';
+    // Limpiar contenido anterior
+    detalleReserva.innerHTML = '';
     
+    const detalleCompleto = document.createElement('div');
+    detalleCompleto.className = 'detalle-completo fade-in';
+    detalleCompleto.innerHTML = 
+        '<h4>Información de la Reserva</h4>' +
+        '<p><strong>ID:</strong> ' + (detalle.id || 'Sin ID') + '</p>' +
+        '<p><strong>Cliente:</strong> ' + (detalle.nicknameCliente || 'Sin cliente') + '</p>' +
+        '<p><strong>Fecha de reserva:</strong> ' + (detalle.fechaReserva || 'Sin fecha') + '</p>' +
+        '<p><strong>Costo:</strong> $' + (detalle.costoReserva ? (detalle.costoReserva.costoTotal || 'N/A') : 'N/A') + '</p>' +
+        
+        '<h4>Información del Vuelo</h4>' +
+        '<p><strong>Nombre:</strong> ' + (detalle.vuelo?.nombre || 'Sin nombre') + '</p>' +
+        '<p><strong>Fecha:</strong> ' + (detalle.vuelo?.fechaVuelo || 'Sin fecha') + '</p>' +
+        '<p><strong>Hora:</strong> ' + (detalle.vuelo?.horaVuelo || 'Sin hora') + '</p>' +
+        '<p><strong>Duración:</strong> ' + (detalle.vuelo?.duracion || 'Sin duración') + '</p>' +
+        
+        '<h4>Información de la Ruta</h4>' +
+        '<p><strong>Nombre:</strong> ' + (detalle.ruta?.nombre || 'Sin nombre') + '</p>' +
+        '<p><strong>Descripción:</strong> ' + (detalle.ruta?.descripcion || 'Sin descripción') + '</p>' +
+        '<p><strong>Origen:</strong> ' + (detalle.ruta?.ciudadOrigen || 'Sin origen') + '</p>' +
+        '<p><strong>Destino:</strong> ' + (detalle.ruta?.ciudadDestino || 'Sin destino') + '</p>' +
+        
+        '<h4>Información de la Aerolínea</h4>' +
+        '<p><strong>Nombre:</strong> ' + (detalle.aerolinea?.nombre || 'Sin nombre') + '</p>' +
+        '<p><strong>Descripción:</strong> ' + (detalle.aerolinea?.descripcion || 'Sin descripción') + '</p>' +
+        
+        '<h4>Pasajeros</h4>' +
+        '<p>' + obtenerTextoPasajeros(detalle.pasajeros) + '</p>';
+    
+    detalleReserva.appendChild(detalleCompleto);
+    
+    // Mostrar con animación
     seccionDetalle.style.display = 'block';
+    seccionDetalle.classList.add('show', 'fade-in');
 }
 
 function obtenerTextoPasajeros(pasajeros) {
@@ -562,16 +672,21 @@ function mostrarError(mensaje) {
     if (mensajeError) {
         mensajeError.textContent = mensaje;
         mensajeError.style.display = 'block';
-        mensajeError.className = 'error-message';
+        mensajeError.className = 'error-message fade-in';
         
-        // Ocultar mensaje después de 10 segundos (más tiempo para debugging)
+        // Ocultar mensaje después de 8 segundos
         setTimeout(() => {
             mensajeError.style.display = 'none';
-        }, 10000);
+            mensajeError.classList.remove('fade-in');
+        }, 8000);
     } else {
-        // Si no existe el elemento, mostrar en consola y alert
+        // Si no existe el elemento, usar el sistema de toast
         console.error('Elemento mensaje-error no encontrado');
-        showToast('Error: ' + mensaje, 'error');
+        if (typeof showToast === 'function') {
+            showToast('Error: ' + mensaje, 'error');
+        } else {
+            alert('Error: ' + mensaje);
+        }
     }
 }
 
@@ -582,125 +697,58 @@ function mostrarWarning(mensaje) {
     if (mensajeError) {
         mensajeError.textContent = mensaje;
         mensajeError.style.display = 'block';
-        mensajeError.className = 'warning-message';
+        mensajeError.className = 'warning-message fade-in';
         
-        // Ocultar mensaje después de 8 segundos
+        // Ocultar mensaje después de 6 segundos
         setTimeout(() => {
             mensajeError.style.display = 'none';
-        }, 8000);
+            mensajeError.classList.remove('fade-in');
+        }, 6000);
     } else {
-        // Si no existe el elemento, mostrar en consola y alert
+        // Si no existe el elemento, usar el sistema de toast
         console.warn('Elemento mensaje-error no encontrado');
-        showToast('Advertencia: ' + mensaje, 'warning');
+        if (typeof showToast === 'function') {
+            showToast('Advertencia: ' + mensaje, 'warning');
+        } else {
+            alert('Advertencia: ' + mensaje);
+        }
     }
 }
 
 // Función para seleccionar ruta (para aerolíneas)
 function seleccionarRuta(ruta) {
     console.log('Ruta seleccionada:', ruta);
+    
+    // Limpiar secciones dependientes
+    limpiarSeccionesDependientes(['lista-vuelos', 'lista-reservas', 'reserva-cliente', 'detalle-reserva']);
+    
+    // Cargar vuelos de la ruta
     cargarVuelosRuta(ruta.nombre);
 }
+
+// Función para mejorar la selección de vuelos
+async function seleccionarVuelo(vuelo) {
+    console.log('Vuelo seleccionado:', vuelo);
+    
+    // Limpiar secciones dependientes
+    limpiarSeccionesDependientes(['lista-reservas', 'reserva-cliente', 'detalle-reserva']);
+    
+    // Verificar tipo de usuario para mostrar reservas o reserva del cliente
+    try {
+        const response = await fetch('/VolandoUy-WebApp/api/consulta-reservas');
+        const info = await response.json();
+        
+        if (info.tipoUsuario === 'aerolinea') {
+            // Para aerolíneas: mostrar todas las reservas del vuelo
+            cargarReservasVuelo(vuelo.nombre);
+        } else if (info.tipoUsuario === 'cliente') {
+            // Para clientes: mostrar su reserva para este vuelo
+            cargarReservaCliente(vuelo.nombre);
+        }
+        
+    } catch (error) {
+        console.error('Error al verificar tipo de usuario:', error);
+        mostrarError('Error al verificar el tipo de usuario');
+    }
+}
 </script>
-
-<style>
-.info-inicial {
-    margin-bottom: 20px;
-}
-
-.loading {
-    text-align: center;
-    padding: 20px;
-    color: #666;
-}
-
-.controls-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.section-content {
-    margin-bottom: 20px;
-}
-
-.section-title {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.grid-rutas, .grid-vuelos, .grid-reservas {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 15px;
-}
-
-.ruta-card, .vuelo-card, .reserva-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.ruta-card:hover, .vuelo-card:hover, .reserva-card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
-
-.card-body h4 {
-    margin: 0 0 10px 0;
-    color: #333;
-}
-
-.card-body p {
-    margin: 5px 0;
-    color: #666;
-}
-
-.detalle-card {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
-}
-
-.detalle-completo h4 {
-    color: #333;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-.detalle-completo h4:first-child {
-    margin-top: 0;
-}
-
-.detalle-completo p {
-    margin: 8px 0;
-    color: #555;
-}
-
-.error-message {
-    background: #ffebee;
-    color: #c62828;
-    padding: 10px;
-    border-radius: 4px;
-    margin: 10px 0;
-    border-left: 4px solid #c62828;
-}
-
-.reserva-card {
-    background: #e8f5e8;
-    border-color: #4caf50;
-}
-
-.reserva-card:hover {
-    background: #f1f8e9;
-}
-</style>

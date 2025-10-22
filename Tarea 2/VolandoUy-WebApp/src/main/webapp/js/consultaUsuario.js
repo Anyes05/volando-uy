@@ -723,7 +723,7 @@ async function mostrarReservasCliente(usuario, contenedor, esUsuarioLogueado = f
           <div class="paquetes-grid">
             ${paquetes.map(paquete => `
               <div class="paquete-card">
-                <h5>Paquete #${paquete.id || 'N/A'}</h5>
+                <h5>${paquete.nombrePaquete || paquete.nombre || 'Paquete #' + (paquete.id || 'N/A')}</h5>
                 <p class="paquete-cliente">Cliente: ${paquete.nickname || usuario.nickname}</p>
                 <p class="paquete-fecha">Fecha de Compra: ${paquete.fechaCompra || 'N/A'}</p>
                 <p class="paquete-costo">Costo Total: $${paquete.costoTotal || 'N/A'}</p>
@@ -847,7 +847,11 @@ function volverALista() {
 function abrirModalDetalle() {
   const modal = document.getElementById('modal-detalle');
   if (modal) {
+    console.log('Abriendo modal de detalle');
     modal.style.display = 'flex';
+    modal.style.zIndex = '1000';
+  } else {
+    console.error('Modal no encontrado');
   }
 }
 
@@ -1065,122 +1069,251 @@ async function mostrarDetallePaqueteEnModal(paquete) {
 
 // Función para mostrar detalle de reserva en el modal
 async function mostrarDetalleReservaEnModal(reserva) {
+  console.log('=== MOSTRAR DETALLE RESERVA ===');
+  console.log('Reserva recibida:', reserva);
   abrirModalDetalle();
   const modalBody = document.getElementById('modal-body');
+  modalBody.innerHTML = '<div class="loading-container"><div class="spinner"></div><p>Cargando detalles de la reserva...</p></div>';
   
-  // Si la reserva tiene información del vuelo, cargarla
-  if (reserva.vuelo) {
-    modalBody.innerHTML = '<div class="loading-container"><div class="spinner"></div><p>Cargando detalles de la reserva...</p></div>';
+  try {
+    // Mostrar datos básicos primero
+    let reservaCompleta = reserva;
+    console.log('Usando datos básicos de reserva:', reservaCompleta);
     
+    // Intentar cargar detalles adicionales
     try {
-      // Cargar detalles del vuelo para mostrar más información
-      const vueloResponse = await fetch(`/VolandoUy-WebApp/api/reservas/vuelo-detalle/${encodeURIComponent(reserva.vuelo)}`, {
+      const reservaResponse = await fetch(`/VolandoUy-WebApp/api/usuarios/reserva-detalle/${reserva.id}`, {
         credentials: 'include'
       });
       
-      let vueloInfo = '';
-      if (vueloResponse.ok) {
-        const vuelo = await vueloResponse.json();
-        vueloInfo = `
-          <h3>Información del vuelo</h3>
-          <p><strong>Vuelo:</strong> ${vuelo.nombre || reserva.vuelo}</p>
-          <p><strong>Fecha:</strong> ${vuelo.fechaVuelo || 'N/A'}</p>
-          <p><strong>Hora:</strong> ${vuelo.horaVuelo || 'N/A'}</p>
-          <p><strong>Duración:</strong> ${vuelo.duracion || 'N/A'}</p>
-        `;
+      if (reservaResponse.ok) {
+        reservaCompleta = await reservaResponse.json();
+        console.log('Detalle completo de reserva cargado:', reservaCompleta);
+      } else {
+        console.log('Error en respuesta:', reservaResponse.status, reservaResponse.statusText);
       }
-      
-      modalBody.innerHTML = `
-        <h2>Reserva #${reserva.id || 'N/A'}</h2>
-        <p><strong>Cliente:</strong> ${reserva.nickname || 'N/A'}</p>
-        <p><strong>Fecha de reserva:</strong> ${reserva.fechaReserva || 'N/A'}</p>
-        <p><strong>Costo:</strong> $${reserva.costoReserva || 0}</p>
-        ${vueloInfo}
-      `;
     } catch (error) {
-      console.error('Error cargando detalle de reserva:', error);
-      modalBody.innerHTML = '<p>Error al cargar los detalles de la reserva.</p>';
+      console.log('Error al cargar detalles:', error);
     }
-  } else {
-    // Mostrar información básica de la reserva
+    
+    // Construir información del vuelo desde los datos cargados
+    let vueloInfo = '';
+    if (reservaCompleta.vuelo) {
+      const vuelo = reservaCompleta.vuelo;
+      vueloInfo = `
+        <div class="flight-details">
+          <h3><i class="fas fa-plane"></i> Información del Vuelo</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Vuelo:</span>
+              <span class="value">${vuelo.nombre || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Fecha:</span>
+              <span class="value">${vuelo.fechaVuelo || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Hora:</span>
+              <span class="value">${vuelo.horaVuelo || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Duración:</span>
+              <span class="value">${vuelo.duracion || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Asientos Turista:</span>
+              <span class="value">${vuelo.asientosMaxTurista || 0}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Asientos Ejecutivo:</span>
+              <span class="value">${vuelo.asientosMaxEjecutivo || 0}</span>
+            </div>
+          </div>
+          ${vuelo.ruta ? `
+            <div class="ruta-details">
+              <h4><i class="fas fa-route"></i> Detalles de la Ruta</h4>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="label">Nombre:</span>
+                  <span class="value">${vuelo.ruta.nombre || 'N/A'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Descripción:</span>
+                  <span class="value">${vuelo.ruta.descripcion || 'Sin descripción'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Origen:</span>
+                  <span class="value">${vuelo.ruta.ciudadOrigen?.nombre || 'N/A'}, ${vuelo.ruta.ciudadOrigen?.pais || 'N/A'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Destino:</span>
+                  <span class="value">${vuelo.ruta.ciudadDestino?.nombre || 'N/A'}, ${vuelo.ruta.ciudadDestino?.pais || 'N/A'}</span>
+                </div>
+                ${vuelo.ruta.costos ? `
+                  <div class="detail-item">
+                    <span class="label">Costo Base Turista:</span>
+                    <span class="value cost">$${vuelo.ruta.costos.costoBaseTurista || 0}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Costo Base Ejecutivo:</span>
+                    <span class="value cost">$${vuelo.ruta.costos.costoBaseEjecutivo || 0}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Costo Equipaje Extra:</span>
+                    <span class="value cost">$${vuelo.ruta.costos.costoEquipajeExtra || 0}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+    
+    // Construir información de pasajeros desde los datos cargados
+    let pasajerosInfo = '';
+    if (reservaCompleta.pasajeros && reservaCompleta.pasajeros.length > 0) {
+      pasajerosInfo = `
+        <div class="passengers-details">
+          <h3><i class="fas fa-users"></i> Pasajeros (${reservaCompleta.pasajeros.length})</h3>
+          <div class="passengers-grid">
+            ${reservaCompleta.pasajeros.map((pasajero, index) => `
+              <div class="passenger-card">
+                <h4>Pasajero ${index + 1}</h4>
+                <p><strong>Nombre:</strong> ${pasajero.nombre || 'N/A'}</p>
+                <p><strong>Apellido:</strong> ${pasajero.apellido || 'N/A'}</p>
+                <p><strong>Tipo de asiento:</strong> ${pasajero.tipoAsiento || 'N/A'}</p>
+                ${pasajero.nickname ? `<p><strong>Nickname:</strong> ${pasajero.nickname}</p>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+    
+    // Mostrar datos básicos de la reserva
+    console.log('Construyendo HTML del modal');
+    const html = `
+      <div class="reservation-details">
+        <div class="reservation-header">
+          <h2><i class="fas fa-ticket-alt"></i> Reserva #${reservaCompleta.id || 'N/A'}</h2>
+        </div>
+        
+        <div class="reservation-info">
+          <h3><i class="fas fa-info-circle"></i> Información de la Reserva</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Cliente:</span>
+              <span class="value">${reservaCompleta.nickname || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Fecha de reserva:</span>
+              <span class="value">${reservaCompleta.fechaReserva || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Costo total:</span>
+              <span class="value cost">$${(reservaCompleta.costoReserva || 0).toFixed(2)}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Estado:</span>
+              <span class="value status">Confirmada</span>
+            </div>
+          </div>
+        </div>
+        
+        ${vueloInfo}
+        ${pasajerosInfo}
+        
+        <div class="info-message">
+          <i class="fas fa-info-circle"></i>
+          <p>Esta es la información disponible de la reserva. Si necesitas más detalles, consulta la sección de reservas en el menú principal.</p>
+        </div>
+      </div>
+    `;
+    
+    console.log('HTML construido, insertando en modal');
+    modalBody.innerHTML = html;
+    console.log('Modal actualizado con contenido');
+    
+  } catch (error) {
+    console.error('Error cargando detalle de reserva:', error);
     modalBody.innerHTML = `
-      <h2>Reserva #${reserva.id || 'N/A'}</h2>
-      <p><strong>Cliente:</strong> ${reserva.nickname || 'N/A'}</p>
-      <p><strong>Fecha de reserva:</strong> ${reserva.fechaReserva || 'N/A'}</p>
-      <p><strong>Costo:</strong> $${reserva.costoReserva || 0}</p>
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Error al cargar los detalles de la reserva: ${error.message}</p>
+      </div>
     `;
   }
 }
 
 // Función para mostrar detalle de paquete comprado en el modal
 async function mostrarDetallePaqueteCompradoEnModal(paquete) {
+  console.log('=== MOSTRAR DETALLE PAQUETE ===');
+  console.log('Paquete recibido:', paquete);
   abrirModalDetalle();
   const modalBody = document.getElementById('modal-body');
   modalBody.innerHTML = '<div class="loading-container"><div class="spinner"></div><p>Cargando detalles del paquete...</p></div>';
   
   try {
-    // Buscar información del paquete en el sistema
-    const response = await fetch(`/VolandoUy-WebApp/api/paquetes/${encodeURIComponent(paquete.nombrePaquete || paquete.nombre)}`, {
-      credentials: 'include'
-    });
+    // Usar los datos del paquete que ya están disponibles
+    let paqueteCompleto = paquete;
+    let rutas = [];
     
+    // Mostrar solo los datos disponibles del paquete comprado
+    console.log('Usando datos disponibles del paquete:', paquete);
+    
+    // Construir HTML del detalle del paquete
     let html = `
-      <h2>Paquete Comprado</h2>
-      <p><strong>Nombre del paquete:</strong> ${paquete.nombrePaquete || paquete.nombre || 'N/A'}</p>
-      <p><strong>Cliente:</strong> ${paquete.nickname || 'N/A'}</p>
-      <p><strong>Fecha de compra:</strong> ${paquete.fechaCompra || 'N/A'}</p>
-      <p><strong>Costo total:</strong> $${paquete.costoTotal || 0}</p>
-      <p><strong>Vencimiento:</strong> ${paquete.vencimiento || 'N/A'}</p>
+      <div class="package-details">
+        <div class="package-header">
+          <h2><i class="fas fa-box"></i> Paquete Comprado #${paquete.id || 'N/A'}</h2>
+        </div>
+        
+        <div class="package-info">
+          <h3><i class="fas fa-info-circle"></i> Información del Paquete</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Cliente:</span>
+              <span class="value">${paquete.nickname || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Fecha de compra:</span>
+              <span class="value">${paquete.fechaCompra || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Costo total:</span>
+              <span class="value cost">$${paquete.costoTotal || 0}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Vencimiento:</span>
+              <span class="value">${paquete.vencimiento || 'N/A'}</span>
+            </div>
+          </div>
+        </div>
     `;
     
-    if (response.ok) {
-      const data = await response.json();
-      const paqueteCompleto = data.paquete;
-      const rutas = data.rutas || [];
-      
-      if (paqueteCompleto) {
-        // Mostrar imagen del paquete si existe
-        if (paqueteCompleto.foto) {
-          html += `<div style="text-align: center; margin: 1rem 0;">
-            <img src="data:image/jpeg;base64,${paqueteCompleto.foto}" alt="${paqueteCompleto.nombre}" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
-          </div>`;
-        }
-        
-        html += `
-          <p><strong>Descripción:</strong> ${paqueteCompleto.descripcion || 'Sin descripción'}</p>
-          <p><strong>Días válidos:</strong> ${paqueteCompleto.diasValidos || 0} días</p>
-          <p><strong>Descuento aplicado:</strong> ${paqueteCompleto.descuento || 0}%</p>
-        `;
-      }
-      
-      // Mostrar rutas incluidas
-      if (rutas && rutas.length > 0) {
-        html += '<hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #1e3a52;">';
-        html += '<h3 style="color: #01aaf5; margin-bottom: 1rem;">📋 Rutas incluidas en el paquete</h3>';
-        html += '<div class="modal-vuelos-grid">';
-        rutas.forEach(ruta => {
-          html += `
-            <div class="modal-vuelo-card" onclick="mostrarDetalleRutaEnModal('${ruta.nombre}')" style="cursor: pointer;">
-              <h4 style="color: #01aaf5; margin-bottom: 0.5rem;">${ruta.nombre}</h4>
-              <p><strong>📍 Origen:</strong> ${ruta.ciudadOrigen || 'N/A'}</p>
-              <p><strong>🎯 Destino:</strong> ${ruta.ciudadDestino || 'N/A'}</p>
-              <p><strong>🎫 Cantidad de pasajes:</strong> ${ruta.cantidad || 0}</p>
-              <p><strong>💺 Tipo de asiento:</strong> ${ruta.tipoAsiento || 'No especificado'}</p>
-              <p><strong>💰 Costo turista:</strong> $${ruta.costoBaseTurista || 0}</p>
-              <p><strong>💰 Costo ejecutivo:</strong> $${ruta.costoBaseEjecutivo || 0}</p>
-            </div>
-          `;
-        });
-        html += '</div>';
-      }
-    }
+    // Agregar mensaje informativo
+    html += `
+      <div class="info-message">
+        <i class="fas fa-info-circle"></i>
+        <p>Esta es la información disponible del paquete comprado. Para ver más detalles, consulta la sección de paquetes en el menú principal.</p>
+      </div>
+    `;
     
+    html += '</div>';
     modalBody.innerHTML = html;
+    
   } catch (error) {
-    console.error('Error cargando detalle de paquete comprado:', error);
-    modalBody.innerHTML = '<p>Error al cargar los detalles del paquete comprado.</p>';
+    console.error('Error cargando detalle de paquete:', error);
+    modalBody.innerHTML = `
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Error al cargar los detalles del paquete: ${error.message}</p>
+      </div>
+    `;
   }
 }
+
 
 // Función para ver detalle de usuario (llamada desde JSP)
 function verDetalleUsuario(nickname) {

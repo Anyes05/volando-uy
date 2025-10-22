@@ -1,18 +1,16 @@
 package com.volandouy.controller;
 
-import logica.DataTypes.DTFecha;
-import logica.DataTypes.TipoDoc;
-import logica.DataTypes.DTUsuario;
-import logica.DataTypes.DTCliente;
-import logica.DataTypes.DTAerolinea;
-import logica.DataTypes.DTReserva;
-import logica.DataTypes.DTCompraPaquete;
-import logica.DataTypes.DTRutaVuelo;
+import logica.DataTypes.*;
 import logica.clase.Sistema;
 import logica.servicios.ClienteServicio;
 import logica.servicios.AerolineaServicio;
+import logica.servicios.ReservaServicio;
 import dato.entidades.Cliente;
 import dato.entidades.Aerolinea;
+import dato.entidades.Reserva;
+import dato.entidades.Pasaje;
+import dato.entidades.Vuelo;
+import dato.entidades.RutaVuelo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -269,6 +267,10 @@ public class UsuarioController extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     out.print(objectMapper.writeValueAsString(Map.of("error", "Error: " + ex.getMessage())));
                 }
+            } else if (pathInfo.startsWith("/reserva-detalle/")) {
+                // GET /api/usuarios/reserva-detalle/{id} - Obtener detalle completo de una reserva
+                String reservaId = pathInfo.substring(18); // Remover "/reserva-detalle/"
+                handleGetDetalleReserva(reservaId, request, response, out);
             } else if (pathInfo.equals("/verificar-bd")) {
                 // GET /api/usuarios/verificar-bd?nickname=anita20182005 - Verificar directamente en BD
                 String nickname = request.getParameter("nickname");
@@ -1017,5 +1019,112 @@ public class UsuarioController extends HttpServlet {
         }
 
         return datos;
+    }
+    
+    /**
+     * Obtiene el detalle completo de una reserva incluyendo pasajeros y datos del vuelo
+     */
+    private void handleGetDetalleReserva(String reservaId, HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+        try {
+            LOG.info("Obteniendo detalle de reserva: " + reservaId);
+            
+            // Obtener la reserva desde la base de datos
+            ReservaServicio reservaServicio = new ReservaServicio();
+            Reserva reserva = reservaServicio.buscarPorId(Long.parseLong(reservaId));
+            
+            if (reserva == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Reserva no encontrada")));
+                return;
+            }
+            
+            Map<String, Object> reservaDetalle = new HashMap<>();
+            
+            // Datos básicos de la reserva
+            reservaDetalle.put("id", reserva.getId());
+            reservaDetalle.put("fechaReserva", reserva.getFechaReserva() != null ? reserva.getFechaReserva().toString() : null);
+            reservaDetalle.put("nickname", reserva.getCliente() != null ? reserva.getCliente().getNickname() : null);
+            
+            // Extraer el costo total del objeto DTCostoBase
+            Object costoReservaObj = reserva.getCostoReserva();
+            float costoTotal = 0.0f;
+            if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+            } else if (costoReservaObj instanceof Number) {
+                costoTotal = ((Number) costoReservaObj).floatValue();
+            }
+            reservaDetalle.put("costoReserva", costoTotal);
+            
+            // Obtener pasajeros de la reserva
+            List<Map<String, Object>> pasajerosData = new ArrayList<>();
+            if (reserva.getPasajeros() != null) {
+                for (Pasaje pasaje : reserva.getPasajeros()) {
+                    Map<String, Object> pasajeroMap = new HashMap<>();
+                    pasajeroMap.put("nombre", pasaje.getNombrePasajero());
+                    pasajeroMap.put("apellido", pasaje.getApellidoPasajero());
+                    pasajeroMap.put("nickname", pasaje.getPasajero() != null ? pasaje.getPasajero().getNickname() : null);
+                    pasajeroMap.put("tipoAsiento", pasaje.getTipoAsiento() != null ? pasaje.getTipoAsiento().toString() : null);
+                    pasajerosData.add(pasajeroMap);
+                }
+            }
+            reservaDetalle.put("pasajeros", pasajerosData);
+            
+            // Obtener datos del vuelo
+            if (reserva.getVuelo() != null) {
+                Vuelo vuelo = reserva.getVuelo();
+                Map<String, Object> vueloData = new HashMap<>();
+                vueloData.put("nombre", vuelo.getNombre());
+                vueloData.put("fechaVuelo", vuelo.getFechaVuelo() != null ? vuelo.getFechaVuelo().toString() : null);
+                vueloData.put("horaVuelo", vuelo.getHoraVuelo() != null ? vuelo.getHoraVuelo().toString() : null);
+                vueloData.put("duracion", vuelo.getDuracion() != null ? vuelo.getDuracion().toString() : null);
+                vueloData.put("asientosMaxTurista", vuelo.getAsientosMaxTurista());
+                vueloData.put("asientosMaxEjecutivo", vuelo.getAsientosMaxEjecutivo());
+                
+                // Obtener datos de la ruta
+                if (vuelo.getRutaVuelo() != null) {
+                    RutaVuelo rutaVuelo = vuelo.getRutaVuelo();
+                    Map<String, Object> rutaData = new HashMap<>();
+                    rutaData.put("nombre", rutaVuelo.getNombre());
+                    rutaData.put("descripcion", rutaVuelo.getDescripcion());
+                    
+                    // Ciudad origen
+                    if (rutaVuelo.getCiudadOrigen() != null) {
+                        Map<String, Object> origenMap = new HashMap<>();
+                        origenMap.put("nombre", rutaVuelo.getCiudadOrigen().getNombre());
+                        origenMap.put("pais", rutaVuelo.getCiudadOrigen().getPais());
+                        rutaData.put("ciudadOrigen", origenMap);
+                    }
+                    
+                    // Ciudad destino
+                    if (rutaVuelo.getCiudadDestino() != null) {
+                        Map<String, Object> destinoMap = new HashMap<>();
+                        destinoMap.put("nombre", rutaVuelo.getCiudadDestino().getNombre());
+                        destinoMap.put("pais", rutaVuelo.getCiudadDestino().getPais());
+                        rutaData.put("ciudadDestino", destinoMap);
+                    }
+                    
+                    // Costos base
+                    if (rutaVuelo.getCostoBase() != null) {
+                        DTCostoBase costoBase = rutaVuelo.getCostoBase();
+                        Map<String, Object> costosMap = new HashMap<>();
+                        costosMap.put("costoBaseTurista", costoBase.getCostoTurista());
+                        costosMap.put("costoBaseEjecutivo", costoBase.getCostoEjecutivo());
+                        costosMap.put("costoEquipajeExtra", costoBase.getCostoEquipajeExtra());
+                        rutaData.put("costos", costosMap);
+                    }
+                    
+                    vueloData.put("ruta", rutaData);
+                }
+                
+                reservaDetalle.put("vuelo", vueloData);
+            }
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(objectMapper.writeValueAsString(reservaDetalle));
+            
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error al obtener detalle de reserva: " + e.getMessage(), e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 }

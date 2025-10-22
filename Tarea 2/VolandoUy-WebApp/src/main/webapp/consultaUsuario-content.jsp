@@ -82,4 +82,4 @@
   </div>
 </div>
 
-<script src="static/js/consultaUsuario.js"></script>
+<script src="js/consultaUsuario.js"></script>

@@ -1,225 +1,949 @@
-/* ====== SELECTOR DE ACTOR ====== */
-#selector-actor {
-  text-align: center;
-  margin: 2em auto;
-  background: #1a7aa3;
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 600px;
-}
-#selector-actor h2 {
-  margin-bottom: 1rem;
-  color: #f0f4f8;
-}
-#selector-actor button {
-  background: #2298ca;
-  color: #fff;
-  border: none;
-  padding: 0.7rem 1.5rem;
-  margin: 0 0.5rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-#selector-actor button:hover {
-  background: #176b8c;
-}
-#mensaje-actor {
-  margin-top: 1rem;
-  font-size: 0.9em;
-  color: #fff;
+/* ====== CONSULTA DE RESERVAS - ESTILOS UNIFICADOS ====== */
+
+/* Contenedor principal */
+.form-section-pro {
+  background: linear-gradient(135deg, #1a7aa3 0%, #2298ca 100%);
+  min-height: 100vh;
+  padding: 2rem 1rem;
 }
 
-/* ====== FILTROS ====== */
-.search-box {
+.form-card-pro {
+  background: linear-gradient(135deg, #32434b 0%, #2a3a42 100%);
+  border-radius: 20px;
+  padding: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 3px solid #2298ca;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-card-pro::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca, #28a745);
+}
+
+.form-card-pro h2 {
+  color: #eaf6fb;
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.form-card-pro h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca);
+  border-radius: 2px;
+}
+
+/* ====== INFORMACIÓN INICIAL ====== */
+.info-inicial {
   background: #2a3a42;
-  padding: 1rem;
   border-radius: 8px;
-  margin: 1.5rem auto;
-  max-width: 1100px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #01aaf5;
 }
-#filtro-rutas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-end;
-  justify-content: center;
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #eaf6fb;
+  font-size: 1.1rem;
 }
-.filtro-group {
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #01aaf5;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  margin-left: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ====== CONTROLES Y FORMULARIOS ====== */
+.controls-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  margin-bottom: 4rem;
+  background: linear-gradient(135deg, #2a3a42 0%, #32434b 100%);
+  padding: 3rem;
+  border-radius: 16px;
+  border-left: 6px solid #28a745;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border: 2px solid #2298ca;
+  position: relative;
+  overflow: hidden;
+}
+
+.controls-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #28a745, #20c997, #01aaf5);
+}
+
+.controls-grid::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca);
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
-  min-width: 180px;
-  flex: 1;
+  background: linear-gradient(135deg, #1a7aa3 0%, #2298ca 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 2px solid #01aaf5;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
-.filtro-group label {
-  font-weight: 600;
+
+.form-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca);
+}
+
+.form-group label {
   color: #eaf6fb;
-  margin-bottom: 0.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(234, 246, 251, 0.3);
 }
-.filtro-group select,
-.filtro-group input[type="text"] {
-  padding: 0.5rem 0.8rem;
-  border: 1px solid #2298ca;
-  border-radius: 6px;
-  background: #32434b;
+
+.form-group select {
+  background: linear-gradient(135deg, #32434b 0%, #2a3a42 100%);
+  border: 2px solid #2298ca;
+  border-radius: 8px;
   color: #eaf6fb;
-  font-size: 0.95rem;
-  transition: border 0.3s, background 0.3s;
-  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-.filtro-group select:focus,
-.filtro-group input[type="text"]:focus {
+
+.form-group select:focus {
   outline: none;
   border-color: #01aaf5;
-  background: #3a4a52;
-}
-.filtro-group option {
-  background: #2a3a42;
-  color: #eaf6fb;
-}
-/* Estilo especial cuando el select está bloqueado */
-#select-aerolinea:disabled {
-  background: #2a3a42;
-  color: #01aaf5;
-  font-weight: 600;
-  cursor: not-allowed;
-  opacity: 0.9;
+  box-shadow: 0 0 0 4px rgba(1, 170, 245, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
 }
 
-/* ====== LISTA DE RUTAS ====== */
-#lista-rutas {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2em;
-  margin: 2em auto;
-  max-width: 1100px;
-}
-.ruta-card {
+.form-group select option {
   background: #32434b;
-  border: 1px solid #2298ca;
+  color: #eaf6fb;
+  padding: 0.5rem;
+}
+
+/* ====== SECCIONES DE CONTENIDO ====== */
+.section-content {
+  background: linear-gradient(135deg, #2a3a42 0%, #32434b 100%);
+  border-radius: 16px;
+  padding: 3rem;
+  margin-bottom: 4rem;
+  border-left: 6px solid #01aaf5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 2px solid #2298ca;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca, #28a745);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.section-content::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #28a745, #20c997, #01aaf5);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.section-content.show::before,
+.section-content.show::after {
+  transform: scaleX(1);
+}
+
+.section-content.show {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-title {
+  color: #eaf6fb;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  padding: 1.5rem 2rem;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  position: relative;
+  background: linear-gradient(135deg, #1a7aa3 0%, #2298ca 100%);
   border-radius: 12px;
-  padding: 1.5em;
-  margin: 1em;
-  max-width: 320px;
-  min-width: 260px;
-  color: #eaf6fb;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.ruta-card h3 {
-  margin: 0.5em 0;
-  color: #01aaf5;
-}
-.ruta-card.seleccionada {
   border: 2px solid #01aaf5;
-  box-shadow: 0 0 12px rgba(1, 170, 245, 0.7);
-  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  margin: 0 -1rem 2.5rem -1rem;
 }
 
-/* ====== ASIDE VUELOS ====== */
-#aside-vuelos {
-  width: 280px;
-  background: #2a3a42;
-  color: #eaf6fb;
-  border-left: 2px solid #2298ca;
-  padding: 1em;
-  border-radius: 8px;
-  box-shadow: -2px 0 6px rgba(0,0,0,0.2);
-  flex-shrink: 0;
+.section-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca, #28a745);
+  border-radius: 12px 12px 0 0;
 }
-#aside-vuelos h3 {
-  margin-top: 0;
-  color: #01aaf5;
-  text-align: center;
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #28a745, #20c997, #01aaf5);
+  border-radius: 0 0 12px 12px;
 }
-.vuelo-card {
-  background: #32434b;
-  border: 1px solid #2298ca;
-  border-radius: 8px;
-  padding: 0.8em;
-  margin-bottom: 0.8em;
-  font-size: 0.9em;
-  text-align: center;
+
+/* ====== GRIDS DE CONTENIDO ====== */
+.grid-rutas, .grid-vuelos, .grid-reservas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(1, 170, 245, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(1, 170, 245, 0.2);
+}
+
+/* ====== CARDS ====== */
+.ruta-card, .vuelo-card, .reserva-card {
+  background: linear-gradient(135deg, #32434b 0%, #2a3a42 100%);
+  border: 2px solid #2298ca;
+  border-radius: 16px;
+  padding: 2.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  color: #eaf6fb;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  margin-bottom: 2rem;
 }
+
+.ruta-card {
+  border-color: #01aaf5;
+  border-left: 6px solid #01aaf5;
+}
+
+.vuelo-card {
+  border-color: #28a745;
+  border-left: 6px solid #28a745;
+}
+
+.reserva-card {
+  border-color: #ffc107;
+  border-left: 6px solid #ffc107;
+}
+
+.ruta-card::before, .vuelo-card::before, .reserva-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.ruta-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(1, 170, 245, 0.4);
+  border-color: #01aaf5;
+  background: linear-gradient(135deg, #1a7aa3 0%, #2298ca 100%);
+}
+
 .vuelo-card:hover {
-  background: #2298ca;
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(40, 167, 69, 0.4);
+  border-color: #28a745;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.reserva-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(255, 193, 7, 0.4);
+  border-color: #ffc107;
+  background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+  color: #212529;
+}
+
+.ruta-card:hover::before, .vuelo-card:hover::before, .reserva-card:hover::before {
+  transform: scaleX(1);
+}
+
+.card-body h4 {
+  color: #01aaf5;
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.card-body p {
+  margin: 0.5rem 0;
+  color: #dceff6;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* ====== CARDS ESPECIALES ====== */
+.reserva-card {
+  background: linear-gradient(135deg, #32434b 0%, #2a3a42 100%);
+  border-color: #28a745;
+}
+
+.reserva-card:hover {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
   color: #fff;
 }
-.vuelo-card.seleccionado {
-  border: 2px solid #01aaf5;
-  box-shadow: 0 0 10px rgba(1,170,245,0.7);
-  transform: scale(1.02);
+
+/* ====== DETALLE DE RESERVA ====== */
+.detalle-card {
+  background: linear-gradient(135deg, #2a3a42 0%, #32434b 100%);
+  border: 3px solid #2298ca;
+  border-radius: 20px;
+  padding: 3.5rem;
+  margin-top: 3rem;
+  border-left: 8px solid #01aaf5;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
 }
 
-/* ====== PANEL RESERVA ====== */
-#panel-reserva {
-  position: fixed;
+.detalle-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca, #28a745);
+  border-radius: 20px 20px 0 0;
+}
+
+.detalle-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #28a745, #20c997, #01aaf5);
+  border-radius: 0 0 20px 20px;
+}
+
+.detalle-card h3 {
+  color: #eaf6fb;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.4rem;
+  border-bottom: 2px solid #2298ca;
+  padding-bottom: 0.5rem;
+}
+
+.detalle-completo {
+  color: #eaf6fb;
+}
+
+.detalle-completo h4 {
+  color: #01aaf5;
+  padding: 1.5rem 2rem;
+  margin: 2.5rem 0 1.5rem 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.detalle-completo h4:first-child {
+  margin-top: 0;
+}
+
+/* ====== INFORMACIÓN DE LA RESERVA ====== */
+.detalle-completo h4:nth-of-type(1) {
+  background: linear-gradient(135deg, #1a7aa3 0%, #2298ca 100%);
+  border: 4px solid #01aaf5;
+  border-radius: 20px;
+  margin: 3rem 0 2rem 0;
+  padding: 2rem 3rem;
+  font-size: 1.5rem;
+  color: #01aaf5 !important;
+  box-shadow: 0 8px 25px rgba(1, 170, 245, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-completo h4:nth-of-type(1)::before {
+  content: '📋';
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+}
+
+.detalle-completo h4:nth-of-type(1)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #01aaf5, #2298ca, #28a745);
+  border-radius: 20px 20px 0 0;
+}
+
+/* ====== INFORMACIÓN DEL VUELO ====== */
+.detalle-completo h4:nth-of-type(2) {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: 4px solid #28a745;
+  border-radius: 20px;
+  margin: 3rem 0 2rem 0;
+  padding: 2rem 3rem;
+  font-size: 1.5rem;
+  color: #01aaf5 !important;
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-completo h4:nth-of-type(2)::before {
+  content: '✈️';
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+}
+
+.detalle-completo h4:nth-of-type(2)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
+  border-radius: 20px 20px 0 0;
+}
+
+/* ====== INFORMACIÓN DE LA RUTA ====== */
+.detalle-completo h4:nth-of-type(3) {
+  background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+  border: 4px solid #ffc107;
+  border-radius: 20px;
+  margin: 3rem 0 2rem 0;
+  padding: 2rem 3rem;
+  font-size: 1.5rem;
+  color: #01aaf5 !important;
+  box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-completo h4:nth-of-type(3)::before {
+  content: '🛣️';
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+}
+
+.detalle-completo h4:nth-of-type(3)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #ffc107, #ff8c00, #fd7e14);
+  border-radius: 20px 20px 0 0;
+}
+
+/* ====== INFORMACIÓN DE LA AEROLÍNEA ====== */
+.detalle-completo h4:nth-of-type(4) {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  border: 4px solid #dc3545;
+  border-radius: 20px;
+  margin: 3rem 0 2rem 0;
+  padding: 2rem 3rem;
+  font-size: 1.5rem;
+  color: #01aaf5 !important;
+  box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-completo h4:nth-of-type(4)::before {
+  content: '🏢';
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+}
+
+.detalle-completo h4:nth-of-type(4)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #dc3545, #c82333, #e83e8c);
+  border-radius: 20px 20px 0 0;
+}
+
+/* ====== INFORMACIÓN DE PASAJEROS ====== */
+.detalle-completo h4:nth-of-type(5) {
+  background: linear-gradient(135deg, #6f42c1 0%, #5a2d91 100%);
+  border: 4px solid #6f42c1;
+  border-radius: 20px;
+  margin: 3rem 0 2rem 0;
+  padding: 2rem 3rem;
+  font-size: 1.5rem;
+  color: #01aaf5 !important;
+  box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-completo h4:nth-of-type(5)::before {
+  content: '👥';
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+}
+
+.detalle-completo h4:nth-of-type(5)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #6f42c1, #5a2d91, #e83e8c);
+  border-radius: 20px 20px 0 0;
+}
+
+.detalle-completo p {
+  margin: 2rem 0;
+  color: #dceff6;
+  line-height: 1.8;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-completo p::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.detalle-completo p:hover {
+  transform: translateX(8px) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: currentColor;
+}
+
+.detalle-completo p:hover::before {
+  background: currentColor;
+}
+
+.detalle-completo strong {
+  color: #eaf6fb;
+  font-weight: 600;
+}
+
+/* Contenedores específicos para cada sección */
+.detalle-completo h4 + p,
+.detalle-completo h4 + p + p,
+.detalle-completo h4 + p + p + p,
+.detalle-completo h4 + p + p + p + p {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ====== CONTENEDORES DIFERENCIADOS POR SECCIÓN ====== */
+
+/* RESERVA - Contenedor azul con marco distintivo */
+.detalle-completo h4:nth-of-type(1) + p,
+.detalle-completo h4:nth-of-type(1) + p + p,
+.detalle-completo h4:nth-of-type(1) + p + p + p,
+.detalle-completo h4:nth-of-type(1) + p + p + p + p {
+  background: linear-gradient(135deg, rgba(1, 170, 245, 0.1) 0%, rgba(26, 122, 163, 0.1) 100%);
+  border: 2px solid #01aaf5;
+  border-left: 8px solid #01aaf5;
+  box-shadow: 0 6px 20px rgba(1, 170, 245, 0.2);
+  margin: 1rem 0 2rem 0;
+  padding: 2rem;
+  border-radius: 15px;
+  position: relative;
+}
+
+.detalle-completo h4:nth-of-type(1) + p::before,
+.detalle-completo h4:nth-of-type(1) + p + p::before,
+.detalle-completo h4:nth-of-type(1) + p + p + p::before,
+.detalle-completo h4:nth-of-type(1) + p + p + p + p::before {
+  content: '📋';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  opacity: 0.3;
+}
+
+/* VUELO - Contenedor verde con marco distintivo */
+.detalle-completo h4:nth-of-type(2) + p,
+.detalle-completo h4:nth-of-type(2) + p + p,
+.detalle-completo h4:nth-of-type(2) + p + p + p,
+.detalle-completo h4:nth-of-type(2) + p + p + p + p {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%);
+  border: 2px solid #28a745;
+  border-left: 8px solid #28a745;
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.2);
+  margin: 1rem 0 2rem 0;
+  padding: 2rem;
+  border-radius: 15px;
+  position: relative;
+}
+
+.detalle-completo h4:nth-of-type(2) + p::before,
+.detalle-completo h4:nth-of-type(2) + p + p::before,
+.detalle-completo h4:nth-of-type(2) + p + p + p::before,
+.detalle-completo h4:nth-of-type(2) + p + p + p + p::before {
+  content: '✈️';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  opacity: 0.3;
+}
+
+/* RUTA - Contenedor amarillo con marco distintivo */
+.detalle-completo h4:nth-of-type(3) + p,
+.detalle-completo h4:nth-of-type(3) + p + p,
+.detalle-completo h4:nth-of-type(3) + p + p + p,
+.detalle-completo h4:nth-of-type(3) + p + p + p + p {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 140, 0, 0.1) 100%);
+  border: 2px solid #ffc107;
+  border-left: 8px solid #ffc107;
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.2);
+  margin: 1rem 0 2rem 0;
+  padding: 2rem;
+  border-radius: 15px;
+  position: relative;
+  color: #212529;
+}
+
+.detalle-completo h4:nth-of-type(3) + p::before,
+.detalle-completo h4:nth-of-type(3) + p + p::before,
+.detalle-completo h4:nth-of-type(3) + p + p + p::before,
+.detalle-completo h4:nth-of-type(3) + p + p + p + p::before {
+  content: '🛣️';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  opacity: 0.3;
+}
+
+/* AEROLÍNEA - Contenedor rojo con marco distintivo */
+.detalle-completo h4:nth-of-type(4) + p,
+.detalle-completo h4:nth-of-type(4) + p + p,
+.detalle-completo h4:nth-of-type(4) + p + p + p,
+.detalle-completo h4:nth-of-type(4) + p + p + p + p {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(200, 35, 51, 0.1) 100%);
+  border: 2px solid #dc3545;
+  border-left: 8px solid #dc3545;
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.2);
+  margin: 1rem 0 2rem 0;
+  padding: 2rem;
+  border-radius: 15px;
+  position: relative;
+}
+
+.detalle-completo h4:nth-of-type(4) + p::before,
+.detalle-completo h4:nth-of-type(4) + p + p::before,
+.detalle-completo h4:nth-of-type(4) + p + p + p::before,
+.detalle-completo h4:nth-of-type(4) + p + p + p + p::before {
+  content: '🏢';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  opacity: 0.3;
+}
+
+/* PASAJEROS - Contenedor púrpura con marco distintivo */
+.detalle-completo h4:nth-of-type(5) + p,
+.detalle-completo h4:nth-of-type(5) + p + p,
+.detalle-completo h4:nth-of-type(5) + p + p + p,
+.detalle-completo h4:nth-of-type(5) + p + p + p + p {
+  background: linear-gradient(135deg, rgba(111, 66, 193, 0.1) 0%, rgba(90, 45, 145, 0.1) 100%);
+  border: 2px solid #6f42c1;
+  border-left: 8px solid #6f42c1;
+  box-shadow: 0 6px 20px rgba(111, 66, 193, 0.2);
+  margin: 1rem 0 2rem 0;
+  padding: 2rem;
+  border-radius: 15px;
+  position: relative;
+}
+
+.detalle-completo h4:nth-of-type(5) + p::before,
+.detalle-completo h4:nth-of-type(5) + p + p::before,
+.detalle-completo h4:nth-of-type(5) + p + p + p::before,
+.detalle-completo h4:nth-of-type(5) + p + p + p + p::before {
+  content: '👥';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  opacity: 0.3;
+}
+
+/* ====== MENSAJES ====== */
+.error-message {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border-left: 4px solid #dc3545;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-out;
+}
+
+.warning-message {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  color: #212529;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border-left: 4px solid #ffc107;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* ====== ANIMACIONES ====== */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ====== ESTADOS DE CARGA ====== */
+.loading-state {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.loading-state::after {
+  content: '';
+  position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background: #1a7aa3;
-  border: 2px solid #2298ca;
-  border-radius: 10px;
-  padding: 1.5rem;
-  z-index: 1000;
-  width: 90%;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  color: #f0f4f8;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
-.cerrar-panel {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  background: transparent;
-  border: none;
-  font-size: 1.2rem;
-  color: #f0f4f8;
-  cursor: pointer;
-}
-.reserva-card {
-  background: #32434b;
-  border: 1px solid #2298ca;
-  border-radius: 8px;
-  padding: 0.8em;
-  margin-bottom: 0.8em;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.reserva-card:hover {
-  background: #2298ca;
-  color: #fff;
-}
-.reserva-card.seleccionada {
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
   border: 2px solid #01aaf5;
-  box-shadow: 0 0 10px rgba(1,170,245,0.7);
-}
-#detalle-reserva {
-  margin-top: 1em;
-  background: #2a3a42;
-  padding: 1em;
-  border-radius: 8px;
-}
-#detalle-reserva ul {
-  margin-top: 0.5em;
-  padding-left: 1.2em;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
 }
 
 /* ====== RESPONSIVE ====== */
-@media (max-width: 600px) {
-  #filtro-rutas {
-    flex-direction: column;
-    align-items: stretch;
+@media (max-width: 768px) {
+  .form-card-pro {
+    padding: 1rem;
+    margin: 1rem;
   }
-  #panel-reserva {
-    width: 95%;
-    padding: 15px;
+  
+  .grid-rutas, .grid-vuelos, .grid-reservas {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
+  
+  .ruta-card, .vuelo-card, .reserva-card {
+    padding: 1rem;
+  }
+  
+  .detalle-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section-pro {
+    padding: 1rem 0.5rem;
+  }
+  
+  .form-card-pro h2 {
+    font-size: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* ====== UTILIDADES ====== */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+
+.hidden { display: none !important; }
+.visible { display: block !important; }
+
+/* ====== MEJORAS DE ACCESIBILIDAD ====== */
+.ruta-card:focus, .vuelo-card:focus, .reserva-card:focus {
+  outline: 2px solid #01aaf5;
+  outline-offset: 2px;
+}
+
+.form-group select:focus {
+  outline: 2px solid #01aaf5;
+  outline-offset: 2px;
+}
+
+/* ====== ESTADOS DE SELECCIÓN ====== */
+.ruta-card.selected, .vuelo-card.selected, .reserva-card.selected {
+  border-color: #01aaf5;
+  box-shadow: 0 0 0 2px rgba(1, 170, 245, 0.3);
+  background: linear-gradient(135deg, #32434b 0%, #2a3a42 100%);
+}
+
+/* ====== TRANSICIONES SUAVES ====== */
+* {
+  transition: all 0.3s ease;
+}
+
+.section-content, .controls-grid, .detalle-card {
+  transition: all 0.3s ease;
 }
