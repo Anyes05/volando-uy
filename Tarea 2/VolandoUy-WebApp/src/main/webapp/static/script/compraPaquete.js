@@ -115,6 +115,21 @@ function crearCardPaquete(paquete) {
         `data:image/jpeg;base64,${btoa(String.fromCharCode(...paquete.foto))}` : 
         '/img/logoAvionSolo.png';
     
+    // Calcular precios para mostrar correctamente
+    const precioConDescuento = paquete.costoTotal;
+    const descuentoPorcentaje = paquete.descuento || 0;
+    
+    // Regla de tres: Si precioConDescuento = (100-descuento)%, entonces precioOriginal = 100%
+    const precioOriginal = descuentoPorcentaje > 0 
+        ? (precioConDescuento * 100) / (100 - descuentoPorcentaje)
+        : precioConDescuento;
+    
+    // Crear el HTML del precio dependiendo si hay descuento o no
+    const precioHTML = descuentoPorcentaje > 0 
+        ? `<span class="precio-original">$${Math.round(precioOriginal)}</span>
+           <span class="costo">$${Math.round(precioConDescuento)}</span>`
+        : `<span class="costo">$${Math.round(precioConDescuento)}</span>`;
+    
     card.innerHTML = `
         <div class="paquete-imagen">
             <img src="${imagenBase64}" alt="${paquete.nombre}" onerror="this.src='/img/logoAvionSolo.png'">
@@ -125,7 +140,7 @@ function crearCardPaquete(paquete) {
             <div class="paquete-details">
                 <span class="dias-validos"><i class="fas fa-calendar"></i> ${paquete.diasValidos} días</span>
                 <span class="descuento"><i class="fas fa-percentage"></i> ${paquete.descuento}% desc.</span>
-                <span class="costo"><i class="fas fa-dollar-sign"></i> $${paquete.costoTotal}</span>
+                <div class="precio-container">${precioHTML}</div>
             </div>
         </div>
         <div class="paquete-acciones">
@@ -240,11 +255,23 @@ function actualizarDetallePaquete(paquete) {
     });
     
     // Actualizar resumen de compra
+    // El costoTotal que viene del backend ya tiene el descuento aplicado
+    // Usamos regla de tres para calcular el precio original
+    const precioConDescuento = paquete.costoTotal;
+    const descuentoPorcentaje = paquete.descuento || 0;
+    
+    // Regla de tres: Si precioConDescuento = (100-descuento)%, entonces precioOriginal = 100%
+    const precioOriginal = descuentoPorcentaje > 0 
+        ? (precioConDescuento * 100) / (100 - descuentoPorcentaje)
+        : precioConDescuento;
+    
+    const ahorroMonetario = precioOriginal - precioConDescuento;
+    
     const resumenElementos = {
         'resumen-nombre': paquete.nombre,
-        'resumen-precio-original': `$${paquete.costoTotal}`,
-        'resumen-descuento': `${paquete.descuento}%`,
-        'resumen-total': `$${paquete.costoTotal}`
+        'resumen-precio-original': `$${Math.round(precioOriginal)}`,
+        'resumen-descuento': descuentoPorcentaje > 0 ? `-$${Math.round(ahorroMonetario)} (${descuentoPorcentaje}%)` : `${descuentoPorcentaje}%`,
+        'resumen-total': `$${Math.round(precioConDescuento)}`
     };
     
     Object.entries(resumenElementos).forEach(([id, valor]) => {

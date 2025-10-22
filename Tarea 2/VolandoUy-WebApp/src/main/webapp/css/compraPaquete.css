@@ -139,6 +139,132 @@
   font-weight:600;
 }
 
+/* Estilos base para tarjetas de paquetes */
+.paquete-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #2298ca;
+  cursor: pointer;
+  transition: all .25s;
+  color: var(--muted);
+  position: relative;
+}
+
+.paquete-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+.paquete-imagen {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.paquete-imagen img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.paquete-info h3 {
+  margin: 0 0 8px 0;
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.paquete-descripcion {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #dfeef6;
+  line-height: 1.4;
+}
+
+.paquete-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.paquete-details span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.paquete-details .fas {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* Estilos para precios */
+.precio-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.precio-original {
+  font-size: 14px;
+  color: #888;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.costo {
+  font-size: 18px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.paquete-acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.btn-ver-detalle {
+  flex: 1;
+  background: rgba(1, 170, 245, 0.1);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all .2s;
+  font-size: 14px;
+}
+
+.btn-ver-detalle:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-comprar {
+  flex: 1;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all .2s;
+  font-size: 14px;
+}
+
+.btn-comprar:hover {
+  background: #0085cc;
+  transform: translateY(-1px);
+}
+
 /* Estilos para paquetes comprados */
 .paquete-card.comprado {
   opacity: 0.7;

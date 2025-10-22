@@ -117,4 +117,4 @@
   </div>
 </div>
 
-<script src="js/compraPaquete.js"></script>
+<script src="js/compraPaquete.js?v=funcionando"></script>
