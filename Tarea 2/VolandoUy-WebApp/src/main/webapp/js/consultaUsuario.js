@@ -1080,17 +1080,31 @@ async function mostrarDetalleReservaEnModal(reserva) {
     let reservaCompleta = reserva;
     console.log('Usando datos básicos de reserva:', reservaCompleta);
     
-    // Intentar cargar detalles adicionales
+    // Intentar cargar detalles adicionales usando el endpoint de consulta de reservas
     try {
-      const reservaResponse = await fetch(`/VolandoUy-WebApp/api/usuarios/reserva-detalle/${reserva.id}`, {
+      const reservaResponse = await fetch(`/VolandoUy-WebApp/api/consulta-reservas/detalle-reserva/${reserva.id}`, {
         credentials: 'include'
       });
       
       if (reservaResponse.ok) {
         reservaCompleta = await reservaResponse.json();
-        console.log('Detalle completo de reserva cargado:', reservaCompleta);
+        console.log('Detalle completo de reserva cargado desde consulta-reservas:', reservaCompleta);
       } else {
-        console.log('Error en respuesta:', reservaResponse.status, reservaResponse.statusText);
+        console.log('Error en respuesta consulta-reservas:', reservaResponse.status, reservaResponse.statusText);
+        
+        // Fallback: intentar con el endpoint de usuarios
+        try {
+          const reservaResponse2 = await fetch(`/VolandoUy-WebApp/api/usuarios/reserva-detalle/${reserva.id}`, {
+            credentials: 'include'
+          });
+          
+          if (reservaResponse2.ok) {
+            reservaCompleta = await reservaResponse2.json();
+            console.log('Detalle completo de reserva cargado desde usuarios:', reservaCompleta);
+          }
+        } catch (error2) {
+          console.log('Error al cargar detalles desde usuarios:', error2);
+        }
       }
     } catch (error) {
       console.log('Error al cargar detalles:', error);
@@ -1119,14 +1133,6 @@ async function mostrarDetalleReservaEnModal(reserva) {
             <div class="detail-item">
               <span class="label">Duración:</span>
               <span class="value">${vuelo.duracion || 'N/A'}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">Asientos Turista:</span>
-              <span class="value">${vuelo.asientosMaxTurista || 0}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">Asientos Ejecutivo:</span>
-              <span class="value">${vuelo.asientosMaxEjecutivo || 0}</span>
             </div>
           </div>
           ${vuelo.ruta ? `
@@ -1170,22 +1176,35 @@ async function mostrarDetalleReservaEnModal(reserva) {
       `;
     }
     
-    // Construir información de pasajeros desde los datos cargados
+    // Construir información de pasajeros desde los datos cargados (similar a consultaReserva)
     let pasajerosInfo = '';
-    if (reservaCompleta.pasajeros && reservaCompleta.pasajeros.length > 0) {
+    if (reservaCompleta.pasajeros) {
       pasajerosInfo = `
         <div class="passengers-details">
-          <h3><i class="fas fa-users"></i> Pasajeros (${reservaCompleta.pasajeros.length})</h3>
-          <div class="passengers-grid">
-            ${reservaCompleta.pasajeros.map((pasajero, index) => `
-              <div class="passenger-card">
-                <h4>Pasajero ${index + 1}</h4>
-                <p><strong>Nombre:</strong> ${pasajero.nombre || 'N/A'}</p>
-                <p><strong>Apellido:</strong> ${pasajero.apellido || 'N/A'}</p>
-                <p><strong>Tipo de asiento:</strong> ${pasajero.tipoAsiento || 'N/A'}</p>
-                ${pasajero.nickname ? `<p><strong>Nickname:</strong> ${pasajero.nickname}</p>` : ''}
-              </div>
-            `).join('')}
+          <h3><i class="fas fa-users"></i> Pasajeros</h3>
+          <div class="passengers-info">
+            <p>${obtenerTextoPasajeros(reservaCompleta.pasajeros)}</p>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Construir información de la aerolínea si está disponible
+    let aerolineaInfo = '';
+    if (reservaCompleta.aerolinea) {
+      const aerolinea = reservaCompleta.aerolinea;
+      aerolineaInfo = `
+        <div class="airline-details">
+          <h3><i class="fas fa-building"></i> Información de la Aerolínea</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="label">Nombre:</span>
+              <span class="value">${aerolinea.nombre || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Descripción:</span>
+              <span class="value">${aerolinea.descripcion || 'Sin descripción'}</span>
+            </div>
           </div>
         </div>
       `;
@@ -1204,7 +1223,7 @@ async function mostrarDetalleReservaEnModal(reserva) {
           <div class="detail-grid">
             <div class="detail-item">
               <span class="label">Cliente:</span>
-              <span class="value">${reservaCompleta.nickname || 'N/A'}</span>
+              <span class="value">${reservaCompleta.nicknameCliente || reservaCompleta.nickname || 'N/A'}</span>
             </div>
             <div class="detail-item">
               <span class="label">Fecha de reserva:</span>
@@ -1212,7 +1231,7 @@ async function mostrarDetalleReservaEnModal(reserva) {
             </div>
             <div class="detail-item">
               <span class="label">Costo total:</span>
-              <span class="value cost">$${(reservaCompleta.costoReserva || 0).toFixed(2)}</span>
+              <span class="value cost">$${(reservaCompleta.costoReserva?.costoTotal || reservaCompleta.costoReserva || 0).toFixed(2)}</span>
             </div>
             <div class="detail-item">
               <span class="label">Estado:</span>
@@ -1222,11 +1241,12 @@ async function mostrarDetalleReservaEnModal(reserva) {
         </div>
         
         ${vueloInfo}
+        ${aerolineaInfo}
         ${pasajerosInfo}
         
         <div class="info-message">
           <i class="fas fa-info-circle"></i>
-          <p>Esta es la información disponible de la reserva. Si necesitas más detalles, consulta la sección de reservas en el menú principal.</p>
+          <p>Esta es la información completa de la reserva. Para más detalles, consulta la sección de reservas en el menú principal.</p>
         </div>
       </div>
     `;
@@ -1244,6 +1264,56 @@ async function mostrarDetalleReservaEnModal(reserva) {
       </div>
     `;
   }
+}
+
+// Función auxiliar para procesar pasajeros (similar a consultaReserva)
+function obtenerTextoPasajeros(pasajeros) {
+  console.log('Procesando pasajeros:', pasajeros);
+  
+  if (!pasajeros) {
+    console.log('Pasajeros es null/undefined');
+    return 'Información no disponible';
+  }
+  
+  if (Array.isArray(pasajeros)) {
+    console.log('Pasajeros es un array con', pasajeros.length, 'elementos');
+    if (pasajeros.length === 0) {
+      return 'No hay pasajeros registrados';
+    }
+    
+    // Si es un array de strings
+    if (typeof pasajeros[0] === 'string') {
+      return pasajeros.join(', ');
+    }
+    
+    // Si es un array de objetos, extraer nombres
+    if (typeof pasajeros[0] === 'object') {
+      const nombres = pasajeros.map(p => {
+        if (p.nombre) return p.nombre;
+        if (p.nickname) return p.nickname;
+        if (p.apellido) return p.apellido;
+        return 'Pasajero sin nombre';
+      });
+      return nombres.join(', ');
+    }
+    
+    return pasajeros.join(', ');
+  }
+  
+  // Si es un objeto único
+  if (typeof pasajeros === 'object') {
+    if (pasajeros.nombre) return pasajeros.nombre;
+    if (pasajeros.nickname) return pasajeros.nickname;
+    return 'Pasajero sin nombre';
+  }
+  
+  // Si es un string
+  if (typeof pasajeros === 'string') {
+    return pasajeros;
+  }
+  
+  console.log('Tipo de pasajeros no reconocido:', typeof pasajeros);
+  return 'Formato de pasajeros no reconocido';
 }
 
 // Función para mostrar detalle de paquete comprado en el modal
@@ -1265,10 +1335,6 @@ async function mostrarDetallePaqueteCompradoEnModal(paquete) {
     // Construir HTML del detalle del paquete
     let html = `
       <div class="package-details">
-        <div class="package-header">
-          <h2><i class="fas fa-box"></i> Paquete Comprado #${paquete.id || 'N/A'}</h2>
-        </div>
-        
         <div class="package-info">
           <h3><i class="fas fa-info-circle"></i> Información del Paquete</h3>
           <div class="detail-grid">
