@@ -1,11 +1,12 @@
 package dato.entidades;
 
-import jakarta.persistence.*;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
-
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "compraComun")

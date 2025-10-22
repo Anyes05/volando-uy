@@ -1,7 +1,10 @@
 package logica.servicios;
 
-import dato.entidades.*;
+
 import dato.dao.PasajeDAO;
+import dato.entidades.Cliente;
+import dato.entidades.Pasaje;
+import dato.entidades.Reserva;
 import logica.DataTypes.TipoAsiento;
 
 public class PasajeServicio {

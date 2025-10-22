@@ -6,6 +6,7 @@ import dato.entidades.CompraPaquete;
 import dato.entidades.PaqueteVuelo;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
+import logica.excepciones.PaqueteException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class CompraPaqueteServicio {
         compraPaqueteDAO.eliminar(id);
     }
 
-    public CompraPaquete registrarCompraPaquete(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento /*TipoAsiento tipoAsiento*/, PaqueteVuelo paqueteSeleccionado) throws Exception {
+    public CompraPaquete registrarCompraPaquete(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento /*TipoAsiento tipoAsiento*/, PaqueteVuelo paqueteSeleccionado) throws PaqueteException {
         PaqueteVueloServicio servicioPaqueteVuelo = new PaqueteVueloServicio();
         paqueteSeleccionado.setComprado(true);
         servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);

@@ -3,6 +3,7 @@ package dato.dao;
 import dato.entidades.Cliente;
 import dato.entidades.CompraComun;
 import dato.entidades.Vuelo;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
@@ -72,7 +73,7 @@ public class CompraComunDAO extends GenericDAO<CompraComun> {
             em.flush(); // Forzar la escritura inmediata
             em.getTransaction().commit();
             return compraComun;
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }

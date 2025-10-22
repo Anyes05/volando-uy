@@ -6,13 +6,14 @@ import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTRutaVuelo;
 import logica.DataTypes.TipoAsiento;
+import logica.excepciones.PaqueteException;
 
 import java.util.List;
 
 public class PaqueteVueloServicio {
     private PaqueteVueloDAO paqueteVueloDAO = new PaqueteVueloDAO();
 
-    public PaqueteVuelo registrarPaqueteVuelo(String nombrePaquete, String descripcion/*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto) {
+    public PaqueteVuelo registrarPaqueteVuelo(String nombrePaquete, String descripcion/*TipoAsiento tipoAsiento*/, int diasValidos, float descuento, DTFecha fechaAlta, byte[] foto) throws PaqueteException {
         PaqueteVuelo p = new PaqueteVuelo(nombrePaquete, descripcion/*null*/, diasValidos, descuento, fechaAlta, foto);
         paqueteVueloDAO.guardar(p);  // Se guarda en la BD
         return p;

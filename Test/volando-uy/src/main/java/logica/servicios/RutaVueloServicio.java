@@ -9,6 +9,7 @@ import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTHora;
 import logica.DataTypes.EstadoRutaVuelo;
+import logica.excepciones.RutasException;
 
 import java.util.List;
 
@@ -32,8 +33,7 @@ public class RutaVueloServicio {
     }
 
     // Método para precargar rutas de vuelo
-    public void precargarRutasVuelo() {
-        try {
+    public void precargarRutasVuelo() throws RutasException {
             // Datos de rutas de vuelo comunes con diferentes estados
             Object[][] rutasData = {
                     // {nombre, descripcion, costoTurista, costoEjecutivo, costoEquipajeExtra, ciudadOrigen, paisOrigen, ciudadDestino, paisDestino, aerolineaNickname, categoria, estado}
@@ -116,14 +116,10 @@ public class RutaVueloServicio {
 
                     System.out.println("Ruta de vuelo precargada: " + nombreRuta + " con estado: " + estado);
 
-                } catch (Exception e) {
+                } catch (IllegalStateException e) {
                     System.err.println("Error al precargar ruta " + nombreRuta + ": " + e.getMessage());
                 }
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error en la precarga de rutas de vuelo: " + e.getMessage(), e);
-        }
     }
 
     // Método para buscar ruta de vuelo por nombre

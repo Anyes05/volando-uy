@@ -1,8 +1,18 @@
 package logica.clase;
 
-import dato.entidades.*;
-import logica.DataTypes.*;
-
+import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoDoc;
+import logica.DataTypes.DTUsuario;
+import logica.DataTypes.DTRutaVuelo;
+import logica.DataTypes.DTAerolinea;
+import logica.DataTypes.TipoAsiento;
+import logica.DataTypes.DTCiudad;
+import logica.DataTypes.DTVueloReserva;
+import logica.DataTypes.DTPaqueteVuelos;
+import logica.DataTypes.DTVuelo;
+import logica.DataTypes.DTHora;
+import logica.DataTypes.DTCliente;
+import logica.DataTypes.DTPasajero;
 import java.util.List;
 
 public interface ISistema {

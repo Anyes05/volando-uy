@@ -11,6 +11,7 @@ import dato.entidades.Cliente;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoAsiento;
 import jakarta.persistence.EntityManager;
+import logica.excepciones.PaqueteException;
 
 public class CompraPaqueteDAO extends GenericDAO<CompraPaquete> {
 
@@ -52,7 +53,7 @@ public class CompraPaqueteDAO extends GenericDAO<CompraPaquete> {
         }
     }
 
-    public CompraPaquete registrarCompra(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, /*TipoAsiento tipoAsiento,*/ PaqueteVuelo paqueteSeleccionado) throws Exception {
+    public CompraPaquete registrarCompra(Cliente clienteSeleccionado, DTFecha fechaCompra, DTFecha vencimiento, /*TipoAsiento tipoAsiento,*/ PaqueteVuelo paqueteSeleccionado) throws PaqueteException {
         EntityManager em = emf.createEntityManager();
         try {
             CompraPaquete compraPaquete = new CompraPaquete();

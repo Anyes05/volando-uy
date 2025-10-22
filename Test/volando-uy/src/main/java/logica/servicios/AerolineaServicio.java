@@ -6,6 +6,7 @@ import logica.DataTypes.DTRutaVuelo;
 import dato.entidades.RutaVuelo;
 import logica.DataTypes.DTAerolinea;
 import logica.DataTypes.DTCiudad;
+import logica.excepciones.AerolineaException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ public class AerolineaServicio {
     }
 
     public void crearAerolinea(String nickname, String nombre, String correo,
-                               String descripcion, String linkSitioWeb, byte[] foto, String contrasena) throws Exception {
+                               String descripcion, String linkSitioWeb, byte[] foto, String contrasena) throws AerolineaException {
         if (aerolineaDAO.buscarPorNickname(nickname) != null) {
-            throw new Exception("Ya existe una aerolínea con ese nickname.");
+            throw new AerolineaException("Ya existe una aerolínea con ese nickname.");
         }
 
         Aerolinea aerolinea = new Aerolinea(nickname, nombre, correo, descripcion, linkSitioWeb, foto, contrasena);
@@ -74,8 +75,7 @@ public class AerolineaServicio {
     }
 
     // Método para precargar aerolíneas
-    public void precargarAerolineas() {
-        try {
+    public void precargarAerolineas() throws AerolineaException {
             // Datos de aerolíneas reales y ficticias
             Object[][] aerolineasData = {
                     // {nickname, nombre, correo, descripcion, linkSitioWeb, foto, contrasena}
@@ -112,14 +112,10 @@ public class AerolineaServicio {
                                 contrasena
                         );
                         System.out.println("Aerolínea precargada: " + nickname);
-                    } catch (Exception e) {
+                    } catch (AerolineaException e) {
                         System.err.println("Error al precargar aerolínea " + nickname + ": " + e.getMessage());
                     }
                 }
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error en la precarga de aerolíneas: " + e.getMessage(), e);
-        }
     }
 }

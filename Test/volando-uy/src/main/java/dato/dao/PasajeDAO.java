@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import dato.entidades.Pasaje;
+import jakarta.persistence.PersistenceException;
 
 public class PasajeDAO {
     private static final EntityManagerFactory emf =
@@ -16,7 +17,7 @@ public class PasajeDAO {
             em.getTransaction().begin();
             em.persist(pasaje);
             em.getTransaction().commit();
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
@@ -57,7 +58,7 @@ public class PasajeDAO {
             em.flush(); // Forzar la escritura inmediata
             em.getTransaction().commit();
             return pasaje;
-        } catch (Exception e) {
+        } catch (PersistenceException  e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }

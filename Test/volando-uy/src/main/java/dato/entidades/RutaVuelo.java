@@ -1,19 +1,29 @@
 package dato.entidades;
 
 import dato.converter.DTCostoBaseConverter;
-import jakarta.persistence.*;
-
 import java.util.List;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.EstadoRutaVuelo;
 import dato.converter.DTFechaConverter;
-
 import java.util.ArrayList;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @Entity
 @Table(name = "rutasVuelo")

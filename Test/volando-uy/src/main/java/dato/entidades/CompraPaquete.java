@@ -1,11 +1,12 @@
 package dato.entidades;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import logica.DataTypes.DTFecha;
-import logica.DataTypes.TipoAsiento;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "compraPaquete")

@@ -1,29 +1,54 @@
 package logica.clase;
 
 
-import dato.entidades.Aeropuerto;
 import dato.entidades.Cantidad;
+import dato.entidades.Ciudad;
 import dato.entidades.Cliente;
 import dato.entidades.CompraPaquete;
-import dato.entidades.Pasaje;
 import dato.entidades.Reserva;
 import dato.entidades.RutaVuelo;
 import dato.entidades.Usuario;
-import logica.DataTypes.*;
+import dato.entidades.Vuelo;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.RollbackException;
+import logica.DataTypes.DTFecha;
+import logica.DataTypes.TipoDoc;
+import logica.DataTypes.DTUsuario;
+import logica.DataTypes.DTRutaVuelo;
+import logica.DataTypes.DTAerolinea;
+import logica.DataTypes.TipoAsiento;
+import logica.DataTypes.DTCiudad;
+import logica.DataTypes.DTVueloReserva;
+import logica.DataTypes.DTPaqueteVuelos;
+import logica.DataTypes.DTVuelo;
+import logica.DataTypes.DTHora;
+import logica.DataTypes.DTCliente;
+import logica.DataTypes.DTReserva;
+import logica.DataTypes.DTCostoBase;
+import logica.DataTypes.DTCompraPaquete;
+import logica.DataTypes.EstadoRutaVuelo;
+import logica.DataTypes.DTPasajero;
 import dato.entidades.Aerolinea;
-import logica.servicios.UsuarioServicio;
+import logica.excepciones.AerolineaException;
+import logica.excepciones.ClienteException;
+import logica.excepciones.PaqueteException;
+import logica.servicios.AeropuertoServicio;
+import logica.servicios.CantidadServicio;
+import logica.servicios.CategoriaServicio;
+import logica.servicios.CiudadServicio;
 import logica.servicios.ClienteServicio;
 import logica.servicios.AerolineaServicio;
-import logica.servicios.*;
-import dato.entidades.*;
-import logica.servicios.*;
-import java.util.*;
+import dato.entidades.PaqueteVuelo;
+import dato.entidades.Categoria;
+import logica.servicios.CompraComunServicio;
+import logica.servicios.CompraPaqueteServicio;
+import logica.servicios.RutaVueloServicio;
+import logica.servicios.VueloServicio;
+import logica.servicios.PaqueteVueloServicio;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class Sistema implements ISistema {
 
@@ -175,7 +200,7 @@ public class Sistema implements ISistema {
         try {
             ClienteServicio clienteServicio = new ClienteServicio();
             clienteServicio.crearCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento, foto, contrasena);
-        } catch (Exception e) {
+        } catch (ClienteException e) {
             throw new IllegalArgumentException("Error al crear el cliente: " + e.getMessage());
         }
     }
@@ -202,8 +227,8 @@ public class Sistema implements ISistema {
         try {
             AerolineaServicio aerolineaServicio = new AerolineaServicio();
             aerolineaServicio.crearAerolinea(nickname, nombre, correo, descripcion, linkSitioWeb, foto, contrasena);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error al crear la aerolínea: " + e.getMessage());
+        } catch (AerolineaException e) {
+            throw new RuntimeException("Error al crear la aerolínea: " + e.getMessage());
         }
     }
 
@@ -663,7 +688,7 @@ public class Sistema implements ISistema {
             precargarUsuarios();
             precargarRutasVuelo();
             precargarVuelos();
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             e.printStackTrace();
             throw new RuntimeException("Error en la precarga completa del sistema", e);
         }
@@ -1136,7 +1161,7 @@ public class Sistema implements ISistema {
                 em.getTransaction().rollback();
             }
             throw new IllegalStateException("ERROR: No se pudo completar la reserva. " + e.getMessage(), e);
-        } catch (Exception e) {
+        } catch (PersistenceException e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
@@ -1170,7 +1195,7 @@ public class Sistema implements ISistema {
 
         try {
             dato.entidades.PaqueteVuelo paqueteVuelo = Servicio.registrarPaqueteVuelo(nombrePaquete, descripcion/*tipoAsiento*/, diasValidos, descuento, fechaAlta, foto);
-        } catch (Exception e) {
+        } catch (PaqueteException e) {
             throw new IllegalArgumentException("Error al crear el paquete de vuelo: " + e.getMessage());
         }
     }
@@ -1465,7 +1490,7 @@ public class Sistema implements ISistema {
             paqueteSeleccionado.setComprado(true);
             paqueteSeleccionado.agregarCompraPaquete(compraPaquete);
             servicioPaqueteVuelo.actualizarPaquete(paqueteSeleccionado);
-        } catch (Exception e) {
+        } catch (PaqueteException e) {
             throw new IllegalArgumentException("Error");
         }
     }
@@ -1651,12 +1676,8 @@ public class Sistema implements ISistema {
 
     // RECARGAR RUTAS CON ESTADOS
     public void recargarRutasConEstados() {
-        try {
-            // Recargar solo las rutas con los nuevos estados
-            precargarRutasVuelo();
-        } catch (Exception e) {
-            throw new RuntimeException("Error al recargar rutas con estados: " + e.getMessage(), e);
-        }
+        // Recargar solo las rutas con los nuevos estados
+        precargarRutasVuelo();
     }
 }
 
