@@ -33,8 +33,10 @@ async function cargarPaquetes() {
   }
 }
 
-// Función para mostrar error al usuario
+// Función para mostrar error al usuario (usando sistema estético)
 function mostrarError(mensaje) {
+  showToast(mensaje, 'error');
+  
   const contenedor = document.getElementById('lista-paquetes');
   if (contenedor) {
     contenedor.innerHTML = `
@@ -214,7 +216,7 @@ function verDetalleRuta(ruta) {
     controladorDeVista.cargar('consultaRutaVuelo.html');
   } else {
     // Fallback: mostrar información en un alert
-    alert(`Detalle de ruta: ${ruta.nombre}\nOrigen: ${ruta.ciudadOrigen}\nDestino: ${ruta.ciudadDestino}\nDescripción: ${ruta.descripcion}`);
+    showAlert(`Detalle de ruta: ${ruta.nombre}\nOrigen: ${ruta.ciudadOrigen}\nDestino: ${ruta.ciudadDestino}\nDescripción: ${ruta.descripcion}`, 'Detalle de Ruta', 'info');
   }
 }
 

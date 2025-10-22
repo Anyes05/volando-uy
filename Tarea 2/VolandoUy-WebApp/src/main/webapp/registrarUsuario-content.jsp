@@ -137,7 +137,7 @@
       const tipo = form.tipo.value;
 
       if (form.contrasena.value !== form.confirmarContrasena.value) {
-        alert("Las contrasenas no coinciden.");
+        showToast("Las contrasenas no coinciden.", "error");
         return;
       }
 
@@ -176,11 +176,11 @@
         let result = {};
         try { result = await response.json(); } catch (err) { /* no-json */ }
         if (tipo == "Cliente" && (tipoDocumento != "DNI" || tipoDocumento != "Cedula" || tipoDocumento != "Pasaporte")) {
-          alert(result.mensaje || "Operacion no valida, seleccione un tipo de documento.");
+          showToast(result.mensaje || "Operacion no valida, seleccione un tipo de documento.", "error");
             return;
         }
         if (response.ok) {
-          alert(result.mensaje || "Operacion completada.");
+          showToast(result.mensaje || "Operacion completada.", "success");
 
           // Iniciar sesión automáticamente después del registro exitoso
           try {
@@ -210,19 +210,19 @@
               window.location.href = "<%= request.getContextPath() %>/inicio.jsp";
             } else {
               // Si falla el login automático, redirigir a la página de login
-              alert("Registro exitoso. Por favor, inicia sesión manualmente.");
+              showToast("Registro exitoso. Por favor, inicia sesión manualmente.", "success");
               window.location.href = "<%= request.getContextPath() %>/inicioSesion.jsp";
             }
           } catch (loginError) {
             console.error('Error en login automático:', loginError);
-            alert("Registro exitoso. Por favor, inicia sesión manualmente.");
+            showToast("Registro exitoso. Por favor, inicia sesión manualmente.", "success");
             window.location.href = "<%= request.getContextPath() %>/inicioSesion.jsp";
           }
         } else {
-          alert(result.error || ("Error: " + response.status));
+          showToast(result.error || ("Error: " + response.status), "error");
         }
       } catch (error) {
-        alert("Error al registrar: " + error.message);
+        showToast("Error al registrar: " + error.message, "error");
       }
     });
   });

@@ -170,14 +170,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (file) {
         // Validar tipo de archivo
         if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido.');
+          showToast('Por favor selecciona un archivo de imagen válido.', 'warning');
           fileInputCliente.value = '';
           return;
         }
         
         // Validar tamaño (5MB)
         if (file.size > 5 * 1024 * 1024) {
-          alert('El archivo es demasiado grande. Máximo 5MB.');
+          showToast('El archivo es demasiado grande. Máximo 5MB.', 'warning');
           fileInputCliente.value = '';
           return;
         }
@@ -211,14 +211,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (file) {
         // Validar tipo de archivo
         if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido.');
+          showToast('Por favor selecciona un archivo de imagen válido.', 'warning');
           fileInputAerolinea.value = '';
           return;
         }
         
         // Validar tamaño (5MB)
         if (file.size > 5 * 1024 * 1024) {
-          alert('El archivo es demasiado grande. Máximo 5MB.');
+          showToast('El archivo es demasiado grande. Máximo 5MB.', 'warning');
           fileInputAerolinea.value = '';
           return;
         }
@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (response.status === 401) {
         // Sesión expirada
         console.error("Sesión expirada (401)");
-        alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        showToast("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", "warning");
         window.location.href = "<%= request.getContextPath() %>/inicioSesion.jsp";
       } else {
         console.error("Error HTTP:", response.status);
@@ -532,7 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
       errorDiv.style.display = "block";
     } else {
       // Fallback: mostrar alert si no existe el div de error
-      alert("Error: " + mensaje);
+      showToast("Error: " + mensaje, "error");
     }
   }
 });

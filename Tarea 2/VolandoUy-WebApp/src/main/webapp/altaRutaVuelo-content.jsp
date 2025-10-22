@@ -323,14 +323,14 @@
       if (file) {
         // Validar tipo de archivo
         if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido.');
+          showToast('Por favor selecciona un archivo de imagen válido.', 'warning');
           fileInput.value = '';
           return;
         }
         
         // Validar tamaño (5MB)
         if (file.size > 5 * 1024 * 1024) {
-          alert('El archivo es demasiado grande. Máximo 5MB.');
+          showToast('El archivo es demasiado grande. Máximo 5MB.', 'warning');
           fileInput.value = '';
           return;
         }

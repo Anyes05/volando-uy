@@ -391,7 +391,7 @@ function mostrarError(mensaje) {
     } else {
         // Si no existe el elemento, mostrar en consola y alert
         console.error('Elemento mensaje-error no encontrado');
-        alert('Error: ' + mensaje);
+        showToast('Error: ' + mensaje, 'error');
     }
 }
 

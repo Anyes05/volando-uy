@@ -75,14 +75,14 @@ document.getElementById('login-form').addEventListener('submit', async function(
     } else {
       // Mostrar error y restaurar boton
       const msg = result.mensaje || result.error || 'Error al iniciar sesi&oacute;n';
-      alert(msg);
+      showToast(msg, 'error');
       submitBtn.disabled = false;
       submitBtn.classList.remove('loading');
       submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('Error de conexi&oacute;n: ' + (error.message || error));
+    showToast('Error de conexi&oacute;n: ' + (error.message || error), 'error');
     submitBtn.disabled = false;
     submitBtn.classList.remove('loading');
     submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';

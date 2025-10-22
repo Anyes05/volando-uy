@@ -1,0 +1,477 @@
+/* errorHandler.css - Estilos para el sistema de manejo de errores estético */
+
+/* ========== TOAST NOTIFICATIONS ========== */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-width: 300px;
+    max-width: 500px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    border-left: 4px solid;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.hide {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
+}
+
+.toast i {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.toast-close:hover {
+    background-color: #f0f0f0;
+}
+
+/* Tipos de toast */
+.toast.info {
+    border-left-color: #3498db;
+}
+
+.toast.info i {
+    color: #3498db;
+}
+
+.toast.success {
+    border-left-color: #27ae60;
+}
+
+.toast.success i {
+    color: #27ae60;
+}
+
+.toast.warning {
+    border-left-color: #f39c12;
+}
+
+.toast.warning i {
+    color: #f39c12;
+}
+
+.toast.error {
+    border-left-color: #e74c3c;
+}
+
+.toast.error i {
+    color: #e74c3c;
+}
+
+/* ========== MODALES ========== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+}
+
+.modal-overlay.hide {
+    opacity: 0;
+}
+
+.modal {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal {
+    transform: scale(1);
+}
+
+.modal-overlay.hide .modal {
+    transform: scale(0.9);
+}
+
+.modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.modal-header i {
+    font-size: 20px;
+}
+
+.modal-header.info {
+    color: #3498db;
+}
+
+.modal-header.warning {
+    color: #f39c12;
+}
+
+.modal-header.error {
+    color: #e74c3c;
+}
+
+.modal-header.success {
+    color: #27ae60;
+}
+
+.modal-body {
+    padding: 20px 24px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.modal-body p {
+    margin: 0 0 12px 0;
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-footer {
+    padding: 16px 24px 20px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    border-top: 1px solid #eee;
+    background: #f8f9fa;
+}
+
+.btn-modal {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.btn-modal:hover {
+    background: #f0f0f0;
+    border-color: #bbb;
+}
+
+.btn-modal:active {
+    transform: translateY(1px);
+}
+
+.btn-modal.btn-primary {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.btn-modal.btn-primary:hover {
+    background: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-modal.btn-cancel {
+    background: #95a5a6;
+    color: white;
+    border-color: #95a5a6;
+}
+
+.btn-modal.btn-cancel:hover {
+    background: #7f8c8d;
+    border-color: #7f8c8d;
+}
+
+/* ========== CONFLICT MODAL ESPECÍFICO ========== */
+.conflict-modal .modal {
+    max-width: 600px;
+}
+
+.conflict-modal .modal-header {
+    background: #fff3cd;
+    border-bottom-color: #ffeaa7;
+}
+
+.conflict-modal .modal-footer {
+    background: #f8f9fa;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.conflict-modal .btn-modal {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* ========== VALIDACIÓN DE CAMPOS ========== */
+.field-validation {
+    margin-top: 4px;
+}
+
+.validation-success {
+    color: #27ae60;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.validation-error {
+    color: #e74c3c;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.validation-loading {
+    color: #3498db;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.validation-success::before {
+    content: "✓";
+    font-weight: bold;
+}
+
+.validation-error::before {
+    content: "✗";
+    font-weight: bold;
+}
+
+.validation-loading::before {
+    content: "⟳";
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Estados de input */
+input.success,
+select.success,
+textarea.success {
+    border-color: #27ae60 !important;
+    box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2) !important;
+}
+
+input.error,
+select.error,
+textarea.error {
+    border-color: #e74c3c !important;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2) !important;
+}
+
+input.loading,
+select.loading,
+textarea.loading {
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2) !important;
+}
+
+/* ========== LOADING STATES ========== */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 1;
+}
+
+.loading::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 0;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .toast {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .modal {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .btn-modal {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* ========== ANIMACIONES ADICIONALES ========== */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* ========== ACCESIBILIDAD ========== */
+.toast[role="status"] {
+    /* Asegurar que los lectores de pantalla anuncien los toasts */
+}
+
+.modal-overlay:focus {
+    outline: none;
+}
+
+.modal:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* ========== DARK MODE SUPPORT ========== */
+@media (prefers-color-scheme: dark) {
+    .toast {
+        background: #2c3e50;
+        color: #ecf0f1;
+    }
+    
+    .modal {
+        background: #2c3e50;
+        color: #ecf0f1;
+    }
+    
+    .modal-header {
+        border-bottom-color: #34495e;
+    }
+    
+    .modal-footer {
+        background: #34495e;
+        border-top-color: #34495e;
+    }
+    
+    .btn-modal {
+        background: #34495e;
+        color: #ecf0f1;
+        border-color: #4a5f7a;
+    }
+    
+    .btn-modal:hover {
+        background: #4a5f7a;
+    }
+}
