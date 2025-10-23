@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="static/css/consultaVueloEstilos.css">
   <link rel="stylesheet" href="static/css/modificarUsuario.css">
   <link rel="stylesheet" href="static/css/reserva.css">
-  <link rel="stylesheet" href="static/css/consultaReserva.css">
+  <link rel="stylesheet" href="css/consultaReserva.css">
   <link rel="stylesheet" href="static/css/consultaPaquete.css">
   <link rel="stylesheet" href="static/css/compraPaquete.css">
   <link rel="stylesheet" href="static/css/registrarUsuario.css">
