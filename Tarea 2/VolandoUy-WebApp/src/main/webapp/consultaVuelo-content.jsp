@@ -63,8 +63,49 @@ function initConsultaVuelo() {
     const detalleReservaDiv = document.getElementById('detalle-reserva');
     const detalleReservaInfo = document.getElementById('detalleReserva');
 
+    // Verificar si hay parámetros de búsqueda desde la página de inicio
+    const busquedaOrigen = sessionStorage.getItem('busquedaOrigen');
+    const busquedaDestino = sessionStorage.getItem('busquedaDestino');
+    const busquedaFecha = sessionStorage.getItem('busquedaFecha');
+    
+    // Limpiar parámetros de búsqueda después de leerlos
+    if (busquedaOrigen || busquedaDestino || busquedaFecha) {
+        sessionStorage.removeItem('busquedaOrigen');
+        sessionStorage.removeItem('busquedaDestino');
+        sessionStorage.removeItem('busquedaFecha');
+        
+        // Mostrar información de búsqueda
+        mostrarInfoBusqueda(busquedaOrigen, busquedaDestino, busquedaFecha);
+    }
+
     // Cargar aerolíneas al inicio
     cargarAerolineas();
+
+    // Función para mostrar información de búsqueda
+    function mostrarInfoBusqueda(origen, destino, fecha) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'busqueda-info';
+        infoDiv.style.cssText = `
+            background: rgba(1, 170, 245, 0.15);
+            border: 1px solid rgba(1, 170, 245, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #eaf6fb;
+            backdrop-filter: blur(10px);
+        `;
+        
+        infoDiv.innerHTML = `
+            <h3 style="color: #01AAF5; margin: 0 0 10px 0;">Resultados de búsqueda</h3>
+            <p style="margin: 5px 0;"><strong>Origen:</strong> ${origen || 'No especificado'}</p>
+            <p style="margin: 5px 0;"><strong>Destino:</strong> ${destino || 'No especificado'}</p>
+            <p style="margin: 5px 0;"><strong>Fecha:</strong> ${fecha || 'No especificada'}</p>
+        `;
+        
+        // Insertar antes del primer elemento del formulario
+        const formCard = document.querySelector('.form-card-pro');
+        formCard.insertBefore(infoDiv, formCard.firstChild);
+    }
 
     // Función para cargar aerolíneas
     function cargarAerolineas() {
@@ -133,7 +174,25 @@ function initConsultaVuelo() {
                 }
 
                 listaRutas.innerHTML = '';
-                rutas.forEach(ruta => {
+                
+                // Filtrar rutas según parámetros de búsqueda si existen
+                let rutasFiltradas = rutas;
+                if (busquedaOrigen || busquedaDestino) {
+                    rutasFiltradas = rutas.filter(ruta => {
+                        const origenMatch = !busquedaOrigen || 
+                            ruta.ciudadOrigen.nombre.toLowerCase().includes(busquedaOrigen.toLowerCase());
+                        const destinoMatch = !busquedaDestino || 
+                            ruta.ciudadDestino.nombre.toLowerCase().includes(busquedaDestino.toLowerCase());
+                        return origenMatch && destinoMatch;
+                    });
+                }
+                
+                if (rutasFiltradas.length === 0) {
+                    listaRutas.innerHTML = 'No se encontraron rutas que coincidan con la búsqueda';
+                    return;
+                }
+                
+                rutasFiltradas.forEach(ruta => {
                     const pill = document.createElement('div');
                     pill.className = 'ruta-pill';
                     pill.textContent = `\${ruta.nombre} (\${ruta.ciudadOrigen.nombre} → \${ruta.ciudadDestino.nombre})`;
@@ -142,10 +201,18 @@ function initConsultaVuelo() {
                         // Remover selección anterior
                         document.querySelectorAll('.ruta-pill').forEach(p => p.classList.remove('active'));
                         pill.classList.add('active');
-                        mostrarVuelos(ruta.nombre);
+                        mostrarVuelos(ruta.nombre, busquedaFecha);
                     });
                     listaRutas.appendChild(pill);
                 });
+                
+                // Si hay solo una ruta filtrada, seleccionarla automáticamente
+                if (rutasFiltradas.length === 1) {
+                    const primeraPill = listaRutas.querySelector('.ruta-pill');
+                    if (primeraPill) {
+                        primeraPill.click();
+                    }
+                }
             })
             .catch(error => {
                 console.error('Error al cargar rutas:', error);
@@ -154,7 +221,7 @@ function initConsultaVuelo() {
     });
 
     // Función para mostrar vuelos de una ruta
-    function mostrarVuelos(nombreRuta) {
+    function mostrarVuelos(nombreRuta, fechaFiltro = null) {
         listaVuelos.innerHTML = '';
         detalleVueloDiv.style.display = 'none';
         reservasDiv.style.display = 'none';
@@ -168,7 +235,22 @@ function initConsultaVuelo() {
                     return;
                 }
 
-                vuelos.forEach(vuelo => {
+                // Filtrar vuelos por fecha si se proporciona
+                let vuelosFiltrados = vuelos;
+                if (fechaFiltro) {
+                    vuelosFiltrados = vuelos.filter(vuelo => {
+                        const fechaVuelo = new Date(vuelo.fechaVuelo);
+                        const fechaBusqueda = new Date(fechaFiltro);
+                        return fechaVuelo.toDateString() === fechaBusqueda.toDateString();
+                    });
+                }
+
+                if (vuelosFiltrados.length === 0) {
+                    listaVuelos.innerHTML = '<p>No hay vuelos disponibles para la fecha especificada.</p>';
+                    return;
+                }
+
+                vuelosFiltrados.forEach(vuelo => {
                     const card = document.createElement('div');
                     card.className = 'vuelo-card';
                     const imagenHtml = vuelo.foto ? 

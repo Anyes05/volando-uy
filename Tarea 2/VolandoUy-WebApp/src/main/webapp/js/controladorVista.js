@@ -332,6 +332,41 @@ const controladorDeVista = {
             }, 100);
           }
 
+          // Si la vista es inicio.jsp, cargar el script de inicio
+          if (url === "inicio.jsp") {
+            const yaCargado = Array.from(document.scripts).some((s) =>
+              s.src.includes("js/inicio.js")
+            );
+
+            const ejecutarInit = () => {
+              // Esperar a que el DOM esté completamente listo y los elementos existan
+              const esperarElemento = () => {
+                const searchBox = document.querySelector('.search-box');
+                if (searchBox) {
+                  if (typeof window.initInicio === "function") {
+                    window.initInicio();
+                  } else {
+                    console.warn("initInicio no está disponible.");
+                  }
+                } else {
+                  // Si el elemento no existe, esperar un poco más
+                  setTimeout(esperarElemento, 50);
+                }
+              };
+              setTimeout(esperarElemento, 100);
+            };
+
+            if (yaCargado) {
+              ejecutarInit();
+            } else {
+              const script = document.createElement("script");
+              script.src = "js/inicio.js";
+              script.defer = true;
+              script.onload = ejecutarInit;
+              document.body.appendChild(script);
+            }
+          }
+
           // Si la vista es reserva.html, cargar su JS y ejecutar init (patrón igual al de arriba)
           if (url === "reserva.jsp" || url === "reservaVuelo.jsp") {
             const yaCargado = Array.from(document.scripts).some((s) =>

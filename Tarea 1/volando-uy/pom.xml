@@ -102,6 +102,32 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.28.0</version>
+                <configuration>
+                    <!-- Apuntar a tu ruleset -->
+                    <rulesets>
+                        <ruleset>pmd-ruleset.xml</ruleset>
+                    </rulesets>
+                    <!-- Limitar a Sistema.java -->
+                    <includes>
+                        <include>**/Sistema.java</include>
+                    </includes>
+                    <!-- Que no rompa el build si encuentra violaciones -->
+                    <failOnViolation>false</failOnViolation>
+                    <printFailingErrors>true</printFailingErrors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

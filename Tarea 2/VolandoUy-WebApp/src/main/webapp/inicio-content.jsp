@@ -7,17 +7,18 @@
 
   <!-- Buscador -->
   <div class="search-box">
-    <div class="trip-options">
-      <button class="active">Ida y vuelta</button>
-      <button class="active">Solo ida</button>
-      <button class="active">Múltiples destinos</button>
-    </div>
     <div class="inputs">
-      <input type="text" placeholder="Desde (origen)">
-      <input type="text" placeholder="Hacia (destino)">
-      <input type="date">
-      <input type="date">
-      <button class="btn-search"><i class="fas fa-search"></i> Buscar</button>
+      <div class="input-group">
+        <input type="text" id="origen-input" placeholder="Ciudad Origen" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <input type="text" id="destino-input" placeholder="Ciudad Destino" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <input type="date" id="fecha-vuelo" required>
+        <label for="fecha-vuelo">Fecha de Vuelo</label>
+      </div>
+      <button class="btn-search" id="btn-buscar"><i class="fas fa-search"></i> Buscar</button>
     </div>
   </div>
 </section>
