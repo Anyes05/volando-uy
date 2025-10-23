@@ -16,7 +16,6 @@
       </div>
       <div class="input-group">
         <input type="date" id="fecha-vuelo" required>
-        <label for="fecha-vuelo">Fecha de Vuelo</label>
       </div>
       <button class="btn-search" id="btn-buscar"><i class="fas fa-search"></i> Buscar</button>
     </div>

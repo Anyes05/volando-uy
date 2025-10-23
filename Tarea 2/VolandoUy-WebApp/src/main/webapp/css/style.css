@@ -485,7 +485,7 @@ body {
 .inputs {
   display: flex;
   gap: 15px;
-  align-items: end;
+  align-items: center;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -500,6 +500,8 @@ body {
   font-size: 15px;
   transition: all 0.3s ease;
   backdrop-filter: blur(5px);
+  height: 52px;
+  box-sizing: border-box;
 }
 
 .inputs input {
@@ -523,6 +525,9 @@ body {
   white-space: nowrap;
   min-width: 140px;
   box-shadow: 0 4px 15px rgba(1, 170, 245, 0.3);
+  height: 52px;
+  box-sizing: border-box;
+  margin-top: -22px;
 }
 
 .btn-search:hover {
