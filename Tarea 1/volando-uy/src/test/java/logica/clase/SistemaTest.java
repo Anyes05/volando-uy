@@ -135,23 +135,23 @@ class SistemaTest {
         categoriaServicio.registrarCategoria("CategoriaT");
 
         //aerolínea no seleccionada
-        assertThrows(IllegalStateException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
+        assertThrows(IllegalStateException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
 
         //alta y selección de aerolínea válida
         s.altaAerolinea("nickAero","Aerolineas","aero@mail.com","EmpresaAerea","https://a.com",new byte[]{1},"Abcdef1");
         s.seleccionarAerolinea("nickAero");
 
         //validaciones
-        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
-        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
-        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
-        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",-10,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
-        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"CiudadX","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
-        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","CiudadY",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
-        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaX"),new byte[]{1}));
+        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
+        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
+        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
+        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",-10,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
+        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"CiudadX","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
+        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","CiudadY",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
+        assertThrows(IllegalArgumentException.class,()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaX"),new byte[]{1}, null));
 
         //caso válido
-        assertDoesNotThrow(()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}));
+        assertDoesNotThrow(()->s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null));
     }
 
     @Test
@@ -169,7 +169,7 @@ class SistemaTest {
         s.seleccionarAerolinea("nickAero");
         assertThrows(IllegalStateException.class,()->s.registrarRuta());
 
-        s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1});
+        s.ingresarDatosRuta("RutaValida","DescripcionValida",100,200,50,"Montevideo","BuenosAires",new DTFecha(1,1,2024),List.of("CategoriaT"),new byte[]{1}, null);
         assertDoesNotThrow(()->s.registrarRuta());
     }
 
@@ -197,7 +197,7 @@ class SistemaTest {
         // 4. Ingresar y registrar ruta bajo la aerolínea seleccionada
         s.ingresarDatosRuta("RutaListar","Descripcion de ruta listar valida",100,200,50,
                 "CiudadOrigenListar","CiudadDestinoListar",
-                new DTFecha(1,1,2025),List.of("CategoriaListar"),new byte[]{1});
+                new DTFecha(1,1,2025),List.of("CategoriaListar"),new byte[]{1}, null);
         s.seleccionarAerolineaRet("aeroTestListar");
         s.registrarRuta();
 
@@ -249,7 +249,7 @@ class SistemaTest {
         // 5. Alta de ruta (usando los nombres de ciudades únicos)
         s.ingresarDatosRuta("RutaDummy", "Desc ruta", 100, 200, 50,
                 "MontevideoTest", "BuenosAiresTest",
-                new DTFecha(1,1,2025), List.of("CategoriaX"), new byte[]{1});
+                new DTFecha(1,1,2025), List.of("CategoriaX"), new byte[]{1}, null);
         s.registrarRuta();
 
         // Confirmar la ruta
@@ -309,7 +309,7 @@ class SistemaTest {
         s.altaCategoria("CategoriaX");
         s.ingresarDatosRuta("RutaAurora","Desc ruta",100,200,50,
                 "VillaRodriguezTest","VillaPerezTest",
-                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{1});
+                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{1}, null);
         s.registrarRuta();
 
         RutaVueloServicio rs = new RutaVueloServicio();
@@ -435,7 +435,8 @@ class SistemaTest {
                 "VillaRodriguezTest","VillaPerezTest",
                 new DTFecha(1,1,2025),
                 List.of("CategoriaX"),
-                new byte[]{1}
+                new byte[]{1},
+                null
         );
         s.registrarRuta();
 
@@ -638,7 +639,7 @@ class SistemaTest {
         s.altaCategoria("CategoriaX");
         s.ingresarDatosRuta("RutaAurora", "Desc ruta", 100, 200, 50,
                 "VillaRodriguezTest", "VillaPerezTest",
-                new DTFecha(1, 1, 2025), List.of("CategoriaX"), new byte[]{1});
+                new DTFecha(1, 1, 2025), List.of("CategoriaX"), new byte[]{1}, null);
         s.registrarRuta();
 
         // --- Paso 5: selección para administración y aceptación oficial ---
@@ -732,7 +733,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("nickAeroTest");
         s.ingresarDatosRuta("RutaTest", "Ruta costera", 100, 200, 50,
                 "CiudadOrigen", "CiudadDestino",
-                new DTFecha(10,10,2025), List.of("CategoriaX"), new byte[]{1});
+                new DTFecha(10,10,2025), List.of("CategoriaX"), new byte[]{1}, null);
         s.registrarRuta();
         s.seleccionarAerolineaParaAdministracion("nickAeroTest");
         s.seleccionarRutaVueloParaAdministracion("RutaTest");
@@ -816,7 +817,7 @@ class SistemaTest {
         s.altaCategoria("CategoriaX");
         s.ingresarDatosRuta("RutaSur", "Ruta costera", 120, 250, 40,
                 "CiudadOrigen", "CiudadDestino",
-                new DTFecha(10, 10, 2025), List.of("CategoriaX"), new byte[]{1});
+                new DTFecha(10, 10, 2025), List.of("CategoriaX"), new byte[]{1}, null);
         s.registrarRuta();
 
         // --- Confirmar ruta y asociarla a la aerolínea ---
@@ -868,7 +869,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("aeroTest");
         s.ingresarDatosRuta("RutaTest", "Ruta costera", 100, 200, 50,
                 "CiudadOrigen", "CiudadDestino",
-                new DTFecha(10, 10, 2025), List.of("CategoriaX"), new byte[]{1});
+                new DTFecha(10, 10, 2025), List.of("CategoriaX"), new byte[]{1}, null);
         s.registrarRuta();
 
         // --- Confirmar ruta con flujo real ---
@@ -933,7 +934,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("aeroIngresada");
         s.ingresarDatosRuta("RutaIngresada", "Ruta de prueba ingresada", 100, 200, 50,
                 "CiudadAlpha", "CiudadBeta",
-                new DTFecha(10,10,2025), List.of("CategoriaIngresada"), new byte[]{1});
+                new DTFecha(10,10,2025), List.of("CategoriaIngresada"), new byte[]{1}, null);
         s.registrarRuta();
 
         // --- Caso 2: confirmar ruta y luego listar ---
@@ -955,7 +956,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("aeroIngresada");
         s.ingresarDatosRuta("RutaNueva", "Otra ruta ingresada", 150, 250, 60,
                 "CiudadAlpha", "CiudadBeta",
-                new DTFecha(11,11,2025), List.of("CategoriaIngresada"), new byte[]{1});
+                new DTFecha(11,11,2025), List.of("CategoriaIngresada"), new byte[]{1}, null);
         s.registrarRuta();
 
         s.seleccionarAerolineaParaAdministracion("aeroIngresada");
@@ -993,7 +994,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("aeroRechazo");
         s.ingresarDatosRuta("RutaRechazo", "Ruta a rechazar", 100, 200, 50,
                 "CiudadGamma", "CiudadDelta",
-                new DTFecha(10,10,2025), List.of("CategoriaRechazo"), new byte[]{1});
+                new DTFecha(10,10,2025), List.of("CategoriaRechazo"), new byte[]{1}, null);
         s.registrarRuta();
 
         // --- Seleccionar aerolínea y ruta para administración ---
@@ -1029,7 +1030,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("aeroPack");
         s.ingresarDatosRuta("RutaPack", "Ruta para paquete", 100, 200, 50,
                 "CiudadX", "CiudadY",
-                new DTFecha(10,10,2025), List.of("CategoriaPack"), new byte[]{1});
+                new DTFecha(10,10,2025), List.of("CategoriaPack"), new byte[]{1}, null);
         s.registrarRuta();
 
         // Confirmar ruta con flujo real
@@ -1091,7 +1092,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("aeroPack");
         s.ingresarDatosRuta("RutaPack", "Ruta para paquete", 100, 200, 50,
                 "CiudadOrigen", "CiudadDestino",
-                new DTFecha(10,10,2025), List.of("CategoriaPack"), new byte[]{1});
+                new DTFecha(10,10,2025), List.of("CategoriaPack"), new byte[]{1}, null);
         s.registrarRuta();
         s.seleccionarAerolineaParaAdministracion("aeroPack");
         s.seleccionarRutaVueloParaAdministracion("RutaPack");
@@ -1210,7 +1211,7 @@ class SistemaTest {
         s.altaCategoria("CategoriaX");
         s.ingresarDatosRuta("RutaAurora","Desc ruta",100,200,50,
                 "VillaRodriguezTest","VillaPerezTest",
-                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{1});
+                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{1}, null);
         s.registrarRuta();
 
         // Confirmar ruta con flujo real de administración ANTES de crear el vuelo
@@ -1388,7 +1389,7 @@ class SistemaTest {
         s.altaCategoria("CategoriaX");
         s.ingresarDatosRuta("RutaTest","Desc ruta",100,200,50,
                 "VillaRodriguezTest","VillaPerezTest",
-                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{1});
+                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{1}, null);
         s.registrarRuta();
 
         // Confirmar ruta con flujo real de administración
@@ -1442,7 +1443,7 @@ class SistemaTest {
         s.seleccionarAerolineaRet("aeroTest");
         s.ingresarDatosRuta("RutaDiferente","Desc ruta diferente",100,200,50,
                 "VillaRodriguezTest","VillaPerezTest",
-                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{2});
+                new DTFecha(1,1,2025),List.of("CategoriaX"),new byte[]{2}, null);
         s.registrarRuta();
 
         s.seleccionarAerolineaParaAdministracion("aeroTest");

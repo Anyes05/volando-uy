@@ -1643,7 +1643,8 @@ public class EstacionTrabajo {
                             destino,
                             fechaCal,
                             categoriasSeleccionadas,
-                            foto
+                            foto,
+                            null  // videoUrl (opcional, se puede agregar campo en el formulario después)
                     );
 
                     JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");

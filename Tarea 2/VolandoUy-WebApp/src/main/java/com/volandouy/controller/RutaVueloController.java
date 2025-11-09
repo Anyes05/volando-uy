@@ -483,6 +483,11 @@ public class RutaVueloController extends HttpServlet {
                                         rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
                                     }
                                     
+                                    // Video URL si existe
+                                    if (r.getVideoUrl() != null && !r.getVideoUrl().trim().isEmpty()) {
+                                        rutaMap.put("videoUrl", r.getVideoUrl().trim());
+                                    }
+                                    
                                     todasLasRutas.add(rutaMap);
                                 }
                             }
@@ -676,6 +681,11 @@ public class RutaVueloController extends HttpServlet {
                     rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
                 }
                 
+                // Video URL si existe
+                if (r.getVideoUrl() != null && !r.getVideoUrl().trim().isEmpty()) {
+                    rutaMap.put("videoUrl", r.getVideoUrl().trim());
+                }
+                
                 outList.add(rutaMap);
                 LOG.info("Ruta confirmada agregada: " + r.getNombre());
             } else {
@@ -759,6 +769,11 @@ public class RutaVueloController extends HttpServlet {
             if (ruta.getFoto() != null && ruta.getFoto().length > 0) {
                 String fotoBase64 = java.util.Base64.getEncoder().encodeToString(ruta.getFoto());
                 rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
+            }
+            
+            // Video URL si existe
+            if (ruta.getVideoUrl() != null && !ruta.getVideoUrl().trim().isEmpty()) {
+                rutaMap.put("videoUrl", ruta.getVideoUrl().trim());
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
@@ -873,6 +888,11 @@ public class RutaVueloController extends HttpServlet {
                 if (r.getFoto() != null && r.getFoto().length > 0) {
                     String fotoBase64 = java.util.Base64.getEncoder().encodeToString(r.getFoto());
                     rutaMap.put("imagen", "data:image/jpeg;base64," + fotoBase64);
+                }
+                
+                // Video URL si existe
+                if (r.getVideoUrl() != null && !r.getVideoUrl().trim().isEmpty()) {
+                    rutaMap.put("videoUrl", r.getVideoUrl().trim());
                 }
                 
                 outList.add(rutaMap);
@@ -991,6 +1011,7 @@ public class RutaVueloController extends HttpServlet {
 
             String ciudadOrigen = trim(request.getParameter("ciudadOrigen"));
             String ciudadDestino = trim(request.getParameter("ciudadDestino"));
+            String videoUrl = trim(request.getParameter("videoUrl")); // URL del video (opcional)
 
             List<String> categorias = new ArrayList<>();
             // Primero intentamos parameterValues (select multiple)
@@ -1031,6 +1052,7 @@ public class RutaVueloController extends HttpServlet {
                     + ", ciudadOrigen=" + ciudadOrigen
                     + ", ciudadDestino=" + ciudadDestino
                     + ", categorias=" + categorias
+                    + ", videoUrl=" + videoUrl
                     + ", fotoBytes=" + (finalFotoBytes == null ? 0 : finalFotoBytes.length));
 
             // --- Validaciones mínimas del servidor ---
@@ -1085,7 +1107,8 @@ public class RutaVueloController extends HttpServlet {
                         ciudadDestino,
                         dtFecha,
                         categorias,
-                        fotoBytes
+                        fotoBytes,
+                        videoUrl  // URL del video (opcional)
                 );
 
                 sistema.registrarRuta(); // o metodo equivalente en tu sistema

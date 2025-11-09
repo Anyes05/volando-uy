@@ -16,6 +16,7 @@ public class DTRutaVuelo {
     private DTCiudad ciudadDestino;
     private List<Categoria> categorias;
     private byte[] foto;
+    private String videoUrl;
     EstadoRutaVuelo estado;
 
     public DTRutaVuelo(String nombre, String descripcion, DTFecha fechaAlta, DTCostoBase costoBase, DTAerolinea aerolinea, DTCiudad ciudadOrigen, DTCiudad ciudadDestino, byte[] foto, EstadoRutaVuelo estado) {
@@ -74,6 +75,14 @@ public class DTRutaVuelo {
 
     public EstadoRutaVuelo getEstado() {
         return estado;
+    }
+    
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 
     // MÉTODOS

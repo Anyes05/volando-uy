@@ -52,6 +52,9 @@ public class RutaVuelo {
     @Column(name = "foto", columnDefinition = "bytea")
     private byte[] foto;
 
+    @Column
+    private String videoUrl;
+
     // Relación con categoría
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -239,5 +242,13 @@ public class RutaVuelo {
 
     public void setEstado(EstadoRutaVuelo estado) {
         this.estado = estado;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

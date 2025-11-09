@@ -16,13 +16,17 @@ public class RutaVueloServicio {
     private RutaVueloDAO rutaVueloDAO = new RutaVueloDAO();
 
     // Método sobrecargado para registrar ruta con estado específico
-    public void registrarRutaVuelo(String nombre, String descripcion, DTCostoBase DTCostoBase, DTFecha fechaAlta, Aerolinea aerolinea, Ciudad ciudadOrigen, Ciudad ciudadDestino, List<Categoria> categorias, byte[] foto, EstadoRutaVuelo estado)  {
+    public void registrarRutaVuelo(String nombre, String descripcion, DTCostoBase DTCostoBase, DTFecha fechaAlta, Aerolinea aerolinea, Ciudad ciudadOrigen, Ciudad ciudadDestino, List<Categoria> categorias, byte[] foto, EstadoRutaVuelo estado, String videoUrl)  {
         RutaVuelo rv = new RutaVuelo(nombre, descripcion, DTCostoBase, fechaAlta, foto);
         rv.setCiudadDestino(ciudadDestino);
         rv.setCiudadOrigen(ciudadOrigen);
         rv.getAerolineas().add(aerolinea); // Se asocia la aerolinea a la ruta de vuelo
         rv.setCategorias(categorias);
         rv.setEstado(estado); // Establecer estado específico
+        // Asignar videoUrl si fue proporcionado (opcional)
+        if (videoUrl != null && !videoUrl.trim().isEmpty()) {
+            rv.setVideoUrl(videoUrl.trim());
+        }
         rutaVueloDAO.guardar(rv);  // Se guarda en la BD
     }
 
@@ -111,7 +115,8 @@ public class RutaVueloServicio {
                             ciudadDestino,
                             categorias,
                             null,  // foto
-                            estado
+                            estado,
+                            null   // videoUrl (opcional)
                     );
 
                     System.out.println("Ruta de vuelo precargada: " + nombreRuta + " con estado: " + estado);

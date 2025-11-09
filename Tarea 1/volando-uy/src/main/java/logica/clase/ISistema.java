@@ -45,7 +45,7 @@ public interface ISistema {
 
     public void seleccionarAerolinea(String nickname);
 
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias, byte[] foto);
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, /*DTHora hora,*/ float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias, byte[] foto, String videoUrl);
 
     public void registrarRuta();
 

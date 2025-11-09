@@ -306,7 +306,7 @@ public class Sistema implements ISistema {
         if (aerolinea != null) {
             List<DTRutaVuelo> rutasDTO = new ArrayList<>();
             for (dato.entidades.RutaVuelo rv : aerolinea.getRutasVuelo()) {
-                rutasDTO.add(new DTRutaVuelo(
+                DTRutaVuelo dtRuta = new DTRutaVuelo(
                         rv.getNombre(),
                         rv.getDescripcion(),
                         rv.getFechaAlta(),
@@ -316,7 +316,9 @@ public class Sistema implements ISistema {
                         new DTCiudad(rv.getCiudadDestino().getNombre(), rv.getCiudadDestino().getPais()),
                         rv.getFoto(),
                         rv.getEstado()
-                ));
+                );
+                dtRuta.setVideoUrl(rv.getVideoUrl());
+                rutasDTO.add(dtRuta);
             }
             return new DTAerolinea(
                     aerolinea.getNickname(),
@@ -457,7 +459,7 @@ public class Sistema implements ISistema {
         }
     }
 
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias, byte[] foto) {
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista, float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, String ciudadDestino, DTFecha fechaAlta, List<String> categorias, byte[] foto, String videoUrl) {
         if (recuerdaAerolinea == null) {
             throw new IllegalStateException("Debe seleccionar una aerolínea antes de ingresar los datos de la ruta.");
         }
@@ -517,6 +519,11 @@ public class Sistema implements ISistema {
         rutaVuelo.getAerolineas().add(aerolinea);
         EstadoRutaVuelo estado = EstadoRutaVuelo.INGRESADA;
         rutaVuelo.setEstado(estado);
+        
+        // Asignar videoUrl si fue proporcionado (opcional)
+        if (videoUrl != null && !videoUrl.trim().isEmpty()) {
+            rutaVuelo.setVideoUrl(videoUrl.trim());
+        }
 
         recordarRutaVuelo = rutaVuelo;
     }
@@ -555,7 +562,8 @@ public class Sistema implements ISistema {
                 ciudadDestino,
                 recordarRutaVuelo.getCategorias(),
                 recordarRutaVuelo.getFoto(),
-                recordarRutaVuelo.getEstado()
+                recordarRutaVuelo.getEstado(),
+                recordarRutaVuelo.getVideoUrl()
         );
 
         // Limpiar las variables de selección
@@ -687,6 +695,7 @@ public class Sistema implements ISistema {
                 );
                 // Agregar las categorías a la ruta
                 dtRuta.setCategorias(r.getCategorias());
+                dtRuta.setVideoUrl(r.getVideoUrl());
                 listaRutas.add(dtRuta);
         }
         return listaRutas;
@@ -720,6 +729,7 @@ public class Sistema implements ISistema {
                         rv.getEstado()
 
                 );
+                dtRuta.setVideoUrl(rv.getVideoUrl());
                 return dtRuta;
             }
         }
@@ -823,6 +833,7 @@ public class Sistema implements ISistema {
                 );
                 // Agregar las categorías a la ruta
                 dtRuta.setCategorias(r.getCategorias());
+                dtRuta.setVideoUrl(r.getVideoUrl());
                 DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta, v.getFoto());
                 listaDTVuelos.add(dtVuelo);
             }
@@ -881,6 +892,7 @@ public class Sistema implements ISistema {
                     );
                     // Agregar las categorías a la ruta
                     dtRuta.setCategorias(r.getCategorias());
+                    dtRuta.setVideoUrl(r.getVideoUrl());
                     listaRutas.add(dtRuta);
                 }
             }
@@ -1556,6 +1568,7 @@ public class Sistema implements ISistema {
                     r.getFoto(),
                     r.getEstado()
             );
+            dtRuta.setVideoUrl(r.getVideoUrl());
             listaRutasDTO.add(dtRuta);
         }
 

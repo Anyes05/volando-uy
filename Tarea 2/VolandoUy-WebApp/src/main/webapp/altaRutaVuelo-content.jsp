@@ -88,6 +88,13 @@
         </div>
       </div>
 
+      <!-- Video URL (opcional) -->
+      <div class="form-group full-width">
+        <label for="videoUrl">URL del video (opcional)</label>
+        <input type="url" id="videoUrl" name="videoUrl" placeholder="https://www.youtube.com/watch?v=..." pattern="https?://.*">
+        <small class="hint">Ingrese la URL del video de la ruta (ej: YouTube, Vimeo, etc.)</small>
+      </div>
+
       <!-- Mensaje -->
       <div id="formMessage" class="form-message full-width" style="display:none;color:#c00;"></div>
 
@@ -382,6 +389,7 @@
     const ciudadOrigen = form.querySelector("[name='ciudadOrigen']").value;
     const ciudadDestino = form.querySelector("[name='ciudadDestino']").value;
     const fechaAlta = form.querySelector("[name='fechaAlta']").value;
+    const videoUrl = form.querySelector("[name='videoUrl']").value.trim();
 
     // Validar que se haya seleccionado al menos una categoría
     const categoriasSeleccionadas = Array.from(form.querySelectorAll('input[name="categorias"]:checked'));
@@ -418,6 +426,9 @@
         showMessage(result.mensaje || "Ruta de vuelo creada exitosamente.", false);
         form.reset();
         document.getElementById("fechaAlta").valueAsDate = new Date();
+        // Limpiar preview de imagen
+        const filePreview = document.getElementById("file-preview");
+        if (filePreview) filePreview.style.display = "none";
         // Recargar categorías para limpiar selecciones
         cargarCategorias();
       } else {

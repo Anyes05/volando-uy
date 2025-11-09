@@ -1643,7 +1643,8 @@ public class EstacionTrabajo {
                             destino,
                             fechaCal,
                             categoriasSeleccionadas,
-                            foto
+                            foto,
+                            null
                     );
 
                     JOptionPane.showMessageDialog(altaRuta, "Ruta de vuelo registrada con éxito.");

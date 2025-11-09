@@ -371,6 +371,9 @@ function initConsultaRutaVuelo() {
             mensajeVuelo.textContent = "";
         }
         
+        // Ocultar detalles de ruta
+        ocultarDetalleRuta();
+        
         console.log("Selección de vuelos limpiada");
     }
 
@@ -383,6 +386,8 @@ function initConsultaRutaVuelo() {
             // Deseleccionar ruta actual
             card.classList.remove('seleccionada');
             limpiarSeleccionVuelos();
+            // Ocultar panel de detalles de ruta
+            ocultarDetalleRuta();
             console.log('Ruta deseleccionada:', ruta.nombre);
         } else {
             // Seleccionar nueva ruta
@@ -395,9 +400,95 @@ function initConsultaRutaVuelo() {
             card.classList.add('seleccionada');
             rutaSeleccionada = ruta;
             
+            // Mostrar detalles de la ruta (imagen y video)
+            mostrarDetalleRuta(ruta);
+            
             // Cargar vuelos de la ruta
             cargarVuelosRuta(ruta.nombre);
             console.log('Ruta seleccionada:', ruta.nombre);
+        }
+    }
+    
+    // Función para mostrar detalles de la ruta (imagen y video)
+    function mostrarDetalleRuta(ruta) {
+        // Buscar o crear el contenedor de detalles de ruta
+        let detalleRutaContainer = document.getElementById('detalle-ruta-container');
+        if (!detalleRutaContainer) {
+            detalleRutaContainer = document.createElement('div');
+            detalleRutaContainer.id = 'detalle-ruta-container';
+            detalleRutaContainer.className = 'detalle-ruta-container';
+            
+            // Insertar antes del aside de vuelos
+            const asideVuelos = document.getElementById('aside-vuelos');
+            if (asideVuelos && asideVuelos.parentNode) {
+                asideVuelos.parentNode.insertBefore(detalleRutaContainer, asideVuelos);
+            }
+        }
+        
+        // Construir HTML del detalle
+        let html = '<div class="detalle-ruta-content">';
+        html += '<h3><i class="fas fa-info-circle"></i> Detalles de la Ruta</h3>';
+        
+        // Imagen si existe
+        if (ruta.imagen) {
+            html += '<div class="ruta-imagen-container">';
+            html += '<img src="' + ruta.imagen + '" alt="' + (ruta.nombre || 'Ruta') + '" class="ruta-imagen">';
+            html += '</div>';
+        }
+        
+        // Video si existe
+        if (ruta.videoUrl) {
+            html += '<div class="ruta-video-container">';
+            html += '<h4><i class="fas fa-video"></i> Video de la Ruta</h4>';
+            // Convertir URL de YouTube a embed si es necesario
+            let videoEmbedUrl = convertirUrlVideo(ruta.videoUrl);
+            html += '<div class="video-wrapper">';
+            html += '<iframe src="' + videoEmbedUrl + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            html += '</div>';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+        
+        detalleRutaContainer.innerHTML = html;
+        detalleRutaContainer.style.display = 'block';
+    }
+    
+    // Función para convertir URL de video a formato embed
+    function convertirUrlVideo(url) {
+        if (!url) return '';
+        
+        // YouTube
+        if (url.includes('youtube.com/watch?v=')) {
+            const videoId = url.split('v=')[1].split('&')[0];
+            return 'https://www.youtube.com/embed/' + videoId;
+        }
+        if (url.includes('youtu.be/')) {
+            const videoId = url.split('youtu.be/')[1].split('?')[0];
+            return 'https://www.youtube.com/embed/' + videoId;
+        }
+        
+        // Vimeo
+        if (url.includes('vimeo.com/')) {
+            const videoId = url.split('vimeo.com/')[1].split('?')[0];
+            return 'https://player.vimeo.com/video/' + videoId;
+        }
+        
+        // Si ya es una URL embed, devolverla tal cual
+        if (url.includes('/embed/')) {
+            return url;
+        }
+        
+        // Por defecto, devolver la URL original
+        return url;
+    }
+    
+    // Función para ocultar detalles de la ruta
+    function ocultarDetalleRuta() {
+        const detalleRutaContainer = document.getElementById('detalle-ruta-container');
+        if (detalleRutaContainer) {
+            detalleRutaContainer.style.display = 'none';
+            detalleRutaContainer.innerHTML = '';
         }
     }
 

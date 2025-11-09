@@ -88,7 +88,8 @@ public class VueloHelper {
             String destino,
             Calendar fechaCal,
             List<String> categoriasSeleccionadas,
-            byte [] foto) throws Exception {
+            byte [] foto,
+            String videoUrl) throws Exception {
 
         // ------------------- VALIDACIONES -------------------
         if (nombre.trim().isEmpty() || descripcion.trim().isEmpty()) {
@@ -177,7 +178,8 @@ public class VueloHelper {
                     destino,
                     fecha,
                     categoriasSeleccionadas,
-                    foto
+                    foto,
+                    videoUrl
             );
             getSistema().registrarRuta();
         } catch (IllegalArgumentException e) {

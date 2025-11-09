@@ -216,6 +216,105 @@
   color: #fff;
   font-weight: 700;
 }
+
+/* Estilos para el panel de detalles de ruta */
+.detalle-ruta-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.detalle-ruta-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  z-index: 0;
+}
+
+.detalle-ruta-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+.detalle-ruta-content h3 {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 1.4em;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.detalle-ruta-content h4 {
+  color: white;
+  margin: 20px 0 15px 0;
+  font-size: 1.2em;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.ruta-imagen-container {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.ruta-imagen {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.ruta-video-container {
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .detalle-ruta-container {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .ruta-imagen {
+    max-height: 250px;
+  }
+}
 </style>
 
 <!-- Script específico para consulta de ruta de vuelo -->
