@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.volandouy.helper.DeviceDetector;
 // Las entidades y servicios vienen de la librería externa
 // Se importarán automáticamente cuando se compile
 
@@ -39,7 +40,16 @@ public class VistaController extends HttpServlet {
         
         String pathInfo = request.getPathInfo();
         if (pathInfo == null) {
-            pathInfo = "/inicio.jsp";
+            // En móvil, si no hay usuario logueado, redirigir a inicio de sesión
+            // En desktop o si hay usuario logueado, ir a inicio
+            boolean isMobilePhone = DeviceDetector.isMobilePhone(request);
+            boolean usuarioLogueado = request.getSession().getAttribute("usuarioLogueado") != null;
+            
+            if (isMobilePhone && !usuarioLogueado) {
+                pathInfo = "/inicioSesion.jsp";
+            } else {
+                pathInfo = "/inicio.jsp";
+            }
         }
         
         // Remover la barra inicial si existe

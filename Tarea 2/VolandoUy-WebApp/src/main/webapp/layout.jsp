@@ -1,5 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.volandouy.helper.DeviceDetector" %>
+<%
+  // Detectar si es un dispositivo móvil
+  boolean isMobile = DeviceDetector.isMobileDevice(request);
+  boolean isTablet = DeviceDetector.isTabletDevice(request);
+  boolean isMobilePhone = DeviceDetector.isMobilePhone(request);
+  
+  // Guardar en request scope para usar en JSP
+  request.setAttribute("isMobileDevice", isMobile);
+  request.setAttribute("isTabletDevice", isTablet);
+  request.setAttribute("isMobilePhone", isMobilePhone);
+%>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -25,9 +37,86 @@
   <link rel="stylesheet" href="static/css/registrarUsuario.css">
   <link rel="stylesheet" href="static/css/login.css">
   <link rel="stylesheet" href="css/errorHandler.css">
+  <style>
+    /* Panel de debug temporal - remover en producción */
+    .debug-panel {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 0, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      z-index: 10000;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      font-family: monospace;
+    }
+    .debug-panel h4 {
+      margin: 0 0 10px 0;
+      color: #000;
+    }
+    .debug-panel p {
+      margin: 5px 0;
+      color: #333;
+    }
+    .debug-panel .true { color: green; font-weight: bold; }
+    .debug-panel .false { color: red; font-weight: bold; }
+    
+    /* CSS para ocultar elementos en móvil basándose en el ancho de pantalla */
+    /* Esto funciona como respaldo cuando el User-Agent no se detecta correctamente */
+    @media (max-width: 767px) {
+      /* Ocultar elementos que solo deben verse en desktop */
+      .desktop-only,
+      body:not(.mobile-phone) .nav-section:has(a[href*="registrarUsuario"]),
+      body:not(.mobile-phone) .nav-section:has(a[href*="consultaUsuario"]):not(:has(a[href*="consultaRutaVuelo"])),
+      body:not(.mobile-phone) .nav-section:has(a[href*="consultaPaquete"]),
+      body:not(.mobile-phone) .nav-section:has(a[href*="compraPaquete"]),
+      body:not(.mobile-phone) .nav-section:has(a[href*="altaRutaVuelo"]),
+      body:not(.mobile-phone) .nav-section:has(a[href*="altaVuelo"]),
+      body:not(.mobile-phone) .nav-section:has(a[href*="reserva"]),
+      body:not(.mobile-phone) .nav-item[href*="inicio.jsp"] {
+        display: none !important;
+      }
+      
+      /* Asegurar que solo se muestren los casos de uso permitidos en móvil */
+      .mobile-phone .nav-section:has(a[href*="registrarUsuario"]) { display: none !important; }
+      .mobile-phone .nav-section:has(a[href*="consultaUsuario"]):not(:has(a[href*="consultaRutaVuelo"])) { display: none !important; }
+      .mobile-phone .nav-section:has(a[href*="consultaPaquete"]) { display: none !important; }
+      .mobile-phone .nav-section:has(a[href*="compraPaquete"]) { display: none !important; }
+      .mobile-phone .nav-section:has(a[href*="altaRutaVuelo"]) { display: none !important; }
+      .mobile-phone .nav-section:has(a[href*="altaVuelo"]) { display: none !important; }
+      .mobile-phone .nav-section:has(a[href*="reserva"]) { display: none !important; }
+      .mobile-phone .nav-item[href*="inicio.jsp"] { display: none !important; }
+    }
+    
+    /* Forzar visibilidad de elementos móviles cuando la clase mobile-phone está presente */
+    body.mobile-phone .nav-section:has(a[href*="inicioSesion"]) { display: block !important; }
+    body.mobile-phone .nav-section:has(a[href*="consultaRutaVuelo"]) { display: block !important; }
+    body.mobile-phone .nav-section:has(a[href*="consultaVuelo"]) { display: block !important; }
+    body.mobile-phone .nav-section:has(a[href*="consultaReserva"]) { display: block !important; }
+  </style>
 </head>
 
-<body>
+<body class="${isMobileDevice ? 'mobile-device' : 'desktop-device'} ${isMobilePhone ? 'mobile-phone' : ''} ${isTabletDevice ? 'tablet-device' : ''}" 
+      data-server-mobile="${isMobileDevice}" 
+      data-server-mobile-phone="${isMobilePhone}" 
+      data-server-tablet="${isTabletDevice}">
+  
+  <!-- Panel de debug temporal -->
+  <div class="debug-panel" id="debugPanel">
+    <h4>🔍 Debug - Detección de Dispositivo</h4>
+    <p><strong>Servidor (User-Agent):</strong></p>
+    <p>isMobileDevice: <span class="${isMobileDevice ? 'true' : 'false'}">${isMobileDevice}</span></p>
+    <p>isMobilePhone: <span class="${isMobilePhone ? 'true' : 'false'}">${isMobilePhone}</span></p>
+    <p>isTabletDevice: <span class="${isTabletDevice ? 'true' : 'false'}">${isTabletDevice}</span></p>
+    <p><strong>Cliente (Pantalla):</strong></p>
+    <p>Ancho: <span id="screenWidth">-</span>px</p>
+    <p>Es Móvil: <span id="clientMobile">-</span></p>
+    <p><strong>User-Agent:</strong></p>
+    <p style="font-size: 10px; word-break: break-all;">${header['User-Agent']}</p>
+    <button onclick="document.getElementById('debugPanel').style.display='none'" style="margin-top: 10px; padding: 5px 10px; cursor: pointer;">Cerrar</button>
+  </div>
 
   <!-- Overlay para mobile / sidebar -->
   <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
@@ -36,120 +125,174 @@
   <aside class="sidebar" id="sidenav-1">
     <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
     
-    <!-- Inicio - siempre visible -->
-    <a href="inicio.jsp" class="nav-item">
-      <i class="fas fa-home"></i>
-      <span>Inicio</span>
-    </a>
+    <!-- Inicio - solo en desktop -->
+    <c:if test="${!isMobilePhone}">
+      <a href="inicio.jsp" class="nav-item">
+        <i class="fas fa-home"></i>
+        <span>Inicio</span>
+      </a>
+    </c:if>
 
     <!-- Navegación para visitantes -->
     <c:if test="${empty sessionScope.usuarioLogueado}">
-      <div class="nav-section">
-        <h3 class="nav-section-title">Acceso</h3>
-        <a href="inicioSesion.jsp" class="nav-item">
-          <i class="fas fa-sign-in-alt"></i>
-          <span>Iniciar Sesión</span>
-        </a>
-        <a href="registrarUsuario.jsp" class="nav-item">
-          <i class="fas fa-user-plus"></i>
-          <span>Registrarse</span>
-        </a>
-      </div>
+      <%-- En móvil: solo mostrar Iniciar Sesión y las consultas permitidas --%>
+      <c:if test="${isMobilePhone}">
+        <div class="nav-section">
+          <h3 class="nav-section-title">Acceso</h3>
+          <a href="inicioSesion.jsp" class="nav-item">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Iniciar Sesión</span>
+          </a>
+        </div>
+        
+        <div class="nav-section">
+          <h3 class="nav-section-title">Consultas</h3>
+          <a href="consultaRutaVuelo.jsp" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span>Consulta de Rutas</span>
+          </a>
+          <a href="consultaVuelo.jsp" class="nav-item">
+            <i class="fas fa-plane"></i>
+            <span>Consulta de Vuelos</span>
+          </a>
+        </div>
+      </c:if>
+      
+      <%-- En desktop: mostrar todas las opciones --%>
+      <c:if test="${!isMobilePhone}">
+        <div class="nav-section">
+          <h3 class="nav-section-title">Acceso</h3>
+          <a href="inicioSesion.jsp" class="nav-item">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Iniciar Sesión</span>
+          </a>
+          <a href="registrarUsuario.jsp" class="nav-item">
+            <i class="fas fa-user-plus"></i>
+            <span>Registrarse</span>
+          </a>
+        </div>
 
-      <div class="nav-section">
-        <h3 class="nav-section-title">Consultas</h3>
-        <a href="consultaUsuario.jsp" class="nav-item">
-          <i class="fas fa-search"></i>
-          <span>Consulta de Usuario</span>
-        </a>
-        <a href="consultaRutaVuelo.jsp" class="nav-item">
-          <i class="fas fa-route"></i>
-          <span>Consulta de Rutas</span>
-        </a>
-        <a href="consultaVuelo.jsp" class="nav-item">
-          <i class="fas fa-plane"></i>
-          <span>Consulta de Vuelos</span>
-        </a>
-        <a href="consultaPaquete.jsp" class="nav-item">
-          <i class="fas fa-box"></i>
-          <span>Consulta de Paquetes</span>
-        </a>
-      </div>
+        <div class="nav-section">
+          <h3 class="nav-section-title">Consultas</h3>
+          <a href="consultaUsuario.jsp" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>Consulta de Usuario</span>
+          </a>
+          <a href="consultaRutaVuelo.jsp" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span>Consulta de Rutas</span>
+          </a>
+          <a href="consultaVuelo.jsp" class="nav-item">
+            <i class="fas fa-plane"></i>
+            <span>Consulta de Vuelos</span>
+          </a>
+          <a href="consultaPaquete.jsp" class="nav-item">
+            <i class="fas fa-box"></i>
+            <span>Consulta de Paquetes</span>
+          </a>
+        </div>
+      </c:if>
     </c:if>
 
     <!-- Navegación para usuarios logueados -->
     <c:if test="${not empty sessionScope.usuarioLogueado}">
-      <!-- Usuario -->
-      <div class="nav-section">
-        <h3 class="nav-section-title">Mi Cuenta</h3>
-        <a href="consultaUsuario.jsp" class="nav-item">
-          <i class="fas fa-user"></i>
-          <span>Mi Perfil</span>
-        </a>
-        <c:if test="${sessionScope.tipoUsuario == 'cliente' || sessionScope.tipoUsuario == 'aerolinea'}">
-          <a href="modificarUsuario.jsp" class="nav-item">
-            <i class="fas fa-edit"></i>
-            <span>Modificar Perfil</span>
+      <%-- En móvil: solo mostrar las consultas permitidas --%>
+      <c:if test="${isMobilePhone}">
+        <div class="nav-section">
+          <h3 class="nav-section-title">Vuelos</h3>
+          <a href="consultaRutaVuelo.jsp" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span>Consulta de Rutas</span>
           </a>
-        </c:if>
-      </div>
+          <a href="consultaVuelo.jsp" class="nav-item">
+            <i class="fas fa-plane"></i>
+            <span>Consulta de Vuelos</span>
+          </a>
+        </div>
 
-      <!-- Vuelos -->
-      <div class="nav-section">
-        <h3 class="nav-section-title">Vuelos</h3>
-        <a href="consultaRutaVuelo.jsp" class="nav-item">
-          <i class="fas fa-route"></i>
-          <span>Consulta de Rutas</span>
-        </a>
-        <a href="consultaVuelo.jsp" class="nav-item">
-          <i class="fas fa-plane"></i>
-          <span>Consulta de Vuelos</span>
-        </a>
-        
-        <!-- Opciones específicas para aerolíneas -->
-        <c:if test="${sessionScope.tipoUsuario == 'aerolinea'}">
-          <a href="altaRutaVuelo.jsp" class="nav-item">
-            <i class="fas fa-plus-circle"></i>
-            <span>Alta de Ruta</span>
+        <div class="nav-section">
+          <h3 class="nav-section-title">Reservas</h3>
+          <a href="consultaReserva.jsp" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Consulta de Reservas</span>
           </a>
-          <a href="altaVuelo.jsp" class="nav-item">
-            <i class="fas fa-plus-circle"></i>
-            <span>Alta de Vuelo</span>
+        </div>
+      </c:if>
+      
+      <%-- En desktop: mostrar todas las opciones --%>
+      <c:if test="${!isMobilePhone}">
+        <!-- Usuario -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Mi Cuenta</h3>
+          <a href="consultaUsuario.jsp" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Mi Perfil</span>
           </a>
-        </c:if>
-        
-        <!-- Opciones específicas para clientes -->
-        <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
-          <a href="reserva.jsp" class="nav-item">
-            <i class="fas fa-calendar-check"></i>
-            <span>Reservar Vuelo</span>
-          </a>
-        </c:if>
-      </div>
+          <c:if test="${sessionScope.tipoUsuario == 'cliente' || sessionScope.tipoUsuario == 'aerolinea'}">
+            <a href="modificarUsuario.jsp" class="nav-item">
+              <i class="fas fa-edit"></i>
+              <span>Modificar Perfil</span>
+            </a>
+          </c:if>
+        </div>
 
-      <!-- Reservas -->
-      <div class="nav-section">
-        <h3 class="nav-section-title">Reservas</h3>
-        <a href="consultaReserva.jsp" class="nav-item">
-          <i class="fas fa-list-alt"></i>
-          <span>Consulta de Reservas</span>
-        </a>
-      </div>
-
-      <!-- Paquetes -->
-      <div class="nav-section">
-        <h3 class="nav-section-title">Paquetes</h3>
-        <a href="consultaPaquete.jsp" class="nav-item">
-          <i class="fas fa-box"></i>
-          <span>Consulta de Paquetes</span>
-        </a>
-        <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
-          <a href="compraPaquete.jsp" class="nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Compra de Paquetes</span>
+        <!-- Vuelos -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Vuelos</h3>
+          <a href="consultaRutaVuelo.jsp" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span>Consulta de Rutas</span>
           </a>
-        </c:if>
-      </div>
+          <a href="consultaVuelo.jsp" class="nav-item">
+            <i class="fas fa-plane"></i>
+            <span>Consulta de Vuelos</span>
+          </a>
+          
+          <!-- Opciones específicas para aerolíneas -->
+          <c:if test="${sessionScope.tipoUsuario == 'aerolinea'}">
+            <a href="altaRutaVuelo.jsp" class="nav-item">
+              <i class="fas fa-plus-circle"></i>
+              <span>Alta de Ruta</span>
+            </a>
+            <a href="altaVuelo.jsp" class="nav-item">
+              <i class="fas fa-plus-circle"></i>
+              <span>Alta de Vuelo</span>
+            </a>
+          </c:if>
+          
+          <!-- Opciones específicas para clientes -->
+          <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
+            <a href="reserva.jsp" class="nav-item">
+              <i class="fas fa-calendar-check"></i>
+              <span>Reservar Vuelo</span>
+            </a>
+          </c:if>
+        </div>
+
+        <!-- Reservas -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Reservas</h3>
+          <a href="consultaReserva.jsp" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Consulta de Reservas</span>
+          </a>
+        </div>
+
+        <!-- Paquetes -->
+        <div class="nav-section">
+          <h3 class="nav-section-title">Paquetes</h3>
+          <a href="consultaPaquete.jsp" class="nav-item">
+            <i class="fas fa-box"></i>
+            <span>Consulta de Paquetes</span>
+          </a>
+          <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
+            <a href="compraPaquete.jsp" class="nav-item">
+              <i class="fas fa-shopping-cart"></i>
+              <span>Compra de Paquetes</span>
+            </a>
+          </c:if>
+        </div>
+      </c:if>
     </c:if>
   </aside>
 
@@ -231,10 +374,13 @@
               <i class="fas fa-user"></i>
               <span class="btn-text">Iniciar sesión</span>
             </a>
-            <a href="registrarUsuario.jsp" class="signup-btn">
-              <i class="fas fa-user-plus"></i>
-              <span class="btn-text">Registrarse</span>
-            </a>
+            <%-- En móvil, ocultar botón de registro --%>
+            <c:if test="${!isMobilePhone}">
+              <a href="registrarUsuario.jsp" class="signup-btn">
+                <i class="fas fa-user-plus"></i>
+                <span class="btn-text">Registrarse</span>
+              </a>
+            </c:if>
           </c:otherwise>
         </c:choose>
       </div>
@@ -247,7 +393,15 @@
           <jsp:include page="${param.content}" />
         </c:when>
         <c:otherwise>
-          <jsp:include page="inicio.jsp" />
+          <%-- En móvil, la página inicial es inicio de sesión; en desktop, es inicio --%>
+          <c:choose>
+            <c:when test="${isMobilePhone && empty sessionScope.usuarioLogueado}">
+              <jsp:include page="inicioSesion-content.jsp" />
+            </c:when>
+            <c:otherwise>
+              <jsp:include page="inicio-content.jsp" />
+            </c:otherwise>
+          </c:choose>
         </c:otherwise>
       </c:choose>
     </div>
@@ -575,6 +729,203 @@ document.addEventListener('DOMContentLoaded', function() {
       })();
     </c:otherwise>
   </c:choose>
+
+  // ===== DETECCIÓN DE DISPOSITIVO MÓVIL DEL LADO DEL CLIENTE =====
+  // Esto funciona como respaldo cuando el User-Agent no se detecta correctamente
+  function detectarDispositivoMovil() {
+    const anchoPantalla = window.innerWidth || document.documentElement.clientWidth;
+    const esMovil = anchoPantalla <= 767; // Mismo breakpoint que CSS
+    
+    // Actualizar panel de debug
+    const screenWidthEl = document.getElementById('screenWidth');
+    const clientMobileEl = document.getElementById('clientMobile');
+    if (screenWidthEl) screenWidthEl.textContent = anchoPantalla;
+    if (clientMobileEl) {
+      clientMobileEl.textContent = esMovil ? 'Sí' : 'No';
+      clientMobileEl.className = esMovil ? 'true' : 'false';
+    }
+    
+    // Obtener detección del servidor
+    const serverMobile = document.body.getAttribute('data-server-mobile-phone') === 'true';
+    const serverMobileDevice = document.body.getAttribute('data-server-mobile') === 'true';
+    
+    // PRIORIDAD: Si el cliente detecta móvil (pantalla pequeña), usar esa detección
+    // Esto es necesario cuando las DevTools simulan dispositivo pero no cambian el User-Agent
+    const esMovilFinal = esMovil || serverMobileDevice;
+    
+    // Agregar/quitar clases al body
+    if (esMovilFinal) {
+      document.body.classList.add('mobile-device', 'mobile-phone');
+      document.body.classList.remove('desktop-device');
+    } else {
+      document.body.classList.add('desktop-device');
+      document.body.classList.remove('mobile-device', 'mobile-phone');
+    }
+    
+    // Ajustar elementos del sidebar basándose en el ancho de pantalla
+    // IMPORTANTE: Usar la detección del cliente (esMovil) para el ajuste
+    ajustarSidebarParaMovil(esMovil);
+    
+    console.log('Detección dispositivo:', {
+      anchoPantalla: anchoPantalla,
+      servidorDetectoMovil: serverMobileDevice,
+      clienteDetectoMovil: esMovil,
+      esMovilFinal: esMovilFinal,
+      usandoCliente: esMovil && !serverMobileDevice
+    });
+    
+    return esMovilFinal;
+  }
+  
+  // Función para ajustar el sidebar dinámicamente
+  function ajustarSidebarParaMovil(esMovil) {
+    // Esta función se ejecuta después de que el servidor ya renderizó el HTML
+    // Oculta/muestra elementos basándose en el ancho de pantalla
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) {
+      console.warn('Sidebar no encontrado');
+      return;
+    }
+    
+    console.log('Ajustando sidebar para móvil:', esMovil);
+    
+    // Lista de enlaces que deben ocultarse en móvil
+    // NOTA: NO incluir 'consultaReserva' aquí porque debe mostrarse
+    const enlacesAOcultar = [
+      'registrarUsuario',
+      'consultaUsuario',
+      'consultaPaquete',
+      'compraPaquete',
+      'altaRutaVuelo',
+      'altaVuelo',
+      'reserva',  // Este es "reserva.jsp" (reservar vuelo), NO "consultaReserva"
+      'inicio.jsp',
+      'modificarUsuario'
+    ];
+    
+    // Lista de enlaces que deben mostrarse en móvil
+    const enlacesPermitidos = [
+      'inicioSesion',
+      'consultaRutaVuelo',
+      'consultaVuelo',
+      'consultaReserva'
+    ];
+    
+    if (esMovil) {
+      console.log('Ocultando elementos no permitidos en móvil...');
+      
+      // En móvil: ocultar elementos no permitidos
+      enlacesAOcultar.forEach(patron => {
+        const enlaces = sidebar.querySelectorAll(`a[href*="${patron}"]`);
+        console.log(`Encontrados ${enlaces.length} enlaces con patrón "${patron}"`);
+        enlaces.forEach(enlace => {
+          enlace.style.display = 'none';
+          enlace.setAttribute('data-mobile-hidden', 'true');
+          
+          // Ocultar también la sección padre si todos sus enlaces están ocultos
+          const seccion = enlace.closest('.nav-section');
+          if (seccion) {
+            const todosLosEnlaces = seccion.querySelectorAll('a');
+            const enlacesVisibles = Array.from(todosLosEnlaces).filter(a => 
+              a.style.display !== 'none' && a.getAttribute('data-mobile-hidden') !== 'true'
+            );
+            if (enlacesVisibles.length === 0 && todosLosEnlaces.length > 0) {
+              seccion.style.display = 'none';
+              seccion.setAttribute('data-mobile-hidden', 'true');
+            }
+          }
+        });
+      });
+      
+      // Asegurar que los elementos permitidos sean visibles
+      console.log('Mostrando elementos permitidos en móvil...');
+      enlacesPermitidos.forEach(patron => {
+        const enlaces = sidebar.querySelectorAll(`a[href*="${patron}"]`);
+        console.log(`Mostrando ${enlaces.length} enlaces con patrón "${patron}"`);
+        enlaces.forEach(enlace => {
+          enlace.style.display = '';
+          enlace.removeAttribute('data-mobile-hidden');
+          const seccion = enlace.closest('.nav-section');
+          if (seccion) {
+            seccion.style.display = 'block';
+            seccion.removeAttribute('data-mobile-hidden');
+            // Asegurar que el título de la sección también sea visible
+            const titulo = seccion.querySelector('.nav-section-title');
+            if (titulo) {
+              titulo.style.display = '';
+            }
+          }
+        });
+      });
+      
+      // Asegurar que la sección de Reservas sea visible si tiene consultaReserva
+      // Buscar el enlace de consultaReserva y luego su sección padre
+      const enlaceReserva = sidebar.querySelector('a[href*="consultaReserva"]');
+      if (enlaceReserva) {
+        enlaceReserva.style.display = '';
+        enlaceReserva.removeAttribute('data-mobile-hidden');
+        const seccionReservas = enlaceReserva.closest('.nav-section');
+        if (seccionReservas) {
+          seccionReservas.style.display = 'block';
+          seccionReservas.removeAttribute('data-mobile-hidden');
+          // Asegurar que el título también sea visible
+          const titulo = seccionReservas.querySelector('.nav-section-title');
+          if (titulo) {
+            titulo.style.display = '';
+          }
+        }
+        console.log('Sección de Reservas mostrada correctamente');
+      } else {
+        console.warn('No se encontró el enlace de consultaReserva');
+      }
+      
+      // Ocultar botón de registro en el header
+      const botonRegistro = document.querySelector('a[href*="registrarUsuario"]');
+      if (botonRegistro && botonRegistro.closest('.header-icons')) {
+        botonRegistro.style.display = 'none';
+      }
+      
+    } else {
+      console.log('Mostrando todos los elementos (desktop)...');
+      
+      // En desktop: mostrar todos los elementos
+      const elementosOcultos = sidebar.querySelectorAll('[data-mobile-hidden="true"]');
+      console.log(`Restaurando ${elementosOcultos.length} elementos ocultos`);
+      elementosOcultos.forEach(el => {
+        el.style.display = '';
+        el.removeAttribute('data-mobile-hidden');
+      });
+      
+      // Mostrar botón de registro en el header
+      const botonRegistro = document.querySelector('a[href*="registrarUsuario"]');
+      if (botonRegistro && botonRegistro.closest('.header-icons')) {
+        botonRegistro.style.display = '';
+      }
+    }
+    
+    console.log('Ajuste del sidebar completado');
+  }
+  
+  // Ejecutar detección al cargar (con pequeño delay para asegurar que el DOM esté listo)
+  setTimeout(function() {
+    detectarDispositivoMovil();
+  }, 100);
+  
+  // Ejecutar al redimensionar la ventana
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      detectarDispositivoMovil();
+    }, 250);
+  });
+  
+  // También ejecutar cuando el DOM esté completamente cargado
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(detectarDispositivoMovil, 100);
+    });
+  }
 });
 </script>
 
