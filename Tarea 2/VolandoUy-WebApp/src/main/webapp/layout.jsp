@@ -252,7 +252,7 @@
           <c:if test="${sessionScope.tipoUsuario == 'aerolinea'}">
             <a href="altaRutaVuelo.jsp" class="nav-item">
               <i class="fas fa-plus-circle"></i>
-              <span>Alta de Ruta</span>
+              <span>Alta y Finalizacion de Ruta</span>
             </a>
             <a href="altaVuelo.jsp" class="nav-item">
               <i class="fas fa-plus-circle"></i>

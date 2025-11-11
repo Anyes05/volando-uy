@@ -154,10 +154,14 @@ public interface ISistema {
 
     public void rechazarRutaVuelo();
 
+    public void EstadoFinalizarRutaVuelo(String nombreRuta);
+
     // RECARGAR RUTAS CON ESTADOS
     public void recargarRutasConEstados();
 
     public List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(String nicknameCliente, String rutaNombre);
+
+
 
 }
 

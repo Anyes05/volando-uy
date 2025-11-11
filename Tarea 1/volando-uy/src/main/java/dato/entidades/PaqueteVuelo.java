@@ -157,4 +157,9 @@ public class PaqueteVuelo {
     public void setFoto(byte[] foto) {
         this.foto = foto;
     }
+
+    public void removeCantidad(Cantidad cantidad) {
+        cantidades.remove(cantidad);
+        cantidad.setPaqueteVuelo(null); // importantísimo: rompe la relación en el lado propietario
+    }
 }

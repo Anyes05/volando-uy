@@ -63,17 +63,12 @@ public class RutaVueloController extends HttpServlet {
             LOG.info("Nickname param: " + nicknameParam);
 
             if (pathInfo == null || pathInfo.equals("/")) {
-                // GET /api/rutas - Lista rutas confirmadas de una aerolínea o todas las rutas
-                LOG.info("Manejando lista de rutas");
-                if (nicknameParam == null || nicknameParam.trim().isEmpty()) {
-                    // Si no se especifica aerolínea, devolver todas las rutas
-                    handleGetTodasLasRutas(request, response, out);
-                } else {
-                    // Si se especifica aerolínea, devolver solo las de esa aerolínea
-                    handleGetRutas(nicknameParam, request, response, out);
-                }
+                // GET /api/rutas - Usar aerolínea del parámetro o, si no hay, de la sesión
+                LOG.info("Manejando lista de rutas (sesión/param)");
+                handleGetRutas(nicknameParam, request, response, out);
                 return;
-            } else if (pathInfo.equals("/test")) {
+            }
+            else if (pathInfo.equals("/test")) {
                 // Endpoint de prueba
                 LOG.info("Endpoint de prueba llamado");
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -979,7 +974,19 @@ public class RutaVueloController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
+        String pathInfo = request.getPathInfo();
+        LOG.info("POST /api/rutas pathInfo=" + pathInfo);
+
         try {
+            // --- NUEVO: si viene /api/rutas/finalizar -> finalizar ruta ---
+            if (pathInfo != null && pathInfo.equals("/finalizar")) {
+                handleFinalizarRuta(request, response, out);
+                return;
+            }
+
+            // ======================
+            //  ALTA DE RUTA (POST /api/rutas)
+            // ======================
             if (sistema == null) {
                 LOG.severe("Sistema.getInstance() devolvió null. Verificar classpath/JAR y carga de la clase.");
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -993,7 +1000,7 @@ public class RutaVueloController extends HttpServlet {
             String descripcion = trim(request.getParameter("descripcion"));
             String fechaAltaStr = trim(request.getParameter("fechaAlta"));
 
-            // Convertir a float de forma segura SIN métodos auxiliares.
+            // Convertir a float de forma segura
             String costoTuristaParam = request.getParameter("costoTurista");
             float costoTurista = (costoTuristaParam != null && !costoTuristaParam.isBlank())
                     ? Float.parseFloat(costoTuristaParam.trim())
@@ -1014,7 +1021,7 @@ public class RutaVueloController extends HttpServlet {
             String videoUrl = trim(request.getParameter("videoUrl")); // URL del video (opcional)
 
             List<String> categorias = new ArrayList<>();
-            // Primero intentamos parameterValues (select multiple)
+            // Primero intentamos parameterValues (checkbox / select multiple)
             String[] catArray = request.getParameterValues("categorias");
             if (catArray != null && catArray.length > 0) {
                 for (String c : catArray) if (c != null && !c.isBlank()) categorias.add(c.trim());
@@ -1044,7 +1051,7 @@ public class RutaVueloController extends HttpServlet {
 
             // LOG de depuración
             byte[] finalFotoBytes = fotoBytes;
-            LOG.info(() -> "POST /api/rutas recibido. nombre=" + nombre
+            LOG.info(() -> "POST /api/rutas (ALTA) recibido. nombre=" + nombre
                     + ", fechaAlta=" + fechaAltaStr
                     + ", costoTurista=" + costoTurista
                     + ", costoEjecutivo=" + costoEjecutivo
@@ -1076,7 +1083,8 @@ public class RutaVueloController extends HttpServlet {
                     return;
                 }
             }
-            // ahora, usar los datos del session para detectar si el usuario logueado es una aerolinea, en caso de serlo, permitir la operacion
+
+            // ahora, usar los datos del session para detectar si el usuario logueado es una aerolinea
             HttpSession session = request.getSession(false);
             if (session == null || session.getAttribute("usuarioLogueado") == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -1084,7 +1092,6 @@ public class RutaVueloController extends HttpServlet {
                 return;
             }
             String nickname = (String) session.getAttribute("usuarioLogueado");
-
 
             // --- Llamada a la lógica (caja negra) ---
             try {
@@ -1094,7 +1101,6 @@ public class RutaVueloController extends HttpServlet {
                     dtFecha = new DTFecha(fechaAlta.getDayOfMonth(), fechaAlta.getMonthValue(), fechaAlta.getYear());
                 }
 
-                // Usamos los métodos que mostraste en tu código original:
                 LOG.info("Invocando sistema.ingresarDatosRuta(...)");
                 sistema.seleccionarAerolinea(nickname);
                 sistema.ingresarDatosRuta(
@@ -1134,6 +1140,71 @@ public class RutaVueloController extends HttpServlet {
             out.flush();
         }
     }
+
+    /**
+     * POST /api/rutas/finalizar
+     * Finaliza una ruta de vuelo seleccionada (cambiando su estado en la lógica).
+     */
+    private void handleFinalizarRuta(HttpServletRequest request, HttpServletResponse response, PrintWriter out)
+            throws IOException {
+
+        LOG.info("POST /api/rutas/finalizar llamado");
+
+        if (sistema == null) {
+            LOG.severe("Sistema no inicializado en handleFinalizarRuta");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
+            return;
+        }
+
+        try {
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("usuarioLogueado") == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "No autenticado")));
+                return;
+            }
+
+            String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+            if (tipoUsuario == null || !"aerolinea".equalsIgnoreCase(tipoUsuario)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Solo una aerolínea puede finalizar rutas")));
+                return;
+            }
+
+            String nickname = (String) session.getAttribute("usuarioLogueado");
+
+            String nombreRuta = trim(request.getParameter("rutaFinalizar"));
+            if (isEmpty(nombreRuta)) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Debe seleccionar una ruta")));
+                return;
+            }
+
+            LOG.info("Finalizando ruta '" + nombreRuta + "' para aerolínea " + nickname);
+
+            try {
+                sistema.seleccionarAerolinea(nickname);
+                sistema.EstadoFinalizarRutaVuelo(nombreRuta);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Ruta finalizada correctamente")));
+            } catch (IllegalArgumentException ex) {
+                LOG.warning("Ruta no encontrada al finalizar: " + nombreRuta + " - " + ex.getMessage());
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada", "detail", ex.getMessage())));
+            } catch (Exception ex) {
+                LOG.log(Level.SEVERE, "Error al finalizar ruta " + nombreRuta, ex);
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Error al finalizar ruta", "detail", ex.getMessage())));
+            }
+
+        } finally {
+            out.flush();
+        }
+    }
+
+
 
     /**
      * Busca una ruta por nombre en todas las aerolíneas

@@ -1,4 +1,3 @@
-<!-- language: html -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -104,7 +103,35 @@
       </div>
     </form>
   </div>
+
+  <div class="form-card-pro" style="margin-top: 2rem;">
+    <h2> Finalizar Ruta de Vuelo</h2>
+    <p class="form-subtitle">Seleccione una ruta existente para finalizarla</p>
+
+    <form id="formFinalizarRutaPro"
+          class="form-grid"
+          method="post"
+          action="<c:url value='/api/rutas/finalizar'/>"
+          novalidate>
+      <div class="form-group full-width">
+        <label for="rutaFinalizar">Ruta de Vuelo</label>
+        <select id="rutaFinalizar" name="rutaFinalizar" required>
+          <option value="">Seleccione una ruta</option>
+          <!-- Las rutas se cargarán dinámicamente aquí -->
+        </select>
+        <small class="hint">Seleccione la ruta que desea marcar como finalizada</small>
+      </div>
+
+      <div class="form-actions full-width">
+        <button id="btnFinalizarRuta" type="submit" class="btn-pro" disabled>
+          Finalizar Ruta de Vuelo
+        </button>
+      </div>
+    </form>
+  </div>
+
 </section>
+
 
 <style>
   /* Estilos para categorías - integrado con el diseño de la página */
@@ -178,6 +205,128 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const baseRutasUrl  = '<c:url value="/api/rutas"/>';
+    const finalizarUrl  = '<c:url value="/api/rutas/finalizar"/>';
+    const selectRuta    = document.getElementById('rutaFinalizar');
+    const btnFinalizar  = document.getElementById('btnFinalizarRuta');
+    const formFinalizar = document.getElementById('formFinalizarRutaPro');
+
+    // Nickname de la aerolínea logueada desde la sesión
+    const nicknameAeroRaw = '<c:out value="${sessionScope.usuarioLogueado}" />';
+    const nicknameAero = nicknameAeroRaw ? nicknameAeroRaw.trim() : '';
+
+    // Si hay aerolínea logueada, pedimos SOLO sus rutas: /api/rutas?aerolinea=<nickname>
+    const rutasUrl = nicknameAero
+      ? baseRutasUrl + '?aerolinea=' + encodeURIComponent(nicknameAero)
+      : baseRutasUrl; // fallback por si acaso
+
+    // --- Habilitar / deshabilitar botón según selección ---
+    const toggleButton = () => {
+      if (!btnFinalizar || !selectRuta) return;
+      btnFinalizar.disabled = !selectRuta.value;
+    };
+
+    if (selectRuta && btnFinalizar) {
+      selectRuta.addEventListener('change', toggleButton);
+    }
+
+    // --- Cargar rutas SOLO CONFIRMADAS de la aerolínea logueada ---
+    if (selectRuta) {
+      fetch(rutasUrl, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Error al obtener rutas: " + response.status);
+          }
+          return response.json();
+        })
+        .then(rutas => {
+          console.log('Rutas recibidas para finalizar:', rutas);
+
+          rutas
+            // acá corregimos: comparación case-insensitive
+            .filter(r => r.estado && r.estado.toUpperCase() === 'CONFIRMADA')
+            .forEach(r => {
+              const opt = document.createElement('option');
+              opt.value = r.nombre;
+
+              let label = r.nombre;
+              if (r.ciudadOrigen && r.ciudadDestino) {
+                label += " (" + r.ciudadOrigen.nombre + " → " + r.ciudadDestino.nombre + ")";
+              }
+              // sabemos que son CONFIRMADAS, no hace falta agregarlo al texto
+              opt.textContent = label;
+              selectRuta.appendChild(opt);
+            });
+
+          toggleButton();
+        })
+        .catch(err => {
+          console.error('Error al cargar rutas para finalizar:', err);
+          // Si tenés toasts:
+          // showToast('error', 'No se pudieron cargar las rutas para finalizar');
+          alert('No se pudieron cargar las rutas para finalizar');
+        });
+    }
+
+    // --- Enviar finalización por fetch para no recargar toda la página ---
+    if (formFinalizar) {
+      formFinalizar.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (!selectRuta || !selectRuta.value) {
+          // showToast('warning', 'Debe seleccionar una ruta');
+          alert('Debe seleccionar una ruta');
+          return;
+        }
+
+        const formData = new FormData(formFinalizar);
+
+        fetch(finalizarUrl, {
+          method: 'POST',
+          body: formData
+        })
+          .then(response =>
+            response.json().then(body => ({ ok: response.ok, status: response.status, body }))
+          )
+          .then(({ ok, status, body }) => {
+            if (ok) {
+              // showToast('success', body.mensaje || 'Ruta finalizada correctamente');
+              alert(body.mensaje || 'Ruta finalizada correctamente');
+
+              const selectedIndex = selectRuta.selectedIndex;
+              if (selectedIndex >= 0) {
+                // Podés marcar visualmente como finalizada o directamente sacarla del combo
+                // selectRuta.options[selectedIndex].textContent += ' (FINALIZADA)';
+                selectRuta.remove(selectedIndex);
+              }
+
+              selectRuta.value = '';
+              toggleButton();
+            } else {
+              console.error('Error al finalizar ruta', status, body);
+              // showToast('error', body.error || 'Error al finalizar ruta');
+              alert(body.error || 'Error al finalizar ruta');
+            }
+          })
+          .catch(err => {
+            console.error('Error inesperado al finalizar ruta:', err);
+            // showToast('error', 'Error inesperado al finalizar ruta');
+            alert('Error inesperado al finalizar ruta');
+          });
+      });
+    }
+  });
+</script>
+
+
+
+
 
 <script>
   // Cargar categorías dinámicamente

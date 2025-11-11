@@ -1,4 +1,7 @@
 package logica.DataTypes;
+import java.time.*;
+
+import java.time.LocalDate;
 
 public class DTFecha {
     private int dia;
@@ -32,4 +35,9 @@ public class DTFecha {
     }
 
 
+    public boolean isAfter(LocalDate hoy) {
+        LocalDate fecha = LocalDate.of(ano, mes, dia);
+        hoy = LocalDate.of(hoy.getYear(), hoy.getMonth(), hoy.getDayOfMonth()-1);
+        return fecha.isAfter(hoy);
+    }
 }
