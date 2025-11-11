@@ -1,10 +1,12 @@
 package logica.DataTypes;
+import java.util.List;
 
 public class DTUsuario {
     private String nickname;
     private String nombre;
     private String correo;
     private byte[] foto;
+    private List<String> seguidos;
     private String contrasena;
 
 
