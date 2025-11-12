@@ -3,6 +3,7 @@ package logica.DataTypes;
 public enum EstadoRutaVuelo {
     INGRESADA("Ingresada"),
     CONFIRMADA("Confirmada"),
+    FINALIZADA("Finalizada"),
     RECHAZADA("Rechazada");
 
     private final String descripcion;

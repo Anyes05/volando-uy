@@ -1647,6 +1647,64 @@ public class Sistema implements ISistema {
         throw new IllegalStateException("SUCCESS: La ruta de vuelo '" + nombreRuta + "' ha sido rechazada y su estado cambió a 'Rechazada'.");
     }
 
+    public void EstadoFinalizarRutaVuelo(String nombreRuta) {
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        rutaVueloSeleccionadaParaAdministracion = rutaVueloServicio.buscarRutaVueloPorNombre(nombreRuta);
+        if (rutaVueloSeleccionadaParaAdministracion == null) {
+            throw new IllegalStateException("Debe seleccionar una ruta de vuelo antes de finalizarla.");
+        }
+
+        if (!chequeoParaFinalizar(nombreRuta)) {
+            eliminarRutaDePaquete(nombreRuta);
+            rutaVueloServicio.cambiarEstadoRutaVuelo(
+                    rutaVueloSeleccionadaParaAdministracion.getId(),
+                    EstadoRutaVuelo.FINALIZADA
+            );
+        }
+
+        // Limpiar selecciones
+        aerolineaSeleccionadaParaAdministracion = null;
+        rutaVueloSeleccionadaParaAdministracion = null;
+    }
+
+    public boolean chequeoParaFinalizar(String nombreRuta) {
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        RutaVuelo ruta = rutaVueloServicio.buscarRutaVueloPorNombre(nombreRuta);
+        boolean estaEnPaquete = false;
+        if (ruta != null) {
+            List<Vuelo> vuelosAsociados = ruta.getVuelos();
+            java.time.LocalDate hoy = java.time.LocalDate.now();
+            for (Vuelo v : vuelosAsociados) {
+                if (v.getFechaVuelo().isAfter(hoy)) {
+                    estaEnPaquete = true;
+                    throw new IllegalStateException("ERROR: No se puede finalizar la ruta de vuelo '" + nombreRuta + "' porque tiene vuelos programados en el futuro.");
+                }
+            }
+            for (Cantidad p : ruta.getCantidad()) {
+                if (p.getPaqueteVuelo().isComprado()) {
+                    estaEnPaquete = true;
+                    throw new IllegalStateException("ERROR: No se puede finalizar la ruta de vuelo '" + nombreRuta + "' porque está asociada a paquetes de vuelo comprados.");
+                }
+            }
+        }
+        return estaEnPaquete;
+    }
+
+    public void eliminarRutaDePaquete (String nombreRuta) {
+        RutaVueloServicio rutaVueloServicio = new RutaVueloServicio();
+        RutaVuelo ruta = rutaVueloServicio.buscarRutaVueloPorNombre(nombreRuta);
+        List<Cantidad> c = ruta.getCantidad();
+        for (Cantidad cantidad : c) {
+            PaqueteVuelo paquete = cantidad.getPaqueteVuelo();
+            paquete.removeCantidad(cantidad);
+            CantidadServicio cantidadServicio = new CantidadServicio();
+            cantidadServicio.eliminarCantidad(cantidad);
+            PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
+            paqueteVueloServicio.actualizarPaquete(paquete);
+        }
+    }
+
+
     // RECARGAR RUTAS CON ESTADOS
     public void recargarRutasConEstados() {
         // Recargar solo las rutas con los nuevos estados

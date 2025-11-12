@@ -7,7 +7,6 @@ let clienteActual = null;
 
 // Inicializar la página
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔥 COMPRA PAQUETE JS CARGADO - FUNCIONANDO 🔥');
     console.log('DOM cargado, inicializando página de compra de paquetes');
     
     console.log('Elementos disponibles:', {

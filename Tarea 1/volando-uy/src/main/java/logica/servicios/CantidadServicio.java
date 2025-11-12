@@ -15,4 +15,8 @@ public class CantidadServicio {
     public Cantidad obtenerCantidad(Long id) {
         return cantidadDAO.buscarPorId(id);
     }
+
+    public void eliminarCantidad(Cantidad cantidad) {
+        cantidadDAO.eliminar(cantidad);
+    }
 }

@@ -25,4 +25,15 @@ public class CantidadDAO {
         em.close();
         return c;
     }
+
+    public void eliminar(Cantidad cantidad) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Cantidad c = em.find(Cantidad.class, cantidad.getId());
+        if (c != null) {
+            em.remove(c);
+        }
+        em.getTransaction().commit();
+        em.close();
+    }
 }
