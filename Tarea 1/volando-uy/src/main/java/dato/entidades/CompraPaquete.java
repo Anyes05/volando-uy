@@ -49,6 +49,10 @@ public class CompraPaquete extends Reserva {
         this.paqueteVuelo = paqueteVuelo;
     }
 
+    public float getCostoTotal() {
+        return this.paqueteVuelo.getCostoTotal();
+    }
+
 //    public TipoAsiento getTipoAsiento() {return tipoAsiento;}
 //
 //    public void setTipoAsiento(TipoAsiento tipoAsiento) {this.tipoAsiento = tipoAsiento;}

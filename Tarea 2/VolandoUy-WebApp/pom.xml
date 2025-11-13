@@ -21,7 +21,7 @@
       <version>4.0.1</version>
       <scope>provided</scope>
     </dependency>
-    
+
     <!-- JSP API -->
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
@@ -29,14 +29,14 @@
       <version>2.3.3</version>
       <scope>provided</scope>
     </dependency>
-    
+
     <!-- JSTL -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
       <version>1.2</version>
     </dependency>
-    
+
     <!-- Jackson para JSON -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -78,7 +78,7 @@
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
-      
+
       <!-- Maven Compiler Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

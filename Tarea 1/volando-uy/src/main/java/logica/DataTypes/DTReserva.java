@@ -13,6 +13,12 @@ public class DTReserva {
         this.nickname = null;
     }
 
+    //constructor vacio
+    public DTReserva() {
+
+    }
+
+
     public DTFecha getFechaReserva() {
         return this.fechaReserva;
     }
@@ -45,4 +51,27 @@ public class DTReserva {
         this.nickname = nickname;
     }
 
+    public void setCheckInRealizado(boolean checkInRealizado) {
+    }
+
+    public void setTipo(String compraComun) {
+    }
+
+    public void setTipoAsiento(TipoAsiento tipoAsiento) {
+    }
+
+    public void setEquipajeExtra(int equipajeExtra) {
+    }
+
+    public void setVueloNombre(String nombre) {
+    }
+
+    public void setCostoTotal(float costoTotal) {
+    }
+
+    public void setVencimiento(DTFecha vencimiento) {
+    }
+
+    public void setPaqueteNombre(String nombre) {
+    }
 }

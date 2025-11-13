@@ -164,7 +164,9 @@ public interface ISistema {
 
     public List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(String nicknameCliente, String rutaNombre);
 
+    public List<Reserva> listarReservasCheck (String nicknameCliente);
 
+    public List<DTReserva> listarDTReservasCheck (List<Reserva> reservas);
 
 }
 

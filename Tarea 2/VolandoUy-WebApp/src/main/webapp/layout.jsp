@@ -276,6 +276,11 @@
             <i class="fas fa-list-alt"></i>
             <span>Consulta de Reservas</span>
           </a>
+
+          <a href="consultacheckin.jsp" class="nav-item">
+            <i class="fas fa-route"></i>
+            <span>Consulta de Check In</span>
+          </a>
         </div>
 
         <!-- Paquetes -->
@@ -808,7 +813,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'inicioSesion',
       'consultaRutaVuelo',
       'consultaVuelo',
-      'consultaReserva'
+      'consultaReserva',
     ];
     
     if (esMovil) {

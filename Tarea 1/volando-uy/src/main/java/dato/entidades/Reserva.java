@@ -19,6 +19,9 @@ public class Reserva {
     @JoinColumn(name = "cliente_id") // columna FK en la tabla actual
     private Cliente cliente;
 
+    @Column(nullable = true)
+    private boolean checkInRealizado = false;
+
     @Column(nullable = false)
     private DTFecha fechaReserva;
 
@@ -44,6 +47,7 @@ public class Reserva {
     public Reserva(Cliente cliente, DTFecha fechaReserva) {
         this.cliente = cliente;
         this.fechaReserva = fechaReserva;
+        this.checkInRealizado = false;
     }
 
     // getters y setters
@@ -100,7 +104,15 @@ public class Reserva {
         }
     }
 
-//    public float getCostoTotal() {
+    public boolean isCheckInRealizado() {
+        return checkInRealizado;
+    }
+
+    public void setCheckInRealizado(boolean checkInRealizado) {
+        this.checkInRealizado = checkInRealizado;
+    }
+
+    //    public float getCostoTotal() {
 //        return costoTotal;
 //    }
 

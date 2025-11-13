@@ -1,13 +1,6 @@
 package logica.clase;
 
-import dato.entidades.Cantidad;
-import dato.entidades.Ciudad;
-import dato.entidades.Cliente;
-import dato.entidades.CompraPaquete;
-import dato.entidades.Reserva;
-import dato.entidades.RutaVuelo;
-import dato.entidades.Usuario;
-import dato.entidades.Vuelo;
+import dato.entidades.*;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.TipoDoc;
 import logica.DataTypes.DTUsuario;
@@ -25,23 +18,7 @@ import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTCompraPaquete;
 import logica.DataTypes.EstadoRutaVuelo;
 import logica.DataTypes.DTPasajero;
-import dato.entidades.Aerolinea;
-import logica.servicios.AeropuertoServicio;
-import logica.servicios.CantidadServicio;
-import logica.servicios.CategoriaServicio;
-import logica.servicios.CiudadServicio;
-import logica.servicios.ClienteServicio;
-import logica.servicios.AerolineaServicio;
-import dato.entidades.PaqueteVuelo;
-import dato.entidades.Categoria;
-import logica.servicios.CompraComunServicio;
-import logica.servicios.CompraPaqueteServicio;
-import logica.servicios.RutaVueloServicio;
-import logica.servicios.VueloServicio;
-import logica.servicios.PaqueteVueloServicio;
-import logica.servicios.UsoPaqueteServicio;
-import logica.servicios.SeguidoresServicio;
-import dato.entidades.UsoPaquete;
+import logica.servicios.*;
 import logica.excepciones.AerolineaException;
 import logica.excepciones.ClienteException;
 import logica.excepciones.PaqueteException;
@@ -2024,6 +2001,47 @@ public class Sistema implements ISistema {
         } finally {
             em.close();
         }
+    }
+
+    public List<Reserva> listarReservasCheck (String nicknameCliente) {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        ReservaServicio reservaServicio = new ReservaServicio();
+        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameCliente);
+        if (cliente == null) {
+            throw new IllegalArgumentException("No se encontró un cliente con el nickname: " + nicknameCliente);
+        }
+        List<Reserva> reservasCliente = cliente.getReservas();
+        List<Reserva> reservasCheckIn = new ArrayList<>();
+        for (Reserva r : reservasCliente) {
+            if (r.isCheckInRealizado()) {
+                reservasCheckIn.add(r);
+            }
+        }
+        return reservasCheckIn;
+    }
+
+    public List<DTReserva> listarDTReservasCheck (List<Reserva> reservas) {
+        List<DTReserva> dtReservas = new ArrayList<>();
+        for (Reserva r : reservas) {
+            DTReserva dtReserva = new DTReserva();
+            dtReserva.setId(r.getId());
+            dtReserva.setFechaReserva(r.getFechaReserva());
+            dtReserva.setCheckInRealizado(r.isCheckInRealizado());
+            if (r instanceof CompraComun compraComun) {
+                dtReserva.setTipo("CompraComun");
+                dtReserva.setTipoAsiento(compraComun.getTipoAsiento());
+                dtReserva.setEquipajeExtra(compraComun.getEquipajeExtra());
+                dtReserva.setVueloNombre(compraComun.getVuelo().getNombre());
+                dtReserva.setCostoTotal(compraComun.getCostoReserva().getCostoTotal());
+            } else if (r instanceof CompraPaquete compraPaquete) {
+                dtReserva.setTipo("CompraPaquete");
+                dtReserva.setVencimiento(compraPaquete.getVencimiento());
+                dtReserva.setPaqueteNombre(compraPaquete.getPaqueteVuelo().getNombre());
+                dtReserva.setCostoTotal(compraPaquete.getCostoTotal());
+            }
+            dtReservas.add(dtReserva);
+        }
+        return dtReservas;
     }
 }
 
