@@ -8,7 +8,7 @@ import java.util.List;
 
 public class GenericDAO<T> {
 
-    protected static final EntityManagerFactory emf =
+    public static final EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("volandouyPU");
 
     // protected EntityManager em;   // <---- antes estaba private
