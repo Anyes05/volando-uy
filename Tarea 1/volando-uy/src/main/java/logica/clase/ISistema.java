@@ -22,6 +22,9 @@ public interface ISistema {
     // PRECARGA DE VUELOS
     public void precargarVuelos();
 
+    // PRECARGA DE SEGUIDORES
+    public void precargarSeguidores();
+
     // PRECARGA COMPLETA DEL SISTEMA
     public void precargarSistemaCompleto();
 

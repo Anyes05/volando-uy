@@ -5,6 +5,7 @@ import logica.clase.Sistema;
 import logica.servicios.ClienteServicio;
 import logica.servicios.AerolineaServicio;
 import logica.servicios.ReservaServicio;
+import logica.servicios.SeguidoresServicio;
 import dato.entidades.Cliente;
 import dato.entidades.Aerolinea;
 import dato.entidades.Reserva;
@@ -532,6 +533,23 @@ public class UsuarioController extends HttpServlet {
                             }
                         }
                         
+                        // Agregar información de seguidores y seguidos (características sociales)
+                        try {
+                            LOG.info("Obteniendo seguidores y seguidos para: " + nickname);
+                            SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
+                            List<String> seguidores = seguidoresServicio.listarSeguidores(nickname);
+                            List<String> seguidos = seguidoresServicio.listarSeguidos(nickname);
+                            
+                            usuarioData.put("seguidores", seguidores != null ? seguidores : new ArrayList<>());
+                            usuarioData.put("seguidos", seguidos != null ? seguidos : new ArrayList<>());
+                            LOG.info("Seguidores: " + (seguidores != null ? seguidores.size() : 0) + 
+                                    ", Seguidos: " + (seguidos != null ? seguidos.size() : 0));
+                        } catch (Exception e) {
+                            LOG.warning("Error al obtener seguidores/seguidos: " + e.getMessage());
+                            usuarioData.put("seguidores", new ArrayList<>());
+                            usuarioData.put("seguidos", new ArrayList<>());
+                        }
+                        
                         LOG.info("Datos extraídos exitosamente");
                         response.setStatus(HttpServletResponse.SC_OK);
                         out.print(objectMapper.writeValueAsString(usuarioData));
@@ -1016,6 +1034,21 @@ public class UsuarioController extends HttpServlet {
         } catch (Exception e) {
             LOG.warning("Error al extraer datos específicos del usuario: " + e.getMessage());
             datos.put("tipo", "desconocido");
+        }
+        
+        // Agregar información de seguidores y seguidos (características sociales)
+        try {
+            String nickname = dtUsuario.getNickname();
+            SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
+            List<String> seguidores = seguidoresServicio.listarSeguidores(nickname);
+            List<String> seguidos = seguidoresServicio.listarSeguidos(nickname);
+            
+            datos.put("seguidores", seguidores != null ? seguidores : new ArrayList<>());
+            datos.put("seguidos", seguidos != null ? seguidos : new ArrayList<>());
+        } catch (Exception e) {
+            LOG.warning("Error al obtener seguidores/seguidos en extraerDatosUsuario: " + e.getMessage());
+            datos.put("seguidores", new ArrayList<>());
+            datos.put("seguidos", new ArrayList<>());
         }
 
         return datos;

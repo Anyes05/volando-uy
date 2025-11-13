@@ -104,4 +104,127 @@ public class SeguidoresServicio {
             em.close();
         }
     }
+
+    // Método para precargar relaciones de seguimiento
+    public void precargarSeguidores() {
+        try {
+            // Array de relaciones de seguimiento: {seguidor, seguido}
+            String[][] relacionesSeguimiento = {
+                // Clientes siguen a aerolíneas
+                {"jperez", "pluna"},
+                {"jperez", "latam"},
+                {"mgarcia", "aerolineas"},
+                {"mgarcia", "latam"},
+                {"rlopez", "gol"},
+                {"acastro", "sky"},
+                {"acastro", "latam"},
+                {"fmartinez", "pluna"},
+                {"srodriguez", "avianca"},
+                {"dfernandez", "aerolineas"},
+                {"lgonzalez", "pluna"},
+                {"chernandez", "gol"},
+                {"mruiz", "sky"},
+                
+                // Clientes se siguen entre sí (red social)
+                {"jperez", "mgarcia"},
+                {"mgarcia", "rlopez"},
+                {"rlopez", "acastro"},
+                {"acastro", "fmartinez"},
+                {"fmartinez", "srodriguez"},
+                {"srodriguez", "dfernandez"},
+                {"dfernandez", "lgonzalez"},
+                {"lgonzalez", "chernandez"},
+                {"chernandez", "mruiz"},
+                {"mruiz", "jperez"},
+                
+                // Algunos clientes siguen a otros clientes (relaciones bidireccionales)
+                {"jperez", "acastro"},
+                {"acastro", "jperez"},
+                {"mgarcia", "srodriguez"},
+                {"srodriguez", "mgarcia"},
+                
+                // Aerolíneas se siguen entre sí (competencia/colaboración)
+                {"pluna", "latam"},
+                {"latam", "aerolineas"},
+                {"aerolineas", "gol"},
+                {"gol", "sky"},
+                {"sky", "avianca"},
+                {"avianca", "copa"},
+                {"copa", "iberia"},
+                {"iberia", "airfrance"},
+                {"airfrance", "american"},
+                {"american", "delta"},
+                {"delta", "united"},
+                
+                // Algunas aerolíneas siguen a otras (relaciones bidireccionales)
+                {"latam", "pluna"},
+                {"aerolineas", "latam"},
+                
+                // Clientes siguen a múltiples aerolíneas
+                {"jperez", "aerolineas"},
+                {"mgarcia", "pluna"},
+                {"rlopez", "latam"},
+                {"acastro", "aerolineas"},
+                {"fmartinez", "latam"},
+                {"srodriguez", "pluna"},
+                {"dfernandez", "latam"},
+                {"lgonzalez", "aerolineas"},
+                {"chernandez", "latam"},
+                {"mruiz", "pluna"}
+            };
+
+            int relacionesCreadas = 0;
+            int relacionesExistentes = 0;
+            int errores = 0;
+
+            for (String[] relacion : relacionesSeguimiento) {
+                String seguidor = relacion[0];
+                String seguido = relacion[1];
+                
+                try {
+                    // Verificar si la relación ya existe
+                    EntityManager em = GenericDAO.emf.createEntityManager();
+                    try {
+                        Long count = em.createQuery(
+                                        "SELECT COUNT(s) FROM Seguidores s WHERE s.seguidor.nickname = :seguidor AND s.seguido.nickname = :seguido",
+                                        Long.class)
+                                .setParameter("seguidor", seguidor)
+                                .setParameter("seguido", seguido)
+                                .getSingleResult();
+                        
+                        if (count > 0) {
+                            relacionesExistentes++;
+                            continue; // Ya existe, saltar
+                        }
+                    } finally {
+                        em.close();
+                    }
+                    
+                    // Crear la relación
+                    seguir(seguidor, seguido);
+                    relacionesCreadas++;
+                    System.out.println("Relación de seguimiento creada: " + seguidor + " -> " + seguido);
+                } catch (IllegalArgumentException e) {
+                    // Ya existe o no puede seguirse a sí mismo, ignorar
+                    if (e.getMessage().contains("Ya existe")) {
+                        relacionesExistentes++;
+                    } else {
+                        errores++;
+                        System.err.println("Error al crear relación " + seguidor + " -> " + seguido + ": " + e.getMessage());
+                    }
+                } catch (Exception e) {
+                    errores++;
+                    System.err.println("Error al crear relación " + seguidor + " -> " + seguido + ": " + e.getMessage());
+                }
+            }
+
+            System.out.println("Precarga de seguidores completada:");
+            System.out.println("  - Relaciones creadas: " + relacionesCreadas);
+            System.out.println("  - Relaciones ya existentes: " + relacionesExistentes);
+            System.out.println("  - Errores: " + errores);
+            
+        } catch (Exception e) {
+            throw new RuntimeException("Error en la precarga de seguidores: " + e.getMessage(), e);
+        }
+    }
 }

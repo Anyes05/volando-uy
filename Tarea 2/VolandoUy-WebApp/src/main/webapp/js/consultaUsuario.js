@@ -237,7 +237,9 @@ async function cargarDetalleUsuarioDesdeAPI(nickname) {
         tipoDocumento: usuario.tipoDocumento,
         fechaNacimiento: usuario.fechaNacimiento,
         reservas: usuario.reservas || [], // Incluir reservas si están disponibles
-        paquetes: usuario.paquetes || [] // Incluir paquetes si están disponibles
+        paquetes: usuario.paquetes || [], // Incluir paquetes si están disponibles
+        seguidores: usuario.seguidores || [], // Incluir seguidores (características sociales)
+        seguidos: usuario.seguidos || [] // Incluir seguidos (características sociales)
       };
       
       console.log("Usuario actual configurado:", usuarioActual);
@@ -348,11 +350,60 @@ function mostrarDetalleUsuarioCompleto(usuario) {
     tabActividad.textContent = 'Rutas de Vuelo';
   }
   
+  // Mostrar seguidores y seguidos (características sociales)
+  mostrarSeguidoresYSeguidos(usuario);
+  
   // Activar tab de perfil por defecto
   activarTab('perfil');
   
   // Scroll al detalle
   detalle.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Función para mostrar seguidores y seguidos
+function mostrarSeguidoresYSeguidos(usuario) {
+  const seguidoresList = document.getElementById('seguidores-list');
+  const seguidosList = document.getElementById('seguidos-list');
+  const seguidoresCount = document.getElementById('seguidores-count');
+  const seguidosCount = document.getElementById('seguidos-count');
+  
+  // Mostrar seguidores
+  const seguidores = usuario.seguidores || [];
+  seguidoresCount.textContent = `(${seguidores.length})`;
+  
+  if (seguidores.length > 0) {
+    seguidoresList.innerHTML = seguidores.map(nickname => {
+      // Escapar el nickname para evitar problemas con comillas
+      const safeNickname = nickname.replace(/'/g, "\\'");
+      return `
+        <div class="seguidor-item" onclick="mostrarDetalleUsuario('${safeNickname}')">
+          <i class="fas fa-user"></i>
+          <span class="nickname">${nickname}</span>
+        </div>
+      `;
+    }).join('');
+  } else {
+    seguidoresList.innerHTML = '<p class="social-empty-message">No hay seguidores</p>';
+  }
+  
+  // Mostrar seguidos
+  const seguidos = usuario.seguidos || [];
+  seguidosCount.textContent = `(${seguidos.length})`;
+  
+  if (seguidos.length > 0) {
+    seguidosList.innerHTML = seguidos.map(nickname => {
+      // Escapar el nickname para evitar problemas con comillas
+      const safeNickname = nickname.replace(/'/g, "\\'");
+      return `
+        <div class="seguido-item" onclick="mostrarDetalleUsuario('${safeNickname}')">
+          <i class="fas fa-user"></i>
+          <span class="nickname">${nickname}</span>
+        </div>
+      `;
+    }).join('');
+  } else {
+    seguidosList.innerHTML = '<p class="social-empty-message">No sigue a nadie</p>';
+  }
 }
 
 // Activar tab específico

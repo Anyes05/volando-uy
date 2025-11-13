@@ -40,6 +40,7 @@ import logica.servicios.RutaVueloServicio;
 import logica.servicios.VueloServicio;
 import logica.servicios.PaqueteVueloServicio;
 import logica.servicios.UsoPaqueteServicio;
+import logica.servicios.SeguidoresServicio;
 import dato.entidades.UsoPaquete;
 import logica.excepciones.AerolineaException;
 import logica.excepciones.ClienteException;
@@ -659,6 +660,12 @@ public class Sistema implements ISistema {
         vueloServicio.precargarVuelos();
     }
 
+    // PRECARGA DE SEGUIDORES
+    public void precargarSeguidores() {
+        SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
+        seguidoresServicio.precargarSeguidores();
+    }
+
     // PRECARGA COMPLETA DEL SISTEMA
     public void precargarSistemaCompleto() {
 
@@ -667,6 +674,7 @@ public class Sistema implements ISistema {
             precargarUsuarios();
             precargarRutasVuelo();
             precargarVuelos();
+            precargarSeguidores(); // Precargar relaciones de seguimiento
 
     }
 

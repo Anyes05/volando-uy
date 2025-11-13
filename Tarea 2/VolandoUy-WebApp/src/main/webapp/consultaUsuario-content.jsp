@@ -60,6 +60,31 @@
       <p id="perfil-fecha-nacimiento" style="display: none;"><strong>Fecha de Nacimiento:</strong> <span></span></p>
       <p id="perfil-sitio" style="display: none;"><strong>Sitio web:</strong> <span></span></p>
       <p id="perfil-descripcion" style="display: none;"><strong>Descripción:</strong> <span></span></p>
+      
+      <!-- Sección de características sociales: Seguidores y Seguidos -->
+      <div id="perfil-social">
+        <h3>Red Social</h3>
+        <div class="social-grid">
+          <div id="seguidores-section">
+            <h4>
+              <i class="fas fa-users"></i> Seguidores 
+              <span id="seguidores-count">(0)</span>
+            </h4>
+            <div id="seguidores-list">
+              <p class="social-empty-message">No hay seguidores</p>
+            </div>
+          </div>
+          <div id="seguidos-section">
+            <h4>
+              <i class="fas fa-user-plus"></i> Siguiendo 
+              <span id="seguidos-count">(0)</span>
+            </h4>
+            <div id="seguidos-list">
+              <p class="social-empty-message">No sigue a nadie</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
