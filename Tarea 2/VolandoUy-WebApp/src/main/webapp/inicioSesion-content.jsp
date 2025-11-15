@@ -62,7 +62,8 @@ document.getElementById('login-form').addEventListener('submit', async function(
       if (result.nickname) sessionStorage.setItem('usuarioLogueado', result.nickname);
       if (result.nombre) sessionStorage.setItem('nombreUsuario', result.nombre);
       if (result.correo) sessionStorage.setItem('correoUsuario', result.correo);
-      if (result.tipo) sessionStorage.setItem('tipoUsuario', result.tipo);
+      if (result.tipoUsuario) sessionStorage.setItem('tipoUsuario', result.tipoUsuario);
+      // Nota: layout.jsp también sincroniza tipoUsuario desde la sesión del servidor
       // Si el backend devuelve foto en Base64, guardarla (en uso en <img> usa 'data:image/png;base64,'+foto)
       if (result.foto) sessionStorage.setItem('fotoUsuario', result.foto);
 
@@ -71,6 +72,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
       submitBtn.classList.remove('loading');
       submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
 
+      // Redirigir según el dispositivo: en móvil después de login, ir a inicio.jsp (que mostrará el contenido apropiado)
       window.location.href = '${pageContext.request.contextPath}/inicio.jsp';
     } else {
       // Mostrar error y restaurar boton

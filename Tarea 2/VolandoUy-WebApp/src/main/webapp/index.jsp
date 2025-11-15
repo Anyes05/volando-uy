@@ -3,6 +3,7 @@
 <%@ page import="com.volandouy.helper.DeviceDetector" %>
 <%
   // Detectar dispositivo y determinar qué contenido mostrar
+  // En móvil, si no hay usuario logueado, mostrar inicio de sesión directamente
   boolean isMobilePhone = DeviceDetector.isMobilePhone(request);
   boolean usuarioLogueado = session.getAttribute("usuarioLogueado") != null;
   

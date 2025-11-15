@@ -7,6 +7,7 @@ import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTAerolinea;
 
+import com.volandouy.helper.DeviceDetector;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -78,6 +79,18 @@ public class LoginController extends HttpServlet {
                 return;
             }
 
+            // Verificar si es móvil y si el usuario es aerolínea (no permitido en móvil)
+            boolean isMobilePhone = DeviceDetector.isMobilePhone(request);
+            if (isMobilePhone) {
+                // Determinar tipo de usuario antes de guardar en sesión
+                String tipoUsuario = determinarTipoUsuario(usuarioEncontrado);
+                if ("aerolinea".equals(tipoUsuario)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    out.print(objectMapper.writeValueAsString(Map.of("error", "Las aerolíneas no pueden iniciar sesión desde dispositivos móviles. Por favor, use la versión de escritorio.")));
+                    return;
+                }
+            }
+
             // Crear o reutilizar sesión
             HttpSession session = request.getSession(true);
             guardarDatosEnSesion(session, usuarioEncontrado);
@@ -115,11 +128,15 @@ public class LoginController extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if ("/logout".equals(path)) {
+            // Detectar si es móvil para redirigir correctamente
+            boolean isMobilePhone = DeviceDetector.isMobilePhone(request);
             if (session != null) {
                 session.invalidate();
                 LOG.info("Sesión cerrada correctamente");
             }
-            response.sendRedirect(request.getContextPath() + "/inicio.jsp");
+            // En móvil, redirigir a inicio de sesión; en desktop, a inicio
+            String redirectPath = isMobilePhone ? "/inicioSesion.jsp" : "/inicio.jsp";
+            response.sendRedirect(request.getContextPath() + redirectPath);
             return;
         }
 
@@ -207,6 +224,50 @@ public class LoginController extends HttpServlet {
 
         session.setAttribute("tipoUsuario", tipo);
         LOG.info("Tipo de usuario detectado y guardado en sesión: " + tipo);
+    }
+
+    /**
+     * Determina el tipo de usuario sin guardar en sesión
+     * (usado para validar antes del login)
+     */
+    private String determinarTipoUsuario(DTUsuario usuario) {
+        String tipo = "desconocido";
+        try {
+            // Intentar obtener datos extendidos desde el sistema
+            DTUsuario datosExtendidos = sistema.mostrarDatosUsuarioMod(usuario.getNickname());
+            
+            if (datosExtendidos != null) {
+                // Si devuelve un objeto con apellido => cliente
+                try {
+                    String apellido = (String) datosExtendidos.getClass()
+                            .getMethod("getApellido")
+                            .invoke(datosExtendidos);
+                    if (apellido != null) tipo = "cliente";
+                } catch (NoSuchMethodException ignored) {}
+
+                // Si devuelve un objeto con descripción => aerolínea
+                try {
+                    String descripcion = (String) datosExtendidos.getClass()
+                            .getMethod("getDescripcion")
+                            .invoke(datosExtendidos);
+                    if (descripcion != null) tipo = "aerolinea";
+                } catch (NoSuchMethodException ignored) {}
+            }
+
+        } catch (Exception e) {
+            LOG.warning("Error al determinar tipoUsuario para " + usuario.getNickname() + ": " + e.getMessage());
+            // Intentar determinar el tipo usando instanceof como fallback
+            try {
+                if (usuario instanceof DTCliente) {
+                    tipo = "cliente";
+                } else if (usuario instanceof DTAerolinea) {
+                    tipo = "aerolinea";
+                }
+            } catch (Exception fallbackError) {
+                LOG.warning("Error en fallback de tipoUsuario: " + fallbackError.getMessage());
+            }
+        }
+        return tipo;
     }
 
 }
