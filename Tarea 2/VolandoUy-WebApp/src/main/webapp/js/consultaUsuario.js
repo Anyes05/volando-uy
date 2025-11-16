@@ -104,6 +104,7 @@ async function obtenerUsuarioLogueado() {
 }
 
 // Mostrar usuarios en el contenedor
+// Mostrar usuarios en el contenedor
 async function mostrarUsuarios(lista) {
   const contenedor = document.getElementById("lista-usuarios");
   if (!contenedor) return;
@@ -115,7 +116,6 @@ async function mostrarUsuarios(lista) {
     return;
   }
 
-  // Verificar usuario logueado una sola vez
   const usuarioLogueado = await obtenerUsuarioLogueado();
 
   lista.forEach(usuario => {
@@ -128,7 +128,6 @@ async function mostrarUsuarios(lista) {
       ? (usuario.nacionalidad || 'Cliente')
       : (tipoUsuario === 'aerolinea' ? (usuario.descripcion || 'Aerolínea') : 'Usuario');
 
-    // Verificar si ya lo sigue
     const yaLoSigue = usuarioLogueado?.seguidos?.includes(usuario.nickname);
 
     card.innerHTML = `
@@ -136,7 +135,18 @@ async function mostrarUsuarios(lista) {
         <img src="${imagenSrc}" alt="Imagen del usuario" class="usuario-avatar">
         <div class="usuario-card-info">
           <h4>${usuario.nombre}</h4>
-          <p class="usuario-nickname">@${usuario.nickname}</p>
+          <p class="usuario-nickname">
+            @${usuario.nickname}
+            ${
+              usuarioLogueado && usuarioLogueado.nickname !== usuario.nickname
+                ? `<button class="follow-btn ${yaLoSigue ? 'dejar' : 'seguir'}"
+                           data-nickname="${usuario.nickname}"
+                           data-following="${yaLoSigue ? 'true' : 'false'}">
+                     ${yaLoSigue ? 'Dejar de seguir' : 'Seguir'}
+                   </button>`
+                : ''
+            }
+          </p>
           <p class="usuario-email">${usuario.correo}</p>
         </div>
       </div>
@@ -146,53 +156,55 @@ async function mostrarUsuarios(lista) {
       </div>
       <div class="usuario-card-footer">
         <p class="click-hint">Haz clic para ver detalles</p>
-        ${
-          usuarioLogueado && usuarioLogueado.nickname !== usuario.nickname
-            ? `<button class="follow-btn"
-                       data-nickname="${usuario.nickname}"
-                       data-following="${yaLoSigue ? 'true' : 'false'}">
-                 ${yaLoSigue ? 'Dejar de seguir' : 'Seguir'}
-               </button>`
-            : ''
-        }
       </div>
     `;
 
-    card.onclick = () => mostrarDetalleUsuario(usuario.nickname);
+    // ✅ Click en la card → carga detalle completo desde API
+    card.addEventListener("click", (e) => {
+      if (e.target.closest('.follow-btn')) return; // ignora clicks en el botón
+      cargarDetalleUsuarioDesdeAPI(usuario.nickname);
+    });
+
     contenedor.appendChild(card);
   });
 }
 
-// Listener global para seguir/dejar de seguir
+// ✅ Listener global único para seguir/dejar de seguir
 document.addEventListener('click', async function(e) {
-  if (e.target.classList.contains('follow-btn')) {
-    const btn = e.target;
-    const nickname = btn.dataset.nickname;
-    const isFollowing = btn.dataset.following === 'true';
+  const btn = e.target.closest('.follow-btn');
+  if (!btn) return;
 
-    try {
-      if (isFollowing) {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/unfollow`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        if (resp.ok) {
-          btn.textContent = 'Seguir';
-          btn.dataset.following = 'false';
-        }
-      } else {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/follow`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        if (resp.ok) {
-          btn.textContent = 'Dejar de seguir';
-          btn.dataset.following = 'true';
-        }
+  e.stopPropagation();
+
+  const nickname = btn.dataset.nickname;
+  const isFollowing = btn.classList.contains('dejar'); // 🔑 usar clase como estado
+
+  try {
+    if (isFollowing) {
+      const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/unfollow`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (resp.ok) {
+        btn.textContent = 'Seguir';
+        btn.dataset.following = 'false';
+        btn.classList.remove('dejar');
+        btn.classList.add('seguir');
       }
-    } catch (error) {
-      console.error('Error al cambiar estado de seguimiento:', error);
+    } else {
+      const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/follow`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (resp.ok) {
+        btn.textContent = 'Dejar de seguir';
+        btn.dataset.following = 'true';
+        btn.classList.remove('seguir');
+        btn.classList.add('dejar');
+      }
     }
+  } catch (error) {
+    console.error('Error al cambiar estado de seguimiento:', error);
   }
 });
 
@@ -233,11 +245,38 @@ function mostrarError(mensaje) {
 }
 
 // Mostrar detalle de usuario
+
+
 async function mostrarDetalleUsuario(nickname) {
-  console.log("Mostrando detalle de usuario:", nickname);
-  
-  // Siempre cargar desde la API para obtener información completa (reservas, paquetes, etc.)
-  await cargarDetalleUsuarioDesdeAPI(nickname);
+  try {
+    const resp = await fetch(`/VolandoUy-WebApp/api/usuarios/${nickname}`, { credentials: "include" });
+    if (!resp.ok) return;
+
+    const usuario = await resp.json();
+    const usuarioLogueado = await obtenerUsuarioLogueado();
+    const yaLoSigue = usuarioLogueado?.seguidos?.includes(usuario.nickname);
+
+    const detalle = document.getElementById("detalle-usuario");
+    detalle.innerHTML = `
+      <h2>
+        ${usuario.nombre} (@${usuario.nickname})
+        ${
+          usuarioLogueado && usuarioLogueado.nickname !== usuario.nickname
+            ? `<button class="follow-btn ${yaLoSigue ? 'dejar' : 'seguir'}"
+                       data-nickname="${usuario.nickname}"
+                       data-following="${yaLoSigue ? 'true' : 'false'}">
+                 ${yaLoSigue ? 'Dejar de seguir' : 'Seguir'}
+               </button>`
+            : ''
+        }
+      </h2>
+      <p>Email: ${usuario.correo}</p>
+      <p>Tipo: ${usuario.tipo}</p>
+      <p>Detalle: ${usuario.descripcion || usuario.nacionalidad || ''}</p>
+    `;
+  } catch (e) {
+    console.error("No se pudo cargar detalle de usuario:", e);
+  }
 }
 
 // Cargar detalle de usuario desde API
@@ -1542,63 +1581,7 @@ async function obtenerUsuarioLogueado() {
   return null;
 }
 
-async function mostrarUsuarios(lista) {
-  const contenedor = document.getElementById("lista-usuarios");
-  if (!contenedor) return;
 
-  contenedor.innerHTML = '';
-
-  if (!lista || lista.length === 0) {
-    contenedor.innerHTML = `<p>No se encontraron usuarios registrados.</p>`;
-    return;
-  }
-
-  const usuarioLogueado = await obtenerUsuarioLogueado();
-
-  lista.forEach(usuario => {
-    const card = document.createElement("div");
-    card.className = "usuario-card";
-
-    let imagenSrc = usuario.foto ? `data:image/jpeg;base64,${usuario.foto}` : 'static/img/logoAvionSolo.png';
-    let tipoUsuario = determinarTipoUsuario(usuario);
-    let detalleInfo = tipoUsuario === 'cliente'
-      ? (usuario.nacionalidad || 'Cliente')
-      : (tipoUsuario === 'aerolinea' ? (usuario.descripcion || 'Aerolínea') : 'Usuario');
-
-    const yaLoSigue = usuarioLogueado?.seguidos?.includes(usuario.nickname);
-
-    card.innerHTML = `
-      <div class="usuario-card-header">
-        <img src="${imagenSrc}" alt="Imagen del usuario" class="usuario-avatar">
-        <div class="usuario-card-info">
-          <h4>${usuario.nombre}</h4>
-          <p class="usuario-nickname">@${usuario.nickname}</p>
-          <p class="usuario-email">${usuario.correo}</p>
-        </div>
-      </div>
-      <div class="usuario-card-body">
-        <p class="usuario-tipo ${tipoUsuario}">${tipoUsuario}</p>
-        <p class="usuario-detalle">${detalleInfo}</p>
-      </div>
-      <div class="usuario-card-footer">
-        <p class="click-hint">Haz clic para ver detalles</p>
-        ${
-          usuarioLogueado && usuarioLogueado.nickname !== usuario.nickname
-            ? `<button class="follow-btn ${yaLoSigue ? 'dejar' : 'seguir'}"
-                       data-nickname="${usuario.nickname}"
-                       data-following="${yaLoSigue ? 'true' : 'false'}">
-                 ${yaLoSigue ? 'Dejar de seguir' : 'Seguir'}
-               </button>`
-            : ''
-        }
-      </div>
-    `;
-
-    // Click en la card (excepto botón)
-    card.addEventListener("click", () => mostrarDetalleUsuario(usuario.nickname));
-    contenedor.appendChild(card);
-  });
-}
 
 // Listener global para seguir/dejar de seguir
 document.addEventListener('click', async function(e) {
@@ -1640,38 +1623,6 @@ document.addEventListener('click', async function(e) {
 });
 
 
-// Listener global para seguir/dejar de seguir
-document.addEventListener('click', async function(e) {
-  if (e.target.classList.contains('follow-btn')) {
-    const btn = e.target;
-    const nickname = btn.dataset.nickname;
-    const isFollowing = btn.dataset.following === 'true';
-
-    try {
-      if (isFollowing) {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/unfollow`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        if (resp.ok) {
-          btn.textContent = 'Seguir';
-          btn.dataset.following = 'false';
-        }
-      } else {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/follow`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        if (resp.ok) {
-          btn.textContent = 'Dejar de seguir';
-          btn.dataset.following = 'true';
-        }
-      }
-    } catch (error) {
-      console.error('Error al cambiar estado de seguimiento:', error);
-    }
-  }
-});
 // Exportar funciones para uso global
 window.cerrarModalDetalle = cerrarModalDetalle;
 window.mostrarDetalleRutaEnModal = mostrarDetalleRutaEnModal;
