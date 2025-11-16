@@ -507,36 +507,27 @@
     /* ===== Carrusel ===== */
     function initCarousel() {
       const carousel = document.getElementById("carousel");
-
       const prevBtn = document.getElementById("prevBtn");
       const nextBtn = document.getElementById("nextBtn");
 
+      // Si no hay carrusel en la página, no hacer nada
       if (!carousel || !prevBtn || !nextBtn) {
-        console.log('Carousel elements not found, retrying...');
-        setTimeout(initCarousel, 500);
+        console.log("No hay carrusel en esta página, se omite inicialización.");
         return;
       }
 
       let currentIndex = 0;
-      const cards = carousel.querySelectorAll('.offer-card');
+      const cards = carousel.querySelectorAll(".offer-card");
       const totalCards = cards.length;
 
       if (totalCards === 0) {
-        console.log('No cards found, retrying...');
-        setTimeout(initCarousel, 500);
+        console.warn("Carrusel encontrado pero sin tarjetas.");
         return;
       }
 
-      function getStep() {
-        const card = carousel.querySelector('.offer-card');
-        if (!card) return 235;
-        const gapValue = getComputedStyle(carousel).gap || '15px';
-        const gap = parseInt(gapValue, 10) || 15;
-        return card.offsetWidth + gap;
-      }
-
-      function scrollToIndex(index) {
-        const step = getStep();
+      // Lógica normal del carrusel
+      function showCard(index) {
+        const step = getStep(); // ancho de una tarjeta + gap
         const targetScroll = index * step;
         carousel.scrollTo({
           left: targetScroll,
@@ -544,58 +535,48 @@
         });
       }
 
-      function scrollNext() {
-        currentIndex = (currentIndex + 1) % totalCards;
-        scrollToIndex(currentIndex);
-      }
 
-      function scrollPrev() {
+      prevBtn.addEventListener("click", () => {
         currentIndex = (currentIndex - 1 + totalCards) % totalCards;
-        scrollToIndex(currentIndex);
-      }
-
-      let autoplayTimer = null;
-      const AUTOPLAY_DELAY = 4000;
-
-      function startAutoplay() {
-        stopAutoplay();
-        autoplayTimer = setInterval(scrollNext, AUTOPLAY_DELAY);
-      }
-
-      function stopAutoplay() {
-        if (autoplayTimer) {
-          clearInterval(autoplayTimer);
-          autoplayTimer = null;
-        }
-      }
-
-      nextBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        stopAutoplay();
-        scrollNext();
-        setTimeout(startAutoplay, 3000);
+        showCard(currentIndex);
       });
 
-      prevBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        stopAutoplay();
-        scrollPrev();
-        setTimeout(startAutoplay, 3000);
+      nextBtn.addEventListener("click", () => {
+        currentIndex = (currentIndex + 1) % totalCards;
+        showCard(currentIndex);
       });
 
-      carousel.addEventListener('mouseenter', stopAutoplay);
-      carousel.addEventListener('mouseleave', startAutoplay);
-      carousel.addEventListener('touchstart', () => { stopAutoplay(); }, {passive:true});
-      carousel.addEventListener('touchend', () => { setTimeout(startAutoplay, 2000); });
-
-      window.addEventListener('resize', () => {
-        stopAutoplay();
-        setTimeout(startAutoplay, 500);
-      });
-
-      setTimeout(startAutoplay, 2000);
-      console.log('Carousel initialized successfully');
+      // Mostrar la primera tarjeta al inicio
+      showCard(currentIndex);
     }
+
+    // Solo inicializar si existe carrusel en la página
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.getElementById("carousel")) {
+        initCarousel();
+      }
+    });
+
+    function getStep() {
+      const carousel = document.getElementById("carousel");
+      const card = carousel.querySelector('.offer-card');
+      if (!card) return 235;
+      const gapValue = getComputedStyle(carousel).gap || '15px';
+      const gap = parseInt(gapValue, 10) || 15;
+      return card.offsetWidth + gap;
+    }
+
+    function scrollToIndex(index) {
+      const carousel = document.getElementById("carousel");
+      const step = getStep();
+      const targetScroll = index * step;
+      carousel.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+    }
+
+    // … resto de tus funciones (scrollNext, scrollPrev, autoplay, etc.)
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initCarousel);

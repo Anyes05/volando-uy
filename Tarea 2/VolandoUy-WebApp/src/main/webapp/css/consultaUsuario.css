@@ -1189,3 +1189,41 @@
   padding: 1rem;
   font-size: 14px;
 }
+
+/* Boton seguir */
+.usuario-nickname {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.follow-btn {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.follow-btn.seguir {
+  background-color: #28a745; /* verde */
+  color: #fff;
+}
+
+.follow-btn.dejar {
+  background-color: #dc3545; /* rojo */
+  color: #fff;
+}
+
+
+.follow-btn.seguir:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+.follow-btn.dejar:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}

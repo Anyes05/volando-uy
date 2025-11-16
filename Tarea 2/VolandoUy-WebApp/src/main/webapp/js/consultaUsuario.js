@@ -90,69 +90,67 @@ function actualizarContador(total) {
 }
 
 // Mostrar usuarios en el contenedor
-function mostrarUsuarios(lista) {
-  const contenedor = document.getElementById("lista-usuarios");
-  if (!contenedor) {
-    console.error("No se encontró el contenedor de usuarios");
-    return;
+// Obtener usuario logueado desde backend
+async function obtenerUsuarioLogueado() {
+  try {
+    const resp = await fetch("/VolandoUy-WebApp/api/usuarios/perfil", { credentials: "include" });
+    if (resp.ok) {
+      return await resp.json(); // objeto con nickname, tipo, seguidos, etc.
+    }
+  } catch (e) {
+    console.error("No se pudo obtener usuario logueado:", e);
   }
+  return null;
+}
 
-  console.log("Mostrando usuarios:", lista.length, "usuarios");
-  console.log("Contenedor encontrado:", contenedor);
-  console.log("Estilos del contenedor:", window.getComputedStyle(contenedor).display);
+// Mostrar usuarios en el contenedor
+async function mostrarUsuarios(lista) {
+  const contenedor = document.getElementById("lista-usuarios");
+  if (!contenedor) return;
 
   contenedor.innerHTML = '';
 
   if (!lista || lista.length === 0) {
-    contenedor.innerHTML = `
-      <div style="text-align: center; padding: 2rem; color: #eaf6fb;">
-        <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; color: #01aaf5;"></i>
-        <p>No se encontraron usuarios registrados.</p>
-      </div>
-    `;
+    contenedor.innerHTML = `<p>No se encontraron usuarios registrados.</p>`;
     return;
   }
+
+  const usuarioLogueado = await obtenerUsuarioLogueado();
 
   lista.forEach(usuario => {
     const card = document.createElement("div");
     card.className = "usuario-card";
-    
-    // Determinar el tipo de usuario basado en la clase del objeto
+
+    let imagenSrc = usuario.foto ? `data:image/jpeg;base64,${usuario.foto}` : 'static/img/logoAvionSolo.png';
     let tipoUsuario = determinarTipoUsuario(usuario);
-    
-    card.setAttribute("data-usuario-nickname", usuario.nickname);
-    card.setAttribute("data-tipo", tipoUsuario);
-    card.onclick = () => mostrarDetalleUsuario(usuario.nickname);
+    let detalleInfo = tipoUsuario === 'cliente'
+      ? (usuario.nacionalidad || 'Cliente')
+      : (tipoUsuario === 'aerolinea' ? (usuario.descripcion || 'Aerolínea') : 'Usuario');
 
-    // Procesar imagen igual que Consulta Paquete
-    let imagenSrc = '';
-    if (usuario.foto && usuario.foto.trim() !== '') {
-      imagenSrc = `data:image/jpeg;base64,${usuario.foto}`;
-    } else {
-      imagenSrc = 'static/img/logoAvionSolo.png';
-    }
-
-    // Determinar información específica según el tipo
-    let detalleInfo = '';
-    if (tipoUsuario === 'cliente') {
-      detalleInfo = usuario.nacionalidad ? `Nacionalidad: ${usuario.nacionalidad}` : 'Cliente';
-    } else if (tipoUsuario === 'aerolinea') {
-      detalleInfo = usuario.descripcion || 'Aerolínea';
-    } else {
-      detalleInfo = 'Usuario';
-    }
+    const yaLoSigue = usuarioLogueado?.seguidos?.includes(usuario.nickname);
 
     card.innerHTML = `
       <div class="usuario-card-header">
         <img src="${imagenSrc}" alt="Imagen del usuario" class="usuario-avatar">
         <div class="usuario-card-info">
           <h4>${usuario.nombre}</h4>
-          <p class="usuario-nickname">@${usuario.nickname}</p>
+          <p class="usuario-nickname">
+            @${usuario.nickname}
+            ${
+              usuarioLogueado && usuarioLogueado.nickname !== usuario.nickname
+                ? `<button class="follow-btn ${yaLoSigue ? 'dejar' : 'seguir'}"
+                           data-nickname="${usuario.nickname}"
+                           data-following="${yaLoSigue ? 'true' : 'false'}">
+                     ${yaLoSigue ? 'Dejar de seguir' : 'Seguir'}
+                   </button>`
+                : ''
+            }
+          </p>
           <p class="usuario-email">${usuario.correo}</p>
         </div>
       </div>
       <div class="usuario-card-body">
-        <p class="usuario-tipo ${tipoUsuario}">${tipoUsuario.charAt(0).toUpperCase() + tipoUsuario.slice(1)}</p>
+        <p class="usuario-tipo ${tipoUsuario}">${tipoUsuario}</p>
         <p class="usuario-detalle">${detalleInfo}</p>
       </div>
       <div class="usuario-card-footer">
@@ -160,9 +158,17 @@ function mostrarUsuarios(lista) {
       </div>
     `;
 
+    // ✅ Click en la card → carga detalle completo desde API
+    card.addEventListener("click", (e) => {
+      if (e.target.closest('.follow-btn')) return; // ignora clicks en el botón
+      cargarDetalleUsuarioDesdeAPI(usuario.nickname);
+    });
+
     contenedor.appendChild(card);
   });
 }
+
+
 
 // Mostrar mensaje cuando no hay usuarios
 function mostrarMensajeNoUsuarios(mensaje) {
@@ -201,11 +207,38 @@ function mostrarError(mensaje) {
 }
 
 // Mostrar detalle de usuario
+
+
 async function mostrarDetalleUsuario(nickname) {
-  console.log("Mostrando detalle de usuario:", nickname);
-  
-  // Siempre cargar desde la API para obtener información completa (reservas, paquetes, etc.)
-  await cargarDetalleUsuarioDesdeAPI(nickname);
+  try {
+    const resp = await fetch(`/VolandoUy-WebApp/api/usuarios/${nickname}`, { credentials: "include" });
+    if (!resp.ok) return;
+
+    const usuario = await resp.json();
+    const usuarioLogueado = await obtenerUsuarioLogueado();
+    const yaLoSigue = usuarioLogueado?.seguidos?.includes(usuario.nickname);
+
+    const detalle = document.getElementById("detalle-usuario");
+    detalle.innerHTML = `
+      <h2>
+        ${usuario.nombre} (@${usuario.nickname})
+        ${
+          usuarioLogueado && usuarioLogueado.nickname !== usuario.nickname
+            ? `<button class="follow-btn ${yaLoSigue ? 'dejar' : 'seguir'}"
+                       data-nickname="${usuario.nickname}"
+                       data-following="${yaLoSigue ? 'true' : 'false'}">
+                 ${yaLoSigue ? 'Dejar de seguir' : 'Seguir'}
+               </button>`
+            : ''
+        }
+      </h2>
+      <p>Email: ${usuario.correo}</p>
+      <p>Tipo: ${usuario.tipo}</p>
+      <p>Detalle: ${usuario.descripcion || usuario.nacionalidad || ''}</p>
+    `;
+  } catch (e) {
+    console.error("No se pudo cargar detalle de usuario:", e);
+  }
 }
 
 // Cargar detalle de usuario desde API
@@ -1465,6 +1498,61 @@ document.addEventListener('DOMContentLoaded', function() {
 window.initConsultaUsuario = function() {
   cargarUsuarios();
 };
+
+
+// Obtener usuario logueado desde backend
+async function obtenerUsuarioLogueado() {
+  try {
+    const resp = await fetch("/VolandoUy-WebApp/api/usuarios/perfil", { credentials: "include" });
+    if (resp.ok) {
+      return await resp.json(); // objeto con nickname, tipo, seguidos, etc.
+    }
+  } catch (e) {
+    console.error("No se pudo obtener usuario logueado:", e);
+  }
+  return null;
+}
+
+
+
+// Listener global para seguir/dejar de seguir
+document.addEventListener('click', async function(e) {
+  if (e.target.classList.contains('follow-btn')) {
+    e.stopPropagation(); // evita que se dispare el click de la card
+
+    const btn = e.target;
+    const nickname = btn.dataset.nickname;
+    const isFollowing = btn.dataset.following === 'true';
+
+    try {
+      if (isFollowing) {
+        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/dejar`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        if (resp.ok) {
+          btn.textContent = 'Seguir';
+          btn.dataset.following = 'false';
+          btn.classList.remove('dejar');
+          btn.classList.add('seguir');
+        }
+      } else {
+        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/seguir`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        if (resp.ok) {
+          btn.textContent = 'Dejar de seguir';
+          btn.dataset.following = 'true';
+          btn.classList.remove('seguir');
+          btn.classList.add('dejar');
+        }
+      }
+    } catch (error) {
+      console.error('Error al cambiar estado de seguimiento:', error);
+    }
+  }
+});
 
 // Exportar funciones para uso global
 window.cerrarModalDetalle = cerrarModalDetalle;
