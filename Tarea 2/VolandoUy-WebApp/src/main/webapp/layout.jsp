@@ -507,25 +507,51 @@
     /* ===== Carrusel ===== */
     function initCarousel() {
       const carousel = document.getElementById("carousel");
-
       const prevBtn = document.getElementById("prevBtn");
       const nextBtn = document.getElementById("nextBtn");
 
+      // Si no hay carrusel en la página, no hacer nada
       if (!carousel || !prevBtn || !nextBtn) {
-        console.log('Carousel elements not found, retrying...');
-        setTimeout(initCarousel, 500);
+        console.log("No hay carrusel en esta página, se omite inicialización.");
         return;
       }
 
       let currentIndex = 0;
-      const cards = carousel.querySelectorAll('.offer-card');
+      const cards = carousel.querySelectorAll(".offer-card");
       const totalCards = cards.length;
 
       if (totalCards === 0) {
-        console.log('No cards found, retrying...');
-        setTimeout(initCarousel, 500);
+        console.warn("Carrusel encontrado pero sin tarjetas.");
         return;
       }
+
+      // Lógica normal del carrusel
+      function showCard(index) {
+        cards.forEach((card, i) => {
+          card.style.display = i === index ? "block" : "none";
+        });
+      }
+
+      prevBtn.addEventListener("click", () => {
+        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+        showCard(currentIndex);
+      });
+
+      nextBtn.addEventListener("click", () => {
+        currentIndex = (currentIndex + 1) % totalCards;
+        showCard(currentIndex);
+      });
+
+      // Mostrar la primera tarjeta al inicio
+      showCard(currentIndex);
+    }
+
+    // Solo inicializar si existe carrusel en la página
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.getElementById("carousel")) {
+        initCarousel();
+      }
+    });
 
       function getStep() {
         const card = carousel.querySelector('.offer-card');
