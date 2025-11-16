@@ -104,7 +104,6 @@ async function obtenerUsuarioLogueado() {
 }
 
 // Mostrar usuarios en el contenedor
-// Mostrar usuarios en el contenedor
 async function mostrarUsuarios(lista) {
   const contenedor = document.getElementById("lista-usuarios");
   if (!contenedor) return;
@@ -169,44 +168,7 @@ async function mostrarUsuarios(lista) {
   });
 }
 
-// ✅ Listener global único para seguir/dejar de seguir
-document.addEventListener('click', async function(e) {
-  const btn = e.target.closest('.follow-btn');
-  if (!btn) return;
 
-  e.stopPropagation();
-
-  const nickname = btn.dataset.nickname;
-  const isFollowing = btn.classList.contains('dejar'); // 🔑 usar clase como estado
-
-  try {
-    if (isFollowing) {
-      const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/unfollow`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-      if (resp.ok) {
-        btn.textContent = 'Seguir';
-        btn.dataset.following = 'false';
-        btn.classList.remove('dejar');
-        btn.classList.add('seguir');
-      }
-    } else {
-      const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/follow`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-      if (resp.ok) {
-        btn.textContent = 'Dejar de seguir';
-        btn.dataset.following = 'true';
-        btn.classList.remove('seguir');
-        btn.classList.add('dejar');
-      }
-    }
-  } catch (error) {
-    console.error('Error al cambiar estado de seguimiento:', error);
-  }
-});
 
 // Mostrar mensaje cuando no hay usuarios
 function mostrarMensajeNoUsuarios(mensaje) {
@@ -1537,37 +1499,7 @@ window.initConsultaUsuario = function() {
   cargarUsuarios();
 };
 
-document.addEventListener('click', async function(e) {
-  if (e.target.classList.contains('follow-btn')) {
-    const btn = e.target;
-    const nickname = btn.dataset.nickname;
-    const isFollowing = btn.dataset.following === 'true';
 
-    try {
-      if (isFollowing) {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/unfollow`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        if (resp.ok) {
-          btn.textContent = 'Seguir';
-          btn.dataset.following = 'false';
-        }
-      } else {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/follow`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        if (resp.ok) {
-          btn.textContent = 'Dejar de seguir';
-          btn.dataset.following = 'true';
-        }
-      }
-    } catch (error) {
-      console.error('Error al cambiar estado de seguimiento:', error);
-    }
-  }
-});
 // Obtener usuario logueado desde backend
 async function obtenerUsuarioLogueado() {
   try {
@@ -1594,7 +1526,7 @@ document.addEventListener('click', async function(e) {
 
     try {
       if (isFollowing) {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/unfollow`, {
+        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/dejar`, {
           method: 'POST',
           credentials: 'include'
         });
@@ -1605,7 +1537,7 @@ document.addEventListener('click', async function(e) {
           btn.classList.add('seguir');
         }
       } else {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/follow`, {
+        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/seguir`, {
           method: 'POST',
           credentials: 'include'
         });
@@ -1621,7 +1553,6 @@ document.addEventListener('click', async function(e) {
     }
   }
 });
-
 
 // Exportar funciones para uso global
 window.cerrarModalDetalle = cerrarModalDetalle;

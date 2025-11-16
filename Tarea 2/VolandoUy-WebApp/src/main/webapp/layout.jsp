@@ -527,10 +527,14 @@
 
       // Lógica normal del carrusel
       function showCard(index) {
-        cards.forEach((card, i) => {
-          card.style.display = i === index ? "block" : "none";
+        const step = getStep(); // ancho de una tarjeta + gap
+        const targetScroll = index * step;
+        carousel.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth'
         });
       }
+
 
       prevBtn.addEventListener("click", () => {
         currentIndex = (currentIndex - 1 + totalCards) % totalCards;
@@ -553,75 +557,26 @@
       }
     });
 
-      function getStep() {
-        const card = carousel.querySelector('.offer-card');
-        if (!card) return 235;
-        const gapValue = getComputedStyle(carousel).gap || '15px';
-        const gap = parseInt(gapValue, 10) || 15;
-        return card.offsetWidth + gap;
-      }
-
-      function scrollToIndex(index) {
-        const step = getStep();
-        const targetScroll = index * step;
-        carousel.scrollTo({
-          left: targetScroll,
-          behavior: 'smooth'
-        });
-      }
-
-      function scrollNext() {
-        currentIndex = (currentIndex + 1) % totalCards;
-        scrollToIndex(currentIndex);
-      }
-
-      function scrollPrev() {
-        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
-        scrollToIndex(currentIndex);
-      }
-
-      let autoplayTimer = null;
-      const AUTOPLAY_DELAY = 4000;
-
-      function startAutoplay() {
-        stopAutoplay();
-        autoplayTimer = setInterval(scrollNext, AUTOPLAY_DELAY);
-      }
-
-      function stopAutoplay() {
-        if (autoplayTimer) {
-          clearInterval(autoplayTimer);
-          autoplayTimer = null;
-        }
-      }
-
-      nextBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        stopAutoplay();
-        scrollNext();
-        setTimeout(startAutoplay, 3000);
-      });
-
-      prevBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        stopAutoplay();
-        scrollPrev();
-        setTimeout(startAutoplay, 3000);
-      });
-
-      carousel.addEventListener('mouseenter', stopAutoplay);
-      carousel.addEventListener('mouseleave', startAutoplay);
-      carousel.addEventListener('touchstart', () => { stopAutoplay(); }, {passive:true});
-      carousel.addEventListener('touchend', () => { setTimeout(startAutoplay, 2000); });
-
-      window.addEventListener('resize', () => {
-        stopAutoplay();
-        setTimeout(startAutoplay, 500);
-      });
-
-      setTimeout(startAutoplay, 2000);
-      console.log('Carousel initialized successfully');
+    function getStep() {
+      const carousel = document.getElementById("carousel");
+      const card = carousel.querySelector('.offer-card');
+      if (!card) return 235;
+      const gapValue = getComputedStyle(carousel).gap || '15px';
+      const gap = parseInt(gapValue, 10) || 15;
+      return card.offsetWidth + gap;
     }
+
+    function scrollToIndex(index) {
+      const carousel = document.getElementById("carousel");
+      const step = getStep();
+      const targetScroll = index * step;
+      carousel.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+    }
+
+    // … resto de tus funciones (scrollNext, scrollPrev, autoplay, etc.)
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initCarousel);

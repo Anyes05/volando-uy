@@ -37,7 +37,7 @@ public class SeguidoresController extends HttpServlet {
         }
 
         String nickSeguidor = (String) session.getAttribute("usuarioLogueado");
-        String pathInfo = request.getPathInfo(); // ej: /juan/follow
+        String pathInfo = request.getPathInfo(); // ej: /juan/seguir
 
         try {
             if (pathInfo != null && pathInfo.startsWith("/")) {
@@ -45,12 +45,12 @@ public class SeguidoresController extends HttpServlet {
             }
             String[] parts = pathInfo.split("/");
 
-            if (parts.length == 2 && "follow".equals(parts[1])) {
+            if (parts.length == 2 && "seguir".equals(parts[1])) {
                 String nickSeguido = parts[0];
                 seguidoresServicio.seguir(nickSeguidor, nickSeguido);
                 response.setStatus(HttpServletResponse.SC_OK);
                 out.print(objectMapper.writeValueAsString(Map.of("message", "Ahora sigues a " + nickSeguido)));
-            } else if (parts.length == 2 && "unfollow".equals(parts[1])) {
+            } else if (parts.length == 2 && "dejar".equals(parts[1])) {
                 String nickSeguido = parts[0];
                 seguidoresServicio.dejarDeSeguir(nickSeguidor, nickSeguido);
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -59,7 +59,12 @@ public class SeguidoresController extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no válida")));
             }
+        } catch (IllegalArgumentException e) {
+            // Errores de lógica → 400
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(objectMapper.writeValueAsString(Map.of("error", e.getMessage())));
         } catch (Exception e) {
+            // Errores inesperados → 500
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print(objectMapper.writeValueAsString(Map.of("error", e.getMessage())));
         }
