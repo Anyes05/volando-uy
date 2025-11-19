@@ -15,54 +15,96 @@
     </properties>
 
     <dependencies>
-        <!-- Dependencias que queramos -->
+        <!-- LGoodDatePicker -->
         <dependency>
             <groupId>com.github.lgooddatepicker</groupId>
             <artifactId>LGoodDatePicker</artifactId>
             <version>11.2.1</version>
         </dependency>
 
-        <!--JCalendar -->
+        <!-- JCalendar -->
         <dependency>
             <groupId>com.toedter</groupId>
             <artifactId>jcalendar</artifactId>
             <version>1.4</version>
         </dependency>
 
-        <!-- API de JPA -->
+        <!-- JPA API -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <version>3.1.0</version>
         </dependency>
 
-        <!-- Implementación de JPA: Hibernate -->
+        <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.6.0.Final</version>
         </dependency>
 
-        <!-- Driver PostgreSQL -->
+        <!-- PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.3</version>
         </dependency>
 
-        <!-- Opcional: logs de Hibernate -->
+        <!-- Logs para Hibernate -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.16</version>
         </dependency>
 
-        <!-- Jackson para serialización JSON -->
+        <!-- Jackson (completo) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.16.1</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>2.16.1</version>
         </dependency>
+
+        <!-- ========= WEB SERVICES (SOAP / JAX-WS) ========= -->
+
+        <!-- API JAX-WS (Jakarta) -->
+        <dependency>
+            <groupId>jakarta.xml.ws</groupId>
+            <artifactId>jakarta.xml.ws-api</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <!-- API JWS (para @WebService, @WebMethod) -->
+        <dependency>
+            <groupId>jakarta.jws</groupId>
+            <artifactId>jakarta.jws-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- Implementacion JAX-WS (runtime) -->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+
+        <!-- JAXB (binding XML, necesario para JAX-WS en Java 17) -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>4.0.5</version>
+        </dependency>
+
+        <!-- ========================= -->
 
         <!-- JUnit 5 -->
         <dependency>
@@ -72,8 +114,8 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
 
+    <build>
         <plugins>
             <!-- Surefire para ejecutar tests -->
             <plugin>
@@ -81,12 +123,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <!-- Excluir una clase de test específica -->
                     <excludes>
                         <exclude>**/SistemaTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
+
             <!-- JaCoCo para cobertura -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -107,20 +149,19 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- PMD -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.28.0</version>
                 <configuration>
-                    <!-- Apuntar a tu ruleset -->
                     <rulesets>
                         <ruleset>pmd-ruleset.xml</ruleset>
                     </rulesets>
-                    <!-- Limitar a Sistema.java -->
                     <includes>
                         <include>**/Sistema.java</include>
                     </includes>
-                    <!-- Que no rompa el build si encuentra violaciones -->
                     <failOnViolation>false</failOnViolation>
                     <printFailingErrors>true</printFailingErrors>
                 </configuration>
@@ -135,6 +176,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
