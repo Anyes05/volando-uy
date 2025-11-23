@@ -409,8 +409,14 @@ function initConsultaRutaVuelo() {
         }
     }
     
-    // Función para mostrar detalles de la ruta (imagen y video)
+    // Función para mostrar detalles de la ruta (solo video)
     function mostrarDetalleRuta(ruta) {
+        // Si no hay video, no mostrar nada y salir
+        if (!ruta.videoUrl) {
+            ocultarDetalleRuta();
+            return;
+        }
+
         // Buscar o crear el contenedor de detalles de ruta
         let detalleRutaContainer = document.getElementById('detalle-ruta-container');
         if (!detalleRutaContainer) {
@@ -418,35 +424,25 @@ function initConsultaRutaVuelo() {
             detalleRutaContainer.id = 'detalle-ruta-container';
             detalleRutaContainer.className = 'detalle-ruta-container';
             
-            // Insertar antes del aside de vuelos
+            // Insertar DENTRO del aside de vuelos, al principio
             const asideVuelos = document.getElementById('aside-vuelos');
-            if (asideVuelos && asideVuelos.parentNode) {
-                asideVuelos.parentNode.insertBefore(detalleRutaContainer, asideVuelos);
+            if (asideVuelos) {
+                asideVuelos.insertBefore(detalleRutaContainer, asideVuelos.firstChild);
             }
         }
         
-        // Construir HTML del detalle
+        // Construir HTML del detalle (solo video)
         let html = '<div class="detalle-ruta-content">';
-        html += '<h3><i class="fas fa-info-circle"></i> Detalles de la Ruta</h3>';
         
-        // Imagen si existe
-        if (ruta.imagen) {
-            html += '<div class="ruta-imagen-container">';
-            html += '<img src="' + ruta.imagen + '" alt="' + (ruta.nombre || 'Ruta') + '" class="ruta-imagen">';
-            html += '</div>';
-        }
-        
-        // Video si existe
-        if (ruta.videoUrl) {
-            html += '<div class="ruta-video-container">';
-            html += '<h4><i class="fas fa-video"></i> Video de la Ruta</h4>';
-            // Convertir URL de YouTube a embed si es necesario
-            let videoEmbedUrl = convertirUrlVideo(ruta.videoUrl);
-            html += '<div class="video-wrapper">';
-            html += '<iframe src="' + videoEmbedUrl + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-            html += '</div>';
-            html += '</div>';
-        }
+        // Video
+        html += '<div class="ruta-video-container">';
+        html += '<h4><i class="fas fa-video"></i> Conocé mas sobre este destino</h4>';
+        // Convertir URL de YouTube a embed si es necesario
+        let videoEmbedUrl = convertirUrlVideo(ruta.videoUrl);
+        html += '<div class="video-wrapper">';
+        html += '<iframe src="' + videoEmbedUrl + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+        html += '</div>';
+        html += '</div>';
         
         html += '</div>';
         
