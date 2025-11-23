@@ -156,11 +156,24 @@
 .form-group select {
   cursor: pointer;
   appearance: none;
-  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23eaf6fb" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8"><path fill="%2301AAF5" d="M6 8L0 0h12z"/></svg>');
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px;
-  padding-right: 40px;
+  background-position: right 14px center;
+  background-size: 14px;
+  padding-right: 45px;
+}
+
+.form-group select option {
+  background: rgba(50, 67, 75, 0.95);
+  color: #eaf6fb;
+  padding: 10px;
+}
+
+.form-group select:focus option:checked {
+  background: #01AAF5;
+  color: white;
 }
 
 button[type="submit"] {
@@ -233,6 +246,65 @@ button[type="submit"]:active {
   margin-top: 5px;
   display: block;
   font-weight: 500;
+  min-height: 18px;
+  transition: all 0.3s ease;
+}
+
+.error-msg-active {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  font-weight: 500;
+  animation: shake 0.3s ease;
+}
+
+.success-msg {
+  color: #22c55e;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  font-weight: 500;
+  animation: slideIn 0.3s ease-out;
+}
+
+.loading-msg {
+  color: #01AAF5;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  font-weight: 500;
+  position: relative;
+}
+
+.loading-msg::after {
+  content: '...';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.input-success {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2) !important;
+}
+
+.input-error {
+  border-color: #f44336 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+  animation: shake 0.3s ease;
 }
 
 /* Efecto de carga en el botón */
@@ -496,9 +568,10 @@ button[type="submit"].loading::after {
 .file-input {
   position: absolute;
   opacity: 0;
-  width: 0;
-  height: 0;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 1;
 }
 
 .file-upload-label {

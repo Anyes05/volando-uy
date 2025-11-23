@@ -358,6 +358,86 @@ public class UsuarioController extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     out.print(serializarJSON(Map.of("error", "Error: " + ex.getMessage())));
                 }
+            } else if (pathInfo.equals("/check-nickname")) {
+                // GET /api/usuarios/check-nickname?nickname=xxx - Verificar disponibilidad de nickname
+                String nickname = request.getParameter("nickname");
+                if (nickname == null || nickname.trim().isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(serializarJSON(Map.of("disponible", false, "error", "Nickname requerido")));
+                    return;
+                }
+                
+                try {
+                    nickname = nickname.trim();
+                    boolean disponible = true;
+                    
+                    // Verificar en clientes
+                    List<DTCliente> clientes = getCentralService().listarClientes();
+                    for (DTCliente cliente : clientes) {
+                        if (cliente.getNickname().equalsIgnoreCase(nickname)) {
+                            disponible = false;
+                            break;
+                        }
+                    }
+                    
+                    // Verificar en aerolíneas si aún está disponible
+                    if (disponible) {
+                        List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
+                        for (DTAerolinea aerolinea : aerolineas) {
+                            if (aerolinea.getNickname().equalsIgnoreCase(nickname)) {
+                                disponible = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(serializarJSON(Map.of("disponible", disponible, "nickname", nickname)));
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error al verificar disponibilidad de nickname: " + nickname, ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(serializarJSON(Map.of("disponible", false, "error", "Error interno del servidor")));
+                }
+            } else if (pathInfo.equals("/check-email")) {
+                // GET /api/usuarios/check-email?email=xxx - Verificar disponibilidad de email
+                String email = request.getParameter("email");
+                if (email == null || email.trim().isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(serializarJSON(Map.of("disponible", false, "error", "Email requerido")));
+                    return;
+                }
+                
+                try {
+                    email = email.trim();
+                    boolean disponible = true;
+                    
+                    // Verificar en clientes
+                    List<DTCliente> clientes = getCentralService().listarClientes();
+                    for (DTCliente cliente : clientes) {
+                        if (cliente.getCorreo().equalsIgnoreCase(email)) {
+                            disponible = false;
+                            break;
+                        }
+                    }
+                    
+                    // Verificar en aerolíneas si aún está disponible
+                    if (disponible) {
+                        List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
+                        for (DTAerolinea aerolinea : aerolineas) {
+                            if (aerolinea.getCorreo().equalsIgnoreCase(email)) {
+                                disponible = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    out.print(serializarJSON(Map.of("disponible", disponible, "email", email)));
+                } catch (Exception ex) {
+                    LOG.log(Level.SEVERE, "Error al verificar disponibilidad de email: " + email, ex);
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(serializarJSON(Map.of("disponible", false, "error", "Error interno del servidor")));
+                }
             } else {
                 // GET /api/usuarios/{nickname} - Obtener datos específicos de un usuario
                 String nickname = pathInfo.substring(1); // Remover el '/' inicial
