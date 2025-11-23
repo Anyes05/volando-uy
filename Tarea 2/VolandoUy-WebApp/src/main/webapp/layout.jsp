@@ -77,6 +77,38 @@
       .nav-section:has(.nav-item[href*="consultaPaquete"]) {
         display: none !important;
       }
+      
+      /* Mostrar sección de cerrar sesión solo en móvil */
+      .nav-section.mobile-only {
+        display: block !important;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(1, 170, 245, 0.2);
+      }
+      
+      /* Ocultar menú desplegable del usuario en móvil */
+      .user-avatar-container {
+        pointer-events: none;
+      }
+      
+      .user-avatar-container .dropdown-arrow {
+        display: none;
+      }
+    }
+    
+    /* Ocultar sección de cerrar sesión en desktop */
+    @media (min-width: 768px) {
+      .nav-section.mobile-only {
+        display: none !important;
+      }
+      
+      .user-avatar-container {
+        pointer-events: auto;
+      }
+      
+      .user-avatar-container .dropdown-arrow {
+        display: inline-block;
+      }
     }
   </style>
 </head>
@@ -209,6 +241,16 @@
           </a>
         </c:if>
       </div>
+
+      <!-- Cerrar Sesión - Solo para móvil y clientes -->
+      <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
+        <div class="nav-section mobile-only">
+          <button onclick="cerrarSesion()" class="nav-item logout-nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </c:if>
     </c:if>
   </aside>
 
@@ -472,6 +514,12 @@
 
     // Función para manejar el menú desplegable del usuario
     function toggleUserMenu() {
+      // No permitir que se despliegue en móvil
+      const isMobile = window.innerWidth <= 767;
+      if (isMobile) {
+        return; // No hacer nada en móvil
+      }
+      
       const dropdown = document.getElementById('userDropdownMenu');
       if (dropdown) {
         dropdown.classList.toggle('show');

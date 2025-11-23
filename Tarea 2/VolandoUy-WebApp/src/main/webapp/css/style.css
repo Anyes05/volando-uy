@@ -1768,6 +1768,45 @@ input:focus {
   color: #dc3545;
 }
 
+/* Estilos para el botón de cerrar sesión en el sidebar móvil */
+.logout-nav-item {
+  color: #e9f6fb !important;
+  border-left: 3px solid transparent !important;
+  width: calc(100% - 32px);
+  margin: 4px 16px;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+}
+
+.logout-nav-item i {
+  color: #dc3545 !important;
+  width: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.logout-nav-item:hover {
+  background: rgba(220, 53, 69, 0.15) !important;
+  border-left-color: #dc3545 !important;
+  transform: translateX(6px);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+}
+
+.logout-nav-item:hover i {
+  color: #dc3545 !important;
+}
+
 .user-avatar-circle:hover {
   border-color: #0056b3;
   transform: scale(1.05);
