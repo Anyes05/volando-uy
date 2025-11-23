@@ -14,6 +14,8 @@ import logica.DataTypes.DTVuelo;
 import logica.DataTypes.DTHora;
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTReserva;
+import logica.DataTypes.DTCategoria;
+import logica.DataTypes.DTCantidad;
 import logica.DataTypes.DTCostoBase;
 import logica.DataTypes.DTCompraPaquete;
 import logica.DataTypes.EstadoRutaVuelo;
@@ -582,6 +584,62 @@ public class Sistema implements ISistema {
         return categoriaServicio.listarCategorias();
     }
 
+    public List<DTCategoria> getDTCategorias() {
+        CategoriaServicio categoriaServicio = new CategoriaServicio();
+        List<dato.entidades.Categoria> categorias = categoriaServicio.listarCategorias();
+        return convertirCategoriasADTO(categorias);
+    }
+
+    private List<DTCategoria> convertirCategoriasADTO(List<dato.entidades.Categoria> categorias) {
+        List<DTCategoria> dtCategorias = new ArrayList<>();
+        if (categorias != null) {
+            for (dato.entidades.Categoria cat : categorias) {
+                dtCategorias.add(new DTCategoria(cat.getNombre()));
+            }
+        }
+        return dtCategorias;
+    }
+
+    private List<DTCantidad> convertirCantidadesADTO(List<dato.entidades.Cantidad> cantidades) {
+        List<DTCantidad> dtCantidades = new ArrayList<>();
+        if (cantidades != null) {
+            for (dato.entidades.Cantidad cant : cantidades) {
+                String rutaNombre = cant.getRutaVuelo() != null ? cant.getRutaVuelo().getNombre() : null;
+                dtCantidades.add(new DTCantidad(cant.getCant(), cant.getTipoAsiento(), rutaNombre));
+            }
+        }
+        return dtCantidades;
+    }
+
+    private List<DTRutaVuelo> convertirRutasADTO(List<dato.entidades.RutaVuelo> rutas) {
+        List<DTRutaVuelo> dtRutas = new ArrayList<>();
+        if (rutas != null) {
+            for (dato.entidades.RutaVuelo r : rutas) {
+                DTAerolinea dtAerolinea = null;
+                if (r.getAerolineas() != null && !r.getAerolineas().isEmpty()) {
+                    dato.entidades.Aerolinea a = r.getAerolineas().get(0);
+                    dtAerolinea = new DTAerolinea(a.getNickname(), a.getNombre(), a.getCorreo(), 
+                            a.getDescripcion(), a.getLinkSitioWeb(), new ArrayList<>(), a.getFoto(), a.getContrasena());
+                }
+                DTRutaVuelo dtRuta = new DTRutaVuelo(
+                        r.getNombre(),
+                        r.getDescripcion(),
+                        r.getFechaAlta(),
+                        r.getCostoBase(),
+                        dtAerolinea,
+                        new DTCiudad(r.getCiudadOrigen().getNombre(), r.getCiudadOrigen().getPais()),
+                        new DTCiudad(r.getCiudadDestino().getNombre(), r.getCiudadDestino().getPais()),
+                        r.getFoto(),
+                        r.getEstado()
+                );
+                dtRuta.setCategorias(convertirCategoriasADTO(r.getCategorias()));
+                dtRuta.setVideoUrl(r.getVideoUrl());
+                dtRutas.add(dtRuta);
+            }
+        }
+        return dtRutas;
+    }
+
     // ALTA CIUDAD
     public void altaCiudad(String nombre, String pais, String aeropuerto, String descripcion, String sitioWeb, DTFecha fechaAlta) {
         CiudadServicio ciudadServicio = new CiudadServicio();
@@ -678,8 +736,8 @@ public class Sistema implements ISistema {
                         r.getFoto(),
                         r.getEstado()
                 );
-                // Agregar las categorías a la ruta
-                dtRuta.setCategorias(r.getCategorias());
+                // Agregar las categorías a la ruta (convertir a DTO)
+                dtRuta.setCategorias(convertirCategoriasADTO(r.getCategorias()));
                 dtRuta.setVideoUrl(r.getVideoUrl());
                 listaRutas.add(dtRuta);
         }
@@ -816,8 +874,8 @@ public class Sistema implements ISistema {
                         r.getFoto(),
                         r.getEstado()
                 );
-                // Agregar las categorías a la ruta
-                dtRuta.setCategorias(r.getCategorias());
+                // Agregar las categorías a la ruta (convertir a DTO)
+                dtRuta.setCategorias(convertirCategoriasADTO(r.getCategorias()));
                 dtRuta.setVideoUrl(r.getVideoUrl());
                 DTVuelo dtVuelo = new DTVuelo(v.getDuracion(), v.getNombre(), v.getFechaVuelo(), v.getHoraVuelo(), v.getAsientosMaxEjecutivo(), v.getFechaAlta(), v.getAsientosMaxTurista(), dtRuta, v.getFoto());
                 listaDTVuelos.add(dtVuelo);
@@ -875,8 +933,8 @@ public class Sistema implements ISistema {
                             r.getFoto(),
                             r.getEstado()
                     );
-                    // Agregar las categorías a la ruta
-                    dtRuta.setCategorias(r.getCategorias());
+                    // Agregar las categorías a la ruta (convertir a DTO)
+                    dtRuta.setCategorias(convertirCategoriasADTO(r.getCategorias()));
                     dtRuta.setVideoUrl(r.getVideoUrl());
                     listaRutas.add(dtRuta);
                 }
@@ -1180,6 +1238,9 @@ public class Sistema implements ISistema {
                         p.getFechaAlta(),
                         p.getFoto()
                 );
+                // Establecer el costoTotal del paquete
+                dtPaquete.setCostoTotal(p.getCostoTotal());
+                dtPaquete.setId(p.getId());
                 listaPaquetes.add(dtPaquete);
             }
         }
@@ -1200,6 +1261,9 @@ public class Sistema implements ISistema {
                         p.getFechaAlta(),
                         p.getFoto()
                 );
+                // Establecer el costoTotal del paquete
+                dtPaquete.setCostoTotal(p.getCostoTotal());
+                dtPaquete.setId(p.getId());
                 listaPaquetes.add(dtPaquete);
             }
         }
@@ -1224,15 +1288,18 @@ public class Sistema implements ISistema {
                         p.getFoto()
                 );
 
-                // Copiamos las rutas
-                List<RutaVuelo> rutas = new ArrayList<>();
+                // Convertimos las rutas a DTOs
+                List<dato.entidades.RutaVuelo> rutasEntidades = new ArrayList<>();
                 for (Cantidad c : p.getCantidad()) {
                     if (c.getRutaVuelo() != null) {
-                        rutas.add(c.getRutaVuelo());
+                        rutasEntidades.add(c.getRutaVuelo());
                     }
                 }
 
-                dtPaquete.setRutas(rutas);
+                dtPaquete.setRutas(convertirRutasADTO(rutasEntidades));
+                // Establecer el costoTotal del paquete
+                dtPaquete.setCostoTotal(p.getCostoTotal());
+                dtPaquete.setId(p.getId());
 
                 listaPaquetes.add(dtPaquete);
             }
@@ -1352,7 +1419,7 @@ public class Sistema implements ISistema {
                 paqueteSeleccionado.getFechaAlta(),
                 paqueteSeleccionado.getFoto()
         );
-        dtPaquete.setCantidad(paqueteSeleccionado.getCantidad());
+        dtPaquete.setCantidad(convertirCantidadesADTO(paqueteSeleccionado.getCantidad()));
         dtPaquete.setCostoTotal(paqueteSeleccionado.getCostoTotal());
 
         return dtPaquete;
@@ -2042,6 +2109,37 @@ public class Sistema implements ISistema {
             dtReservas.add(dtReserva);
         }
         return dtReservas;
+    }
+
+    public List<DTReserva> listarDTReservasCheck(String nicknameCliente) {
+        List<Reserva> reservas = listarReservasCheck(nicknameCliente);
+        return listarDTReservasCheck(reservas);
+    }
+
+    /**
+     * Obtiene la lista de pasajeros de una reserva por su ID
+     */
+    public List<DTPasajero> obtenerPasajerosReserva(Long reservaId) {
+        logica.servicios.ReservaServicio reservaServicio = new logica.servicios.ReservaServicio();
+        dato.entidades.Reserva reserva = reservaServicio.buscarPorId(reservaId);
+        
+        if (reserva == null) {
+            throw new IllegalArgumentException("Reserva no encontrada con ID: " + reservaId);
+        }
+        
+        List<DTPasajero> pasajeros = new ArrayList<>();
+        if (reserva.getPasajeros() != null) {
+            for (dato.entidades.Pasaje pasaje : reserva.getPasajeros()) {
+                String nombre = pasaje.getNombrePasajero();
+                String apellido = pasaje.getApellidoPasajero();
+                String nicknameCliente = pasaje.getPasajero() != null ? pasaje.getPasajero().getNickname() : null;
+                
+                DTPasajero dtPasajero = new DTPasajero(nombre, apellido, nicknameCliente);
+                pasajeros.add(dtPasajero);
+            }
+        }
+        
+        return pasajeros;
     }
 }
 

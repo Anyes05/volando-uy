@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import logica.clase.Sistema;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,7 +23,20 @@ public class DebugController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(DebugController.class.getName());
     private final ObjectMapper objectMapper;
-    private final Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
 
     public DebugController() {
         // Configurar ObjectMapper para evitar referencias circulares
@@ -48,13 +62,13 @@ public class DebugController extends HttpServlet {
                 // Test básico del sistema
                 out.print(objectMapper.writeValueAsString(Map.of(
                     "mensaje", "Sistema funcionando",
-                    "sistemaInstance", sistema != null ? "OK" : "NULL"
+                    "sistemaInstance", centralService != null ? "OK" : "NULL"
                 )));
                 
             } else if (pathInfo.equals("/precargar")) {
                 // Precargar datos del sistema
                 try {
-                    sistema.precargarSistemaCompleto();
+                    getCentralService().precargarSistemaCompleto();
                     out.print(objectMapper.writeValueAsString(Map.of(
                         "mensaje", "Sistema precargado exitosamente"
                     )));
@@ -69,7 +83,7 @@ public class DebugController extends HttpServlet {
             } else if (pathInfo.equals("/usuarios")) {
                 // Test de consulta de usuarios
                 try {
-                    var usuarios = sistema.consultarUsuarios();
+                    var usuarios = getCentralService().consultarUsuarios();
                     out.print(objectMapper.writeValueAsString(Map.of(
                         "usuarios", usuarios,
                         "cantidad", usuarios.size()

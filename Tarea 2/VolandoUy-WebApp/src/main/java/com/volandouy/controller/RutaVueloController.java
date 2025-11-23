@@ -24,7 +24,8 @@ import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTRutaVuelo;
 import logica.DataTypes.DTVuelo;
 import logica.DataTypes.EstadoRutaVuelo;
-import logica.clase.Sistema;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 
 /**
  * Controlador para manejar las operaciones relacionadas con rutas de vuelo
@@ -41,7 +42,33 @@ public class RutaVueloController extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(RutaVueloController.class.getName());
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
+
+    /**
+     * Serializa un objeto a JSON de forma segura, manejando excepciones
+     */
+    private String serializarJSON(Object objeto) {
+        try {
+            return objectMapper.writeValueAsString(objeto);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            LOG.log(Level.SEVERE, "Error al serializar objeto a JSON: " + e.getMessage(), e);
+            // Retornar un JSON de error simple
+            return "{\"error\":\"Error al serializar respuesta\"}";
+        }
+    }
 
     /**
      * GET endpoints:
@@ -84,13 +111,8 @@ public class RutaVueloController extends HttpServlet {
                 
                 LOG.info("Probando aerolínea: " + testNickname);
                 try {
-                    if (sistema == null) {
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                        return;
-                    }
-                    
-                    List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(testNickname);
+                    // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
+                    List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(testNickname);
                     Map<String, Object> result = new HashMap<>();
                     result.put("nickname", testNickname);
                     result.put("rutasEncontradas", rutas != null ? rutas.size() : 0);
@@ -110,14 +132,9 @@ public class RutaVueloController extends HttpServlet {
                 // Endpoint para precargar el sistema
                 LOG.info("Endpoint de precarga llamado");
                 try {
-                    if (sistema == null) {
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                        return;
-                    }
-                    
-                    LOG.info("Iniciando precarga del sistema...");
-                    sistema.precargarSistemaCompleto();
+                    // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
+                    LOG.info("Iniciando precarga del centralService...");
+                    getCentralService().precargarSistemaCompleto();
                     
                     Map<String, Object> result = new HashMap<>();
                     result.put("status", "OK");
@@ -126,10 +143,10 @@ public class RutaVueloController extends HttpServlet {
                     
                     // Verificar que la precarga funcionó
                     try {
-                        List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                        List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
                         result.put("aerolineasDisponibles", aerolineas != null ? aerolineas.size() : 0);
                         
-                        List<dato.entidades.Categoria> categorias = sistema.getCategorias();
+                        List<logica.DataTypes.DTCategoria> categorias = getCentralService().getCategorias();
                         result.put("categoriasDisponibles", categorias != null ? categorias.size() : 0);
                     } catch (Exception ex) {
                         result.put("warning", "Precarga completada pero hay problemas verificando datos: " + ex.getMessage());
@@ -152,11 +169,11 @@ public class RutaVueloController extends HttpServlet {
                     Map<String, Object> healthInfo = new HashMap<>();
                     healthInfo.put("status", "OK");
                     healthInfo.put("timestamp", java.time.LocalDateTime.now().toString());
-                    healthInfo.put("sistemaInicializado", sistema != null);
+                    healthInfo.put("sistemaInicializado", centralService != null);
                     
-                    if (sistema != null) {
+                    if (centralService != null) {
                         try {
-                            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
                             healthInfo.put("aerolineasDisponibles", aerolineas != null ? aerolineas.size() : 0);
                         } catch (Exception ex) {
                             healthInfo.put("errorAerolineas", ex.getMessage());
@@ -176,17 +193,17 @@ public class RutaVueloController extends HttpServlet {
             } else if (pathInfo.equals("/debug")) {
                 // Endpoint de debug para verificar el sistema
                 try {
-                    LOG.info("Verificando sistema...");
-                    boolean sistemaInicializado = sistema != null;
+                    LOG.info("Verificando centralService...");
+                    boolean sistemaInicializado = centralService != null;
                     LOG.info("Sistema inicializado: " + sistemaInicializado);
                     
                     Map<String, Object> debugInfo = new HashMap<>();
                     debugInfo.put("sistemaInicializado", sistemaInicializado);
                     debugInfo.put("timestamp", java.time.LocalDateTime.now().toString());
                     
-                    if (sistema != null) {
+                    if (centralService != null) {
                         try {
-                            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
                             debugInfo.put("aerolineasDisponibles", aerolineas.size());
                             debugInfo.put("aerolineas", aerolineas.stream().map(a -> a.getNickname()).collect(java.util.stream.Collectors.toList()));
                         } catch (Exception ex) {
@@ -208,12 +225,12 @@ public class RutaVueloController extends HttpServlet {
                 try {
                     Map<String, Object> diagnostico = new HashMap<>();
                     diagnostico.put("timestamp", java.time.LocalDateTime.now().toString());
-                    diagnostico.put("sistemaInicializado", sistema != null);
+                    diagnostico.put("sistemaInicializado", centralService != null);
                     
-                    if (sistema != null) {
+                    if (centralService != null) {
                         // Probar listar aerolíneas
                         try {
-                            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
                             diagnostico.put("aerolineasCount", aerolineas != null ? aerolineas.size() : 0);
                             
                             if (aerolineas != null && !aerolineas.isEmpty()) {
@@ -222,7 +239,7 @@ public class RutaVueloController extends HttpServlet {
                                 diagnostico.put("primeraAerolinea", primeraAero.getNickname());
                                 
                                 try {
-                                    List<DTRutaVuelo> rutasTest = sistema.listarRutaVuelo(primeraAero.getNickname());
+                                    List<DTRutaVuelo> rutasTest = getCentralService().listarRutasPorAerolinea(primeraAero.getNickname());
                                     diagnostico.put("rutasTestCount", rutasTest != null ? rutasTest.size() : 0);
                                     
                                     if (rutasTest != null && !rutasTest.isEmpty()) {
@@ -253,14 +270,8 @@ public class RutaVueloController extends HttpServlet {
                 try {
                     LOG.info("Listando aerolíneas disponibles");
                     
-                    if (sistema == null) {
-                        LOG.severe("Sistema no inicializado");
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                        return;
-                    }
-                    
-                    List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                    // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
+                    List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
                     LOG.info("Aerolíneas encontradas: " + (aerolineas != null ? aerolineas.size() : 0));
                     
                     List<Map<String, Object>> result = new ArrayList<>();
@@ -296,18 +307,12 @@ public class RutaVueloController extends HttpServlet {
                 try {
                     LOG.info("Listando categorías disponibles");
                     
-                    if (sistema == null) {
-                        LOG.severe("Sistema no inicializado");
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                        return;
-                    }
-                    
-                    List<dato.entidades.Categoria> categoriasEntidades = sistema.getCategorias();
+                    // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
+                    List<logica.DataTypes.DTCategoria> categoriasEntidades = getCentralService().getCategorias();
                     List<String> categorias = new ArrayList<>();
                     
                     if (categoriasEntidades != null) {
-                        for (dato.entidades.Categoria cat : categoriasEntidades) {
+                        for (logica.DataTypes.DTCategoria cat : categoriasEntidades) {
                             if (cat != null && cat.getNombre() != null) {
                                 categorias.add(cat.getNombre());
                             }
@@ -338,14 +343,8 @@ public class RutaVueloController extends HttpServlet {
                 try {
                     LOG.info("Listando ciudades disponibles");
                     
-                    if (sistema == null) {
-                        LOG.severe("Sistema no inicializado");
-                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                        return;
-                    }
-                    
-                    List<logica.DataTypes.DTCiudad> ciudadesEntidades = sistema.listarCiudades();
+                    // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
+                    List<logica.DataTypes.DTCiudad> ciudadesEntidades = getCentralService().listarCiudades();
                     List<Map<String, String>> ciudades = new ArrayList<>();
                     
                     if (ciudadesEntidades != null) {
@@ -416,25 +415,18 @@ public class RutaVueloController extends HttpServlet {
     private void handleGetTodasLasRutas(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
         LOG.info("Obteniendo todas las rutas de todas las aerolíneas");
 
-        // Verificar que el sistema esté inicializado
-        if (sistema == null) {
-            LOG.severe("Sistema no inicializado");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-            return;
-        }
-
+        // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
         List<Map<String, Object>> todasLasRutas = new ArrayList<>();
         
         try {
             // Obtener todas las aerolíneas
-            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
             LOG.info("Aerolíneas encontradas: " + (aerolineas != null ? aerolineas.size() : 0));
             
             if (aerolineas != null) {
                 for (DTAerolinea aero : aerolineas) {
                     try {
-                        List<DTRutaVuelo> rutasAerolinea = sistema.listarRutaVuelo(aero.getNickname());
+                        List<DTRutaVuelo> rutasAerolinea = getCentralService().listarRutasPorAerolinea(aero.getNickname());
                         if (rutasAerolinea != null) {
                             for (DTRutaVuelo r : rutasAerolinea) {
                                 if (r.getEstado() == EstadoRutaVuelo.CONFIRMADA) {
@@ -464,7 +456,7 @@ public class RutaVueloController extends HttpServlet {
                                     // Categorías - serializar solo nombres para evitar recursión
                                     if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
                                         List<String> nombresCategorias = new ArrayList<>();
-                                        for (dato.entidades.Categoria cat : r.getCategorias()) {
+                                        for (logica.DataTypes.DTCategoria cat : r.getCategorias()) {
                                             if (cat != null && cat.getNombre() != null) {
                                                 nombresCategorias.add(cat.getNombre());
                                             }
@@ -538,44 +530,29 @@ public class RutaVueloController extends HttpServlet {
 
         LOG.info("Buscando rutas para aerolínea: " + nickname);
 
-        // Verificar que el sistema esté inicializado
-        if (sistema == null) {
-            LOG.severe("Sistema no inicializado");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-            return;
-        }
-
+        // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
         // Obtener las rutas filtradas desde la lógica de negocio
         List<DTRutaVuelo> rutas = new ArrayList<>();
         try {
-            LOG.info("Llamando a sistema.listarRutaVuelo(" + nickname + ")");
-            
-            // Verificar que el sistema esté funcionando
-            if (sistema == null) {
-                LOG.severe("Sistema es null al intentar obtener rutas");
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                return;
-            }
+            LOG.info("Llamando a getCentralService().listarRutasPorAerolinea(" + nickname + ")");
             
             // Intentar precargar el sistema si no tiene datos
             try {
-                List<DTAerolinea> testAerolineas = sistema.listarAerolineas();
+                List<DTAerolinea> testAerolineas = getCentralService().listarAerolineas();
                 if (testAerolineas == null || testAerolineas.isEmpty()) {
                     LOG.info("No hay aerolíneas cargadas, precargando sistema...");
-                    sistema.precargarSistemaCompleto();
+                    getCentralService().precargarSistemaCompleto();
                 }
             } catch (Exception precargarEx) {
                 LOG.warning("Error al precargar sistema: " + precargarEx.getMessage());
             }
             
             // Usar el mismo método que funciona en VueloController
-            rutas = sistema.listarRutaVuelo(nickname);
+            rutas = getCentralService().listarRutasPorAerolinea(nickname);
             LOG.info("Rutas obtenidas exitosamente para aerolínea " + nickname + ": " + (rutas != null ? rutas.size() : 0));
             
             if (rutas == null) {
-                LOG.warning("sistema.listarRutaVuelo devolvió null para aerolínea: " + nickname);
+                LOG.warning("getCentralService().listarRutasPorAerolinea devolvió null para aerolínea: " + nickname);
                 rutas = new ArrayList<>();
             }
         } catch (IllegalArgumentException ex) {
@@ -662,7 +639,7 @@ public class RutaVueloController extends HttpServlet {
                 // Categorías - serializar solo nombres para evitar recursión
                 if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
                     List<String> nombresCategorias = new ArrayList<>();
-                    for (dato.entidades.Categoria cat : r.getCategorias()) {
+                    for (logica.DataTypes.DTCategoria cat : r.getCategorias()) {
                         if (cat != null && cat.getNombre() != null) {
                             nombresCategorias.add(cat.getNombre());
                         }
@@ -717,7 +694,7 @@ public class RutaVueloController extends HttpServlet {
             
             if (ruta == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no encontrada")));
+                out.print(serializarJSON(Map.of("error", "Ruta no encontrada")));
                 return;
             }
 
@@ -752,7 +729,7 @@ public class RutaVueloController extends HttpServlet {
             // Categorías - serializar solo nombres para evitar recursión
             if (ruta.getCategorias() != null && !ruta.getCategorias().isEmpty()) {
                 List<String> nombresCategorias = new ArrayList<>();
-                for (dato.entidades.Categoria cat : ruta.getCategorias()) {
+                for (logica.DataTypes.DTCategoria cat : ruta.getCategorias()) {
                     if (cat != null && cat.getNombre() != null) {
                         nombresCategorias.add(cat.getNombre());
                     }
@@ -772,12 +749,12 @@ public class RutaVueloController extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(rutaMap));
+            out.print(serializarJSON(rutaMap));
             
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error al obtener detalles de ruta: " + nombreRuta, ex);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Error al obtener detalles de la ruta")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener detalles de la ruta")));
         }
     }
 
@@ -793,33 +770,26 @@ public class RutaVueloController extends HttpServlet {
 
         LOG.info("Buscando rutas para categoría: " + categoriaParam);
 
-        // Verificar que el sistema esté inicializado
-        if (sistema == null) {
-            LOG.severe("Sistema no inicializado");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-            return;
-        }
-
+        // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
         // Obtener las rutas filtradas por categoría desde la lógica de negocio
         List<DTRutaVuelo> rutas = new ArrayList<>();
         try {
             LOG.info("Buscando rutas por categoría: " + categoriaParam);
             
             // Obtener todas las aerolíneas
-            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
             
             // Para cada aerolínea, obtener sus rutas y filtrar por categoría
             for (DTAerolinea aero : aerolineas) {
                 try {
-                    List<DTRutaVuelo> rutasAerolinea = sistema.listarRutaVuelo(aero.getNickname());
+                    List<DTRutaVuelo> rutasAerolinea = getCentralService().listarRutasPorAerolinea(aero.getNickname());
                     
                     // Filtrar rutas que contengan la categoría especificada
                     for (DTRutaVuelo ruta : rutasAerolinea) {
                         if (ruta.getCategorias() != null) {
                             // Verificar si alguna categoría de la ruta coincide con el parámetro
                             boolean categoriaEncontrada = false;
-                            for (dato.entidades.Categoria categoria : ruta.getCategorias()) {
+                            for (logica.DataTypes.DTCategoria categoria : ruta.getCategorias()) {
                                 if (categoria != null && categoriaParam.equals(categoria.getNombre())) {
                                     categoriaEncontrada = true;
                                     break;
@@ -871,7 +841,7 @@ public class RutaVueloController extends HttpServlet {
                 // Categorías - serializar solo nombres para evitar recursión
                 if (r.getCategorias() != null && !r.getCategorias().isEmpty()) {
                     List<String> nombresCategorias = new ArrayList<>();
-                    for (dato.entidades.Categoria cat : r.getCategorias()) {
+                    for (logica.DataTypes.DTCategoria cat : r.getCategorias()) {
                         if (cat != null && cat.getNombre() != null) {
                             nombresCategorias.add(cat.getNombre());
                         }
@@ -931,7 +901,7 @@ public class RutaVueloController extends HttpServlet {
                 return;
             }
             
-            List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(nombreRuta);
+            List<DTVuelo> vuelos = getCentralService().listarVuelosDeRuta(nombreRuta);
             LOG.info("Vuelos encontrados: " + vuelos.size());
             
             List<Map<String, Object>> result = new ArrayList<>();
@@ -955,12 +925,12 @@ public class RutaVueloController extends HttpServlet {
             }
             
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(result));
+            out.print(serializarJSON(result));
             
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error al obtener vuelos de ruta: " + nombreRuta, ex);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Error al obtener vuelos", "detail", ex.getMessage())));
+            out.print(serializarJSON(Map.of("error", "Error al obtener vuelos", "detail", ex.getMessage())));
         }
     }
 
@@ -987,13 +957,7 @@ public class RutaVueloController extends HttpServlet {
             // ======================
             //  ALTA DE RUTA (POST /api/rutas)
             // ======================
-            if (sistema == null) {
-                LOG.severe("Sistema.getInstance() devolvió null. Verificar classpath/JAR y carga de la clase.");
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                return;
-            }
-
+            // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
             // --- Leer parámetros (multipart/form-data) ---
             String nombre = trim(request.getParameter("nombre"));
             String descripcionCorta = trim(request.getParameter("descripcionCorta"));
@@ -1101,9 +1065,9 @@ public class RutaVueloController extends HttpServlet {
                     dtFecha = new DTFecha(fechaAlta.getDayOfMonth(), fechaAlta.getMonthValue(), fechaAlta.getYear());
                 }
 
-                LOG.info("Invocando sistema.ingresarDatosRuta(...)");
-                sistema.seleccionarAerolinea(nickname);
-                sistema.ingresarDatosRuta(
+                LOG.info("Invocando getCentralService().ingresarDatosRuta(...)");
+                getCentralService().seleccionarAerolinea(nickname);
+                getCentralService().ingresarDatosRuta(
                         nombre,
                         descripcion,
                         costoTurista,
@@ -1117,14 +1081,14 @@ public class RutaVueloController extends HttpServlet {
                         videoUrl  // URL del video (opcional)
                 );
 
-                sistema.registrarRuta(); // o metodo equivalente en tu sistema
+                getCentralService().registrarRuta(); // o metodo equivalente en tu sistema
 
-                LOG.info("sistema.registrarRuta() ejecutado sin lanzar excepción.");
+                LOG.info("getCentralService().registrarRuta() ejecutado sin lanzar excepción.");
                 response.setStatus(HttpServletResponse.SC_CREATED);
                 out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Ruta creada")));
                 return;
             } catch (Exception ex) {
-                LOG.log(Level.SEVERE, "Error al invocar sistema.altaRutaVuelo", ex);
+                LOG.log(Level.SEVERE, "Error al invocar centralService.altaRutaVuelo", ex);
                 String msg = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
                 if (msg.contains("existe") || msg.contains("ya existe") || msg.contains("duplicate") || msg.contains("duplic")) {
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
@@ -1150,13 +1114,7 @@ public class RutaVueloController extends HttpServlet {
 
         LOG.info("POST /api/rutas/finalizar llamado");
 
-        if (sistema == null) {
-            LOG.severe("Sistema no inicializado en handleFinalizarRuta");
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-            return;
-        }
-
+        // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
         try {
             HttpSession session = request.getSession(false);
             if (session == null || session.getAttribute("usuarioLogueado") == null) {
@@ -1184,8 +1142,8 @@ public class RutaVueloController extends HttpServlet {
             LOG.info("Finalizando ruta '" + nombreRuta + "' para aerolínea " + nickname);
 
             try {
-                sistema.seleccionarAerolinea(nickname);
-                sistema.EstadoFinalizarRutaVuelo(nombreRuta);
+                getCentralService().seleccionarAerolinea(nickname);
+                getCentralService().EstadoFinalizarRutaVuelo(nombreRuta);
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Ruta finalizada correctamente")));
@@ -1211,7 +1169,7 @@ public class RutaVueloController extends HttpServlet {
      */
     private DTRutaVuelo buscarRutaEnTodasLasAerolineas(String nombreRuta) {
         try {
-            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
             if (aerolineas == null || aerolineas.isEmpty()) {
                 LOG.warning("No hay aerolíneas disponibles para buscar la ruta");
                 return null;
@@ -1220,10 +1178,10 @@ public class RutaVueloController extends HttpServlet {
             for (DTAerolinea aerolinea : aerolineas) {
                 try {
                     // Seleccionar la aerolínea temporalmente
-                    sistema.seleccionarAerolinea(aerolinea.getNickname());
+                    getCentralService().seleccionarAerolinea(aerolinea.getNickname());
                     
                     // Buscar la ruta en esta aerolínea
-                    DTRutaVuelo ruta = sistema.seleccionarRutaVueloRet(nombreRuta);
+                    DTRutaVuelo ruta = getCentralService().seleccionarRutaVueloRet(nombreRuta);
                     if (ruta != null) {
                         LOG.info("Ruta encontrada en aerolínea: " + aerolinea.getNickname());
                         return ruta;

@@ -1,6 +1,5 @@
 package com.volandouy.controller;
 
-import logica.servicios.SeguidoresServicio;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,7 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SeguidoresController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
+    // TODO: Implementar métodos de seguidores en el Web Service
+    // private final SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -47,14 +47,16 @@ public class SeguidoresController extends HttpServlet {
 
             if (parts.length == 2 && "seguir".equals(parts[1])) {
                 String nickSeguido = parts[0];
-                seguidoresServicio.seguir(nickSeguidor, nickSeguido);
+                com.volandouy.central.CentralService centralService = com.volandouy.central.ServiceFactory.getCentralService();
+                centralService.seguir(nickSeguidor, nickSeguido);
                 response.setStatus(HttpServletResponse.SC_OK);
-                out.print(objectMapper.writeValueAsString(Map.of("message", "Ahora sigues a " + nickSeguido)));
+                out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Usuario seguido exitosamente")));
             } else if (parts.length == 2 && "dejar".equals(parts[1])) {
                 String nickSeguido = parts[0];
-                seguidoresServicio.dejarDeSeguir(nickSeguidor, nickSeguido);
+                com.volandouy.central.CentralService centralService = com.volandouy.central.ServiceFactory.getCentralService();
+                centralService.dejarDeSeguir(nickSeguidor, nickSeguido);
                 response.setStatus(HttpServletResponse.SC_OK);
-                out.print(objectMapper.writeValueAsString(Map.of("message", "Has dejado de seguir a " + nickSeguido)));
+                out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Dejaste de seguir al usuario exitosamente")));
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no válida")));
@@ -87,14 +89,16 @@ public class SeguidoresController extends HttpServlet {
 
             if (parts.length == 2 && "seguidores".equals(parts[1])) {
                 String nick = parts[0];
-                List<String> seguidores = seguidoresServicio.listarSeguidores(nick);
+                com.volandouy.central.CentralService centralService = com.volandouy.central.ServiceFactory.getCentralService();
+                List<String> seguidores = centralService.listarSeguidores(nick);
                 response.setStatus(HttpServletResponse.SC_OK);
-                out.print(objectMapper.writeValueAsString(Map.of("seguidores", seguidores)));
+                out.print(objectMapper.writeValueAsString(seguidores));
             } else if (parts.length == 2 && "seguidos".equals(parts[1])) {
                 String nick = parts[0];
-                List<String> seguidos = seguidoresServicio.listarSeguidos(nick);
+                com.volandouy.central.CentralService centralService = com.volandouy.central.ServiceFactory.getCentralService();
+                List<String> seguidos = centralService.listarSeguidos(nick);
                 response.setStatus(HttpServletResponse.SC_OK);
-                out.print(objectMapper.writeValueAsString(Map.of("seguidos", seguidos)));
+                out.print(objectMapper.writeValueAsString(seguidos));
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.print(objectMapper.writeValueAsString(Map.of("error", "Ruta no válida")));

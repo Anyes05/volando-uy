@@ -81,12 +81,9 @@
       <version>2.15.2</version>
     </dependency>
 
-      <!-- Servidor Central - Dependencia local -->
-      <dependency>
-          <groupId>com.ana.proyecto</groupId>
-          <artifactId>mi-libreria</artifactId>
-          <version>1.0.0</version>
-      </dependency>
+      <!-- NOTA: No se usa el JAR de la Tarea 1. 
+           Las clases DataTypes se copian directamente al cliente para evitar dependencia del JAR.
+           Esto permite que JAXB deserialice las respuestas del Web Service sin necesidad del JAR completo. -->
 
       <dependency>
           <groupId>jakarta.persistence</groupId>

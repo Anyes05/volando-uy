@@ -1,17 +1,8 @@
 package com.volandouy.controller;
 
 import logica.DataTypes.*;
-import logica.clase.Sistema;
-import logica.servicios.ClienteServicio;
-import logica.servicios.AerolineaServicio;
-import logica.servicios.ReservaServicio;
-import logica.servicios.SeguidoresServicio;
-import dato.entidades.Cliente;
-import dato.entidades.Aerolinea;
-import dato.entidades.Reserva;
-import dato.entidades.Pasaje;
-import dato.entidades.Vuelo;
-import dato.entidades.RutaVuelo;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +42,33 @@ public class UsuarioController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(UsuarioController.class.getName());
     private final ObjectMapper objectMapper;
-    private final Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
+
+    /**
+     * Serializa un objeto a JSON de forma segura, manejando excepciones
+     */
+    private String serializarJSON(Object objeto) {
+        try {
+            return objectMapper.writeValueAsString(objeto);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            LOG.log(Level.SEVERE, "Error al serializar objeto a JSON: " + e.getMessage(), e);
+            // Retornar un JSON de error simple
+            return "{\"error\":\"Error al serializar respuesta\"}";
+        }
+    }
 
     public UsuarioController() {
         // Configurar ObjectMapper para evitar referencias circulares
@@ -80,7 +97,7 @@ public class UsuarioController extends HttpServlet {
                     List<Map<String, Object>> usuariosCompletos = new ArrayList<>();
                     
                     // Obtener clientes
-                    List<DTCliente> clientes = sistema.listarClientes();
+                    List<DTCliente> clientes = getCentralService().listarClientes();
                     for (DTCliente cliente : clientes) {
                         Map<String, Object> usuarioMap = new HashMap<>();
                         usuarioMap.put("nickname", cliente.getNickname());
@@ -97,7 +114,7 @@ public class UsuarioController extends HttpServlet {
                     }
                     
                     // Obtener aerolíneas
-                    List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                    List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
                     for (DTAerolinea aerolinea : aerolineas) {
                         Map<String, Object> usuarioMap = new HashMap<>();
                         usuarioMap.put("nickname", aerolinea.getNickname());
@@ -111,11 +128,23 @@ public class UsuarioController extends HttpServlet {
                     }
                     
                     response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(Map.of("usuarios", usuariosCompletos)));
+                    out.print(serializarJSON(Map.of("usuarios", usuariosCompletos)));
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error al consultar usuarios", ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
+                    
+                    // Mensaje más descriptivo para el usuario
+                    String mensajeError = ex.getMessage();
+                    if (mensajeError != null && (mensajeError.contains("Connection") || 
+                            mensajeError.contains("connect") || mensajeError.contains("refused"))) {
+                        mensajeError = "No se pudo conectar al Servidor Central. " +
+                                "Asegúrate de que el Servidor Central esté ejecutándose.";
+                    }
+                    
+                    out.print(serializarJSON(Map.of(
+                        "error", mensajeError != null ? mensajeError : "Error interno del servidor",
+                        "detalle", ex.getClass().getSimpleName()
+                    )));
                 }
             } else if (pathInfo.equals("/perfil")) {
                 // GET /api/usuarios/perfil - Obtener datos del usuario logueado
@@ -127,7 +156,7 @@ public class UsuarioController extends HttpServlet {
                     LOG.warning("Sesión no válida - session: " + (session != null ? "existe" : "null") +
                             ", usuarioLogueado: " + (session != null ? session.getAttribute("usuarioLogueado") : "N/A"));
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Sesión no válida")));
+                    out.print(serializarJSON(Map.of("error", "Sesión no válida")));
                     return;
                 }
 
@@ -135,8 +164,8 @@ public class UsuarioController extends HttpServlet {
                 LOG.info("Nickname obtenido de sesión: " + nickname);
 
                 try {
-                    LOG.info("Llamando a sistema.mostrarDatosUsuarioMod(" + nickname + ")");
-                    var datosUsuario = sistema.mostrarDatosUsuarioMod(nickname);
+                    LOG.info("Llamando a getCentralService().mostrarDatosUsuarioMod(" + nickname + ")");
+                    var datosUsuario = getCentralService().mostrarDatosUsuarioMod(nickname);
                     LOG.info("Datos usuario obtenidos: " + (datosUsuario != null ? "existe" : "null"));
 
                     if (datosUsuario != null) {
@@ -144,21 +173,21 @@ public class UsuarioController extends HttpServlet {
                         Map<String, Object> usuarioData = extraerDatosUsuario(datosUsuario);
                         LOG.info("Datos extraídos: " + usuarioData.keySet());
                         response.setStatus(HttpServletResponse.SC_OK);
-                        out.print(objectMapper.writeValueAsString(usuarioData));
+                        out.print(serializarJSON(usuarioData));
                     } else {
                         LOG.warning("Datos usuario es null");
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario no encontrado")));
+                        out.print(serializarJSON(Map.of("error", "Usuario no encontrado")));
                     }
                 } catch (IllegalArgumentException ex) {
                     // Usuario no encontrado
                     LOG.info("Usuario no encontrado en el sistema: " + nickname + " - " + ex.getMessage());
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario no encontrado: " + ex.getMessage())));
+                    out.print(serializarJSON(Map.of("error", "Usuario no encontrado: " + ex.getMessage())));
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error al obtener datos del usuario logueado: " + nickname, ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
+                    out.print(serializarJSON(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
                 }
             } else if (pathInfo.equals("/debug")) {
                 // GET /api/usuarios/debug - Endpoint de debug para verificar mostrarDatosUsuario
@@ -173,11 +202,11 @@ public class UsuarioController extends HttpServlet {
                     LOG.info("=== DEBUG: Probando mostrarDatosUsuario para: " + nickname + " ===");
                     
                     // Probar mostrarDatosUsuarioMod
-                    var datosMod = sistema.mostrarDatosUsuarioMod(nickname);
+                    var datosMod = getCentralService().mostrarDatosUsuarioMod(nickname);
                     LOG.info("mostrarDatosUsuarioMod resultado: " + (datosMod != null ? "OK" : "NULL"));
                     
                     // Probar mostrarDatosUsuario
-                    var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                    var datosCompletos = getCentralService().mostrarDatosUsuario(nickname);
                     LOG.info("mostrarDatosUsuario resultado: " + (datosCompletos != null ? "OK" : "NULL"));
                     
                     Map<String, Object> debugInfo = new HashMap<>();
@@ -197,17 +226,17 @@ public class UsuarioController extends HttpServlet {
                     }
                     
                     response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(debugInfo));
+                    out.print(serializarJSON(debugInfo));
                     
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error en debug endpoint: " + ex.getMessage(), ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error en debug: " + ex.getMessage())));
+                    out.print(serializarJSON(Map.of("error", "Error en debug: " + ex.getMessage())));
                 }
             } else if (pathInfo.equals("/test")) {
                 // GET /api/usuarios/test - Endpoint simple de prueba
                 response.setStatus(HttpServletResponse.SC_OK);
-                out.print(objectMapper.writeValueAsString(Map.of(
+                out.print(serializarJSON(Map.of(
                     "message", "Endpoint de usuarios funcionando correctamente",
                     "timestamp", System.currentTimeMillis(),
                     "servlet", "UsuarioController"
@@ -217,7 +246,7 @@ public class UsuarioController extends HttpServlet {
                 String nickname = request.getParameter("nickname");
                 if (nickname == null) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Parámetro nickname requerido")));
+                    out.print(serializarJSON(Map.of("error", "Parámetro nickname requerido")));
                     return;
                 }
                 
@@ -225,11 +254,11 @@ public class UsuarioController extends HttpServlet {
                     LOG.info("=== CHECK RESERVAS: Verificando reservas para: " + nickname + " ===");
                     
                     // Probar mostrarDatosUsuarioMod
-                    var datosMod = sistema.mostrarDatosUsuarioMod(nickname);
+                    var datosMod = getCentralService().mostrarDatosUsuarioMod(nickname);
                     LOG.info("mostrarDatosUsuarioMod: " + (datosMod != null ? "OK" : "NULL"));
                     
                     // Probar mostrarDatosUsuario
-                    var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                    var datosCompletos = getCentralService().mostrarDatosUsuario(nickname);
                     LOG.info("mostrarDatosUsuario: " + (datosCompletos != null ? "OK" : "NULL"));
                     
                     Map<String, Object> result = new HashMap<>();
@@ -261,12 +290,12 @@ public class UsuarioController extends HttpServlet {
                     }
                     
                     response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(result));
+                    out.print(serializarJSON(result));
                     
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error en check-reservas: " + ex.getMessage(), ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error: " + ex.getMessage())));
+                    out.print(serializarJSON(Map.of("error", "Error: " + ex.getMessage())));
                 }
             } else if (pathInfo.startsWith("/reserva-detalle/")) {
                 // GET /api/usuarios/reserva-detalle/{id} - Obtener detalle completo de una reserva
@@ -277,7 +306,7 @@ public class UsuarioController extends HttpServlet {
                 String nickname = request.getParameter("nickname");
                 if (nickname == null) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Parámetro nickname requerido")));
+                    out.print(serializarJSON(Map.of("error", "Parámetro nickname requerido")));
                     return;
                 }
                 
@@ -289,7 +318,7 @@ public class UsuarioController extends HttpServlet {
                     
                     // Verificar si el usuario existe en la BD
                     try {
-                        var datosMod = sistema.mostrarDatosUsuarioMod(nickname);
+                        var datosMod = getCentralService().mostrarDatosUsuarioMod(nickname);
                         result.put("usuario_existe", datosMod != null);
                         result.put("tipo_usuario", datosMod != null ? datosMod.getClass().getSimpleName() : "NO_ENCONTRADO");
                         
@@ -307,7 +336,7 @@ public class UsuarioController extends HttpServlet {
                     
                     // Verificar método mostrarDatosUsuario
                     try {
-                        var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                        var datosCompletos = getCentralService().mostrarDatosUsuario(nickname);
                         result.put("mostrarDatosUsuario_funciona", datosCompletos != null);
                         
                         if (datosCompletos instanceof DTCliente) {
@@ -322,12 +351,12 @@ public class UsuarioController extends HttpServlet {
                     result.put("diagnostico", "Verificación completa de BD completada");
                     
                     response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(result));
+                    out.print(serializarJSON(result));
                     
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error en verificar-bd: " + ex.getMessage(), ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error: " + ex.getMessage())));
+                    out.print(serializarJSON(Map.of("error", "Error: " + ex.getMessage())));
                 }
             } else {
                 // GET /api/usuarios/{nickname} - Obtener datos específicos de un usuario
@@ -336,7 +365,7 @@ public class UsuarioController extends HttpServlet {
                     LOG.info("Intentando obtener datos del usuario: " + nickname);
                     
                     // Usar mostrarDatosUsuarioMod como fallback seguro
-                    var datosUsuario = sistema.mostrarDatosUsuarioMod(nickname);
+                    var datosUsuario = getCentralService().mostrarDatosUsuarioMod(nickname);
                     LOG.info("Datos del usuario obtenidos: " + (datosUsuario != null ? "OK" : "NULL"));
                     
                     if (datosUsuario != null) {
@@ -347,7 +376,7 @@ public class UsuarioController extends HttpServlet {
                         if (datosUsuario instanceof DTAerolinea) {
                             try {
                                 LOG.info("Intentando obtener todas las rutas de la aerolínea: " + nickname);
-                                var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                                var datosCompletos = getCentralService().mostrarDatosUsuario(nickname);
                                 if (datosCompletos instanceof DTAerolinea) {
                                     DTAerolinea aerolineaCompleta = (DTAerolinea) datosCompletos;
                                     int numRutas = aerolineaCompleta.getRutasVuelo() != null ? aerolineaCompleta.getRutasVuelo().size() : 0;
@@ -400,8 +429,8 @@ public class UsuarioController extends HttpServlet {
                                 
                                 // Intentar con mostrarDatosUsuario primero
                                 try {
-                                    LOG.info("Llamando a sistema.mostrarDatosUsuario para: " + nickname);
-                                    var datosCompletos = sistema.mostrarDatosUsuario(nickname);
+                                    LOG.info("Llamando a getCentralService().mostrarDatosUsuario para: " + nickname);
+                                    var datosCompletos = getCentralService().mostrarDatosUsuario(nickname);
                                     LOG.info("Respuesta de mostrarDatosUsuario: " + (datosCompletos != null ? "OK" : "NULL"));
                                     if (datosCompletos instanceof DTCliente) {
                                         clienteConReservas = (DTCliente) datosCompletos;
@@ -474,8 +503,8 @@ public class UsuarioController extends HttpServlet {
                                     
                                     // Intentar obtener reservas directamente desde el sistema como fallback
                                     try {
-                                        LOG.info("Intentando obtener reservas directamente desde el sistema...");
-                                        var datosCompletosFallback = sistema.mostrarDatosUsuario(nickname);
+                                        LOG.info("Intentando obtener reservas directamente desde el getCentralService()...");
+                                        var datosCompletosFallback = getCentralService().mostrarDatosUsuario(nickname);
                                         if (datosCompletosFallback instanceof DTCliente) {
                                             DTCliente clienteFallback = (DTCliente) datosCompletosFallback;
                                             if (clienteFallback.getReserva() != null && !clienteFallback.getReserva().isEmpty()) {
@@ -536,14 +565,12 @@ public class UsuarioController extends HttpServlet {
                         // Agregar información de seguidores y seguidos (características sociales)
                         try {
                             LOG.info("Obteniendo seguidores y seguidos para: " + nickname);
-                            SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
-                            List<String> seguidores = seguidoresServicio.listarSeguidores(nickname);
-                            List<String> seguidos = seguidoresServicio.listarSeguidos(nickname);
+                            List<String> seguidores = getCentralService().listarSeguidores(nickname);
+                            List<String> seguidos = getCentralService().listarSeguidos(nickname);
                             
                             usuarioData.put("seguidores", seguidores != null ? seguidores : new ArrayList<>());
                             usuarioData.put("seguidos", seguidos != null ? seguidos : new ArrayList<>());
-                            LOG.info("Seguidores: " + (seguidores != null ? seguidores.size() : 0) + 
-                                    ", Seguidos: " + (seguidos != null ? seguidos.size() : 0));
+                            LOG.info("Seguidores: " + (seguidores != null ? seguidores.size() : 0) + ", Seguidos: " + (seguidos != null ? seguidos.size() : 0));
                         } catch (Exception e) {
                             LOG.warning("Error al obtener seguidores/seguidos: " + e.getMessage());
                             usuarioData.put("seguidores", new ArrayList<>());
@@ -552,16 +579,16 @@ public class UsuarioController extends HttpServlet {
                         
                         LOG.info("Datos extraídos exitosamente");
                         response.setStatus(HttpServletResponse.SC_OK);
-                        out.print(objectMapper.writeValueAsString(usuarioData));
+                        out.print(serializarJSON(usuarioData));
                     } else {
                         LOG.warning("Usuario no encontrado: " + nickname);
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario no encontrado")));
+                        out.print(serializarJSON(Map.of("error", "Usuario no encontrado")));
                     }
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error al obtener datos del usuario: " + nickname, ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
+                    out.print(serializarJSON(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
                 }
             }
         } finally {
@@ -586,7 +613,7 @@ public class UsuarioController extends HttpServlet {
                 HttpSession session = request.getSession(false);
                 if (session == null || session.getAttribute("usuarioLogueado") == null) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Sesión no válida")));
+                    out.print(serializarJSON(Map.of("error", "Sesión no válida")));
                     return;
                 }
                 nickname = (String) session.getAttribute("usuarioLogueado");
@@ -597,7 +624,7 @@ public class UsuarioController extends HttpServlet {
                 LOG.info("PUT /api/usuarios/" + nickname + " - Modificar usuario específico");
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Endpoint no válido")));
+                out.print(serializarJSON(Map.of("error", "Endpoint no válido")));
                 return;
             }
 
@@ -647,22 +674,22 @@ public class UsuarioController extends HttpServlet {
             }
 
             // Obtener datos actuales del usuario para determinar el tipo
-            var datosActuales = sistema.mostrarDatosUsuarioMod(nickname);
+            var datosActuales = getCentralService().mostrarDatosUsuarioMod(nickname);
             if (datosActuales == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario no encontrado")));
+                out.print(serializarJSON(Map.of("error", "Usuario no encontrado")));
                 return;
             }
 
             // Validaciones básicas
             if (isEmpty(nombre)) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "El nombre es obligatorio")));
+                out.print(serializarJSON(Map.of("error", "El nombre es obligatorio")));
                 return;
             }
 
             // Seleccionar usuario para modificación
-            sistema.seleccionarUsuarioAMod(nickname);
+            getCentralService().seleccionarUsuarioAMod(nickname);
 
             // Determinar tipo de usuario y aplicar modificaciones
             boolean esCliente = false;
@@ -687,7 +714,7 @@ public class UsuarioController extends HttpServlet {
                         fechaNacimiento = LocalDate.parse(fechaNacimientoStr);
                     } catch (Exception ex) {
                         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Formato de fecha inválido")));
+                        out.print(serializarJSON(Map.of("error", "Formato de fecha inválido")));
                         return;
                     }
                 }
@@ -703,47 +730,45 @@ public class UsuarioController extends HttpServlet {
                         tipoDocEnum = TipoDoc.valueOf(tipoDoc);
                     } catch (IllegalArgumentException e) {
                         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.print(objectMapper.writeValueAsString(Map.of("error", "Tipo de documento inválido")));
+                        out.print(serializarJSON(Map.of("error", "Tipo de documento inválido")));
                         return;
                     }
                 }
 
-                sistema.modificarDatosCliente(nombre, apellido, dtFecha, nacionalidad, tipoDocEnum, numeroDoc);
+                getCentralService().modificarDatosCliente(nombre, apellido, dtFecha, nacionalidad, tipoDocEnum, numeroDoc);
 
                 // Actualizar foto si se proporcionó
                 if (fotoBytes != null && fotoBytes.length > 0) {
-                    ClienteServicio clienteServicio = new ClienteServicio();
-                    Cliente cliente = clienteServicio.buscarClientePorNickname(nickname);
-                    if (cliente != null) {
-                        cliente.setFoto(fotoBytes);
-                        clienteServicio.actualizarCliente(cliente);
-                        LOG.info("Foto actualizada para cliente: " + nickname);
+                    try {
+                        getCentralService().actualizarFotoCliente(nickname, fotoBytes);
+                        LOG.info("Foto actualizada exitosamente para cliente: " + nickname);
+                    } catch (Exception e) {
+                        LOG.warning("Error al actualizar foto de cliente: " + e.getMessage());
                     }
                 }
 
             } else {
                 // Es una aerolínea
-                sistema.modificarDatosAerolinea(nombre, descripcion, sitioWeb);
+                getCentralService().modificarDatosAerolinea(nombre, descripcion, sitioWeb);
 
                 // Actualizar foto si se proporcionó
                 if (fotoBytes != null && fotoBytes.length > 0) {
-                    AerolineaServicio aerolineaServicio = new AerolineaServicio();
-                    Aerolinea aerolinea = aerolineaServicio.buscarAerolineaPorNickname(nickname);
-                    if (aerolinea != null) {
-                        aerolinea.setFoto(fotoBytes);
-                        aerolineaServicio.actualizarAerolinea(aerolinea);
-                        LOG.info("Foto actualizada para aerolínea: " + nickname);
+                    try {
+                        getCentralService().actualizarFotoAerolinea(nickname, fotoBytes);
+                        LOG.info("Foto actualizada exitosamente para aerolínea: " + nickname);
+                    } catch (Exception e) {
+                        LOG.warning("Error al actualizar foto de aerolínea: " + e.getMessage());
                     }
                 }
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Perfil modificado exitosamente")));
+            out.print(serializarJSON(Map.of("mensaje", "Perfil modificado exitosamente")));
 
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error al modificar usuario", ex);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
+            out.print(serializarJSON(Map.of("error", "Error interno del servidor: " + ex.getMessage())));
         } finally {
             out.flush();
         }
@@ -760,13 +785,6 @@ public class UsuarioController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            if (sistema == null) {
-                LOG.severe("Sistema.getInstance() devolvió null. Verificar classpath/JAR y carga de la clase.");
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                return;
-            }
-
             String contentType = request.getContentType() == null ? "" : request.getContentType().toLowerCase();
 
             String nickname = null, nombre = null, apellido = null, correo = null, nacionalidad = null;
@@ -845,12 +863,12 @@ public class UsuarioController extends HttpServlet {
             // Validaciones mínimas (el sistema también valida)
             if (isEmpty(nickname) || isEmpty(nombre) || isEmpty(correo) || isEmpty(contrasena)) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Campos obligatorios faltantes")));
+                out.print(serializarJSON(Map.of("error", "Campos obligatorios faltantes")));
                 return;
             }
             if (!contrasena.equals(confirmarContrasena)) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Las contraseñas no coinciden")));
+                out.print(serializarJSON(Map.of("error", "Las contraseñas no coinciden")));
                 return;
             }
 
@@ -860,7 +878,7 @@ public class UsuarioController extends HttpServlet {
                     fechaNacimiento = LocalDate.parse(fechaNacimientoStr);
                 } catch (DateTimeParseException ex) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Formato de fecha inválido (usar yyyy-MM-dd)")));
+                    out.print(serializarJSON(Map.of("error", "Formato de fecha inválido (usar yyyy-MM-dd)")));
                     return;
                 }
             }
@@ -888,26 +906,56 @@ public class UsuarioController extends HttpServlet {
             // Llamada al sistema: envolver en log y capturar excepción para mostrar detalle en logs
             try {
                 if ((userType.equalsIgnoreCase("cliente"))) {
-                    sistema.altaCliente(nickname, nombre, correo, apellido, dtFecha, nacionalidad, tipoDocEnum, numeroDoc, fotoBytes, contrasena);
+                    getCentralService().altaCliente(nickname, nombre, correo, apellido, dtFecha, nacionalidad, tipoDocEnum, numeroDoc, fotoBytes, contrasena);
+                    LOG.info("Cliente registrado exitosamente: " + nickname);
                 }
                 else if (userType.equalsIgnoreCase("aerolinea")) {
-                    sistema.altaAerolinea(nickname, nombre, correo, descripcion, sitioWeb, fotoBytes, contrasena);
-                }
-            } catch (Exception ex) {
-                // Log completo para diagnóstico
-                LOG.log(Level.SEVERE, "Error al invocar sistema.altaCliente", ex);
-                String msg = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
-                if (msg.contains("existe") || msg.contains("ya existe") || msg.contains("duplicate") || msg.contains("duplic")) {
-                    response.setStatus(HttpServletResponse.SC_CONFLICT);
-                    out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario ya existe", "detail", ex.getMessage())));
+                    getCentralService().altaAerolinea(nickname, nombre, correo, descripcion, sitioWeb, fotoBytes, contrasena);
+                    LOG.info("Aerolínea registrada exitosamente: " + nickname);
+                } else {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(serializarJSON(Map.of("error", "Tipo de usuario inválido. Debe ser 'cliente' o 'aerolinea'")));
                     return;
                 }
-                // devolver mensaje de excepción temporalmente para depuración (quitar en producción)
+                
+                // Respuesta de éxito
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                out.print(serializarJSON(Map.of("mensaje", "Usuario registrado exitosamente", "nickname", nickname)));
+                
+            } catch (Exception ex) {
+                // Log completo para diagnóstico
+                LOG.log(Level.SEVERE, "Error al invocar centralService.altaCliente/altaAerolinea", ex);
+                String msg = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
+                
+                // Detectar errores de validación (deben devolverse como 400 Bad Request)
+                if (msg.contains("contraseña") || msg.contains("password") || 
+                    msg.contains("debe tener") || msg.contains("caracteres") ||
+                    msg.contains("mayúscula") || msg.contains("número") || msg.contains("numero") ||
+                    msg.contains("inválid") || msg.contains("invalido") || msg.contains("invalida") ||
+                    msg.contains("formato") || msg.contains("obligatorio") || msg.contains("faltante") ||
+                    msg.contains("requerido") || msg.contains("requiere")) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(serializarJSON(Map.of("error", "Error de validación", "detail", ex.getMessage())));
+                    return;
+                }
+                
+                // Detectar errores de usuario duplicado
+                if (msg.contains("existe") || msg.contains("ya existe") || msg.contains("duplicate") || msg.contains("duplic")) {
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    out.print(serializarJSON(Map.of("error", "Usuario ya existe", "detail", ex.getMessage())));
+                    return;
+                }
+                
+                // Otros errores se tratan como error interno del servidor
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor", "detail", ex.getMessage())));
+                out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail", ex.getMessage())));
                 return;
             }
 
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error inesperado en doPost de UsuarioController", ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail", ex.getMessage())));
         } finally {
             out.flush();
         }
@@ -1036,15 +1084,24 @@ public class UsuarioController extends HttpServlet {
             datos.put("tipo", "desconocido");
         }
         
+        // TODO: Implementar métodos de seguidores en el Web Service
         // Agregar información de seguidores y seguidos (características sociales)
         try {
             String nickname = dtUsuario.getNickname();
-            SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
-            List<String> seguidores = seguidoresServicio.listarSeguidores(nickname);
-            List<String> seguidos = seguidoresServicio.listarSeguidos(nickname);
+            // SeguidoresServicio seguidoresServicio = new SeguidoresServicio();
+            // List<String> seguidores = seguidoresServicio.listarSeguidores(nickname);
+            // List<String> seguidos = seguidoresServicio.listarSeguidos(nickname);
             
+            try {
+                List<String> seguidores = getCentralService().listarSeguidores(nickname);
+                List<String> seguidos = getCentralService().listarSeguidos(nickname);
             datos.put("seguidores", seguidores != null ? seguidores : new ArrayList<>());
             datos.put("seguidos", seguidos != null ? seguidos : new ArrayList<>());
+            } catch (Exception e) {
+                LOG.warning("Error al obtener seguidores/seguidos en extraerDatosUsuario: " + e.getMessage());
+                datos.put("seguidores", new ArrayList<>());
+                datos.put("seguidos", new ArrayList<>());
+            }
         } catch (Exception e) {
             LOG.warning("Error al obtener seguidores/seguidos en extraerDatosUsuario: " + e.getMessage());
             datos.put("seguidores", new ArrayList<>());
@@ -1061,103 +1118,106 @@ public class UsuarioController extends HttpServlet {
         try {
             LOG.info("Obteniendo detalle de reserva: " + reservaId);
             
-            // Obtener la reserva desde la base de datos
-            ReservaServicio reservaServicio = new ReservaServicio();
-            Reserva reserva = reservaServicio.buscarPorId(Long.parseLong(reservaId));
+            Long id = Long.parseLong(reservaId);
             
-            if (reserva == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Reserva no encontrada")));
-                return;
-            }
+            // Buscar la reserva en todas las aerolíneas y vuelos
+            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
+            Map<String, Object> detalle = null;
             
-            Map<String, Object> reservaDetalle = new HashMap<>();
-            
-            // Datos básicos de la reserva
-            reservaDetalle.put("id", reserva.getId());
-            reservaDetalle.put("fechaReserva", reserva.getFechaReserva() != null ? reserva.getFechaReserva().toString() : null);
-            reservaDetalle.put("nickname", reserva.getCliente() != null ? reserva.getCliente().getNickname() : null);
-            
-            // Extraer el costo total del objeto DTCostoBase
-            Object costoReservaObj = reserva.getCostoReserva();
+            for (DTAerolinea aerolinea : aerolineas) {
+                List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(aerolinea.getNickname());
+                for (DTRutaVuelo ruta : rutas) {
+                    List<DTVuelo> vuelos = getCentralService().listarVuelosDeRuta(ruta.getNombre());
+                    for (DTVuelo vuelo : vuelos) {
+                        List<DTVueloReserva> reservasVuelo = getCentralService().listarReservasVuelo(vuelo.getNombre());
+                        for (DTVueloReserva vueloReserva : reservasVuelo) {
+                            if (vueloReserva.getReserva().getId().equals(id)) {
+                                // Encontramos la reserva, crear detalle completo
+                                detalle = new HashMap<>();
+                                detalle.put("id", vueloReserva.getReserva().getId());
+                                detalle.put("nicknameCliente", vueloReserva.getReserva().getNickname());
+                                detalle.put("fechaReserva", vueloReserva.getReserva().getFechaReserva().toString());
+                                
+                                // Extraer costo
+                                Object costoObj = vueloReserva.getReserva().getCostoReserva();
             float costoTotal = 0.0f;
-            if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
-                costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
-            } else if (costoReservaObj instanceof Number) {
-                costoTotal = ((Number) costoReservaObj).floatValue();
-            }
-            reservaDetalle.put("costoReserva", costoTotal);
-            
-            // Obtener pasajeros de la reserva
-            List<Map<String, Object>> pasajerosData = new ArrayList<>();
-            if (reserva.getPasajeros() != null) {
-                for (Pasaje pasaje : reserva.getPasajeros()) {
-                    Map<String, Object> pasajeroMap = new HashMap<>();
-                    pasajeroMap.put("nombre", pasaje.getNombrePasajero());
-                    pasajeroMap.put("apellido", pasaje.getApellidoPasajero());
-                    pasajeroMap.put("nickname", pasaje.getPasajero() != null ? pasaje.getPasajero().getNickname() : null);
-                    pasajeroMap.put("tipoAsiento", pasaje.getTipoAsiento() != null ? pasaje.getTipoAsiento().toString() : null);
-                    pasajerosData.add(pasajeroMap);
+                                if (costoObj instanceof logica.DataTypes.DTCostoBase) {
+                                    costoTotal = ((logica.DataTypes.DTCostoBase) costoObj).getCostoTotal();
+                                } else if (costoObj instanceof Number) {
+                                    costoTotal = ((Number) costoObj).floatValue();
+                                }
+                                detalle.put("costoReserva", costoTotal);
+                                
+                                // Información del vuelo
+                                Map<String, Object> vueloInfo = new HashMap<>();
+                                vueloInfo.put("nombre", vueloReserva.getVuelo().getNombre());
+                                vueloInfo.put("fechaVuelo", vueloReserva.getVuelo().getFechaVuelo().toString());
+                                vueloInfo.put("horaVuelo", vueloReserva.getVuelo().getHoraVuelo().toString());
+                                vueloInfo.put("duracion", vueloReserva.getVuelo().getDuracion().toString());
+                                detalle.put("vuelo", vueloInfo);
+                                
+                                // Información de la ruta
+                                Map<String, Object> rutaInfo = new HashMap<>();
+                                rutaInfo.put("nombre", ruta.getNombre());
+                                rutaInfo.put("descripcion", ruta.getDescripcion());
+                                if (ruta.getCiudadOrigen() != null) {
+                                    rutaInfo.put("ciudadOrigen", ruta.getCiudadOrigen().getNombre());
+                                }
+                                if (ruta.getCiudadDestino() != null) {
+                                    rutaInfo.put("ciudadDestino", ruta.getCiudadDestino().getNombre());
+                                }
+                                detalle.put("ruta", rutaInfo);
+                                
+                                // Información de la aerolínea
+                                Map<String, Object> aerolineaInfo = new HashMap<>();
+                                aerolineaInfo.put("nickname", aerolinea.getNickname());
+                                aerolineaInfo.put("nombre", aerolinea.getNombre());
+                                aerolineaInfo.put("descripcion", aerolinea.getDescripcion());
+                                detalle.put("aerolinea", aerolineaInfo);
+                                
+                                // Obtener los pasajeros de la reserva usando el Web Service
+                                List<Map<String, Object>> pasajerosInfo = new ArrayList<>();
+                                try {
+                                    List<logica.DataTypes.DTPasajero> pasajeros = getCentralService().obtenerPasajerosReserva(vueloReserva.getReserva().getId());
+                                    if (pasajeros != null) {
+                                        for (logica.DataTypes.DTPasajero pasajero : pasajeros) {
+                                            Map<String, Object> pasajeroInfo = new HashMap<>();
+                                            pasajeroInfo.put("nombre", pasajero.getNombre());
+                                            pasajeroInfo.put("apellido", pasajero.getApellido());
+                                            pasajeroInfo.put("nicknameCliente", pasajero.getNicknameCliente());
+                                            pasajerosInfo.add(pasajeroInfo);
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    LOG.warning("Error al obtener pasajeros de la reserva " + vueloReserva.getReserva().getId() + ": " + e.getMessage());
+                                }
+                                detalle.put("pasajeros", pasajerosInfo);
+                                
+                                break;
+                            }
+                        }
+                        if (detalle != null) break;
+                    }
+                    if (detalle != null) break;
                 }
-            }
-            reservaDetalle.put("pasajeros", pasajerosData);
-            
-            // Obtener datos del vuelo
-            if (reserva.getVuelo() != null) {
-                Vuelo vuelo = reserva.getVuelo();
-                Map<String, Object> vueloData = new HashMap<>();
-                vueloData.put("nombre", vuelo.getNombre());
-                vueloData.put("fechaVuelo", vuelo.getFechaVuelo() != null ? vuelo.getFechaVuelo().toString() : null);
-                vueloData.put("horaVuelo", vuelo.getHoraVuelo() != null ? vuelo.getHoraVuelo().toString() : null);
-                vueloData.put("duracion", vuelo.getDuracion() != null ? vuelo.getDuracion().toString() : null);
-                vueloData.put("asientosMaxTurista", vuelo.getAsientosMaxTurista());
-                vueloData.put("asientosMaxEjecutivo", vuelo.getAsientosMaxEjecutivo());
-                
-                // Obtener datos de la ruta
-                if (vuelo.getRutaVuelo() != null) {
-                    RutaVuelo rutaVuelo = vuelo.getRutaVuelo();
-                    Map<String, Object> rutaData = new HashMap<>();
-                    rutaData.put("nombre", rutaVuelo.getNombre());
-                    rutaData.put("descripcion", rutaVuelo.getDescripcion());
-                    
-                    // Ciudad origen
-                    if (rutaVuelo.getCiudadOrigen() != null) {
-                        Map<String, Object> origenMap = new HashMap<>();
-                        origenMap.put("nombre", rutaVuelo.getCiudadOrigen().getNombre());
-                        origenMap.put("pais", rutaVuelo.getCiudadOrigen().getPais());
-                        rutaData.put("ciudadOrigen", origenMap);
-                    }
-                    
-                    // Ciudad destino
-                    if (rutaVuelo.getCiudadDestino() != null) {
-                        Map<String, Object> destinoMap = new HashMap<>();
-                        destinoMap.put("nombre", rutaVuelo.getCiudadDestino().getNombre());
-                        destinoMap.put("pais", rutaVuelo.getCiudadDestino().getPais());
-                        rutaData.put("ciudadDestino", destinoMap);
-                    }
-                    
-                    // Costos base
-                    if (rutaVuelo.getCostoBase() != null) {
-                        DTCostoBase costoBase = rutaVuelo.getCostoBase();
-                        Map<String, Object> costosMap = new HashMap<>();
-                        costosMap.put("costoBaseTurista", costoBase.getCostoTurista());
-                        costosMap.put("costoBaseEjecutivo", costoBase.getCostoEjecutivo());
-                        costosMap.put("costoEquipajeExtra", costoBase.getCostoEquipajeExtra());
-                        rutaData.put("costos", costosMap);
-                    }
-                    
-                    vueloData.put("ruta", rutaData);
-                }
-                
-                reservaDetalle.put("vuelo", vueloData);
+                if (detalle != null) break;
             }
             
+            if (detalle == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print(serializarJSON(Map.of("error", "Reserva no encontrada")));
+            } else {
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(reservaDetalle));
-            
+                out.print(serializarJSON(detalle));
+            }
+        } catch (NumberFormatException e) {
+            LOG.warning("ID de reserva inválido: " + reservaId);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(serializarJSON(Map.of("error", "ID de reserva inválido")));
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error al obtener detalle de reserva: " + e.getMessage(), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(serializarJSON(Map.of("error", "Error interno del servidor: " + e.getMessage())));
         }
     }
 }

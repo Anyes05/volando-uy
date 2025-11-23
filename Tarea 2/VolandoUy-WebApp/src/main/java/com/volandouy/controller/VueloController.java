@@ -26,8 +26,8 @@ import logica.DataTypes.DTRutaVuelo;
 import logica.DataTypes.DTVuelo;
 import logica.DataTypes.DTVueloReserva;
 import logica.DataTypes.EstadoRutaVuelo;
-import logica.clase.Sistema;
-import logica.servicios.ReservaServicio;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 
 @WebServlet("/api/vuelos/*")
 @MultipartConfig(
@@ -40,7 +40,20 @@ public class VueloController extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(VueloController.class.getName());
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -52,12 +65,7 @@ public class VueloController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            if (sistema == null) {
-                LOG.severe("Sistema no inicializado.");
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                return;
-            }
+            // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
 
             // Parámetros (multipart/form-data)
             String rutaParam = trim(request.getParameter("rutasvuelo")); // puede ser id o nombre según front
@@ -191,10 +199,10 @@ public class VueloController extends HttpServlet {
                     dtFechaVuelo = new DTFecha(fechaVuelo.getDayOfMonth(), fechaVuelo.getMonthValue(), fechaVuelo.getYear());
                 }
 
-                LOG.info("Invocando sistema.ingresarDatosVuelo(...)");
-                sistema.seleccionarAerolinea(nickname);
-                DTRutaVuelo rutaVuelo = sistema.seleccionarRutaVueloRet(ruta);
-                sistema.ingresarDatosVuelo(
+                LOG.info("Invocando getCentralService().ingresarDatosVuelo(...)");
+                getCentralService().seleccionarAerolinea(nickname);
+                DTRutaVuelo rutaVuelo = getCentralService().seleccionarRutaVueloRet(ruta);
+                getCentralService().ingresarDatosVuelo(
                         nombre,
                         dtFechaVuelo,
                         horaVuelo,
@@ -207,7 +215,7 @@ public class VueloController extends HttpServlet {
 
                 );
 
-                sistema.darAltaVuelo();
+                getCentralService().darAltaVuelo();
 
                 response.setStatus(HttpServletResponse.SC_CREATED);
                 out.print(objectMapper.writeValueAsString(Map.of("mensaje", "Vuelo creado")));
@@ -243,12 +251,7 @@ public class VueloController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
-            if (sistema == null) {
-                LOG.severe("Sistema no inicializado.");
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Sistema no inicializado")));
-                return;
-            }
+            // La inicialización es lazy, se hace automáticamente al llamar getCentralService()
 
             String pathInfo = request.getPathInfo(); // ejemplo: /aerolineas, /rutas/latam, /vuelos/montevideo-madrid
             
@@ -324,7 +327,7 @@ public class VueloController extends HttpServlet {
     private void handleGetAerolineas(HttpServletResponse response, PrintWriter out) throws IOException {
         try {
             LOG.info("=== HANDLE GET AEROLINEAS ===");
-            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
             LOG.info("Aerolíneas obtenidas: " + (aerolineas != null ? aerolineas.size() : "null"));
             
             List<Map<String, Object>> result = new ArrayList<>();
@@ -353,7 +356,7 @@ public class VueloController extends HttpServlet {
      */
     private void handleGetRutas(String nickname, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(nickname);
+            List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(nickname);
             
             List<Map<String, Object>> result = new ArrayList<>();
             for (DTRutaVuelo ruta : rutas) {
@@ -403,7 +406,7 @@ public class VueloController extends HttpServlet {
      */
     private void handleGetVuelos(String nombreRuta, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(nombreRuta);
+            List<DTVuelo> vuelos = getCentralService().listarVuelosDeRuta(nombreRuta);
             
             List<Map<String, Object>> result = new ArrayList<>();
             for (DTVuelo vuelo : vuelos) {
@@ -465,7 +468,7 @@ public class VueloController extends HttpServlet {
                 return;
             }
             
-            List<DTVueloReserva> reservas = sistema.listarReservasVuelo(nombreVuelo);
+            List<DTVueloReserva> reservas = getCentralService().listarReservasVuelo(nombreVuelo);
             List<Map<String, Object>> result = new ArrayList<>();
             
             // Verificar si la aerolínea es propietaria del vuelo (se verificará al procesar cada reserva)
@@ -500,6 +503,9 @@ public class VueloController extends HttpServlet {
                         }
                         reservaMap.put("costoReserva", costoTotal);
                         
+                        // TODO: Los pasajeros deberían venir en DTVueloReserva o necesitamos un método del Web Service
+                        // Por ahora, omitimos la información de pasajeros ya que no está disponible en el DTO
+                        /*
                         // Incluir información de pasajeros si está disponible
                         try {
                             // Obtener la reserva real de la base de datos para acceder a los pasajeros
@@ -532,6 +538,7 @@ public class VueloController extends HttpServlet {
                         } catch (Exception e) {
                             LOG.log(Level.WARNING, "Error obteniendo pasajeros de reserva: " + e.getMessage(), e);
                         }
+                        */
                         
                         result.add(reservaMap);
                     }
@@ -553,6 +560,9 @@ public class VueloController extends HttpServlet {
                         }
                         reservaMap.put("costoReserva", costoTotal);
                         
+                        // TODO: Los pasajeros deberían venir en DTVueloReserva o necesitamos un método del Web Service
+                        // Por ahora, omitimos la información de pasajeros ya que no está disponible en el DTO
+                        /*
                         // Incluir información de pasajeros si está disponible
                         try {
                             // Obtener la reserva real de la base de datos para acceder a los pasajeros
@@ -585,6 +595,7 @@ public class VueloController extends HttpServlet {
                         } catch (Exception e) {
                             LOG.log(Level.WARNING, "Error obteniendo pasajeros de reserva: " + e.getMessage(), e);
                         }
+                        */
                         
                         result.add(reservaMap);
                     }

@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,10 +21,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import logica.clase.Sistema;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 import logica.DataTypes.DTPaqueteVuelos;
 import logica.DataTypes.DTRutaVuelo;
-import logica.servicios.PaqueteVueloServicio;
 
 /**
  * Controlador para manejar las operaciones relacionadas con paquetes
@@ -33,7 +34,20 @@ public class PaqueteController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(PaqueteController.class.getName());
     private final ObjectMapper objectMapper;
-    private final Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
 
     public PaqueteController() {
         this.objectMapper = new ObjectMapper();
@@ -74,30 +88,37 @@ public class PaqueteController extends HttpServlet {
                 // GET /api/paquetes - Listar todos los paquetes
                 LOG.info("GET /api/paquetes - Listando paquetes");
                 try {
-                    List<DTPaqueteVuelos> paquetes = sistema.mostrarPaquete();
+                    List<DTPaqueteVuelos> paquetes = getCentralService().mostrarPaquetes();
                     
                     // Convertir paquetes a formato simplificado para evitar problemas de serialización
                     List<Map<String, Object>> paquetesSimples = new ArrayList<>();
                     for (DTPaqueteVuelos paquete : paquetes) {
-                        // Obtener el costo total desde la entidad original
-                        PaqueteVueloServicio paqueteVueloServicio = new PaqueteVueloServicio();
-                        dato.entidades.PaqueteVuelo paqueteEntidad = paqueteVueloServicio.obtenerPaquetePorNombre(paquete.getNombre());
-                        float costoTotal = paqueteEntidad != null ? paqueteEntidad.getCostoTotal() : 0;
+                        // El costo total viene en DTPaqueteVuelos
+                        float costoTotal = paquete.getCostoTotal();
                         
-                        Map<String, Object> paqueteSimple = Map.of(
-                            "nombre", paquete.getNombre() != null ? paquete.getNombre() : "",
-                            "descripcion", paquete.getDescripcion() != null ? paquete.getDescripcion() : "",
-                            "diasValidos", paquete.getDiasValidos(),
-                            "descuento", paquete.getDescuento(),
-                            "costoTotal", costoTotal,
-                            "fechaAlta", paquete.getFechaAlta() != null ? paquete.getFechaAlta().toString() : "",
-                            "foto", convertirFotoABase64(paquete.getFoto())
-                        );
+                        // Log para debugging
+                        LOG.info("Paquete: " + paquete.getNombre() + ", CostoTotal: " + costoTotal);
+                        
+                        Map<String, Object> paqueteSimple = new HashMap<>();
+                        paqueteSimple.put("nombre", paquete.getNombre() != null ? paquete.getNombre() : "");
+                        paqueteSimple.put("descripcion", paquete.getDescripcion() != null ? paquete.getDescripcion() : "");
+                        paqueteSimple.put("diasValidos", paquete.getDiasValidos());
+                        paqueteSimple.put("descuento", paquete.getDescuento());
+                        paqueteSimple.put("costoTotal", costoTotal);
+                        paqueteSimple.put("fechaAlta", paquete.getFechaAlta() != null ? paquete.getFechaAlta().toString() : "");
+                        paqueteSimple.put("foto", convertirFotoABase64(paquete.getFoto()));
                         paquetesSimples.add(paqueteSimple);
                     }
                     
                     response.setStatus(HttpServletResponse.SC_OK);
-                    out.print(objectMapper.writeValueAsString(Map.of("paquetes", paquetesSimples)));
+                    try {
+                        out.print(objectMapper.writeValueAsString(Map.of("paquetes", paquetesSimples)));
+                    } catch (Exception e) {
+                        LOG.severe("Error al serializar paquetes: " + e.getMessage());
+                        e.printStackTrace();
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        out.print(objectMapper.writeValueAsString(Map.of("error", "Error al serializar respuesta")));
+                    }
                 } catch (Exception ex) {
                     LOG.log(Level.SEVERE, "Error al consultar paquetes", ex);
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -110,16 +131,16 @@ public class PaqueteController extends HttpServlet {
                 
                 try {
                     // Seleccionar el paquete
-                    sistema.seleccionarPaquete(nombrePaquete);
+                    centralService.seleccionarPaquete(nombrePaquete);
                     
                     // Obtener datos del paquete
-                    DTPaqueteVuelos paquete = sistema.consultaPaqueteVuelo();
+                    DTPaqueteVuelos paquete = centralService.consultaPaqueteVuelo();
                     
                     // Obtener rutas del paquete
-                    List<DTRutaVuelo> rutas = sistema.consultaPaqueteVueloRutas();
+                    List<DTRutaVuelo> rutas = centralService.consultaPaqueteVueloRutas();
                     
                     // Obtener cantidades del paquete
-                    List<dato.entidades.Cantidad> cantidades = paquete.getCantidad();
+                        List<logica.DataTypes.DTCantidad> cantidades = paquete.getCantidad();
                     
                     // Crear respuesta simplificada para evitar problemas de serialización
                     Map<String, Object> paqueteSimple = Map.of(
@@ -138,8 +159,8 @@ public class PaqueteController extends HttpServlet {
                         // Buscar la cantidad correspondiente a esta ruta
                         int cantidad = 0;
                         String tipoAsiento = "No especificado";
-                        for (dato.entidades.Cantidad c : cantidades) {
-                            if (c.getRutaVuelo() != null && c.getRutaVuelo().getNombre().equals(ruta.getNombre())) {
+                        for (logica.DataTypes.DTCantidad c : cantidades) {
+                            if (c != null && c.getRutaVueloNombre() != null && c.getRutaVueloNombre().equals(ruta.getNombre())) {
                                 cantidad = c.getCant();
                                 tipoAsiento = c.getTipoAsiento() != null ? c.getTipoAsiento().toString() : "No especificado";
                                 break;

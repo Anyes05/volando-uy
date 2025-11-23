@@ -20,16 +20,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import logica.clase.Sistema;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTPaqueteVuelos;
-import logica.servicios.ClienteServicio;
-import logica.servicios.PaqueteVueloServicio;
-import logica.servicios.CompraPaqueteServicio;
-import dato.entidades.Cliente;
-import dato.entidades.PaqueteVuelo;
-import dato.entidades.CompraPaquete;
 
 /**
  * Controlador para manejar las operaciones de compra de paquetes
@@ -40,7 +35,20 @@ public class CompraPaqueteController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(CompraPaqueteController.class.getName());
     private final ObjectMapper objectMapper;
-    private final Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
 
     public CompraPaqueteController() {
         this.objectMapper = new ObjectMapper();
@@ -86,11 +94,11 @@ public class CompraPaqueteController extends HttpServlet {
                 
                 try {
                     // Seleccionar cliente y paquete en el sistema
-                    sistema.seleccionarCliente(clienteNickname);
-                    sistema.seleccionarPaquete(nombrePaquete);
+                    getCentralService().seleccionarCliente(clienteNickname);
+                    getCentralService().seleccionarPaquete(nombrePaquete);
                     
                     // Verificar si ya compró el paquete
-                    boolean yaCompro = sistema.clienteYaComproPaquete();
+                    boolean yaCompro = getCentralService().clienteYaComproPaquete();
                     
                     response.setStatus(HttpServletResponse.SC_OK);
                     out.print(objectMapper.writeValueAsString(Map.of("yaCompro", yaCompro)));
@@ -145,30 +153,50 @@ public class CompraPaqueteController extends HttpServlet {
             
             // Obtener cliente desde la sesión
             HttpSession session = request.getSession(false);
-            if (session == null || session.getAttribute("usuarioLogueado") == null) {
+            
+            // Logging detallado para debugging
+            LOG.info("POST /api/compra-paquetes - Verificando sesión");
+            LOG.info("Session ID: " + (session != null ? session.getId() : "null"));
+            LOG.info("Session isNew: " + (session != null ? session.isNew() : "N/A"));
+            if (session != null) {
+                LOG.info("Session attributes: " + java.util.Collections.list(session.getAttributeNames()));
+                LOG.info("usuarioLogueado attribute: " + session.getAttribute("usuarioLogueado"));
+            }
+            
+            if (session == null) {
+                LOG.warning("No hay sesión activa");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario no autenticado")));
+                out.print(objectMapper.writeValueAsString(Map.of("error", "No hay sesión activa. Por favor, inicia sesión.")));
                 return;
             }
             
-            String clienteNickname = (String) session.getAttribute("usuarioLogueado");
+            Object usuarioLogueadoObj = session.getAttribute("usuarioLogueado");
+            if (usuarioLogueadoObj == null) {
+                LOG.warning("No hay usuario logueado en la sesión");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print(objectMapper.writeValueAsString(Map.of("error", "Usuario no autenticado. Por favor, inicia sesión.")));
+                return;
+            }
+            
+            String clienteNickname = (String) usuarioLogueadoObj;
+            LOG.info("Cliente identificado: " + clienteNickname);
             
             LOG.info("POST /api/compra-paquetes - Procesando compra para paquete: " + nombrePaquete + ", cliente: " + clienteNickname + ", costo: " + costo);
             
             try {
                 // Seleccionar cliente y paquete en el sistema
-                sistema.seleccionarCliente(clienteNickname);
-                sistema.seleccionarPaquete(nombrePaquete);
+                getCentralService().seleccionarCliente(clienteNickname);
+                getCentralService().seleccionarPaquete(nombrePaquete);
                 
                 // Verificar si ya compró el paquete
-                if (sistema.clienteYaComproPaquete()) {
+                if (getCentralService().clienteYaComproPaquete()) {
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
                     out.print(objectMapper.writeValueAsString(Map.of("error", "El cliente ya compró este paquete anteriormente")));
                     return;
                 }
                 
                 // Obtener información del paquete para calcular vencimiento
-                DTPaqueteVuelos paqueteInfo = sistema.consultaPaqueteVuelo();
+                DTPaqueteVuelos paqueteInfo = getCentralService().consultaPaqueteVuelo();
                 
                 // Calcular fechas
                 LocalDate hoy = LocalDate.now();
@@ -181,7 +209,7 @@ public class CompraPaqueteController extends HttpServlet {
                 );
                 
                 // Realizar la compra
-                sistema.realizarCompra(fechaCompra, costo, vencimiento);
+                getCentralService().realizarCompra(fechaCompra, costo, vencimiento);
                 
                 // Crear respuesta con información de la compra
                 Map<String, Object> compraResponse = new HashMap<>();

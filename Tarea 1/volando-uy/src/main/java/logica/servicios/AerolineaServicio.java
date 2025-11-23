@@ -2,7 +2,9 @@ package logica.servicios;
 
 import dato.dao.AerolineaDAO;
 import dato.entidades.Aerolinea;
+import dato.entidades.Categoria;
 import logica.DataTypes.DTRutaVuelo;
+import logica.DataTypes.DTCategoria;
 import dato.entidades.RutaVuelo;
 import logica.DataTypes.DTAerolinea;
 import logica.DataTypes.DTCiudad;
@@ -67,7 +69,7 @@ public class AerolineaServicio {
                     r.getFoto(),
                     r.getEstado()
             );
-            rv.setCategorias(r.getCategorias());
+            rv.setCategorias(convertirCategoriasADTO(r.getCategorias()));
             listaRutas.add(rv);
 
         }
@@ -122,5 +124,15 @@ public class AerolineaServicio {
         } catch (Exception e) {
             throw new RuntimeException("Error en la precarga de aerolíneas: " + e.getMessage(), e);
         }
+    }
+
+    private List<DTCategoria> convertirCategoriasADTO(List<Categoria> categorias) {
+        List<DTCategoria> dtCategorias = new ArrayList<>();
+        if (categorias != null) {
+            for (Categoria cat : categorias) {
+                dtCategorias.add(new DTCategoria(cat.getNombre()));
+            }
+        }
+        return dtCategorias;
     }
 }

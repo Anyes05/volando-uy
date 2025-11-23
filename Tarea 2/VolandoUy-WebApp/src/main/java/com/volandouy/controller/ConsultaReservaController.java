@@ -17,10 +17,9 @@ import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dato.entidades.Reserva;
-import logica.clase.Sistema;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 import logica.DataTypes.*;
-import logica.servicios.ReservaServicio;
 
 /**
  * Controlador para manejar la consulta de reservas de vuelo
@@ -32,12 +31,42 @@ public class ConsultaReservaController extends HttpServlet {
     private static final Logger LOG = Logger.getLogger(ConsultaReservaController.class.getName());
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
+
+    /**
+     * Serializa un objeto a JSON de forma segura, manejando excepciones
+     */
+    private String serializarJSON(Object objeto) {
+        try {
+            return objectMapper.writeValueAsString(objeto);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            LOG.severe("Error al serializar objeto a JSON: " + e.getMessage());
+            // Retornar un JSON de error simple
+            return "{\"error\":\"Error al serializar respuesta\"}";
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
+        // Establecer content type y encoding ANTES de cualquier operación
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        
         String pathInfo = request.getPathInfo();
         System.out.println("PATH INFO = " + pathInfo); // debug
 
@@ -47,10 +76,7 @@ public class ConsultaReservaController extends HttpServlet {
             return; // MUY IMPORTANTE: salir del método
         }
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
-
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
                 handleGetInfoInicial(request, response, out);
@@ -77,15 +103,24 @@ public class ConsultaReservaController extends HttpServlet {
                 handleGetDetalleReserva(reservaId, request, response, out);
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print("{\"error\": \"Endpoint no encontrado\"}");
+                out.print(serializarJSON(Map.of("error", "Endpoint no encontrado")));
             }
         } catch (Exception e) {
+            LOG.severe("Error crítico en doGet de ConsultaReservaController: " + e.getMessage());
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"Error interno del servidor\"}");
+            try {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            } catch (Exception e2) {
+                LOG.severe("Error al escribir respuesta de error: " + e2.getMessage());
+            }
+        } finally {
+            if (out != null) {
+                out.flush();
+            }
         }
-
-        out.flush();
     }
 
     private void handleGetPdfReserva(String reservaId, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -374,14 +409,8 @@ public class ConsultaReservaController extends HttpServlet {
             if ("aerolinea".equals(tipoUsuario)) {
                 LOG.info("Procesando como aerolínea: " + usuarioLogueado);
                 try {
-                    // Verificar que el sistema esté inicializado
-                    if (sistema == null) {
-                        LOG.warning("Sistema no inicializado");
-                        infoInicial.put("rutas", new ArrayList<>());
-                        infoInicial.put("warning", "Sistema no inicializado - no se pueden cargar las rutas");
-                    } else {
-                        // Para aerolínea: mostrar sus rutas directamente
-                        List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(usuarioLogueado);
+                    // Para aerolínea: mostrar sus rutas directamente
+                    List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(usuarioLogueado);
                         LOG.info("Rutas encontradas: " + (rutas != null ? rutas.size() : "null"));
 
                         List<Map<String, Object>> rutasSimplificadas = new ArrayList<>();
@@ -400,7 +429,6 @@ public class ConsultaReservaController extends HttpServlet {
                             }
                         }
                         infoInicial.put("rutas", rutasSimplificadas);
-                    }
                 } catch (Exception e) {
                     LOG.severe("Error al obtener rutas de aerolínea: " + e.getMessage());
                     e.printStackTrace();
@@ -410,14 +438,8 @@ public class ConsultaReservaController extends HttpServlet {
             } else if ("cliente".equals(tipoUsuario)) {
                 LOG.info("Procesando como cliente");
                 try {
-                    // Verificar que el sistema esté inicializado
-                    if (sistema == null) {
-                        LOG.warning("Sistema no inicializado");
-                        infoInicial.put("aerolineas", new ArrayList<>());
-                        infoInicial.put("warning", "Sistema no inicializado - no se pueden cargar las aerolíneas");
-                    } else {
-                        // Para cliente: mostrar aerolíneas disponibles
-                        List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+                    // Para cliente: mostrar aerolíneas disponibles
+                    List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
                         LOG.info("Aerolíneas encontradas: " + (aerolineas != null ? aerolineas.size() : "null"));
 
                         List<Map<String, Object>> aerolineasSimplificadas = new ArrayList<>();
@@ -431,7 +453,6 @@ public class ConsultaReservaController extends HttpServlet {
                             }
                         }
                         infoInicial.put("aerolineas", aerolineasSimplificadas);
-                    }
                 } catch (Exception e) {
                     LOG.severe("Error al obtener aerolíneas: " + e.getMessage());
                     e.printStackTrace();
@@ -445,7 +466,7 @@ public class ConsultaReservaController extends HttpServlet {
 
             LOG.info("Enviando respuesta con información inicial");
             response.setStatus(HttpServletResponse.SC_OK);
-            String jsonResponse = objectMapper.writeValueAsString(infoInicial);
+            String jsonResponse = serializarJSON(infoInicial);
             LOG.info("Respuesta JSON: " + jsonResponse);
             out.print(jsonResponse);
 
@@ -453,7 +474,7 @@ public class ConsultaReservaController extends HttpServlet {
             LOG.severe("Error crítico en handleGetInfoInicial: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"Error interno del servidor: " + e.getMessage() + "\"}");
+            out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
@@ -479,7 +500,7 @@ public class ConsultaReservaController extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(testResponse));
+            out.print(serializarJSON(testResponse));
 
         } catch (Exception e) {
             LOG.severe("Error en endpoint de prueba: " + e.getMessage());
@@ -494,7 +515,7 @@ public class ConsultaReservaController extends HttpServlet {
      */
     private void handleGetAerolineas(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
 
             List<Map<String, Object>> aerolineasSimplificadas = new ArrayList<>();
             for (DTAerolinea aerolinea : aerolineas) {
@@ -506,7 +527,7 @@ public class ConsultaReservaController extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(aerolineasSimplificadas));
+            out.print(serializarJSON(aerolineasSimplificadas));
 
         } catch (Exception e) {
             LOG.severe("Error al obtener aerolíneas: " + e.getMessage());
@@ -521,7 +542,7 @@ public class ConsultaReservaController extends HttpServlet {
     private void handleGetRutasAerolinea(String aerolineaNickname, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
             LOG.info("Obteniendo rutas para aerolínea: " + aerolineaNickname);
-            List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(aerolineaNickname);
+            List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(aerolineaNickname);
             LOG.info("Se encontraron " + rutas.size() + " rutas para la aerolínea " + aerolineaNickname);
 
             List<Map<String, Object>> rutasSimplificadas = new ArrayList<>();
@@ -529,14 +550,14 @@ public class ConsultaReservaController extends HttpServlet {
                 Map<String, Object> rutaMap = new HashMap<>();
                 rutaMap.put("nombre", ruta.getNombre());
                 rutaMap.put("descripcion", ruta.getDescripcion());
-                rutaMap.put("ciudadOrigen", ruta.getCiudadOrigen().getNombre());
-                rutaMap.put("ciudadDestino", ruta.getCiudadDestino().getNombre());
-                rutaMap.put("estado", ruta.getEstado().toString());
+                rutaMap.put("ciudadOrigen", ruta.getCiudadOrigen() != null ? ruta.getCiudadOrigen().getNombre() : null);
+                rutaMap.put("ciudadDestino", ruta.getCiudadDestino() != null ? ruta.getCiudadDestino().getNombre() : null);
+                rutaMap.put("estado", ruta.getEstado() != null ? ruta.getEstado().toString() : null);
                 rutasSimplificadas.add(rutaMap);
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            String jsonResponse = objectMapper.writeValueAsString(rutasSimplificadas);
+            String jsonResponse = serializarJSON(rutasSimplificadas);
             LOG.info("Respuesta JSON: " + jsonResponse);
             out.print(jsonResponse);
 
@@ -552,23 +573,23 @@ public class ConsultaReservaController extends HttpServlet {
      */
     private void handleGetVuelosRuta(String rutaNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(rutaNombre);
+            List<DTVuelo> vuelos = getCentralService().listarVuelosDeRuta(rutaNombre);
 
             List<Map<String, Object>> vuelosSimplificados = new ArrayList<>();
             for (DTVuelo vuelo : vuelos) {
                 Map<String, Object> vueloMap = new HashMap<>();
                 vueloMap.put("nombre", vuelo.getNombre());
-                vueloMap.put("fechaVuelo", vuelo.getFechaVuelo().toString());
-                vueloMap.put("horaVuelo", vuelo.getHoraVuelo().toString());
-                vueloMap.put("duracion", vuelo.getDuracion().toString());
+                vueloMap.put("fechaVuelo", vuelo.getFechaVuelo() != null ? vuelo.getFechaVuelo().toString() : null);
+                vueloMap.put("horaVuelo", vuelo.getHoraVuelo() != null ? vuelo.getHoraVuelo().toString() : null);
+                vueloMap.put("duracion", vuelo.getDuracion() != null ? vuelo.getDuracion().toString() : null);
                 vueloMap.put("asientosMaxTurista", vuelo.getAsientosMaxTurista());
                 vueloMap.put("asientosMaxEjecutivo", vuelo.getAsientosMaxEjecutivo());
-                vueloMap.put("fechaAlta", vuelo.getFechaAlta().toString());
+                vueloMap.put("fechaAlta", vuelo.getFechaAlta() != null ? vuelo.getFechaAlta().toString() : null);
                 vuelosSimplificados.add(vueloMap);
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(vuelosSimplificados));
+            out.print(serializarJSON(vuelosSimplificados));
 
         } catch (Exception e) {
             LOG.severe("Error al obtener vuelos de ruta " + rutaNombre + ": " + e.getMessage());
@@ -582,23 +603,33 @@ public class ConsultaReservaController extends HttpServlet {
      */
     private void handleGetReservasVuelo(String vueloNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
-            List<DTVueloReserva> reservasVuelo = sistema.listarReservasVuelo(vueloNombre);
+            List<DTVueloReserva> reservasVuelo = getCentralService().listarReservasVuelo(vueloNombre);
 
             List<Map<String, Object>> reservasSimplificadas = new ArrayList<>();
             for (DTVueloReserva vueloReserva : reservasVuelo) {
                 Map<String, Object> reservaMap = new HashMap<>();
                 reservaMap.put("id", vueloReserva.getReserva().getId());
                 reservaMap.put("nicknameCliente", vueloReserva.getReserva().getNickname());
-                reservaMap.put("fechaReserva", vueloReserva.getReserva().getFechaReserva().toString());
-                reservaMap.put("costoReserva", vueloReserva.getReserva().getCostoReserva());
+                reservaMap.put("fechaReserva", vueloReserva.getReserva().getFechaReserva() != null ? vueloReserva.getReserva().getFechaReserva().toString() : null);
+                
+                // Extraer el costo total del objeto DTCostoBase
+                Object costoReservaObj = vueloReserva.getReserva().getCostoReserva();
+                float costoTotal = 0.0f;
+                if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                    costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                } else if (costoReservaObj instanceof Number) {
+                    costoTotal = ((Number) costoReservaObj).floatValue();
+                }
+                reservaMap.put("costoReserva", costoTotal);
+                
                 reservaMap.put("vueloNombre", vueloReserva.getVuelo().getNombre());
-                reservaMap.put("fechaVuelo", vueloReserva.getVuelo().getFechaVuelo().toString());
-                reservaMap.put("horaVuelo", vueloReserva.getVuelo().getHoraVuelo().toString());
+                reservaMap.put("fechaVuelo", vueloReserva.getVuelo().getFechaVuelo() != null ? vueloReserva.getVuelo().getFechaVuelo().toString() : null);
+                reservaMap.put("horaVuelo", vueloReserva.getVuelo().getHoraVuelo() != null ? vueloReserva.getVuelo().getHoraVuelo().toString() : null);
                 reservasSimplificadas.add(reservaMap);
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(reservasSimplificadas));
+            out.print(serializarJSON(reservasSimplificadas));
 
         } catch (Exception e) {
             LOG.severe("Error al obtener reservas del vuelo " + vueloNombre + ": " + e.getMessage());
@@ -612,51 +643,117 @@ public class ConsultaReservaController extends HttpServlet {
      */
     private void handleGetReservaCliente(String vueloNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
         try {
+            LOG.info("handleGetReservaCliente llamado con vueloNombre: " + vueloNombre);
+            
             HttpSession session = request.getSession(false);
             if (session == null) {
+                LOG.warning("Sesión no encontrada en handleGetReservaCliente");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.print("{\"error\": \"Usuario no autenticado\"}");
+                out.print(serializarJSON(Map.of("error", "Usuario no autenticado")));
                 return;
             }
 
             String nicknameCliente = (String) session.getAttribute("usuarioLogueado");
             if (nicknameCliente == null) {
+                LOG.warning("Nickname de cliente no encontrado en sesión");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                out.print("{\"error\": \"Usuario no autenticado\"}");
+                out.print(serializarJSON(Map.of("error", "Usuario no autenticado")));
+                return;
+            }
+
+            LOG.info("Cliente autenticado: " + nicknameCliente);
+
+            // Validar que el nombre del vuelo no sea null o vacío
+            if (vueloNombre == null || vueloNombre.trim().isEmpty()) {
+                LOG.warning("Nombre de vuelo inválido: " + vueloNombre);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(serializarJSON(Map.of("error", "Nombre de vuelo inválido")));
                 return;
             }
 
             // Buscar la reserva del cliente para este vuelo
-            List<DTVueloReserva> reservasVuelo = sistema.listarReservasVuelo(vueloNombre);
+            LOG.info("Buscando reservas para vuelo: " + vueloNombre);
+            List<DTVueloReserva> reservasVuelo;
+            try {
+                CentralService service = getCentralService();
+                if (service == null) {
+                    LOG.severe("CentralService es null");
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print(serializarJSON(Map.of("error", "Error de conexión con el servidor central")));
+                    return;
+                }
+                reservasVuelo = service.listarReservasVuelo(vueloNombre);
+                LOG.info("Reservas encontradas: " + (reservasVuelo != null ? reservasVuelo.size() : "null"));
+            } catch (RuntimeException e) {
+                LOG.severe("Error al llamar a listarReservasVuelo: " + e.getMessage());
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print(serializarJSON(Map.of("error", "Error al consultar reservas del vuelo", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+                return;
+            } catch (Exception e) {
+                LOG.severe("Error inesperado al llamar a listarReservasVuelo: " + e.getMessage());
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print(serializarJSON(Map.of("error", "Error al consultar reservas del vuelo", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+                return;
+            }
             Map<String, Object> reservaCliente = null;
 
+            if (reservasVuelo == null || reservasVuelo.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print(serializarJSON(Map.of("error", "No se encontraron reservas para este vuelo")));
+                return;
+            }
+
             for (DTVueloReserva vueloReserva : reservasVuelo) {
-                if (vueloReserva.getReserva().getNickname().equals(nicknameCliente)) {
+                if (vueloReserva == null || vueloReserva.getReserva() == null) {
+                    continue;
+                }
+                
+                if (nicknameCliente.equals(vueloReserva.getReserva().getNickname())) {
                     reservaCliente = new HashMap<>();
                     reservaCliente.put("id", vueloReserva.getReserva().getId());
                     reservaCliente.put("nicknameCliente", vueloReserva.getReserva().getNickname());
-                    reservaCliente.put("fechaReserva", vueloReserva.getReserva().getFechaReserva().toString());
-                    reservaCliente.put("costoReserva", vueloReserva.getReserva().getCostoReserva());
-                    reservaCliente.put("vueloNombre", vueloReserva.getVuelo().getNombre());
-                    reservaCliente.put("fechaVuelo", vueloReserva.getVuelo().getFechaVuelo().toString());
-                    reservaCliente.put("horaVuelo", vueloReserva.getVuelo().getHoraVuelo().toString());
+                    reservaCliente.put("fechaReserva", vueloReserva.getReserva().getFechaReserva() != null ? vueloReserva.getReserva().getFechaReserva().toString() : null);
+                    
+                    // Extraer el costo total del objeto DTCostoBase
+                    Object costoReservaObj = vueloReserva.getReserva().getCostoReserva();
+                    float costoTotal = 0.0f;
+                    if (costoReservaObj instanceof logica.DataTypes.DTCostoBase) {
+                        costoTotal = ((logica.DataTypes.DTCostoBase) costoReservaObj).getCostoTotal();
+                    } else if (costoReservaObj instanceof Number) {
+                        costoTotal = ((Number) costoReservaObj).floatValue();
+                    }
+                    reservaCliente.put("costoReserva", costoTotal);
+                    
+                    // Validar que el vuelo no sea null
+                    if (vueloReserva.getVuelo() != null) {
+                        reservaCliente.put("vueloNombre", vueloReserva.getVuelo().getNombre());
+                        reservaCliente.put("fechaVuelo", vueloReserva.getVuelo().getFechaVuelo() != null ? vueloReserva.getVuelo().getFechaVuelo().toString() : null);
+                        reservaCliente.put("horaVuelo", vueloReserva.getVuelo().getHoraVuelo() != null ? vueloReserva.getVuelo().getHoraVuelo().toString() : null);
+                    } else {
+                        reservaCliente.put("vueloNombre", null);
+                        reservaCliente.put("fechaVuelo", null);
+                        reservaCliente.put("horaVuelo", null);
+                    }
                     break;
                 }
             }
 
             if (reservaCliente == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print("{\"error\": \"No se encontró reserva del cliente para este vuelo\"}");
+                out.print(serializarJSON(Map.of("error", "No se encontró reserva del cliente para este vuelo")));
                 return;
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(reservaCliente));
+            out.print(serializarJSON(reservaCliente));
 
         } catch (Exception e) {
             LOG.severe("Error al obtener reserva del cliente para vuelo " + vueloNombre + ": " + e.getMessage());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"Error al obtener reserva del cliente\"}");
+            out.print(serializarJSON(Map.of("error", "Error al obtener reserva del cliente", "detail", e.getMessage())));
         }
     }
 
@@ -671,20 +768,21 @@ public class ConsultaReservaController extends HttpServlet {
 
             if (detalleReserva == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print("{\"error\": \"Reserva no encontrada\"}");
+                out.print(serializarJSON(Map.of("error", "Reserva no encontrada")));
                 return;
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print(objectMapper.writeValueAsString(detalleReserva));
+            out.print(serializarJSON(detalleReserva));
 
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\": \"ID de reserva inválido\"}");
+            out.print(serializarJSON(Map.of("error", "ID de reserva inválido")));
         } catch (Exception e) {
             LOG.severe("Error al obtener detalle de reserva " + reservaId + ": " + e.getMessage());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"Error al obtener detalle de la reserva\"}");
+            out.print(serializarJSON(Map.of("error", "Error al obtener detalle de la reserva", "detail", e.getMessage())));
         }
     }
 
@@ -693,14 +791,14 @@ public class ConsultaReservaController extends HttpServlet {
      */
     private Map<String, Object> buscarReservaPorId(Long reservaId) {
         try {
-            List<DTAerolinea> aerolineas = sistema.listarAerolineas();
+            List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
 
             for (DTAerolinea aerolinea : aerolineas) {
-                List<DTRutaVuelo> rutas = sistema.listarRutaVuelo(aerolinea.getNickname());
+                List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(aerolinea.getNickname());
                 for (DTRutaVuelo ruta : rutas) {
-                    List<DTVuelo> vuelos = sistema.seleccionarRutaVuelo(ruta.getNombre());
+                    List<DTVuelo> vuelos = getCentralService().listarVuelosDeRuta(ruta.getNombre());
                     for (DTVuelo vuelo : vuelos) {
-                        List<DTVueloReserva> reservasVuelo = sistema.listarReservasVuelo(vuelo.getNombre());
+                        List<DTVueloReserva> reservasVuelo = getCentralService().listarReservasVuelo(vuelo.getNombre());
                         for (DTVueloReserva vueloReserva : reservasVuelo) {
                             if (vueloReserva.getReserva().getId().equals(reservaId)) {
                                 // Encontramos la reserva, crear detalle completo
@@ -733,22 +831,23 @@ public class ConsultaReservaController extends HttpServlet {
                                 aerolineaInfo.put("descripcion", aerolinea.getDescripcion());
                                 detalle.put("aerolinea", aerolineaInfo);
 
-                                // Información de pasajeros
-                                List<String> nombresPasajeros = new ArrayList<>();
+                                // Obtener los pasajeros de la reserva usando el Web Service
+                                List<Map<String, Object>> pasajerosInfo = new ArrayList<>();
                                 try {
-                                    // Buscar la reserva real en la base de datos usando el ID
-                                    ReservaServicio reservaServicio = new ReservaServicio();
-                                    dato.entidades.Reserva reservaReal = reservaServicio.buscarPorId(vueloReserva.getReserva().getId());
-                                    if (reservaReal != null && reservaReal.getPasajeros() != null) {
-                                        for (dato.entidades.Pasaje pasaje : reservaReal.getPasajeros()) {
-                                            String nombreCompleto = pasaje.getNombrePasajero() + " " + pasaje.getApellidoPasajero();
-                                            nombresPasajeros.add(nombreCompleto);
+                                    List<logica.DataTypes.DTPasajero> pasajeros = getCentralService().obtenerPasajerosReserva(vueloReserva.getReserva().getId());
+                                    if (pasajeros != null) {
+                                        for (logica.DataTypes.DTPasajero pasajero : pasajeros) {
+                                            Map<String, Object> pasajeroInfo = new HashMap<>();
+                                            pasajeroInfo.put("nombre", pasajero.getNombre());
+                                            pasajeroInfo.put("apellido", pasajero.getApellido());
+                                            pasajeroInfo.put("nicknameCliente", pasajero.getNicknameCliente());
+                                            pasajerosInfo.add(pasajeroInfo);
                                         }
                                     }
                                 } catch (Exception e) {
                                     LOG.warning("Error al obtener pasajeros de la reserva " + vueloReserva.getReserva().getId() + ": " + e.getMessage());
                                 }
-                                detalle.put("pasajeros", nombresPasajeros);
+                                detalle.put("pasajeros", pasajerosInfo);
 
                                 return detalle;
                             }
@@ -788,9 +887,8 @@ public class ConsultaReservaController extends HttpServlet {
                 return;
             }
 
-            List<Reserva> reservas = sistema.listarReservasCheck(nicknameCliente);
-            LOG.info("Llamando a sistema.listarDTReservasCheck para cliente: " + nicknameCliente);
-            List<DTReserva> reservasCheck = sistema.listarDTReservasCheck(reservas);
+            LOG.info("Llamando a centralService.listarReservasCheck para cliente: " + nicknameCliente);
+            List<DTReserva> reservasCheck = getCentralService().listarReservasCheck(nicknameCliente);
 
             if (reservasCheck == null) {
                 reservasCheck = new ArrayList<>();

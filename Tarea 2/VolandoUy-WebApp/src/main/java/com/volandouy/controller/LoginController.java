@@ -1,8 +1,8 @@
 package com.volandouy.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import logica.clase.ISistema;
-import logica.clase.Sistema;
+import com.volandouy.central.CentralService;
+import com.volandouy.central.ServiceFactory;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTCliente;
 import logica.DataTypes.DTAerolinea;
@@ -27,7 +27,20 @@ public class LoginController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(LoginController.class.getName());
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final Sistema sistema = Sistema.getInstance();
+    private CentralService centralService;
+    
+    private CentralService getCentralService() {
+        if (centralService == null) {
+            try {
+                centralService = ServiceFactory.getCentralService();
+            } catch (Exception e) {
+                LOG.severe("Error al obtener CentralService: " + e.getMessage());
+                throw new RuntimeException("No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.", e);
+            }
+        }
+        return centralService;
+    }
 
     // LOGIN
     @Override
@@ -49,7 +62,7 @@ public class LoginController extends HttpServlet {
             }
 
             // Buscar usuario por correo o nickname
-            List<DTUsuario> usuarios = sistema.consultarUsuarios();
+            List<DTUsuario> usuarios = getCentralService().consultarUsuarios();
             DTUsuario usuarioEncontrado = usuarios.stream()
                     .filter(u -> {
                         // Buscar por correo
@@ -114,7 +127,19 @@ public class LoginController extends HttpServlet {
             LOG.severe("Error en login: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(objectMapper.writeValueAsString(Map.of("error", "Error interno del servidor", "detail", e.getMessage())));
+            
+            // Mensaje más descriptivo para el usuario
+            String mensajeError = e.getMessage();
+            if (mensajeError != null && (mensajeError.contains("Connection") || 
+                    mensajeError.contains("connect") || mensajeError.contains("refused") ||
+                    mensajeError.contains("Servidor Central"))) {
+                mensajeError = "No se pudo conectar al Servidor Central. " +
+                        "Asegúrate de que el Servidor Central esté ejecutándose.";
+            } else {
+                mensajeError = "Error interno del servidor: " + (mensajeError != null ? mensajeError : e.getClass().getSimpleName());
+            }
+            
+            out.print(objectMapper.writeValueAsString(Map.of("error", mensajeError, "detail", e.getClass().getSimpleName())));
         } finally {
             out.flush();
         }
@@ -186,7 +211,7 @@ public class LoginController extends HttpServlet {
         String tipo = "desconocido";
         try {
             // Primero: intentar obtener datos extendidos desde el sistema
-            DTUsuario datosExtendidos = sistema.mostrarDatosUsuarioMod(usuario.getNickname());
+            DTUsuario datosExtendidos = getCentralService().mostrarDatosUsuarioMod(usuario.getNickname());
             
             if (datosExtendidos != null) {
                 // Si devuelve un objeto con apellido => cliente
@@ -234,7 +259,7 @@ public class LoginController extends HttpServlet {
         String tipo = "desconocido";
         try {
             // Intentar obtener datos extendidos desde el sistema
-            DTUsuario datosExtendidos = sistema.mostrarDatosUsuarioMod(usuario.getNickname());
+            DTUsuario datosExtendidos = getCentralService().mostrarDatosUsuarioMod(usuario.getNickname());
             
             if (datosExtendidos != null) {
                 // Si devuelve un objeto con apellido => cliente
