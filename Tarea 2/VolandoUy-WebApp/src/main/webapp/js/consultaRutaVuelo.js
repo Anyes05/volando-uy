@@ -2,6 +2,212 @@
 let rutasData = [];
 let rutaSeleccionada = null;
 let vueloSeleccionado = null;
+let vuelosRutaActual = []; // Guardar vuelos de la ruta actual para móvil
+
+// Funciones globales para móvil (deben estar fuera de initConsultaRutaVuelo para ser accesibles desde onclick)
+function cerrarModalDetalleRutaMobile() {
+    const modal = document.getElementById('modal-detalle-ruta-mobile');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+function cerrarModalDetalleVueloMobile() {
+    const modal = document.getElementById('modal-detalle-vuelo-mobile');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+async function verDetalleVueloMobileDesdeLista(nombreVuelo) {
+    // Primero buscar en los vuelos ya cargados (más eficiente)
+    if (vuelosRutaActual && vuelosRutaActual.length > 0) {
+        const vuelo = vuelosRutaActual.find(v => v.nombre === nombreVuelo);
+        if (vuelo) {
+            mostrarDetalleVueloMobile(vuelo);
+            return;
+        }
+    }
+    
+    // Si no encontramos en los vuelos cargados, buscar en la ruta seleccionada
+    try {
+        if (rutaSeleccionada && rutaSeleccionada.nombre) {
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(rutaSeleccionada.nombre) + '/vuelos');
+            const vuelos = await response.json();
+            const vuelo = vuelos.find(v => v.nombre === nombreVuelo);
+            if (vuelo) {
+                mostrarDetalleVueloMobile(vuelo);
+                return;
+            }
+        }
+        
+        // Si no encontramos, intentar buscar en todas las rutas (más costoso, último recurso)
+        const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
+        const aerolineas = await response.json();
+        
+        for (const aero of aerolineas) {
+            const rutasResponse = await fetch('/VolandoUy-WebApp/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname));
+            if (rutasResponse.ok) {
+                const rutas = await rutasResponse.json();
+                for (const ruta of rutas) {
+                    const vuelosResponse = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(ruta.nombre) + '/vuelos');
+                    if (vuelosResponse.ok) {
+                        const vuelos = await vuelosResponse.json();
+                        const vuelo = vuelos.find(v => v.nombre === nombreVuelo);
+                        if (vuelo) {
+                            mostrarDetalleVueloMobile(vuelo);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error al cargar vuelo:', error);
+    }
+}
+
+function mostrarDetalleVueloMobile(vuelo) {
+    // Crear modal para detalle de vuelo
+    let modal = document.getElementById('modal-detalle-vuelo-mobile');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-detalle-vuelo-mobile';
+        modal.className = 'modal-detalle-vuelo-mobile';
+        document.body.appendChild(modal);
+    }
+
+    // Cargar reservas del cliente si está logueado
+    let reservasHtml = '';
+    const usuarioLogueado = sessionStorage.getItem('usuarioLogueado');
+    const tipoUsuario = sessionStorage.getItem('tipoUsuario');
+    
+    if (usuarioLogueado && tipoUsuario === 'cliente') {
+        reservasHtml = '<div id="reservas-vuelo-mobile-' + vuelo.nombre + '" class="reservas-vuelo-mobile">' +
+            '<h4><i class="fas fa-ticket-alt"></i> Mi Reserva</h4>' +
+            '<div id="contenido-reservas-mobile-' + vuelo.nombre + '">Cargando...</div>' +
+            '</div>';
+    }
+
+    modal.innerHTML = '<div class="modal-content-mobile">' +
+        '<div class="modal-header-mobile">' +
+        '<h2><i class="fas fa-plane"></i> ' + vuelo.nombre + '</h2>' +
+        '<button class="btn-cerrar-mobile" onclick="cerrarModalDetalleVueloMobile()"><i class="fas fa-times"></i></button>' +
+        '</div>' +
+        '<div class="modal-body-mobile">' +
+        '<div class="vuelo-info-detalle-mobile">' +
+        '<p><strong>Fecha:</strong> ' + (vuelo.fechaVuelo || 'N/A') + '</p>' +
+        '<p><strong>Hora:</strong> ' + (vuelo.horaVuelo || 'N/A') + '</p>' +
+        '<p><strong>Duración:</strong> ' + (vuelo.duracion || 'N/A') + '</p>' +
+        '<p><strong>Asientos Turista:</strong> ' + (vuelo.asientosMaxTurista || 0) + '</p>' +
+        '<p><strong>Asientos Ejecutivo:</strong> ' + (vuelo.asientosMaxEjecutivo || 0) + '</p>' +
+        '</div>' +
+        reservasHtml +
+        '</div>' +
+        '</div>';
+
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+
+    // Cargar reservas si es cliente
+    if (usuarioLogueado && tipoUsuario === 'cliente') {
+        cargarReservasVueloMobile(vuelo.nombre);
+    }
+}
+
+async function cargarReservasVueloMobile(nombreVuelo) {
+    try {
+        const response = await fetch('/VolandoUy-WebApp/api/vuelos/reservas/' + encodeURIComponent(nombreVuelo));
+        const reservas = await response.json();
+        
+        const contenidoReservas = document.getElementById('contenido-reservas-mobile-' + nombreVuelo);
+        if (!contenidoReservas) return;
+
+        if (reservas.length === 0) {
+            contenidoReservas.innerHTML = '<p>No tienes reservas para este vuelo</p>';
+            return;
+        }
+
+        let html = '';
+        reservas.forEach(function(reserva) {
+            html += '<div class="reserva-item-mobile">' +
+                '<p><strong>ID Reserva:</strong> ' + reserva.id + '</p>' +
+                '<p><strong>Fecha:</strong> ' + reserva.fechaReserva + '</p>' +
+                '<p><strong>Costo:</strong> ' + formatearCostoReserva(reserva.costoReserva) + '</p>';
+            
+            // Botón de check-in si no está realizado
+            if (!reserva.checkInRealizado) {
+                html += '<button class="btn-checkin-mobile" onclick="realizarCheckInMobile(\'' + reserva.id + '\')">' +
+                    '<i class="fas fa-check-circle"></i> Realizar Check-in</button>';
+            } else {
+                html += '<p class="checkin-realizado"><i class="fas fa-check-circle"></i> Check-in realizado</p>';
+            }
+            
+            html += '</div>';
+        });
+        
+        contenidoReservas.innerHTML = html;
+    } catch (error) {
+        console.error('Error al cargar reservas:', error);
+        const contenidoReservas = document.getElementById('contenido-reservas-mobile-' + nombreVuelo);
+        if (contenidoReservas) {
+            contenidoReservas.innerHTML = '<p>Error al cargar reservas</p>';
+        }
+    }
+}
+
+function realizarCheckInMobile(reservaId) {
+    // Redirigir a la página de check-in o hacer la llamada al API
+    window.location.href = '/VolandoUy-WebApp/consultacheckin.jsp?reservaId=' + reservaId;
+}
+
+function formatearCostoReserva(costoReserva) {
+    if (!costoReserva) return '$0';
+
+    try {
+        if (typeof costoReserva === 'object' && costoReserva.costoTotal) {
+            return '$' + costoReserva.costoTotal.toFixed(2);
+        } else if (typeof costoReserva === 'number') {
+            return '$' + costoReserva.toFixed(2);
+        } else {
+            return '$' + parseFloat(costoReserva).toFixed(2);
+        }
+    } catch (error) {
+        console.warn('No se pudo parsear costoReserva:', costoReserva);
+        return '$0';
+    }
+}
+
+// Función para convertir URL de video a formato embed (necesaria para móvil)
+function convertirUrlVideo(url) {
+    if (!url) return '';
+
+    // YouTube
+    if (url.includes('youtube.com/watch?v=')) {
+        const videoId = url.split('v=')[1].split('&')[0];
+        return 'https://www.youtube.com/embed/' + videoId;
+    }
+    if (url.includes('youtu.be/')) {
+        const videoId = url.split('youtu.be/')[1].split('?')[0];
+        return 'https://www.youtube.com/embed/' + videoId;
+    }
+
+    // Vimeo
+    if (url.includes('vimeo.com/')) {
+        const videoId = url.split('vimeo.com/')[1].split('?')[0];
+        return 'https://player.vimeo.com/video/' + videoId;
+    }
+
+    // Si ya es una URL embed, devolverla tal cual
+    if (url.includes('/embed/')) {
+        return url;
+    }
+
+    // Por defecto, devolver la URL original
+    return url;
+}
 
 // Función de inicialización
 function initConsultaRutaVuelo() {
@@ -236,6 +442,11 @@ function initConsultaRutaVuelo() {
         mostrarRutas(rutasFiltradas);
     }
 
+    // Función para detectar si es móvil
+    function esMobile() {
+        return window.innerWidth <= 767;
+    }
+
     // Función para mostrar rutas
     function mostrarRutas(rutas) {
         listaRutas.innerHTML = '';
@@ -251,6 +462,62 @@ function initConsultaRutaVuelo() {
             return;
         }
 
+        // Si es móvil, mostrar grilla compacta
+        if (esMobile()) {
+            mostrarRutasMobile(rutas);
+        } else {
+            mostrarRutasDesktop(rutas);
+        }
+
+        // Si hay una ruta para seleccionar automáticamente (viene de sessionStorage)
+        if (window.rutaASeleccionar) {
+            const rutaParaSeleccionar = rutas.find(r => r.nombre === window.rutaASeleccionar);
+            if (rutaParaSeleccionar) {
+                console.log('Seleccionando automáticamente la ruta:', window.rutaASeleccionar);
+                // Buscar la tarjeta de la ruta y hacer click en ella
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.ruta-card');
+                    cards.forEach(card => {
+                        if (card.textContent.includes(window.rutaASeleccionar)) {
+                            card.click();
+                        }
+                    });
+                    window.rutaASeleccionar = null; // Limpiar la variable
+                }, 100);
+            }
+        }
+    }
+
+    // Función para mostrar rutas en móvil (grilla compacta)
+    function mostrarRutasMobile(rutas) {
+        rutas.forEach(function (ruta) {
+            const card = document.createElement('div');
+            card.className = 'ruta-card ruta-card-mobile';
+            card.onclick = function () {
+                mostrarDetalleRutaMobile(ruta);
+            };
+
+            // Descripción corta (máximo 80 caracteres)
+            const descripcionCorta = ruta.descripcion ? 
+                (ruta.descripcion.length > 80 ? ruta.descripcion.substring(0, 80) + '...' : ruta.descripcion) : 
+                'Sin descripción';
+
+            const imagenHtml = ruta.imagen ?
+                '<img src="' + ruta.imagen + '" alt="' + ruta.nombre + '">' :
+                '<div class="no-image"><i class="fas fa-route"></i></div>';
+
+            card.innerHTML = imagenHtml +
+                '<div class="ruta-card-content-mobile">' +
+                '<h3>' + ruta.nombre + '</h3>' +
+                '<p class="ruta-descripcion-corta">' + descripcionCorta + '</p>' +
+                '</div>';
+
+            listaRutas.appendChild(card);
+        });
+    }
+
+    // Función para mostrar rutas en desktop (versión original)
+    function mostrarRutasDesktop(rutas) {
         rutas.forEach(function (ruta) {
             // Debug: log temporal para ver la estructura del costoBase
             if (ruta.costoBase) {
@@ -277,24 +544,6 @@ function initConsultaRutaVuelo() {
 
             listaRutas.appendChild(card);
         });
-
-        // Si hay una ruta para seleccionar automáticamente (viene de sessionStorage)
-        if (window.rutaASeleccionar) {
-            const rutaParaSeleccionar = rutas.find(r => r.nombre === window.rutaASeleccionar);
-            if (rutaParaSeleccionar) {
-                console.log('Seleccionando automáticamente la ruta:', window.rutaASeleccionar);
-                // Buscar la tarjeta de la ruta y hacer click en ella
-                setTimeout(() => {
-                    const cards = document.querySelectorAll('.ruta-card');
-                    cards.forEach(card => {
-                        if (card.textContent.includes(window.rutaASeleccionar)) {
-                            card.click();
-                        }
-                    });
-                    window.rutaASeleccionar = null; // Limpiar la variable
-                }, 100);
-            }
-        }
     }
 
     // Función helper para formatear los costos de la ruta
@@ -488,6 +737,107 @@ function initConsultaRutaVuelo() {
         }
     }
 
+    // Función para mostrar detalle completo de ruta en móvil
+    async function mostrarDetalleRutaMobile(ruta) {
+        // Guardar ruta seleccionada para uso posterior
+        rutaSeleccionada = ruta;
+        
+        // Crear modal/pantalla completa para móvil
+        let modal = document.getElementById('modal-detalle-ruta-mobile');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'modal-detalle-ruta-mobile';
+            modal.className = 'modal-detalle-ruta-mobile';
+            document.body.appendChild(modal);
+        }
+
+        // Cargar vuelos de la ruta
+        let vuelos = [];
+        try {
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(ruta.nombre) + '/vuelos');
+            vuelos = await response.json();
+            // Guardar vuelos para uso posterior
+            vuelosRutaActual = vuelos;
+        } catch (error) {
+            console.error('Error al cargar vuelos:', error);
+            vuelosRutaActual = [];
+        }
+
+        // Construir HTML del modal
+        const imagenHtml = ruta.imagen ?
+            '<img src="' + ruta.imagen + '" alt="' + ruta.nombre + '" class="ruta-imagen-detalle">' :
+            '<div class="no-image-detalle"><i class="fas fa-route"></i></div>';
+
+        let videoHtml = '';
+        if (ruta.videoUrl) {
+            const videoEmbedUrl = convertirUrlVideo(ruta.videoUrl);
+            videoHtml = '<div class="ruta-video-container-mobile">' +
+                '<h4><i class="fas fa-video"></i> Conocé más sobre este destino</h4>' +
+                '<div class="video-wrapper-mobile">' +
+                '<iframe src="' + videoEmbedUrl + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' +
+                '</div>' +
+                '</div>';
+        }
+
+        // Tabla de vuelos
+        let vuelosHtml = '';
+        if (vuelos.length > 0) {
+            vuelosHtml = '<div class="vuelos-tabla-mobile">' +
+                '<h3><i class="fas fa-plane"></i> Vuelos Asociados</h3>' +
+                '<div class="table-container-mobile">' +
+                '<table class="tabla-vuelos-mobile">' +
+                '<thead>' +
+                '<tr>' +
+                '<th>Nombre</th>' +
+                '<th>Fecha</th>' +
+                '<th>Hora</th>' +
+                '<th>Duración</th>' +
+                '<th>Acción</th>' +
+                '</tr>' +
+                '</thead>' +
+                '<tbody>';
+            
+            vuelos.forEach(function(vuelo) {
+                vuelosHtml += '<tr onclick="verDetalleVueloMobileDesdeLista(\'' + vuelo.nombre + '\')">' +
+                    '<td>' + vuelo.nombre + '</td>' +
+                    '<td>' + (vuelo.fechaVuelo || 'N/A') + '</td>' +
+                    '<td>' + (vuelo.horaVuelo || 'N/A') + '</td>' +
+                    '<td>' + (vuelo.duracion || 'N/A') + '</td>' +
+                    '<td><button class="btn-ver-vuelo-mobile" onclick="event.stopPropagation(); verDetalleVueloMobileDesdeLista(\'' + vuelo.nombre + '\')">Ver</button></td>' +
+                    '</tr>';
+            });
+            
+            vuelosHtml += '</tbody></table></div></div>';
+        } else {
+            vuelosHtml = '<div class="vuelos-placeholder-mobile"><i class="fas fa-plane"></i><p>No hay vuelos disponibles para esta ruta</p></div>';
+        }
+
+        modal.innerHTML = '<div class="modal-content-mobile">' +
+            '<div class="modal-header-mobile">' +
+            '<h2>' + ruta.nombre + '</h2>' +
+            '<button class="btn-cerrar-mobile" onclick="cerrarModalDetalleRutaMobile()"><i class="fas fa-times"></i></button>' +
+            '</div>' +
+            '<div class="modal-body-mobile">' +
+            imagenHtml +
+            '<div class="ruta-info-detalle-mobile">' +
+            '<p class="ruta-descripcion-completa">' + (ruta.descripcion || 'Sin descripción') + '</p>' +
+            '<div class="ruta-datos-mobile">' +
+            '<p><strong><i class="fas fa-map-marker-alt"></i> Origen:</strong> ' + (ruta.ciudadOrigen ? ruta.ciudadOrigen.nombre : 'N/A') + '</p>' +
+            '<p><strong><i class="fas fa-map-marker-alt"></i> Destino:</strong> ' + (ruta.ciudadDestino ? ruta.ciudadDestino.nombre : 'N/A') + '</p>' +
+            '<p><strong><i class="fas fa-dollar-sign"></i> Costo base:</strong> ' + formatearCostosRuta(ruta.costoBase) + '</p>' +
+            '</div>' +
+            '</div>' +
+            videoHtml +
+            vuelosHtml +
+            '</div>' +
+            '</div>';
+
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Las funciones para móvil están ahora en el scope global (arriba del archivo)
+
     // Función para cargar vuelos de una ruta
     async function cargarVuelosRuta(nombreRuta) {
         try {
@@ -516,6 +866,43 @@ function initConsultaRutaVuelo() {
             return;
         }
 
+        // Si es móvil, mostrar como tabla
+        if (esMobile()) {
+            mostrarVuelosMobile(vuelos);
+        } else {
+            mostrarVuelosDesktop(vuelos);
+        }
+    }
+
+    // Función para mostrar vuelos en móvil (tabla)
+    function mostrarVuelosMobile(vuelos) {
+        let html = '<div class="table-container-mobile">' +
+            '<table class="tabla-vuelos-mobile">' +
+            '<thead>' +
+            '<tr>' +
+            '<th>Nombre</th>' +
+            '<th>Fecha</th>' +
+            '<th>Hora</th>' +
+            '<th>Acción</th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody>';
+
+        vuelos.forEach(function(vuelo) {
+            html += '<tr onclick="verDetalleVueloMobileDesdeLista(\'' + vuelo.nombre + '\')">' +
+                '<td>' + vuelo.nombre + '</td>' +
+                '<td>' + (vuelo.fechaVuelo || 'N/A') + '</td>' +
+                '<td>' + (vuelo.horaVuelo || 'N/A') + '</td>' +
+                '<td><button class="btn-ver-vuelo-mobile" onclick="event.stopPropagation(); verDetalleVueloMobileDesdeLista(\'' + vuelo.nombre + '\')">Ver</button></td>' +
+                '</tr>';
+        });
+
+        html += '</tbody></table></div>';
+        listaVuelos.innerHTML = html;
+    }
+
+    // Función para mostrar vuelos en desktop (versión original)
+    function mostrarVuelosDesktop(vuelos) {
         vuelos.forEach(function (vuelo) {
             const card = document.createElement('div');
             card.className = 'vuelo-card';
@@ -537,6 +924,7 @@ function initConsultaRutaVuelo() {
             listaVuelos.appendChild(card);
         });
     }
+
 
     // Función para seleccionar un vuelo y mostrar detalles
     // Función para seleccionar un vuelo y mostrar detalles
@@ -749,5 +1137,11 @@ document.addEventListener('DOMContentLoaded', function () {
     initConsultaRutaVuelo();
 });
 
-// Exportar función para uso global
+// Exportar funciones para uso global
 window.initConsultaRutaVuelo = initConsultaRutaVuelo;
+window.cerrarModalDetalleRutaMobile = cerrarModalDetalleRutaMobile;
+window.cerrarModalDetalleVueloMobile = cerrarModalDetalleVueloMobile;
+window.verDetalleVueloMobileDesdeLista = verDetalleVueloMobileDesdeLista;
+window.mostrarDetalleVueloMobile = mostrarDetalleVueloMobile;
+window.realizarCheckInMobile = realizarCheckInMobile;
+window.convertirUrlVideo = convertirUrlVideo;

@@ -46,6 +46,7 @@
        - consultaRutaVuelo
        - consultaVuelo
        - consultaReserva
+       - consultaCheckIn
     */
     @media (max-width: 767.98px) {
       /* Ocultar elementos que NO están permitidos en móvil */
@@ -57,8 +58,7 @@
       .nav-item[href*="altaVuelo"],
       .nav-item[href*="reserva"]:not([href*="consultaReserva"]),
       .nav-item[href*="inicio.jsp"],
-      .nav-item[href*="modificarUsuario"],
-      .nav-item[href*="consultacheckin"] {
+      .nav-item[href*="modificarUsuario"] {
         display: none !important;
       }
       
@@ -69,7 +69,7 @@
       
       /* Ocultar secciones completas que solo tienen elementos no permitidos */
       /* Sección "Mi Cuenta" - ocultar si solo tiene elementos no permitidos */
-      .nav-section:has(.nav-item[href*="consultaUsuario"]:not([href*="consultaRutaVuelo"])):not(:has(.nav-item[href*="inicioSesion"])):not(:has(.nav-item[href*="consultaRutaVuelo"])):not(:has(.nav-item[href*="consultaVuelo"])):not(:has(.nav-item[href*="consultaReserva"])) {
+      .nav-section:has(.nav-item[href*="consultaUsuario"]:not([href*="consultaRutaVuelo"])):not(:has(.nav-item[href*="inicioSesion"])):not(:has(.nav-item[href*="consultaRutaVuelo"])):not(:has(.nav-item[href*="consultaVuelo"])):not(:has(.nav-item[href*="consultaReserva"])):not(:has(.nav-item[href*="consultacheckin"])) {
         display: none !important;
       }
       
