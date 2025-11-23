@@ -76,8 +76,8 @@
     <!-- Estilos para el panel de detalles del vuelo -->
     <style>
       .detalle-vuelo {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
+        background: rgba(34, 152, 202, 0.15);
+        border: 1px solid rgba(34, 152, 202, 0.3);
         border-radius: 12px;
         padding: 20px;
         margin: 15px 0;
@@ -85,6 +85,7 @@
         color: white;
         position: relative;
         overflow: hidden;
+        backdrop-filter: blur(10px);
       }
 
       .detalle-vuelo::before {
@@ -94,7 +95,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
         z-index: 0;
       }
@@ -113,7 +114,7 @@
       }
 
       .detalle-vuelo-info {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         padding: 15px;
         margin-bottom: 15px;
@@ -149,8 +150,8 @@
       }
 
       .detalle-reserva {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 8px;
         padding: 15px;
         margin-top: 15px;
@@ -166,8 +167,8 @@
       }
 
       .reserva-card {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 8px;
         padding: 12px;
         margin: 8px 0;
@@ -178,8 +179,8 @@
       }
 
       .reserva-card:hover {
-        background: rgba(255, 255, 255, 0.3);
-        border-color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       }
@@ -189,7 +190,7 @@
       }
 
       .detalle-reserva-info {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.1);
         border-radius: 6px;
         padding: 12px;
         margin-top: 10px;
@@ -261,6 +262,31 @@
         border: none;
       }
 
+      .vuelos-container {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 5px;
+      }
+
+      /* Custom Scrollbar */
+      .vuelos-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .vuelos-container::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+      }
+
+      .vuelos-container::-webkit-scrollbar-thumb {
+        background: rgba(34, 152, 202, 0.5);
+        border-radius: 3px;
+      }
+
+      .vuelos-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(34, 152, 202, 0.8);
+      }
+
       /* Responsive */
       @media (max-width: 768px) {
         .detalle-ruta-container {
@@ -271,4 +297,4 @@
     </style>
 
     <!-- Script específico para consulta de ruta de vuelo -->
-    <script src="js/consultaRutaVuelo.js?v=2"></script>
+    <script src="js/consultaRutaVuelo.js?v=3"></script>

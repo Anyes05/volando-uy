@@ -6,7 +6,7 @@ let vueloSeleccionado = null;
 // Función de inicialización
 function initConsultaRutaVuelo() {
     console.log('Inicializando consulta de ruta de vuelo...');
-    
+
     const selectAerolinea = document.getElementById('select-aerolinea');
     const selectCategoria = document.getElementById('select-categoria');
     const buscadorNombre = document.getElementById('buscador-nombre');
@@ -27,10 +27,10 @@ function initConsultaRutaVuelo() {
         try {
             const rutaData = JSON.parse(rutaSeleccionadaStorage);
             console.log('Ruta seleccionada encontrada:', rutaData);
-            
+
             // Limpiar el sessionStorage
             sessionStorage.removeItem('rutaSeleccionada');
-            
+
             // Guardar el nombre de la ruta para seleccionarla después de cargar
             window.rutaASeleccionar = rutaData.nombre;
         } catch (error) {
@@ -54,18 +54,18 @@ function initConsultaRutaVuelo() {
         try {
             console.log('Cargando aerolíneas...');
             const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
-            
+
             if (!response.ok) {
                 throw new Error('Error HTTP: ' + response.status);
             }
-            
+
             const aerolineas = await response.json();
             console.log('Aerolíneas recibidas:', aerolineas);
-            
+
             selectAerolinea.innerHTML = '<option value="">Todas las aerolíneas</option>';
-            
+
             if (Array.isArray(aerolineas)) {
-                aerolineas.forEach(function(aero) {
+                aerolineas.forEach(function (aero) {
                     const option = document.createElement('option');
                     option.value = aero.nickname;
                     option.textContent = aero.nombre;
@@ -84,18 +84,18 @@ function initConsultaRutaVuelo() {
         try {
             console.log('Cargando categorías...');
             const response = await fetch('/VolandoUy-WebApp/api/rutas/categorias');
-            
+
             if (!response.ok) {
                 throw new Error('Error HTTP: ' + response.status);
             }
-            
+
             const categorias = await response.json();
             console.log('Categorías recibidas:', categorias);
-            
+
             selectCategoria.innerHTML = '<option value="">Todas las categorías</option>';
-            
+
             if (Array.isArray(categorias)) {
-                categorias.forEach(function(cat) {
+                categorias.forEach(function (cat) {
                     const option = document.createElement('option');
                     option.value = cat;
                     option.textContent = cat;
@@ -113,25 +113,25 @@ function initConsultaRutaVuelo() {
     async function cargarTodasLasRutas() {
         try {
             console.log('Iniciando carga de rutas...');
-            
+
             const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
-            
+
             if (!response.ok) {
                 throw new Error('Error HTTP: ' + response.status);
             }
-            
+
             const aerolineas = await response.json();
             console.log('Aerolíneas cargadas:', aerolineas);
-            
+
             let todasLasRutas = [];
-            
+
             // Procesar cada aerolínea de forma secuencial
             for (let i = 0; i < aerolineas.length; i++) {
                 const aero = aerolineas[i];
                 try {
                     console.log('Cargando rutas de aerolínea: ' + aero.nombre);
                     const rutasResponse = await fetch('/VolandoUy-WebApp/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname));
-                    
+
                     if (rutasResponse.ok) {
                         const rutas = await rutasResponse.json();
                         if (Array.isArray(rutas)) {
@@ -172,7 +172,7 @@ function initConsultaRutaVuelo() {
                     console.warn('Error cargando rutas de ' + aero.nombre + ':', error);
                 }
             }
-            
+
             console.log('Total de rutas cargadas:', todasLasRutas.length);
             rutasData = todasLasRutas;
             mostrarRutas(todasLasRutas);
@@ -212,8 +212,8 @@ function initConsultaRutaVuelo() {
                 const response = await fetch('/VolandoUy-WebApp/api/rutas/por-categoria?categoria=' + encodeURIComponent(categoriaSeleccionada));
                 if (response.ok) {
                     const rutasCategoria = await response.json();
-                    rutasFiltradas = rutasFiltradas.filter(function(ruta) {
-                        return rutasCategoria.some(function(rc) {
+                    rutasFiltradas = rutasFiltradas.filter(function (ruta) {
+                        return rutasCategoria.some(function (rc) {
                             return rc.nombre === ruta.nombre;
                         });
                     });
@@ -225,11 +225,11 @@ function initConsultaRutaVuelo() {
 
         // Filtrar por texto de búsqueda
         if (textoBusqueda) {
-            rutasFiltradas = rutasFiltradas.filter(function(ruta) {
+            rutasFiltradas = rutasFiltradas.filter(function (ruta) {
                 return ruta.nombre.toLowerCase().includes(textoBusqueda) ||
-                       ruta.descripcion.toLowerCase().includes(textoBusqueda) ||
-                       (ruta.ciudadOrigen && ruta.ciudadOrigen.nombre.toLowerCase().includes(textoBusqueda)) ||
-                       (ruta.ciudadDestino && ruta.ciudadDestino.nombre.toLowerCase().includes(textoBusqueda));
+                    ruta.descripcion.toLowerCase().includes(textoBusqueda) ||
+                    (ruta.ciudadOrigen && ruta.ciudadOrigen.nombre.toLowerCase().includes(textoBusqueda)) ||
+                    (ruta.ciudadDestino && ruta.ciudadDestino.nombre.toLowerCase().includes(textoBusqueda));
             });
         }
 
@@ -239,7 +239,7 @@ function initConsultaRutaVuelo() {
     // Función para mostrar rutas
     function mostrarRutas(rutas) {
         listaRutas.innerHTML = '';
-        
+
         if (rutasStats) {
             const texto = rutas.length === 1 ? 'ruta encontrada' : 'rutas encontradas';
             rutasStats.innerHTML = '<span class="total-rutas">' + rutas.length + ' ' + texto + '</span>';
@@ -251,20 +251,20 @@ function initConsultaRutaVuelo() {
             return;
         }
 
-        rutas.forEach(function(ruta) {
+        rutas.forEach(function (ruta) {
             // Debug: log temporal para ver la estructura del costoBase
             if (ruta.costoBase) {
                 console.log('Costo base de ruta "' + ruta.nombre + '":', ruta.costoBase, 'Tipo:', typeof ruta.costoBase);
             }
-            
+
             const card = document.createElement('div');
             card.className = 'ruta-card';
-            card.onclick = function() {
+            card.onclick = function () {
                 seleccionarRuta(ruta);
             };
 
-            const imagenHtml = ruta.imagen ? 
-                '<img src="' + ruta.imagen + '" alt="' + ruta.nombre + '">' : 
+            const imagenHtml = ruta.imagen ?
+                '<img src="' + ruta.imagen + '" alt="' + ruta.nombre + '">' :
                 '<div class="no-image"><i class="fas fa-route"></i><p>Sin imagen</p></div>';
 
             card.innerHTML = imagenHtml +
@@ -277,7 +277,7 @@ function initConsultaRutaVuelo() {
 
             listaRutas.appendChild(card);
         });
-        
+
         // Si hay una ruta para seleccionar automáticamente (viene de sessionStorage)
         if (window.rutaASeleccionar) {
             const rutaParaSeleccionar = rutas.find(r => r.nombre === window.rutaASeleccionar);
@@ -300,23 +300,23 @@ function initConsultaRutaVuelo() {
     // Función helper para formatear los costos de la ruta
     function formatearCostosRuta(costoBase) {
         if (!costoBase) return '$0';
-        
+
         // Si es un número simple, devolverlo directamente
         if (typeof costoBase === 'number') {
             return '$' + costoBase;
         }
-        
+
         // Si es un string, parsearlo
         if (typeof costoBase === 'string') {
             const parsed = parseFloat(costoBase);
             return '$' + (isNaN(parsed) ? 0 : parsed);
         }
-        
+
         // Si es el objeto con estructura de costos múltiples
         if (typeof costoBase === 'object' && costoBase.costoTurista !== undefined) {
             const turista = costoBase.costoTurista || 0;
             const ejecutivo = costoBase.costoEjecutivo || 0;
-            
+
             // Mostrar ambos precios si son diferentes
             if (ejecutivo > 0 && turista !== ejecutivo) {
                 return '$' + turista + ' (Turista) / $' + ejecutivo + ' (Ejecutivo)';
@@ -325,7 +325,7 @@ function initConsultaRutaVuelo() {
                 return '$' + turista;
             }
         }
-        
+
         // Si es un objeto simple con otras propiedades, intentar obtener valor
         if (typeof costoBase === 'object') {
             if (costoBase.value !== undefined) return '$' + (parseFloat(costoBase.value) || 0);
@@ -337,7 +337,7 @@ function initConsultaRutaVuelo() {
                 return '$' + (isNaN(parsed) ? 0 : parsed);
             }
         }
-        
+
         // Fallback: intentar convertir a string y parsear
         try {
             const parsed = parseFloat(String(costoBase));
@@ -353,34 +353,34 @@ function initConsultaRutaVuelo() {
         // Limpiar variables de selección
         rutaSeleccionada = null;
         vueloSeleccionado = null;
-        
+
         // Limpiar contenedor de vuelos
         if (listaVuelos) {
             listaVuelos.innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-route"></i><p>Selecciona una ruta para ver sus vuelos disponibles</p></div>';
         }
-        
+
         // Limpiar cualquier detalle de vuelo que pueda estar visible
         const detalleVuelo = document.getElementById("detalle-vuelo");
         if (detalleVuelo) {
             detalleVuelo.style.display = "none";
         }
-        
+
         // Limpiar mensaje de vuelo
         if (mensajeVuelo) {
             mensajeVuelo.style.display = "none";
             mensajeVuelo.textContent = "";
         }
-        
+
         // Ocultar detalles de ruta
         ocultarDetalleRuta();
-        
+
         console.log("Selección de vuelos limpiada");
     }
 
     // Función para seleccionar una ruta (con funcionalidad de deselección)
     function seleccionarRuta(ruta) {
         const card = event.currentTarget;
-        
+
         // Si esta ruta ya está seleccionada, deseleccionarla
         if (rutaSeleccionada && rutaSeleccionada.nombre === ruta.nombre) {
             // Deseleccionar ruta actual
@@ -392,23 +392,23 @@ function initConsultaRutaVuelo() {
         } else {
             // Seleccionar nueva ruta
             // Remover selección anterior
-            document.querySelectorAll('.ruta-card').forEach(function(c) {
+            document.querySelectorAll('.ruta-card').forEach(function (c) {
                 c.classList.remove('seleccionada');
             });
-            
+
             // Agregar selección actual
             card.classList.add('seleccionada');
             rutaSeleccionada = ruta;
-            
+
             // Mostrar detalles de la ruta (imagen y video)
             mostrarDetalleRuta(ruta);
-            
+
             // Cargar vuelos de la ruta
             cargarVuelosRuta(ruta.nombre);
             console.log('Ruta seleccionada:', ruta.nombre);
         }
     }
-    
+
     // Función para mostrar detalles de la ruta (solo video)
     function mostrarDetalleRuta(ruta) {
         // Si no hay video, no mostrar nada y salir
@@ -423,17 +423,17 @@ function initConsultaRutaVuelo() {
             detalleRutaContainer = document.createElement('div');
             detalleRutaContainer.id = 'detalle-ruta-container';
             detalleRutaContainer.className = 'detalle-ruta-container';
-            
+
             // Insertar DENTRO del aside de vuelos, al principio
             const asideVuelos = document.getElementById('aside-vuelos');
             if (asideVuelos) {
                 asideVuelos.insertBefore(detalleRutaContainer, asideVuelos.firstChild);
             }
         }
-        
+
         // Construir HTML del detalle (solo video)
         let html = '<div class="detalle-ruta-content">';
-        
+
         // Video
         html += '<div class="ruta-video-container">';
         html += '<h4><i class="fas fa-video"></i> Conocé mas sobre este destino</h4>';
@@ -443,17 +443,17 @@ function initConsultaRutaVuelo() {
         html += '<iframe src="' + videoEmbedUrl + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
         html += '</div>';
         html += '</div>';
-        
+
         html += '</div>';
-        
+
         detalleRutaContainer.innerHTML = html;
         detalleRutaContainer.style.display = 'block';
     }
-    
+
     // Función para convertir URL de video a formato embed
     function convertirUrlVideo(url) {
         if (!url) return '';
-        
+
         // YouTube
         if (url.includes('youtube.com/watch?v=')) {
             const videoId = url.split('v=')[1].split('&')[0];
@@ -463,22 +463,22 @@ function initConsultaRutaVuelo() {
             const videoId = url.split('youtu.be/')[1].split('?')[0];
             return 'https://www.youtube.com/embed/' + videoId;
         }
-        
+
         // Vimeo
         if (url.includes('vimeo.com/')) {
             const videoId = url.split('vimeo.com/')[1].split('?')[0];
             return 'https://player.vimeo.com/video/' + videoId;
         }
-        
+
         // Si ya es una URL embed, devolverla tal cual
         if (url.includes('/embed/')) {
             return url;
         }
-        
+
         // Por defecto, devolver la URL original
         return url;
     }
-    
+
     // Función para ocultar detalles de la ruta
     function ocultarDetalleRuta() {
         const detalleRutaContainer = document.getElementById('detalle-ruta-container');
@@ -493,7 +493,7 @@ function initConsultaRutaVuelo() {
         try {
             const response = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(nombreRuta) + '/vuelos');
             const vuelos = await response.json();
-            
+
             mostrarVuelos(vuelos);
         } catch (error) {
             console.error('Error al cargar vuelos:', error);
@@ -504,7 +504,7 @@ function initConsultaRutaVuelo() {
     // Función para mostrar vuelos
     function mostrarVuelos(vuelos) {
         listaVuelos.innerHTML = '';
-        
+
         if (vuelos.length === 0) {
             listaVuelos.innerHTML = '<div class="vuelos-placeholder"><i class="fas fa-plane"></i><p>No hay vuelos disponibles para esta ruta</p></div>';
             vueloSeleccionado = null; // Limpiar selección de vuelo si no hay vuelos
@@ -516,15 +516,15 @@ function initConsultaRutaVuelo() {
             return;
         }
 
-        vuelos.forEach(function(vuelo) {
+        vuelos.forEach(function (vuelo) {
             const card = document.createElement('div');
             card.className = 'vuelo-card';
-            card.onclick = function() {
+            card.onclick = function () {
                 seleccionarVuelo(vuelo);
             };
 
-            const imagenHtml = vuelo.foto ? 
-                '<img src="' + vuelo.foto + '" alt="' + vuelo.nombre + '">' : 
+            const imagenHtml = vuelo.foto ?
+                '<img src="' + vuelo.foto + '" alt="' + vuelo.nombre + '">' :
                 '<div class="no-image"><i class="fas fa-plane"></i></div>';
 
             card.innerHTML = imagenHtml +
@@ -539,36 +539,40 @@ function initConsultaRutaVuelo() {
     }
 
     // Función para seleccionar un vuelo y mostrar detalles
+    // Función para seleccionar un vuelo y mostrar detalles
     function seleccionarVuelo(vuelo) {
         const card = event.currentTarget;
-        
-        // Si este vuelo ya está seleccionado, deseleccionarlo
+
+        // Si este vuelo ya está seleccionado
         if (vueloSeleccionado && vueloSeleccionado.nombre === vuelo.nombre) {
             // Deseleccionar vuelo actual
             card.classList.remove('seleccionado');
             vueloSeleccionado = null;
-            
-            // Ocultar panel de detalles
-            const detalleVuelo = document.getElementById('detalle-vuelo');
+
+            // Ocultar panel de detalles específico
+            const detalleVuelo = document.getElementById('detalle-vuelo-' + vuelo.nombre);
             if (detalleVuelo) {
-                detalleVuelo.style.display = 'none';
+                detalleVuelo.remove(); // Removerlo del DOM para limpiar
             }
-            
+
             console.log('Vuelo deseleccionado:', vuelo.nombre);
         } else {
+            // Si hay otro vuelo seleccionado, deseleccionarlo primero
+            if (vueloSeleccionado) {
+                const cardAnterior = document.querySelector('.vuelo-card.seleccionado');
+                if (cardAnterior) cardAnterior.classList.remove('seleccionado');
+
+                const detalleAnterior = document.getElementById('detalle-vuelo-' + vueloSeleccionado.nombre);
+                if (detalleAnterior) detalleAnterior.remove();
+            }
+
             // Seleccionar nuevo vuelo
-            // Remover selección anterior
-            document.querySelectorAll('.vuelo-card').forEach(function(c) {
-                c.classList.remove('seleccionado');
-            });
-            
-            // Agregar selección actual
             card.classList.add('seleccionado');
             vueloSeleccionado = vuelo;
-            
+
             // Mostrar detalles del vuelo
             mostrarDetalleVuelo(vuelo);
-            
+
             console.log('Vuelo seleccionado:', vuelo.nombre);
         }
     }
@@ -580,35 +584,35 @@ function initConsultaRutaVuelo() {
         if (panelAnterior) {
             panelAnterior.remove();
         }
-        
+
         // Crear panel de detalles
         const detalleVuelo = document.createElement('div');
         detalleVuelo.id = 'detalle-vuelo-' + vuelo.nombre;
         detalleVuelo.className = 'detalle-vuelo';
         detalleVuelo.style.display = 'block';
-        
+
         // Crear contenido del panel
-        detalleVuelo.innerHTML = 
+        detalleVuelo.innerHTML =
             '<div class="detalle-vuelo-header">' +
-                '<h3><i class="fas fa-info-circle"></i> Detalles del Vuelo</h3>' +
+            '<h3><i class="fas fa-info-circle"></i> Detalles del Vuelo</h3>' +
             '</div>' +
             '<div class="detalle-vuelo-info">' +
-                '<p><strong>Nombre:</strong> ' + vuelo.nombre + '</p>' +
-                '<p><strong>Fecha:</strong> ' + (vuelo.fechaVuelo || 'N/A') + '</p>' +
-                '<p><strong>Hora:</strong> ' + (vuelo.horaVuelo || 'N/A') + '</p>' +
-                '<p><strong>Duración:</strong> ' + (vuelo.duracion || 'N/A') + '</p>' +
-                '<p><strong>Asientos Turista:</strong> ' + (vuelo.asientosMaxTurista || 0) + '</p>' +
-                '<p><strong>Asientos Ejecutivo:</strong> ' + (vuelo.asientosMaxEjecutivo || 0) + '</p>' +
+            '<p><strong>Nombre:</strong> ' + vuelo.nombre + '</p>' +
+            '<p><strong>Fecha:</strong> ' + (vuelo.fechaVuelo || 'N/A') + '</p>' +
+            '<p><strong>Hora:</strong> ' + (vuelo.horaVuelo || 'N/A') + '</p>' +
+            '<p><strong>Duración:</strong> ' + (vuelo.duracion || 'N/A') + '</p>' +
+            '<p><strong>Asientos Turista:</strong> ' + (vuelo.asientosMaxTurista || 0) + '</p>' +
+            '<p><strong>Asientos Ejecutivo:</strong> ' + (vuelo.asientosMaxEjecutivo || 0) + '</p>' +
             '</div>' +
             '<div id="seccion-reservas-' + vuelo.nombre + '" class="seccion-reservas" style="display: none;">' +
-                '<h4><i class="fas fa-users"></i> Reservas</h4>' +
-                '<div id="lista-reservas-' + vuelo.nombre + '"></div>' +
-                '<div id="detalle-reserva-' + vuelo.nombre + '" class="detalle-reserva" style="display: none;">' +
-                    '<h4><i class="fas fa-ticket-alt"></i> Detalle de Reserva</h4>' +
-                    '<div id="detalle-reserva-info-' + vuelo.nombre + '"></div>' +
-                '</div>' +
+            '<h4><i class="fas fa-users"></i> Reservas</h4>' +
+            '<div id="lista-reservas-' + vuelo.nombre + '"></div>' +
+            '<div id="detalle-reserva-' + vuelo.nombre + '" class="detalle-reserva" style="display: none;">' +
+            '<h4><i class="fas fa-ticket-alt"></i> Detalle de Reserva</h4>' +
+            '<div id="detalle-reserva-info-' + vuelo.nombre + '"></div>' +
+            '</div>' +
             '</div>';
-        
+
         // Insertar el panel después del vuelo seleccionado
         const vueloCard = document.querySelector('.vuelo-card.seleccionado');
         if (vueloCard && vueloCard.parentNode) {
@@ -620,23 +624,23 @@ function initConsultaRutaVuelo() {
                 listaVuelos.appendChild(detalleVuelo);
             }
         }
-        
+
         // Verificar si se pueden mostrar reservas
         verificarYMostrarReservas(vuelo.nombre);
     }
-    
+
     // Función para verificar y mostrar reservas
     function verificarYMostrarReservas(nombreVuelo) {
         const seccionReservas = document.getElementById('seccion-reservas-' + nombreVuelo);
         const listaReservas = document.getElementById('lista-reservas-' + nombreVuelo);
         const detalleReserva = document.getElementById('detalle-reserva-' + nombreVuelo);
-        
+
         if (!seccionReservas || !listaReservas || !detalleReserva) return;
-        
+
         // Ocultar secciones de reservas inicialmente
         seccionReservas.style.display = 'none';
         detalleReserva.style.display = 'none';
-        
+
         // Obtener información del usuario logueado desde el servidor
         fetch('/VolandoUy-WebApp/api/vuelos/reservas/' + encodeURIComponent(nombreVuelo))
             .then(response => response.json())
@@ -646,7 +650,7 @@ function initConsultaRutaVuelo() {
                     seccionReservas.style.display = 'block';
                     return;
                 }
-                
+
                 // Mostrar reservas
                 mostrarReservas(reservas, nombreVuelo);
                 seccionReservas.style.display = 'block';
@@ -657,17 +661,17 @@ function initConsultaRutaVuelo() {
                 seccionReservas.style.display = 'block';
             });
     }
-    
+
     // Función para mostrar reservas
     function mostrarReservas(reservas, nombreVuelo) {
         const listaReservas = document.getElementById('lista-reservas-' + nombreVuelo);
         const detalleReserva = document.getElementById('detalle-reserva-' + nombreVuelo);
-        
+
         if (!listaReservas || !detalleReserva) return;
-        
+
         listaReservas.innerHTML = '';
         detalleReserva.style.display = 'none';
-        
+
         reservas.forEach((reserva) => {
             const div = document.createElement('div');
             div.className = 'reserva-card';
@@ -676,23 +680,23 @@ function initConsultaRutaVuelo() {
             listaReservas.appendChild(div);
         });
     }
-    
+
     // Función para mostrar detalle de reserva
     function mostrarDetalleReserva(reserva, nombreVuelo) {
         const detalleReserva = document.getElementById('detalle-reserva-' + nombreVuelo);
         const detalleReservaInfo = document.getElementById('detalle-reserva-info-' + nombreVuelo);
-        
+
         if (!detalleReserva || !detalleReservaInfo) return;
-        
+
         detalleReserva.style.display = 'block';
-        
+
         let pasajerosHtml = '';
         if (reserva.pasajeros && reserva.pasajeros.length > 0) {
             pasajerosHtml = '<h4>Pasajeros:</h4><ul>';
             reserva.pasajeros.forEach((pasajero) => {
                 const nombre = pasajero.nombre || '';
                 const apellido = pasajero.apellido || '';
-                
+
                 pasajerosHtml += '<li><strong>' + nombre + ' ' + apellido + '</strong>';
                 if (pasajero.nickname) {
                     pasajerosHtml += ' (' + pasajero.nickname + ')';
@@ -701,19 +705,19 @@ function initConsultaRutaVuelo() {
             });
             pasajerosHtml += '</ul>';
         }
-        
-        detalleReservaInfo.innerHTML = 
+
+        detalleReservaInfo.innerHTML =
             '<p><strong>ID:</strong> ' + reserva.id + '</p>' +
             '<p><strong>Cliente:</strong> ' + reserva.cliente + '</p>' +
             '<p><strong>Fecha de reserva:</strong> ' + reserva.fechaReserva + '</p>' +
             '<p><strong>Costo:</strong> ' + formatearCostoReserva(reserva.costoReserva) + '</p>' +
             pasajerosHtml;
     }
-    
+
     // Función para formatear el costo de la reserva
     function formatearCostoReserva(costoReserva) {
         if (!costoReserva) return '$0';
-        
+
         try {
             if (typeof costoReserva === 'object' && costoReserva.costoTotal) {
                 return '$' + costoReserva.costoTotal.toFixed(2);
@@ -740,7 +744,7 @@ function initConsultaRutaVuelo() {
 }
 
 // Auto-inicializar cuando se carga la página
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM cargado, inicializando consulta de ruta de vuelo...');
     initConsultaRutaVuelo();
 });
