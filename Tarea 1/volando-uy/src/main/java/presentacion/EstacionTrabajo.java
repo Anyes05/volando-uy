@@ -314,6 +314,10 @@ public class EstacionTrabajo {
     private JPasswordField modificarClienteContrasena;
     private JPasswordField modificarClienteConfirmarContrasena;
 
+    //CONSULTAR RUTAS MAS VISITADAS
+    private JPanel consultarRutasMasVisitadas;
+    private JTable consultarRutasMasVisitadasTable;
+
     byte[] fotoSeleccionada = null;
     private String contrasenaActual = null;
 
@@ -875,7 +879,12 @@ public class EstacionTrabajo {
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
-
+                    case "Consultar rutas mas visitadas":
+                        parentPanel.removeAll();
+                        parentPanel.add(consultarRutasMasVisitadas);
+                        parentPanel.repaint();
+                        parentPanel.revalidate();
+                        break;
                     case "Reservar vuelo":
                         // Inicializar ComboBox de TipoAsiento cuando se entra a reservar vuelo
 //                        inicializarComboBoxTipoAsiento();
