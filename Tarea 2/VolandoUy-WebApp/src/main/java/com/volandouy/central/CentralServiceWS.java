@@ -347,11 +347,30 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public List<DTReserva> listarReservasCheck(String nicknameCliente) {
+    public List<DTReserva> listarDTReservasCheck(String nicknameCliente) {
         try {
-            return port.listarReservasCheck(nicknameCliente);
+            return port.listarDTReservasCheck(nicknameCliente);
         } catch (Exception e) {
-            throw new RuntimeException("Error al listar reservas check: " + e.getMessage(), e);
+            throw new RuntimeException("Error al listar reservas con check-in: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<DTReserva> listarDTReservasNoCheck(String nicknameCliente) {
+        try {
+            return port.listarDTReservasNoCheck(nicknameCliente);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al listar reservas con check-in: " + e.getMessage(), e);
+        }
+    }
+
+
+    @Override
+    public void realizarCheckIn(Long reservaId) {
+        try {
+            port.realizarCheckIn(reservaId);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al realizar Check In: " + e.getMessage(), e);
         }
     }
 

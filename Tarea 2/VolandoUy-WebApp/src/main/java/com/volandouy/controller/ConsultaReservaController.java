@@ -101,6 +101,8 @@ public class ConsultaReservaController extends HttpServlet {
             } else if (pathInfo.startsWith("/detalle-reserva/")) {
                 String reservaId = pathInfo.substring(17); // "/detalle-reserva/"
                 handleGetDetalleReserva(reservaId, request, response, out);
+            } else if (pathInfo.equals("/reservas-no-checkin")) {
+                handleGetReservasNoCheckin(request, response, out);
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.print(serializarJSON(Map.of("error", "Endpoint no encontrado")));
@@ -122,6 +124,43 @@ public class ConsultaReservaController extends HttpServlet {
             }
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String pathInfo = request.getPathInfo();
+        System.out.println("PATH INFO POST = " + pathInfo); // debug
+
+        PrintWriter out = response.getWriter();
+
+        try {
+            if (pathInfo != null && pathInfo.startsWith("/realizar-checkin/")) {
+                String reservaId = pathInfo.substring("/realizar-checkin/".length());
+                handleRealizarCheckIN(reservaId, request, response, out);
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                out.print(serializarJSON(Map.of("error", "Endpoint POST no encontrado")));
+            }
+        } catch (Exception e) {
+            LOG.severe("Error crítico en doPost de ConsultaReservaController: " + e.getMessage());
+            e.printStackTrace();
+            try {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail", e.getMessage())));
+            } catch (Exception e2) {
+                LOG.severe("Error al escribir respuesta de error: " + e2.getMessage());
+            }
+        } finally {
+            if (out != null) {
+                out.flush();
+            }
+        }
+    }
+
 
     private void handleGetPdfReserva(String reservaId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
@@ -888,7 +927,7 @@ public class ConsultaReservaController extends HttpServlet {
             }
 
             LOG.info("Llamando a centralService.listarReservasCheck para cliente: " + nicknameCliente);
-            List<DTReserva> reservasCheck = getCentralService().listarReservasCheck(nicknameCliente);
+            List<DTReserva> reservasCheck = getCentralService().listarDTReservasCheck(nicknameCliente);
 
             if (reservasCheck == null) {
                 reservasCheck = new ArrayList<>();
@@ -904,4 +943,92 @@ public class ConsultaReservaController extends HttpServlet {
             out.print("{\"error\": \"Error al obtener reservas con check-in\"}");
         }
     }
+
+    private void handleGetReservasNoCheckin(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+        try {
+            LOG.info("Obteniendo reservas SIN check-in para cliente (para realizar check-in)...");
+
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print("{\"error\": \"Usuario no autenticado\"}");
+                return;
+            }
+
+            String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+            String nicknameCliente = (String) session.getAttribute("usuarioLogueado");
+
+            if (nicknameCliente == null || !"cliente".equalsIgnoreCase(tipoUsuario)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                out.print("{\"error\": \"Solo un cliente puede consultar sus reservas sin check-in\"}");
+                return;
+            }
+
+            LOG.info("Llamando a centralService.listarReservasNOCheck para cliente: " + nicknameCliente);
+            List<DTReserva> reservasNoCheck = getCentralService().listarDTReservasNoCheck(nicknameCliente);
+
+            if (reservasNoCheck == null) {
+                reservasNoCheck = new ArrayList<>();
+            }
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(objectMapper.writeValueAsString(reservasNoCheck));
+
+        } catch (Exception e) {
+            LOG.severe("Error al obtener reservas SIN check-in del cliente: " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print("{\"error\": \"Error al obtener reservas sin check-in\"}");
+        }
+    }
+
+    private void handleRealizarCheckIN(String reservaIdStr, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+        try {
+            LOG.info("Realizando check-in para reserva ID: " + reservaIdStr);
+
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print(serializarJSON(Map.of("error", "Usuario no autenticado")));
+                return;
+            }
+
+            String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+            String nicknameCliente = (String) session.getAttribute("usuarioLogueado");
+
+            if (nicknameCliente == null || !"cliente".equalsIgnoreCase(tipoUsuario)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                out.print(serializarJSON(Map.of("error", "Solo un cliente puede realizar check-in sobre sus reservas")));
+                return;
+            }
+
+            Long reservaId;
+            try {
+                reservaId = Long.parseLong(reservaIdStr);
+            } catch (NumberFormatException e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(serializarJSON(Map.of("error", "ID de reserva inválido")));
+                return;
+            }
+
+            getCentralService().realizarCheckIn(reservaId);
+
+            // Podés devolver solo un mensaje de éxito:
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(serializarJSON(Map.of(
+                    "ok", true,
+                    "mensaje", "Check in realizado correctamente"
+            )));
+
+        } catch (Exception e) {
+            LOG.severe("Error al realizar check-in de la reserva: " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(serializarJSON(Map.of("error", "Error al realizar check-in")));
+        }
+    }
+
+
 }
+
+

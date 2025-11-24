@@ -2070,51 +2070,77 @@ public class Sistema implements ISistema {
         }
     }
 
-    public List<Reserva> listarReservasCheck (String nicknameCliente) {
-        ClienteServicio clienteServicio = new ClienteServicio();
-        ReservaServicio reservaServicio = new ReservaServicio();
-        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameCliente);
-        if (cliente == null) {
-            throw new IllegalArgumentException("No se encontró un cliente con el nickname: " + nicknameCliente);
-        }
-        List<Reserva> reservasCliente = cliente.getReservas();
-        List<Reserva> reservasCheckIn = new ArrayList<>();
-        for (Reserva r : reservasCliente) {
-            if (r.isCheckInRealizado()) {
-                reservasCheckIn.add(r);
-            }
-        }
-        return reservasCheckIn;
-    }
-
-    public List<DTReserva> listarDTReservasCheck (List<Reserva> reservas) {
+    public List<DTReserva> convertirA_DTReservas(List<Reserva> reservas) {
         List<DTReserva> dtReservas = new ArrayList<>();
+
         for (Reserva r : reservas) {
-            DTReserva dtReserva = new DTReserva();
-            dtReserva.setId(r.getId());
-            dtReserva.setFechaReserva(r.getFechaReserva());
-            dtReserva.setCheckInRealizado(r.isCheckInRealizado());
+            DTReserva dt = new DTReserva();
+            dt.setId(r.getId());
+            dt.setFechaReserva(r.getFechaReserva());
+            dt.setCheckInRealizado(r.isCheckInRealizado());
+
             if (r instanceof CompraComun compraComun) {
-                dtReserva.setTipo("CompraComun");
-                dtReserva.setTipoAsiento(compraComun.getTipoAsiento());
-                dtReserva.setEquipajeExtra(compraComun.getEquipajeExtra());
-                dtReserva.setVueloNombre(compraComun.getVuelo().getNombre());
-                dtReserva.setCostoTotal(compraComun.getCostoReserva().getCostoTotal());
+                dt.setTipo("CompraComun");
+                dt.setTipoAsiento(compraComun.getTipoAsiento());
+                dt.setEquipajeExtra(compraComun.getEquipajeExtra());
+                dt.setVueloNombre(compraComun.getVuelo().getNombre());
+                dt.setCostoTotal(compraComun.getCostoReserva().getCostoTotal());
+
             } else if (r instanceof CompraPaquete compraPaquete) {
-                dtReserva.setTipo("CompraPaquete");
-                dtReserva.setVencimiento(compraPaquete.getVencimiento());
-                dtReserva.setPaqueteNombre(compraPaquete.getPaqueteVuelo().getNombre());
-                dtReserva.setCostoTotal(compraPaquete.getCostoTotal());
+                dt.setTipo("CompraPaquete");
+                dt.setVencimiento(compraPaquete.getVencimiento());
+                dt.setPaqueteNombre(compraPaquete.getPaqueteVuelo().getNombre());
+                dt.setCostoTotal(compraPaquete.getCostoTotal());
             }
-            dtReservas.add(dtReserva);
+
+            dtReservas.add(dt);
         }
+
         return dtReservas;
     }
 
     public List<DTReserva> listarDTReservasCheck(String nicknameCliente) {
-        List<Reserva> reservas = listarReservasCheck(nicknameCliente);
-        return listarDTReservasCheck(reservas);
+        ClienteServicio clienteServicio = new ClienteServicio();
+        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameCliente);
+
+        if (cliente == null) {
+            throw new IllegalArgumentException("No se encontró un cliente con el nickname: " + nicknameCliente);
+        }
+
+        List<Reserva> reservasCliente = cliente.getReservas();
+        List<Reserva> soloCheckin = new ArrayList<>();
+
+        for (Reserva r : reservasCliente) {
+            if (r.isCheckInRealizado()) {
+                soloCheckin.add(r);
+            }
+        }
+
+        return convertirA_DTReservas(soloCheckin);
     }
+
+    public List<DTReserva> listarDTReservasNoCheck(String nicknameCliente) {
+        ClienteServicio clienteServicio = new ClienteServicio();
+        dato.entidades.Cliente cliente = clienteServicio.buscarClientePorNickname(nicknameCliente);
+
+        if (cliente == null) {
+            throw new IllegalArgumentException("No se encontró un cliente con el nickname: " + nicknameCliente);
+        }
+
+        List<Reserva> reservasCliente = cliente.getReservas();
+        List<Reserva> sinCheckin = new ArrayList<>();
+
+        for (Reserva r : reservasCliente) {
+            if (!r.isCheckInRealizado()) {
+                sinCheckin.add(r);
+            }
+        }
+
+        return convertirA_DTReservas(sinCheckin);
+    }
+
+
+
 
     /**
      * Obtiene la lista de pasajeros de una reserva por su ID
@@ -2141,5 +2167,23 @@ public class Sistema implements ISistema {
         
         return pasajeros;
     }
+
+    public void realizarCheckIn(Long reservaId) {
+        ReservaServicio reservaServicio = new ReservaServicio();
+        Reserva reserva = reservaServicio.buscarPorId(reservaId);
+
+        if (reserva == null) {
+            throw new IllegalArgumentException("Reserva no encontrada con ID: " + reservaId);
+        }
+
+        if (reserva.isCheckInRealizado()) {
+            throw new IllegalStateException("El check-in ya ha sido realizado para esta reserva.");
+        }
+
+        reserva.setCheckInRealizado(true);
+        reservaServicio.actualizarReserva(reserva);
+    }
+
+
 }
 

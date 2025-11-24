@@ -62,7 +62,10 @@ public interface CentralService {
     void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje, 
             int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, 
             Long paqueteId);
-    List<DTReserva> listarReservasCheck(String nicknameCliente);
+    List<DTReserva> listarDTReservasCheck(String nicknameCliente);
+    List<DTReserva> listarDTReservasNoCheck(String nicknameCliente);
+    void realizarCheckIn(Long reservaId);
+
 
     // Paquetes
     List<DTPaqueteVuelos> mostrarPaquetes();
@@ -92,4 +95,5 @@ public interface CentralService {
     List<DTCategoria> getCategorias();
     void precargarSistemaCompleto();
     String ping();
+
 }

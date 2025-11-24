@@ -221,9 +221,9 @@
           <span>Consulta de Reservas</span>
         </a>
 
-        <a href="consultacheckin.jsp" class="nav-item">
+        <a href="realizarCheckIn.jsp" class="nav-item">
           <i class="fas fa-route"></i>
-          <span>Consulta de Check In</span>
+          <span>Realizar Check In</span>
         </a>
       </div>
 

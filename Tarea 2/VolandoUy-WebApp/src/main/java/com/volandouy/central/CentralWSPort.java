@@ -225,9 +225,17 @@ public interface CentralWSPort {
             @WebParam(name = "nicknameCliente") String nicknameCliente,
             @WebParam(name = "rutaNombre") String rutaNombre);
 
-    @WebMethod(operationName = "listarReservasCheck")
+    @WebMethod(operationName = "listarDTReservasCheck")
     @WebResult(name = "reservas")
-    List<DTReserva> listarReservasCheck(@WebParam(name = "nicknameCliente") String nicknameCliente);
+    List<DTReserva> listarDTReservasCheck(@WebParam(name = "nicknameCliente") String nicknameCliente);
+
+    @WebMethod(operationName = "listarDTReservasNoCheck")
+    @WebResult(name = "reservas")
+    List<DTReserva> listarDTReservasNoCheck(@WebParam(name = "nicknameCliente") String nicknameCliente);
+
+    @WebMethod(operationName = "realizarCheckIn")
+    void realizarCheckIn(@WebParam(name = "reservaId") Long reservaId);
+
 
     // Seguidores
     @WebMethod(operationName = "seguir")
@@ -263,5 +271,6 @@ public interface CentralWSPort {
     @WebResult(name = "pasajeros")
     List<DTPasajero> obtenerPasajerosReserva(
             @WebParam(name = "reservaId") Long reservaId);
+
 }
 
