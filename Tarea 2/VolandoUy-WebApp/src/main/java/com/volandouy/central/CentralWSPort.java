@@ -227,6 +227,17 @@ public interface CentralWSPort {
         List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(
                         @WebParam(name = "nicknameCliente") String nicknameCliente,
                         @WebParam(name = "rutaNombre") String rutaNombre);
+    @WebMethod(operationName = "listarDTReservasCheck")
+    @WebResult(name = "reservas")
+    List<DTReserva> listarDTReservasCheck(@WebParam(name = "nicknameCliente") String nicknameCliente);
+
+    @WebMethod(operationName = "listarDTReservasNoCheck")
+    @WebResult(name = "reservas")
+    List<DTReserva> listarDTReservasNoCheck(@WebParam(name = "nicknameCliente") String nicknameCliente);
+
+    @WebMethod(operationName = "realizarCheckIn")
+    void realizarCheckIn(@WebParam(name = "reservaId") Long reservaId);
+
 
         @WebMethod(operationName = "listarReservasCheck")
         @WebResult(name = "reservas")

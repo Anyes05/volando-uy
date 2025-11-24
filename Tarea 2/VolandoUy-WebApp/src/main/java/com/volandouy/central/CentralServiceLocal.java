@@ -189,9 +189,21 @@ public class CentralServiceLocal implements CentralService {
     }
 
     @Override
-    public List<DTReserva> listarReservasCheck(String nicknameCliente) {
+    public List<DTReserva> listarDTReservasCheck(String nicknameCliente) {
         throwUnsupported();
         return null;
+    }
+
+    @Override
+    public List<DTReserva> listarDTReservasNoCheck(String nicknameCliente) {
+        throwUnsupported();
+        return null;
+    }
+
+
+    @Override
+    public void realizarCheckIn(Long reservaId) {
+        throwUnsupported();
     }
 
     // Paquetes

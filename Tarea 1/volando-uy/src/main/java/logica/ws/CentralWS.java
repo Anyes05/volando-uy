@@ -1,5 +1,6 @@
 package logica.ws;
 
+import dato.entidades.Reserva;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.WebResult;
@@ -379,12 +380,28 @@ public class CentralWS {
         return sistema.obtenerPaquetesClienteParaRuta(nicknameCliente, rutaNombre);
     }
 
-    @WebMethod(operationName = "listarReservasCheck")
+    @WebMethod(operationName = "listarDTReservasCheck")
     @WebResult(name = "reservas")
-    public List<DTReserva> listarReservasCheck(
+    public List<DTReserva> listarDTReservasCheck(
             @WebParam(name = "nicknameCliente") String nicknameCliente) {
         return sistema.listarDTReservasCheck(nicknameCliente);
     }
+
+    @WebMethod(operationName = "listarDTReservasNoCheck")
+    @WebResult(name = "reservas")
+    public List<DTReserva> listarDTReservasNoCheck(
+            @WebParam(name = "nicknameCliente") String nicknameCliente) {
+        return sistema.listarDTReservasNoCheck(nicknameCliente);
+    }
+
+
+    @WebMethod(operationName = "realizarCheckIn")
+    @WebResult(name = "reservas")
+    public void realizarCheckIn(
+            @WebParam(name = "reservaId") Long reservaId) {
+        sistema.realizarCheckIn(reservaId);
+    }
+
 
     // ===========================
     // SEGUIDORES
