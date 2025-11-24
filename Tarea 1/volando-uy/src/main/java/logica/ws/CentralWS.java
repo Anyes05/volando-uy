@@ -26,7 +26,7 @@ public class CentralWS {
     private final Sistema sistema = Sistema.getInstance();
 
     // ===========================
-    //      MÉTODO DE PRUEBA
+    // MÉTODO DE PRUEBA
     // ===========================
 
     @WebMethod(operationName = "ping")
@@ -35,7 +35,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //      AEROLÍNEAS
+    // AEROLÍNEAS
     // ===========================
 
     @WebMethod(operationName = "listarAerolineas")
@@ -45,7 +45,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //         CIUDADES
+    // CIUDADES
     // ===========================
 
     @WebMethod(operationName = "listarCiudades")
@@ -61,7 +61,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //         RUTAS DE VUELO
+    // RUTAS DE VUELO
     // ===========================
 
     @WebMethod(operationName = "listarRutasPorAerolinea")
@@ -78,7 +78,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //         VUELOS
+    // VUELOS
     // ===========================
 
     @WebMethod(operationName = "listarVuelosDeRuta")
@@ -89,7 +89,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //         CLIENTES
+    // CLIENTES
     // ===========================
 
     @WebMethod(operationName = "listarClientes")
@@ -112,7 +112,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //         RESERVAS
+    // RESERVAS
     // ===========================
 
     @WebMethod(operationName = "listarReservasVuelo")
@@ -123,7 +123,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //         PAQUETES
+    // PAQUETES
     // ===========================
 
     @WebMethod(operationName = "mostrarPaquetes")
@@ -139,7 +139,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //      MÉTODOS ADICIONALES
+    // MÉTODOS ADICIONALES
     // ===========================
 
     @WebMethod(operationName = "mostrarDatosUsuarioMod")
@@ -186,7 +186,7 @@ public class CentralWS {
             @WebParam(name = "categorias") List<String> categorias,
             @WebParam(name = "foto") byte[] foto,
             @WebParam(name = "videoUrl") String videoUrl) {
-        sistema.ingresarDatosRuta(nombreRuta, descripcion, costoTurista, costoEjecutivo, 
+        sistema.ingresarDatosRuta(nombreRuta, descripcion, costoTurista, costoEjecutivo,
                 costoEquipajeExtra, ciudadOrigen, ciudadDestino, fechaAlta, categorias, foto, videoUrl);
     }
 
@@ -199,6 +199,28 @@ public class CentralWS {
     public void EstadoFinalizarRutaVuelo(
             @WebParam(name = "nombreRuta") String nombreRuta) {
         sistema.EstadoFinalizarRutaVuelo(nombreRuta);
+    }
+
+    @WebMethod(operationName = "incrementarVisitasRuta")
+    public void incrementarVisitasRuta(
+            @WebParam(name = "nombreRuta") String nombreRuta) {
+        dato.dao.RutaVueloDAO rutaVueloDAO = new dato.dao.RutaVueloDAO();
+        dato.entidades.RutaVuelo ruta = rutaVueloDAO.buscarPorNombre(nombreRuta);
+        if (ruta != null) {
+            ruta.setVisitas(ruta.getVisitas() + 1);
+            // Persisto usando EntityManager directamente ya que el DAO no tiene método
+            // update
+            jakarta.persistence.EntityManagerFactory emf = jakarta.persistence.Persistence
+                    .createEntityManagerFactory("volandouyPU");
+            jakarta.persistence.EntityManager em = emf.createEntityManager();
+            try {
+                em.getTransaction().begin();
+                em.merge(ruta);
+                em.getTransaction().commit();
+            } finally {
+                em.close();
+            }
+        }
     }
 
     @WebMethod(operationName = "seleccionarUsuarioAMod")
@@ -238,7 +260,8 @@ public class CentralWS {
             @WebParam(name = "numeroDocumento") String numeroDocumento,
             @WebParam(name = "foto") byte[] foto,
             @WebParam(name = "contrasena") String contrasena) {
-        sistema.altaCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento, foto, contrasena);
+        sistema.altaCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento,
+                foto, contrasena);
     }
 
     @WebMethod(operationName = "altaAerolinea")
@@ -265,7 +288,8 @@ public class CentralWS {
             @WebParam(name = "fechaAlta") DTFecha fechaAlta,
             @WebParam(name = "ruta") DTRutaVuelo ruta,
             @WebParam(name = "foto") byte[] foto) {
-        return sistema.ingresarDatosVuelo(nombre, fecha, horaVuelo, duracion, maxTurista, maxEjecutivo, fechaAlta, ruta, foto);
+        return sistema.ingresarDatosVuelo(nombre, fecha, horaVuelo, duracion, maxTurista, maxEjecutivo, fechaAlta, ruta,
+                foto);
     }
 
     @WebMethod(operationName = "darAltaVuelo")
@@ -305,7 +329,8 @@ public class CentralWS {
             @WebParam(name = "nombresPasajeros") List<String> nombresPasajeros,
             @WebParam(name = "fechaReserva") DTFecha fechaReserva,
             @WebParam(name = "paqueteId") Long paqueteId) {
-        sistema.datosReservaConPaquete(tipoAsiento, cantidadPasaje, equipajeExtra, nombresPasajeros, fechaReserva, paqueteId);
+        sistema.datosReservaConPaquete(tipoAsiento, cantidadPasaje, equipajeExtra, nombresPasajeros, fechaReserva,
+                paqueteId);
     }
 
     @WebMethod(operationName = "seleccionarPaquete")
@@ -362,7 +387,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //      SEGUIDORES
+    // SEGUIDORES
     // ===========================
 
     @WebMethod(operationName = "seguir")
@@ -398,7 +423,7 @@ public class CentralWS {
     }
 
     // ===========================
-    //      ACTUALIZAR FOTO
+    // ACTUALIZAR FOTO
     // ===========================
 
     @WebMethod(operationName = "actualizarFotoCliente")

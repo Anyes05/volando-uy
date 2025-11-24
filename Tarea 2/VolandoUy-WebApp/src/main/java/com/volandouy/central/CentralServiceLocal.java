@@ -61,9 +61,9 @@ public class CentralServiceLocal implements CentralService {
     }
 
     @Override
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista, 
-            float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, 
-            String ciudadDestino, DTFecha fechaAlta, List<String> categorias, 
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista,
+            float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen,
+            String ciudadDestino, DTFecha fechaAlta, List<String> categorias,
             byte[] foto, String videoUrl) {
         throwUnsupported();
     }
@@ -78,6 +78,11 @@ public class CentralServiceLocal implements CentralService {
         throwUnsupported();
     }
 
+    @Override
+    public void incrementarVisitasRuta(String nombreRuta) {
+        throw new UnsupportedOperationException("incrementarVisitasRuta no soportado en Local");
+    }
+
     // Vuelos
     @Override
     public List<DTVuelo> listarVuelosDeRuta(String nombreRuta) {
@@ -86,8 +91,8 @@ public class CentralServiceLocal implements CentralService {
     }
 
     @Override
-    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, 
-            DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, 
+    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo,
+            DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta,
             DTRutaVuelo ruta, byte[] foto) {
         throwUnsupported();
         return null;
@@ -129,7 +134,7 @@ public class CentralServiceLocal implements CentralService {
     }
 
     @Override
-    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, 
+    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac,
             String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
         throwUnsupported();
     }
@@ -140,14 +145,14 @@ public class CentralServiceLocal implements CentralService {
     }
 
     @Override
-    public void altaCliente(String nickname, String nombre, String correo, String apellido, 
-            DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, 
+    public void altaCliente(String nickname, String nombre, String correo, String apellido,
+            DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento,
             String numeroDocumento, byte[] foto, String contrasena) {
         throwUnsupported();
     }
 
     @Override
-    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, 
+    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion,
             String linkSitioWeb, byte[] foto, String contrasena) {
         throwUnsupported();
     }
@@ -171,14 +176,14 @@ public class CentralServiceLocal implements CentralService {
     }
 
     @Override
-    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, 
+    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra,
             List<String> nombresPasajeros, DTFecha fechaReserva) {
         throwUnsupported();
     }
 
     @Override
-    public void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje, 
-            int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, 
+    public void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje,
+            int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva,
             Long paqueteId) {
         throwUnsupported();
     }
@@ -259,7 +264,7 @@ public class CentralServiceLocal implements CentralService {
     }
 
     // ===========================
-    //         SEGUIDORES
+    // SEGUIDORES
     // ===========================
 
     @Override
@@ -283,7 +288,7 @@ public class CentralServiceLocal implements CentralService {
     }
 
     // ===========================
-    //      ACTUALIZAR FOTO
+    // ACTUALIZAR FOTO
     // ===========================
 
     @Override
@@ -301,7 +306,7 @@ public class CentralServiceLocal implements CentralService {
         throwUnsupported();
         return null;
     }
-    
+
     // Todos los demás métodos también lanzan UnsupportedOperationException
     // Se mantienen para cumplir con la interfaz pero no se usan
     private <T> T throwUnsupported() {

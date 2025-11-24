@@ -17,251 +17,253 @@ import java.util.List;
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL)
 public interface CentralWSPort {
 
-    @WebMethod(operationName = "ping")
-    @WebResult(name = "return")
-    String ping();
+        @WebMethod(operationName = "ping")
+        @WebResult(name = "return")
+        String ping();
 
-    @WebMethod(operationName = "listarAerolineas")
-    @WebResult(name = "aerolineas")
-    List<DTAerolinea> listarAerolineas();
+        @WebMethod(operationName = "listarAerolineas")
+        @WebResult(name = "aerolineas")
+        List<DTAerolinea> listarAerolineas();
 
-    @WebMethod(operationName = "listarCiudades")
-    @WebResult(name = "ciudades")
-    List<DTCiudad> listarCiudades();
+        @WebMethod(operationName = "listarCiudades")
+        @WebResult(name = "ciudades")
+        List<DTCiudad> listarCiudades();
 
-    @WebMethod(operationName = "listarAeropuertos")
-    @WebResult(name = "aeropuertos")
-    List<String> listarAeropuertos();
+        @WebMethod(operationName = "listarAeropuertos")
+        @WebResult(name = "aeropuertos")
+        List<String> listarAeropuertos();
 
-    @WebMethod(operationName = "listarRutasPorAerolinea")
-    @WebResult(name = "rutasVuelo")
-    List<DTRutaVuelo> listarRutasPorAerolinea(
-            @WebParam(name = "nicknameAerolinea") String nickname);
+        @WebMethod(operationName = "listarRutasPorAerolinea")
+        @WebResult(name = "rutasVuelo")
+        List<DTRutaVuelo> listarRutasPorAerolinea(
+                        @WebParam(name = "nicknameAerolinea") String nickname);
 
-    @WebMethod(operationName = "listarRutasDeVuelo")
-    @WebResult(name = "rutasVuelo")
-    List<DTRutaVuelo> listarRutasDeVuelo();
+        @WebMethod(operationName = "listarRutasDeVuelo")
+        @WebResult(name = "rutasVuelo")
+        List<DTRutaVuelo> listarRutasDeVuelo();
 
-    @WebMethod(operationName = "listarVuelosDeRuta")
-    @WebResult(name = "vuelos")
-    List<DTVuelo> listarVuelosDeRuta(
-            @WebParam(name = "nombreRuta") String nombreRuta);
+        @WebMethod(operationName = "listarVuelosDeRuta")
+        @WebResult(name = "vuelos")
+        List<DTVuelo> listarVuelosDeRuta(
+                        @WebParam(name = "nombreRuta") String nombreRuta);
 
-    @WebMethod(operationName = "listarClientes")
-    @WebResult(name = "clientes")
-    List<DTCliente> listarClientes();
+        @WebMethod(operationName = "listarClientes")
+        @WebResult(name = "clientes")
+        List<DTCliente> listarClientes();
 
-    @WebMethod(operationName = "mostrarDatosUsuario")
-    @WebResult(name = "usuario")
-    DTUsuario mostrarDatosUsuario(
-            @WebParam(name = "nickname") String nickname);
+        @WebMethod(operationName = "mostrarDatosUsuario")
+        @WebResult(name = "usuario")
+        DTUsuario mostrarDatosUsuario(
+                        @WebParam(name = "nickname") String nickname);
 
-    @WebMethod(operationName = "consultarUsuarios")
-    @WebResult(name = "usuarios")
-    List<DTUsuario> consultarUsuarios();
+        @WebMethod(operationName = "consultarUsuarios")
+        @WebResult(name = "usuarios")
+        List<DTUsuario> consultarUsuarios();
 
-    @WebMethod(operationName = "listarReservasVuelo")
-    @WebResult(name = "reservas")
-    List<DTVueloReserva> listarReservasVuelo(
-            @WebParam(name = "nombreVuelo") String nombre);
+        @WebMethod(operationName = "listarReservasVuelo")
+        @WebResult(name = "reservas")
+        List<DTVueloReserva> listarReservasVuelo(
+                        @WebParam(name = "nombreVuelo") String nombre);
 
-    @WebMethod(operationName = "mostrarPaquetes")
-    @WebResult(name = "paquetes")
-    List<DTPaqueteVuelos> mostrarPaquetes();
+        @WebMethod(operationName = "mostrarPaquetes")
+        @WebResult(name = "paquetes")
+        List<DTPaqueteVuelos> mostrarPaquetes();
 
-    @WebMethod(operationName = "obtenerPaquetesNoComprados")
-    @WebResult(name = "paquetes")
-    List<DTPaqueteVuelos> obtenerPaquetesNoComprados();
+        @WebMethod(operationName = "obtenerPaquetesNoComprados")
+        @WebResult(name = "paquetes")
+        List<DTPaqueteVuelos> obtenerPaquetesNoComprados();
 
-    // Métodos adicionales
-    @WebMethod(operationName = "mostrarDatosUsuarioMod")
-    @WebResult(name = "usuario")
-    DTUsuario mostrarDatosUsuarioMod(@WebParam(name = "nickname") String nickname);
+        // Métodos adicionales
+        @WebMethod(operationName = "mostrarDatosUsuarioMod")
+        @WebResult(name = "usuario")
+        DTUsuario mostrarDatosUsuarioMod(@WebParam(name = "nickname") String nickname);
 
-    @WebMethod(operationName = "seleccionarRutaVueloRet")
-    @WebResult(name = "rutaVuelo")
-    DTRutaVuelo seleccionarRutaVueloRet(@WebParam(name = "nombreRutaVuelo") String nombreRutaVuelo);
+        @WebMethod(operationName = "seleccionarRutaVueloRet")
+        @WebResult(name = "rutaVuelo")
+        DTRutaVuelo seleccionarRutaVueloRet(@WebParam(name = "nombreRutaVuelo") String nombreRutaVuelo);
 
-    @WebMethod(operationName = "getCategorias")
-    @WebResult(name = "categorias")
-    List<DTCategoria> getCategorias();
+        @WebMethod(operationName = "getCategorias")
+        @WebResult(name = "categorias")
+        List<DTCategoria> getCategorias();
 
-    @WebMethod(operationName = "precargarSistemaCompleto")
-    void precargarSistemaCompleto();
+        @WebMethod(operationName = "precargarSistemaCompleto")
+        void precargarSistemaCompleto();
 
-    @WebMethod(operationName = "seleccionarAerolinea")
-    void seleccionarAerolinea(@WebParam(name = "nickname") String nickname);
+        @WebMethod(operationName = "seleccionarAerolinea")
+        void seleccionarAerolinea(@WebParam(name = "nickname") String nickname);
 
-    @WebMethod(operationName = "ingresarDatosRuta")
-    void ingresarDatosRuta(
-            @WebParam(name = "nombreRuta") String nombreRuta,
-            @WebParam(name = "descripcion") String descripcion,
-            @WebParam(name = "costoTurista") float costoTurista,
-            @WebParam(name = "costoEjecutivo") float costoEjecutivo,
-            @WebParam(name = "costoEquipajeExtra") float costoEquipajeExtra,
-            @WebParam(name = "ciudadOrigen") String ciudadOrigen,
-            @WebParam(name = "ciudadDestino") String ciudadDestino,
-            @WebParam(name = "fechaAlta") DTFecha fechaAlta,
-            @WebParam(name = "categorias") List<String> categorias,
-            @WebParam(name = "foto") byte[] foto,
-            @WebParam(name = "videoUrl") String videoUrl);
+        @WebMethod(operationName = "ingresarDatosRuta")
+        void ingresarDatosRuta(
+                        @WebParam(name = "nombreRuta") String nombreRuta,
+                        @WebParam(name = "descripcion") String descripcion,
+                        @WebParam(name = "costoTurista") float costoTurista,
+                        @WebParam(name = "costoEjecutivo") float costoEjecutivo,
+                        @WebParam(name = "costoEquipajeExtra") float costoEquipajeExtra,
+                        @WebParam(name = "ciudadOrigen") String ciudadOrigen,
+                        @WebParam(name = "ciudadDestino") String ciudadDestino,
+                        @WebParam(name = "fechaAlta") DTFecha fechaAlta,
+                        @WebParam(name = "categorias") List<String> categorias,
+                        @WebParam(name = "foto") byte[] foto,
+                        @WebParam(name = "videoUrl") String videoUrl);
 
-    @WebMethod(operationName = "registrarRuta")
-    void registrarRuta();
+        @WebMethod(operationName = "registrarRuta")
+        void registrarRuta();
 
-    @WebMethod(operationName = "EstadoFinalizarRutaVuelo")
-    void EstadoFinalizarRutaVuelo(@WebParam(name = "nombreRuta") String nombreRuta);
+        @WebMethod(operationName = "EstadoFinalizarRutaVuelo")
+        void EstadoFinalizarRutaVuelo(@WebParam(name = "nombreRuta") String nombreRuta);
 
-    @WebMethod(operationName = "seleccionarUsuarioAMod")
-    void seleccionarUsuarioAMod(@WebParam(name = "nickname") String nickname);
+        @WebMethod(operationName = "incrementarVisitasRuta")
+        void incrementarVisitasRuta(@WebParam(name = "nombreRuta") String nombreRuta);
 
-    @WebMethod(operationName = "modificarDatosCliente")
-    void modificarDatosCliente(
-            @WebParam(name = "nombre") String nombre,
-            @WebParam(name = "apellido") String apellido,
-            @WebParam(name = "fechaNac") DTFecha fechaNac,
-            @WebParam(name = "nacionalidad") String nacionalidad,
-            @WebParam(name = "tipoDocumento") TipoDoc tipoDocumento,
-            @WebParam(name = "numeroDocumento") String numeroDocumento);
+        @WebMethod(operationName = "seleccionarUsuarioAMod")
+        void seleccionarUsuarioAMod(@WebParam(name = "nickname") String nickname);
 
-    @WebMethod(operationName = "modificarDatosAerolinea")
-    void modificarDatosAerolinea(
-            @WebParam(name = "nombre") String nombre,
-            @WebParam(name = "descripcion") String descripcion,
-            @WebParam(name = "linkSitioWeb") String linkSitioWeb);
+        @WebMethod(operationName = "modificarDatosCliente")
+        void modificarDatosCliente(
+                        @WebParam(name = "nombre") String nombre,
+                        @WebParam(name = "apellido") String apellido,
+                        @WebParam(name = "fechaNac") DTFecha fechaNac,
+                        @WebParam(name = "nacionalidad") String nacionalidad,
+                        @WebParam(name = "tipoDocumento") TipoDoc tipoDocumento,
+                        @WebParam(name = "numeroDocumento") String numeroDocumento);
 
-    @WebMethod(operationName = "altaCliente")
-    void altaCliente(
-            @WebParam(name = "nickname") String nickname,
-            @WebParam(name = "nombre") String nombre,
-            @WebParam(name = "correo") String correo,
-            @WebParam(name = "apellido") String apellido,
-            @WebParam(name = "fechaNac") DTFecha fechaNac,
-            @WebParam(name = "nacionalidad") String nacionalidad,
-            @WebParam(name = "tipoDocumento") TipoDoc tipoDocumento,
-            @WebParam(name = "numeroDocumento") String numeroDocumento,
-            @WebParam(name = "foto") byte[] foto,
-            @WebParam(name = "contrasena") String contrasena);
+        @WebMethod(operationName = "modificarDatosAerolinea")
+        void modificarDatosAerolinea(
+                        @WebParam(name = "nombre") String nombre,
+                        @WebParam(name = "descripcion") String descripcion,
+                        @WebParam(name = "linkSitioWeb") String linkSitioWeb);
 
-    @WebMethod(operationName = "altaAerolinea")
-    void altaAerolinea(
-            @WebParam(name = "nickname") String nickname,
-            @WebParam(name = "nombre") String nombre,
-            @WebParam(name = "correo") String correo,
-            @WebParam(name = "descripcion") String descripcion,
-            @WebParam(name = "linkSitioWeb") String linkSitioWeb,
-            @WebParam(name = "foto") byte[] foto,
-            @WebParam(name = "contrasena") String contrasena);
+        @WebMethod(operationName = "altaCliente")
+        void altaCliente(
+                        @WebParam(name = "nickname") String nickname,
+                        @WebParam(name = "nombre") String nombre,
+                        @WebParam(name = "correo") String correo,
+                        @WebParam(name = "apellido") String apellido,
+                        @WebParam(name = "fechaNac") DTFecha fechaNac,
+                        @WebParam(name = "nacionalidad") String nacionalidad,
+                        @WebParam(name = "tipoDocumento") TipoDoc tipoDocumento,
+                        @WebParam(name = "numeroDocumento") String numeroDocumento,
+                        @WebParam(name = "foto") byte[] foto,
+                        @WebParam(name = "contrasena") String contrasena);
 
-    @WebMethod(operationName = "ingresarDatosVuelo")
-    @WebResult(name = "vuelo")
-    DTVuelo ingresarDatosVuelo(
-            @WebParam(name = "nombre") String nombre,
-            @WebParam(name = "fecha") DTFecha fecha,
-            @WebParam(name = "horaVuelo") DTHora horaVuelo,
-            @WebParam(name = "duracion") DTHora duracion,
-            @WebParam(name = "maxTurista") int maxTurista,
-            @WebParam(name = "maxEjecutivo") int maxEjecutivo,
-            @WebParam(name = "fechaAlta") DTFecha fechaAlta,
-            @WebParam(name = "ruta") DTRutaVuelo ruta,
-            @WebParam(name = "foto") byte[] foto);
+        @WebMethod(operationName = "altaAerolinea")
+        void altaAerolinea(
+                        @WebParam(name = "nickname") String nickname,
+                        @WebParam(name = "nombre") String nombre,
+                        @WebParam(name = "correo") String correo,
+                        @WebParam(name = "descripcion") String descripcion,
+                        @WebParam(name = "linkSitioWeb") String linkSitioWeb,
+                        @WebParam(name = "foto") byte[] foto,
+                        @WebParam(name = "contrasena") String contrasena);
 
-    @WebMethod(operationName = "darAltaVuelo")
-    void darAltaVuelo();
+        @WebMethod(operationName = "ingresarDatosVuelo")
+        @WebResult(name = "vuelo")
+        DTVuelo ingresarDatosVuelo(
+                        @WebParam(name = "nombre") String nombre,
+                        @WebParam(name = "fecha") DTFecha fecha,
+                        @WebParam(name = "horaVuelo") DTHora horaVuelo,
+                        @WebParam(name = "duracion") DTHora duracion,
+                        @WebParam(name = "maxTurista") int maxTurista,
+                        @WebParam(name = "maxEjecutivo") int maxEjecutivo,
+                        @WebParam(name = "fechaAlta") DTFecha fechaAlta,
+                        @WebParam(name = "ruta") DTRutaVuelo ruta,
+                        @WebParam(name = "foto") byte[] foto);
 
-    @WebMethod(operationName = "seleccionarVueloParaReserva")
-    void seleccionarVueloParaReserva(@WebParam(name = "nombreVuelo") String nombreVuelo);
+        @WebMethod(operationName = "darAltaVuelo")
+        void darAltaVuelo();
 
-    @WebMethod(operationName = "nombresPasajes")
-    @WebResult(name = "nombres")
-    List<String> nombresPasajes(
-            @WebParam(name = "nombre") String nombre,
-            @WebParam(name = "nombresPasajeros") List<String> nombresPasajeros);
+        @WebMethod(operationName = "seleccionarVueloParaReserva")
+        void seleccionarVueloParaReserva(@WebParam(name = "nombreVuelo") String nombreVuelo);
 
-    @WebMethod(operationName = "datosReserva")
-    void datosReserva(
-            @WebParam(name = "tipoAsiento") TipoAsiento tipoAsiento,
-            @WebParam(name = "cantidadPasaje") int cantidadPasaje,
-            @WebParam(name = "equipajeExtra") int equipajeExtra,
-            @WebParam(name = "nombresPasajeros") List<String> nombresPasajeros,
-            @WebParam(name = "fechaReserva") DTFecha fechaReserva);
+        @WebMethod(operationName = "nombresPasajes")
+        @WebResult(name = "nombres")
+        List<String> nombresPasajes(
+                        @WebParam(name = "nombre") String nombre,
+                        @WebParam(name = "nombresPasajeros") List<String> nombresPasajeros);
 
-    @WebMethod(operationName = "datosReservaConPaquete")
-    void datosReservaConPaquete(
-            @WebParam(name = "tipoAsiento") TipoAsiento tipoAsiento,
-            @WebParam(name = "cantidadPasaje") int cantidadPasaje,
-            @WebParam(name = "equipajeExtra") int equipajeExtra,
-            @WebParam(name = "nombresPasajeros") List<String> nombresPasajeros,
-            @WebParam(name = "fechaReserva") DTFecha fechaReserva,
-            @WebParam(name = "paqueteId") Long paqueteId);
+        @WebMethod(operationName = "datosReserva")
+        void datosReserva(
+                        @WebParam(name = "tipoAsiento") TipoAsiento tipoAsiento,
+                        @WebParam(name = "cantidadPasaje") int cantidadPasaje,
+                        @WebParam(name = "equipajeExtra") int equipajeExtra,
+                        @WebParam(name = "nombresPasajeros") List<String> nombresPasajeros,
+                        @WebParam(name = "fechaReserva") DTFecha fechaReserva);
 
-    @WebMethod(operationName = "seleccionarPaquete")
-    void seleccionarPaquete(@WebParam(name = "nombrePaquete") String nombrePaquete);
+        @WebMethod(operationName = "datosReservaConPaquete")
+        void datosReservaConPaquete(
+                        @WebParam(name = "tipoAsiento") TipoAsiento tipoAsiento,
+                        @WebParam(name = "cantidadPasaje") int cantidadPasaje,
+                        @WebParam(name = "equipajeExtra") int equipajeExtra,
+                        @WebParam(name = "nombresPasajeros") List<String> nombresPasajeros,
+                        @WebParam(name = "fechaReserva") DTFecha fechaReserva,
+                        @WebParam(name = "paqueteId") Long paqueteId);
 
-    @WebMethod(operationName = "consultaPaqueteVuelo")
-    @WebResult(name = "paquete")
-    DTPaqueteVuelos consultaPaqueteVuelo();
+        @WebMethod(operationName = "seleccionarPaquete")
+        void seleccionarPaquete(@WebParam(name = "nombrePaquete") String nombrePaquete);
 
-    @WebMethod(operationName = "consultaPaqueteVueloRutas")
-    @WebResult(name = "rutas")
-    List<DTRutaVuelo> consultaPaqueteVueloRutas();
+        @WebMethod(operationName = "consultaPaqueteVuelo")
+        @WebResult(name = "paquete")
+        DTPaqueteVuelos consultaPaqueteVuelo();
 
-    @WebMethod(operationName = "seleccionarCliente")
-    void seleccionarCliente(@WebParam(name = "nombreCliente") String nombreCliente);
+        @WebMethod(operationName = "consultaPaqueteVueloRutas")
+        @WebResult(name = "rutas")
+        List<DTRutaVuelo> consultaPaqueteVueloRutas();
 
-    @WebMethod(operationName = "clienteYaComproPaquete")
-    @WebResult(name = "yaCompro")
-    boolean clienteYaComproPaquete();
+        @WebMethod(operationName = "seleccionarCliente")
+        void seleccionarCliente(@WebParam(name = "nombreCliente") String nombreCliente);
 
-    @WebMethod(operationName = "realizarCompra")
-    void realizarCompra(
-            @WebParam(name = "fechaCompra") DTFecha fechaCompra,
-            @WebParam(name = "costo") float costo,
-            @WebParam(name = "vencimiento") DTFecha vencimiento);
+        @WebMethod(operationName = "clienteYaComproPaquete")
+        @WebResult(name = "yaCompro")
+        boolean clienteYaComproPaquete();
 
-    @WebMethod(operationName = "obtenerPaquetesClienteParaRuta")
-    @WebResult(name = "paquetes")
-    List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(
-            @WebParam(name = "nicknameCliente") String nicknameCliente,
-            @WebParam(name = "rutaNombre") String rutaNombre);
+        @WebMethod(operationName = "realizarCompra")
+        void realizarCompra(
+                        @WebParam(name = "fechaCompra") DTFecha fechaCompra,
+                        @WebParam(name = "costo") float costo,
+                        @WebParam(name = "vencimiento") DTFecha vencimiento);
 
-    @WebMethod(operationName = "listarReservasCheck")
-    @WebResult(name = "reservas")
-    List<DTReserva> listarReservasCheck(@WebParam(name = "nicknameCliente") String nicknameCliente);
+        @WebMethod(operationName = "obtenerPaquetesClienteParaRuta")
+        @WebResult(name = "paquetes")
+        List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(
+                        @WebParam(name = "nicknameCliente") String nicknameCliente,
+                        @WebParam(name = "rutaNombre") String rutaNombre);
 
-    // Seguidores
-    @WebMethod(operationName = "seguir")
-    void seguir(
-            @WebParam(name = "nickSeguidor") String nickSeguidor,
-            @WebParam(name = "nickSeguido") String nickSeguido);
+        @WebMethod(operationName = "listarReservasCheck")
+        @WebResult(name = "reservas")
+        List<DTReserva> listarReservasCheck(@WebParam(name = "nicknameCliente") String nicknameCliente);
 
-    @WebMethod(operationName = "dejarDeSeguir")
-    void dejarDeSeguir(
-            @WebParam(name = "nickSeguidor") String nickSeguidor,
-            @WebParam(name = "nickSeguido") String nickSeguido);
+        // Seguidores
+        @WebMethod(operationName = "seguir")
+        void seguir(
+                        @WebParam(name = "nickSeguidor") String nickSeguidor,
+                        @WebParam(name = "nickSeguido") String nickSeguido);
 
-    @WebMethod(operationName = "listarSeguidores")
-    @WebResult(name = "seguidores")
-    List<String> listarSeguidores(@WebParam(name = "nickSeguido") String nickSeguido);
+        @WebMethod(operationName = "dejarDeSeguir")
+        void dejarDeSeguir(
+                        @WebParam(name = "nickSeguidor") String nickSeguidor,
+                        @WebParam(name = "nickSeguido") String nickSeguido);
 
-    @WebMethod(operationName = "listarSeguidos")
-    @WebResult(name = "seguidos")
-    List<String> listarSeguidos(@WebParam(name = "nickSeguidor") String nickSeguidor);
+        @WebMethod(operationName = "listarSeguidores")
+        @WebResult(name = "seguidores")
+        List<String> listarSeguidores(@WebParam(name = "nickSeguido") String nickSeguido);
 
-    // Actualizar foto
-    @WebMethod(operationName = "actualizarFotoCliente")
-    void actualizarFotoCliente(
-            @WebParam(name = "nickname") String nickname,
-            @WebParam(name = "foto") byte[] foto);
+        @WebMethod(operationName = "listarSeguidos")
+        @WebResult(name = "seguidos")
+        List<String> listarSeguidos(@WebParam(name = "nickSeguidor") String nickSeguidor);
 
-    @WebMethod(operationName = "actualizarFotoAerolinea")
-    void actualizarFotoAerolinea(
-            @WebParam(name = "nickname") String nickname,
-            @WebParam(name = "foto") byte[] foto);
+        // Actualizar foto
+        @WebMethod(operationName = "actualizarFotoCliente")
+        void actualizarFotoCliente(
+                        @WebParam(name = "nickname") String nickname,
+                        @WebParam(name = "foto") byte[] foto);
 
-    @WebMethod(operationName = "obtenerPasajerosReserva")
-    @WebResult(name = "pasajeros")
-    List<DTPasajero> obtenerPasajerosReserva(
-            @WebParam(name = "reservaId") Long reservaId);
+        @WebMethod(operationName = "actualizarFotoAerolinea")
+        void actualizarFotoAerolinea(
+                        @WebParam(name = "nickname") String nickname,
+                        @WebParam(name = "foto") byte[] foto);
+
+        @WebMethod(operationName = "obtenerPasajerosReserva")
+        @WebResult(name = "pasajeros")
+        List<DTPasajero> obtenerPasajerosReserva(
+                        @WebParam(name = "reservaId") Long reservaId);
 }
-

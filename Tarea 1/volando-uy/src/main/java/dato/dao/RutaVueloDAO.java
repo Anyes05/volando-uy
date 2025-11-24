@@ -8,8 +8,7 @@ import jakarta.persistence.Persistence;
 import java.util.List;
 
 public class RutaVueloDAO {
-    private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("volandouyPU");
+    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar una ruta de vuelo en la Base de Datos
     public void guardar(RutaVuelo rutaVuelo) {
@@ -33,9 +32,8 @@ public class RutaVueloDAO {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT rv FROM RutaVuelo rv WHERE rv.nombre = :nombre",
-                            RutaVuelo.class
-                    )
+                    "SELECT rv FROM RutaVuelo rv WHERE rv.nombre = :nombre",
+                    RutaVuelo.class)
                     .setParameter("nombre", nombre)
                     .getResultStream()
                     .findFirst()
@@ -50,9 +48,8 @@ public class RutaVueloDAO {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT rv FROM RutaVuelo rv WHERE rv.estado = :estado",
-                            RutaVuelo.class
-                    )
+                    "SELECT rv FROM RutaVuelo rv WHERE rv.estado = :estado",
+                    RutaVuelo.class)
                     .setParameter("estado", estado)
                     .getResultList();
         } finally {
@@ -65,9 +62,8 @@ public class RutaVueloDAO {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT rv FROM RutaVuelo rv JOIN rv.aerolineas a WHERE a.nickname = :aerolineaNickname AND rv.estado = :estado",
-                            RutaVuelo.class
-                    )
+                    "SELECT rv FROM RutaVuelo rv JOIN rv.aerolineas a WHERE a.nickname = :aerolineaNickname AND rv.estado = :estado",
+                    RutaVuelo.class)
                     .setParameter("aerolineaNickname", aerolineaNickname)
                     .setParameter("estado", estado)
                     .getResultList();
@@ -92,4 +88,3 @@ public class RutaVueloDAO {
         }
     }
 }
-
