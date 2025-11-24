@@ -12,142 +12,128 @@ import logica.DataTypes.*;
  */
 public interface CentralService {
 
-    // Aerolineas
-    List<DTAerolinea> listarAerolineas();
+        // Aerolineas
+        List<DTAerolinea> listarAerolineas();
 
-    // Ciudades
-    List<DTCiudad> listarCiudades();
+        // Ciudades
+        List<DTCiudad> listarCiudades();
 
-    List<String> listarAeropuertos();
+        List<String> listarAeropuertos();
 
-    // Rutas
-    List<DTRutaVuelo> listarRutasPorAerolinea(String nicknameAerolinea);
+        // Rutas
+        List<DTRutaVuelo> listarRutasPorAerolinea(String nicknameAerolinea);
 
-    List<DTRutaVuelo> listarRutasDeVuelo();
+        List<DTRutaVuelo> listarRutasDeVuelo();
 
-    DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
+        DTRutaVuelo seleccionarRutaVueloRet(String nombreRutaVuelo);
 
-    // Reservas
-    List<DTVueloReserva> listarReservasVuelo(String nombreVuelo);
+        void seleccionarAerolinea(String nickname);
 
-    void seleccionarVueloParaReserva(String nombreVuelo);
+        void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista,
+                        float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen,
+                        String ciudadDestino, DTFecha fechaAlta, List<String> categorias,
+                        byte[] foto, String videoUrl);
 
-    List<String> nombresPasajes(String nombre, List<String> nombresPasajeros);
+        void registrarRuta();
 
-    void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra,
-            List<String> nombresPasajeros, DTFecha fechaReserva);
+        void EstadoFinalizarRutaVuelo(String nombreRuta);
 
-    void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje,
-            int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva,
-            Long paqueteId);
+        void incrementarVisitasRuta(String nombreRuta);
 
-    List<DTReserva> listarDTReservasCheck(String nicknameCliente);
+        // Vuelos
+        List<DTVuelo> listarVuelosDeRuta(String nombreRuta);
 
-    List<DTReserva> listarDTReservasNoCheck(String nicknameCliente);
+        DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo,
+                        DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta,
+                        DTRutaVuelo ruta, byte[] foto);
 
-    void realizarCheckIn(Long reservaId);
+        void darAltaVuelo();
 
-    void seleccionarAerolinea(String nickname);
+        // Usuarios
+        List<DTCliente> listarClientes();
 
-    void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista,
-            float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen,
-            String ciudadDestino, DTFecha fechaAlta, List<String> categorias,
-            byte[] foto, String videoUrl);
+        List<DTUsuario> consultarUsuarios();
 
-    void registrarRuta();
+        DTUsuario mostrarDatosUsuario(String nickname);
 
-    void EstadoFinalizarRutaVuelo(String nombreRuta);
+        DTUsuario mostrarDatosUsuarioMod(String nickname);
 
-    void incrementarVisitasRuta(String nombreRuta);
+        void seleccionarUsuarioAMod(String nickname);
 
-    // Vuelos
-    List<DTVuelo> listarVuelosDeRuta(String nombreRuta);
+        void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac,
+                        String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
 
-    DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo,
-            DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta,
-            DTRutaVuelo ruta, byte[] foto);
+        void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb);
 
-    void darAltaVuelo();
+        void altaCliente(String nickname, String nombre, String correo, String apellido,
+                        DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento,
+                        String numeroDocumento, byte[] foto, String contrasena);
 
-    // Usuarios
-    List<DTCliente> listarClientes();
+        void altaAerolinea(String nickname, String nombre, String correo, String descripcion,
+                        String linkSitioWeb, byte[] foto, String contrasena);
 
-    List<DTUsuario> consultarUsuarios();
+        // Reservas
+        List<DTVueloReserva> listarReservasVuelo(String nombreVuelo);
 
-    DTUsuario mostrarDatosUsuario(String nickname);
+        void seleccionarVueloParaReserva(String nombreVuelo);
 
-    DTUsuario mostrarDatosUsuarioMod(String nickname);
+        List<String> nombresPasajes(String nombre, List<String> nombresPasajeros);
 
-    void seleccionarUsuarioAMod(String nickname);
+        void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra,
+                        List<String> nombresPasajeros, DTFecha fechaReserva);
 
-    void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac,
-            String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento);
+        void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje,
+                        int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva,
+                        Long paqueteId);
 
-    void modificarDatosAerolinea(String nombre, String descripcion, String linkSitioWeb);
+        List<DTReserva> listarReservasCheck(String nicknameCliente);
 
-    void altaCliente(String nickname, String nombre, String correo, String apellido,
-            DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento,
-            String numeroDocumento, byte[] foto, String contrasena);
+        List<DTReserva> listarDTReservasCheck(String nicknameCliente);
 
-    void altaAerolinea(String nickname, String nombre, String correo, String descripcion,
-            String linkSitioWeb, byte[] foto, String contrasena);
+        List<DTReserva> listarDTReservasNoCheck(String nicknameCliente);
 
-    // Reservas
-    List<DTVueloReserva> listarReservasVuelo(String nombreVuelo);
+        void realizarCheckIn(Long reservaId);
 
-    void seleccionarVueloParaReserva(String nombreVuelo);
+        // Paquetes
+        List<DTPaqueteVuelos> mostrarPaquetes();
 
-    List<String> nombresPasajes(String nombre, List<String> nombresPasajeros);
+        List<DTPaqueteVuelos> obtenerPaquetesNoComprados();
 
-    void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra,
-            List<String> nombresPasajeros, DTFecha fechaReserva);
+        void seleccionarPaquete(String nombrePaquete);
 
-    void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje,
-            int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva,
-            Long paqueteId);
+        DTPaqueteVuelos consultaPaqueteVuelo();
 
-    List<DTReserva> listarReservasCheck(String nicknameCliente);
+        List<DTRutaVuelo> consultaPaqueteVueloRutas();
 
-    // Paquetes
-    List<DTPaqueteVuelos> mostrarPaquetes();
+        void seleccionarCliente(String nombreCliente);
 
-    List<DTPaqueteVuelos> obtenerPaquetesNoComprados();
+        boolean clienteYaComproPaquete();
 
-    void seleccionarPaquete(String nombrePaquete);
+        void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento);
 
-    DTPaqueteVuelos consultaPaqueteVuelo();
+        List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(String nicknameCliente, String rutaNombre);
 
-    List<DTRutaVuelo> consultaPaqueteVueloRutas();
+        // Seguidores
+        void seguir(String nickSeguidor, String nickSeguido);
 
-    void seleccionarCliente(String nombreCliente);
+        void dejarDeSeguir(String nickSeguidor, String nickSeguido);
 
-    boolean clienteYaComproPaquete();
+        List<String> listarSeguidores(String nickSeguido);
 
-    void realizarCompra(DTFecha fechaCompra, float costo, DTFecha vencimiento);
+        List<String> listarSeguidos(String nickSeguidor);
 
-    List<DTPaqueteVuelos> obtenerPaquetesClienteParaRuta(String nicknameCliente, String rutaNombre);
+        // Actualizar foto
+        void actualizarFotoCliente(String nickname, byte[] foto);
 
-    // Seguidores
-    void seguir(String nickSeguidor, String nickSeguido);
+        void actualizarFotoAerolinea(String nickname, byte[] foto);
 
-    void dejarDeSeguir(String nickSeguidor, String nickSeguido);
+        // Pasajeros
+        List<DTPasajero> obtenerPasajerosReserva(Long reservaId);
 
-    List<String> listarSeguidores(String nickSeguido);
+        // Utilidades
+        List<DTCategoria> getCategorias();
 
-    List<String> listarSeguidos(String nickSeguidor);
+        void precargarSistemaCompleto();
 
-    // Actualizar foto
-    void actualizarFotoCliente(String nickname, byte[] foto);
-
-    void actualizarFotoAerolinea(String nickname, byte[] foto);
-
-    // Pasajeros
-    List<DTPasajero> obtenerPasajerosReserva(Long reservaId);
-
-    // Utilidades
-    List<DTCategoria> getCategorias();
-
-    void precargarSistemaCompleto();
-
-    String ping();
+        String ping();
 }

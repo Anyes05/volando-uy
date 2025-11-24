@@ -189,6 +189,12 @@ public class CentralServiceLocal implements CentralService {
     }
 
     @Override
+    public List<DTReserva> listarReservasCheck(String nicknameCliente) {
+        throwUnsupported();
+        return null;
+    }
+
+    @Override
     public List<DTReserva> listarDTReservasCheck(String nicknameCliente) {
         throwUnsupported();
         return null;
@@ -199,7 +205,6 @@ public class CentralServiceLocal implements CentralService {
         throwUnsupported();
         return null;
     }
-
 
     @Override
     public void realizarCheckIn(Long reservaId) {

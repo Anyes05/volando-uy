@@ -380,6 +380,13 @@ public class CentralWS {
         return sistema.obtenerPaquetesClienteParaRuta(nicknameCliente, rutaNombre);
     }
 
+    @WebMethod(operationName = "listarReservasCheck")
+    @WebResult(name = "reservas")
+    public List<DTReserva> listarReservasCheck(
+            @WebParam(name = "nicknameCliente") String nicknameCliente) {
+        return sistema.listarDTReservasCheck(nicknameCliente);
+    }
+
     @WebMethod(operationName = "listarDTReservasCheck")
     @WebResult(name = "reservas")
     public List<DTReserva> listarDTReservasCheck(
@@ -394,14 +401,12 @@ public class CentralWS {
         return sistema.listarDTReservasNoCheck(nicknameCliente);
     }
 
-
     @WebMethod(operationName = "realizarCheckIn")
     @WebResult(name = "reservas")
     public void realizarCheckIn(
             @WebParam(name = "reservaId") Long reservaId) {
         sistema.realizarCheckIn(reservaId);
     }
-
 
     // ===========================
     // SEGUIDORES

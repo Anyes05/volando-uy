@@ -357,6 +357,15 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
+    public List<DTReserva> listarReservasCheck(String nicknameCliente) {
+        try {
+            return port.listarDTReservasCheck(nicknameCliente);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al listar reservas con check-in: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<DTReserva> listarDTReservasCheck(String nicknameCliente) {
         try {
             return port.listarDTReservasCheck(nicknameCliente);
@@ -373,7 +382,6 @@ public class CentralServiceWS implements CentralService {
             throw new RuntimeException("Error al listar reservas con check-in: " + e.getMessage(), e);
         }
     }
-
 
     @Override
     public void realizarCheckIn(Long reservaId) {
