@@ -3,6 +3,7 @@ package dato.entidades;
 import jakarta.persistence.*;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.DTCostoBase;
+import logica.DataTypes.TipoAsiento;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,6 @@ public class Reserva {
     @Column(nullable = true) // Temporalmente nullable para permitir guardar primero
     @Convert(converter = dato.converter.DTCostoBaseConverter.class)
     private DTCostoBase costoReserva;
-
-//    @Column(nullable = false)
-//    private float costoTotal;
 
     @OneToMany(mappedBy = "reserva", fetch = FetchType.EAGER)
     private List<dato.entidades.Pasaje> pasajeros = new ArrayList<>();
@@ -112,12 +110,10 @@ public class Reserva {
         this.checkInRealizado = checkInRealizado;
     }
 
-    //    public float getCostoTotal() {
-//        return costoTotal;
-//    }
-
-// esto seria para la relacion con cliente que me vueleve LOCA, primero hay que crear el atributo privado, despues hay que
-    // descomentar la parte que esta en Cliente que sirve como para "controlar" que la relacion estable jaja
-    //    public Cliente getCliente() { return cliente; }
-    //    public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public TipoAsiento getTipoAsientoReserva() {
+        if (this.pasajeros != null && !this.pasajeros.isEmpty()) {
+            return this.pasajeros.get(0).getTipoAsiento();
+        }
+        return null;
+    }
 }

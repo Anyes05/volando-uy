@@ -6,7 +6,7 @@
   boolean isMobile = DeviceDetector.isMobileDevice(request);
   boolean isTablet = DeviceDetector.isTabletDevice(request);
   boolean isMobilePhone = DeviceDetector.isMobilePhone(request);
-  
+
   // Guardar en request scope para usar en JSP
   request.setAttribute("isMobileDevice", isMobile);
   request.setAttribute("isTabletDevice", isTablet);
@@ -41,12 +41,12 @@
   <link rel="stylesheet" href="css/errorHandler.css">
   <style>
     /* Estilos para ocultar elementos no permitidos en móvil usando Bootstrap */
-    /* Solo los casos de uso permitidos en móvil deben ser visibles: 
+    /* Solo los casos de uso permitidos en móvil deben ser visibles:
        - inicioSesion
        - consultaRutaVuelo
        - consultaVuelo
        - consultaReserva
-       - consultaCheckIn
+       - Realizar Check-in (solo mobile)
     */
     @media (max-width: 767.98px) {
       /* Ocultar elementos que NO están permitidos en móvil */
@@ -58,26 +58,28 @@
       .nav-item[href*="altaVuelo"],
       .nav-item[href*="reserva"]:not([href*="consultaReserva"]),
       .nav-item[href*="inicio.jsp"],
-      .nav-item[href*="modificarUsuario"] {
+      .nav-item[href*="modificarUsuario"],
+      /* Consulta de Check In solo PC: se oculta en mobile */
+      .nav-item[href*="consultacheckin.jsp"] {
         display: none !important;
       }
-      
+
       /* Ocultar botón de registro en header en móvil */
       .header-icons .signup-btn {
         display: none !important;
       }
-      
+
       /* Ocultar secciones completas que solo tienen elementos no permitidos */
       /* Sección "Mi Cuenta" - ocultar si solo tiene elementos no permitidos */
       .nav-section:has(.nav-item[href*="consultaUsuario"]:not([href*="consultaRutaVuelo"])):not(:has(.nav-item[href*="inicioSesion"])):not(:has(.nav-item[href*="consultaRutaVuelo"])):not(:has(.nav-item[href*="consultaVuelo"])):not(:has(.nav-item[href*="consultaReserva"])):not(:has(.nav-item[href*="consultacheckin"])) {
         display: none !important;
       }
-      
+
       /* Sección "Paquetes" - ocultar completamente en móvil */
       .nav-section:has(.nav-item[href*="consultaPaquete"]) {
         display: none !important;
       }
-      
+
       /* Mostrar sección de cerrar sesión solo en móvil */
       .nav-section.mobile-only {
         display: block !important;
@@ -85,29 +87,34 @@
         padding-top: 20px;
         border-top: 1px solid rgba(1, 170, 245, 0.2);
       }
-      
+
       /* Ocultar menú desplegable del usuario en móvil */
       .user-avatar-container {
         pointer-events: none;
       }
-      
+
       .user-avatar-container .dropdown-arrow {
         display: none;
       }
     }
-    
+
     /* Ocultar sección de cerrar sesión en desktop */
     @media (min-width: 768px) {
       .nav-section.mobile-only {
         display: none !important;
       }
-      
+
       .user-avatar-container {
         pointer-events: auto;
       }
-      
+
       .user-avatar-container .dropdown-arrow {
         display: inline-block;
+      }
+
+      /* Realizar Check In solo mobile: se esconde en desktop */
+      .nav-item[href*="realizarCheckIn.jsp"] {
+        display: none !important;
       }
     }
   </style>
@@ -121,7 +128,7 @@
   <!-- Sidebar -->
   <aside class="sidebar" id="sidenav-1">
     <button class="close-btn" onclick="closeSidebar()" aria-label="Cerrar menú">×</button>
-    
+
     <!-- Inicio - solo en desktop (oculto en móvil con CSS) -->
     <a href="inicio.jsp" class="nav-item d-none d-md-block">
       <i class="fas fa-home"></i>
@@ -180,31 +187,39 @@
         </c:if>
       </div>
 
-      <!-- Vuelos -->
+      <!-- Rutas -->
       <div class="nav-section">
-        <h3 class="nav-section-title">Vuelos</h3>
+        <h3 class="nav-section-title">Rutas</h3>
         <a href="consultaRutaVuelo.jsp" class="nav-item">
           <i class="fas fa-route"></i>
           <span>Consulta de Rutas</span>
         </a>
-        <a href="consultaVuelo.jsp" class="nav-item">
-          <i class="fas fa-plane"></i>
-          <span>Consulta de Vuelos</span>
-        </a>
-        
-        <!-- Opciones específicas para aerolíneas -->
+        <!-- Opciones específicas para aerolíneas (rutas) -->
         <c:if test="${sessionScope.tipoUsuario == 'aerolinea'}">
           <a href="altaRutaVuelo.jsp" class="nav-item">
             <i class="fas fa-plus-circle"></i>
             <span>Alta y Finalizacion de Ruta</span>
           </a>
+        </c:if>
+      </div>
+
+      <!-- Vuelos -->
+      <div class="nav-section">
+        <h3 class="nav-section-title">Vuelos</h3>
+        <a href="consultaVuelo.jsp" class="nav-item">
+          <i class="fas fa-plane"></i>
+          <span>Consulta de Vuelos</span>
+        </a>
+
+        <!-- Opciones específicas para aerolíneas (vuelos) -->
+        <c:if test="${sessionScope.tipoUsuario == 'aerolinea'}">
           <a href="altaVuelo.jsp" class="nav-item">
             <i class="fas fa-plus-circle"></i>
             <span>Alta de Vuelo</span>
           </a>
         </c:if>
-        
-        <!-- Opciones específicas para clientes -->
+
+        <!-- Opciones específicas para clientes (reservar vuelo) -->
         <c:if test="${sessionScope.tipoUsuario == 'cliente'}">
           <a href="reserva.jsp" class="nav-item">
             <i class="fas fa-calendar-check"></i>
@@ -221,9 +236,16 @@
           <span>Consulta de Reservas</span>
         </a>
 
+        <!-- Realizar Check In: solo mobile (se oculta en desktop via CSS) -->
         <a href="realizarCheckIn.jsp" class="nav-item">
-          <i class="fas fa-route"></i>
+          <i class="fas fa-check-circle"></i>
           <span>Realizar Check In</span>
+        </a>
+
+        <!-- Consulta de Check In: solo desktop (se oculta en mobile via CSS) -->
+        <a href="consultacheckin.jsp" class="nav-item">
+          <i class="fas fa-route"></i>
+          <span>Consulta de Check In</span>
         </a>
       </div>
 
@@ -259,13 +281,32 @@
 
     <!-- Header -->
     <header class="header">
-      <!-- Toggler responsive -->
-      <button data-mdb-button-init data-mdb-toggle="sidenav" data-mdb-target="#sidenav-1" data-mdb-ripple-init
-        class="sidenav-toggler" id="menuBtn" aria-controls="#sidenav-1" aria-haspopup="true" aria-label="Abrir menú">
-        <i class="fas fa-bars" aria-hidden="true"></i>
-      </button>
+      <!-- Lado izquierdo: menú + buscador -->
+      <div class="header-left">
+        <!-- Toggler responsive -->
+        <button data-mdb-button-init data-mdb-toggle="sidenav" data-mdb-target="#sidenav-1" data-mdb-ripple-init
+          class="sidenav-toggler" id="menuBtn" aria-controls="#sidenav-1" aria-haspopup="true" aria-label="Abrir menú">
+          <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
 
-      <!-- Logo y branding -->
+      <!-- BUSCADOR GLOBAL (va directo a busqueda.jsp) -->
+      <div class="global-search-container">
+        <form action="busqueda.jsp" method="get" class="global-search-form">
+          <input
+            type="text"
+            name="q"
+            class="global-search-input"
+            placeholder="Buscar rutas o paquetes..."
+            autocomplete="off"
+          />
+          <button type="submit" class="global-search-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+
+
+      <!-- Logo y branding (centrado) -->
       <div class="brand-container">
         <div class="logo-container">
           <img src="static/img/logoAvionSolo.png" alt="VolandoUY Logo" class="logo-img">
@@ -276,7 +317,7 @@
         </div>
       </div>
 
-      <!-- Header icons -->
+      <!-- Header icons a la derecha (usuario) -->
       <div class="header-icons">
         <c:choose>
           <c:when test="${not empty sessionScope.usuarioLogueado}">
@@ -299,7 +340,7 @@
                   </c:choose>
                   <i class="fas fa-chevron-down dropdown-arrow"></i>
                 </div>
-                
+
                 <!-- Menú desplegable del usuario -->
                 <div class="user-dropdown-menu" id="userDropdownMenu">
                   <div class="user-info">
@@ -339,6 +380,109 @@
           </c:otherwise>
         </c:choose>
       </div>
+
+      <!-- Estilos específicos del header + buscador -->
+      <style>
+        .header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          flex: 1 1 auto;
+        }
+
+        .brand-container {
+          flex: 0 0 auto;
+        }
+
+        .header-icons {
+          flex: 0 0 auto;
+        }
+
+        .global-search-container {
+          flex: 1 1 auto;
+          max-width: 360px;
+        }
+
+        .global-search-form {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          background: rgba(15, 23, 42, 0.9);
+          border-radius: 999px;
+          border: 1px solid rgba(34, 152, 202, 0.8);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+          overflow: hidden;
+        }
+
+        .global-search-input {
+          flex: 1 1 auto;
+          padding: 0.45rem 0.9rem 0.45rem 1rem;
+          border: none;
+          outline: none;
+          font-size: 0.9rem;
+          background: transparent;
+          color: #e5f4ff;
+        }
+
+        .global-search-input::placeholder {
+          color: rgba(148, 163, 184, 0.9);
+        }
+
+        .global-search-btn {
+          background: linear-gradient(135deg, #01aaf5 0%, #007bbd 100%);
+          border: none;
+          width: 42px;
+          height: 34px;
+          margin-right: 4px;
+          margin-top: 2px;
+          margin-bottom: 2px;
+          border-radius: 999px;
+          color: white;
+          cursor: pointer;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 0.9rem;
+          box-shadow: 0 8px 22px rgba(1, 170, 245, 0.55);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .global-search-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 10px 26px rgba(1, 170, 245, 0.75);
+        }
+
+        @media (max-width: 992px) {
+          .global-search-container {
+            max-width: 260px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .header {
+            gap: 0.6rem;
+          }
+          .global-search-container {
+            max-width: 220px;
+          }
+          .brand-container .brand-slogan {
+            display: none;
+          }
+        }
+
+        @media (max-width: 576px) {
+          .global-search-container {
+            display: none; /* si en mobile prefieres no mostrar el buscador en el header */
+          }
+        }
+      </style>
     </header>
 
     <div id="main-content" class="${param.content == 'inicioSesion-content.jsp' ? 'login-page' : ''}">
@@ -467,7 +611,7 @@
 
   <!-- Sistema de manejo de errores estético -->
   <script src="js/errorHandler.js"></script>
-  
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
@@ -519,7 +663,7 @@
       if (isMobile) {
         return; // No hacer nada en móvil
       }
-      
+
       const dropdown = document.getElementById('userDropdownMenu');
       if (dropdown) {
         dropdown.classList.toggle('show');
@@ -530,7 +674,7 @@
     document.addEventListener('click', function(event) {
       const dropdown = document.getElementById('userDropdownMenu');
       const avatarContainer = document.querySelector('.user-avatar-container');
-      
+
       if (dropdown && avatarContainer && !avatarContainer.contains(event.target)) {
         dropdown.classList.remove('show');
       }
@@ -538,12 +682,12 @@
 
     // Detectar si el sidebar necesita scroll
     function checkSidebarScroll() {
-      const sidebar = document.getElementById('sidenav-1');
-      if (sidebar) {
-        if (sidebar.scrollHeight > sidebar.clientHeight) {
-          sidebar.classList.add('scrollable');
+      const sidebarEl = document.getElementById('sidenav-1');
+      if (sidebarEl) {
+        if (sidebarEl.scrollHeight > sidebarEl.clientHeight) {
+          sidebarEl.classList.add('scrollable');
         } else {
-          sidebar.classList.remove('scrollable');
+          sidebarEl.classList.remove('scrollable');
         }
       }
     }
@@ -582,7 +726,6 @@
           behavior: 'smooth'
         });
       }
-
 
       prevBtn.addEventListener("click", () => {
         currentIndex = (currentIndex - 1 + totalCards) % totalCards;
@@ -624,8 +767,6 @@
       });
     }
 
-    // … resto de tus funciones (scrollNext, scrollPrev, autoplay, etc.)
-
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initCarousel);
     } else {
@@ -633,43 +774,42 @@
     }
   </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Si el servidor tiene usuario en sesión, inyectar esos datos en sessionStorage
-  <%-- Si hay usuario en sesión, se escriben los campos; si no, se limpian --%>
-  <c:choose>
-    <c:when test="${not empty sessionScope.usuarioLogueado}">
-      (function(){
-        try {
-          sessionStorage.setItem('usuarioLogueado', '<c:out value="${sessionScope.usuarioLogueado}" />');
-          sessionStorage.setItem('nombreUsuario', '<c:out value="${sessionScope.nombreUsuario}" />');
-          sessionStorage.setItem('tipoUsuario', '<c:out value="${sessionScope.tipoUsuario}" />');
-          // si guardas la foto en base64 en sesión, la ponemos también
-          <c:if test="${not empty sessionScope.fotoUsuario}">
-            sessionStorage.setItem('fotoUsuario', 'data:image/jpeg;base64,<c:out value="${sessionScope.fotoUsuario}" />');
-          </c:if>
-        } catch(e) {
-          console.warn('No se pudo setear sessionStorage desde sesión JSP:', e);
-        }
-      })();
-    </c:when>
-    <c:otherwise>
-      (function(){
-        try {
-          sessionStorage.removeItem('usuarioLogueado');
-          sessionStorage.removeItem('nombreUsuario');
-          sessionStorage.removeItem('tipoUsuario');
-          sessionStorage.removeItem('fotoUsuario');
-        } catch(e) {
-          /* ignore */
-        }
-      })();
-    </c:otherwise>
-  </c:choose>
-});
-</script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Si el servidor tiene usuario en sesión, inyectar esos datos en sessionStorage
+    <%-- Si hay usuario en sesión, se escriben los campos; si no, se limpian --%>
+    <c:choose>
+      <c:when test="${not empty sessionScope.usuarioLogueado}">
+        (function(){
+          try {
+            sessionStorage.setItem('usuarioLogueado', '<c:out value="${sessionScope.usuarioLogueado}" />');
+            sessionStorage.setItem('nombreUsuario', '<c:out value="${sessionScope.nombreUsuario}" />');
+            sessionStorage.setItem('tipoUsuario', '<c:out value="${sessionScope.tipoUsuario}" />');
+            // si guardas la foto en base64 en sesión, la ponemos también
+            <c:if test="${not empty sessionScope.fotoUsuario}">
+              sessionStorage.setItem('fotoUsuario', 'data:image/jpeg;base64,<c:out value="${sessionScope.fotoUsuario}" />');
+            </c:if>
+          } catch(e) {
+            console.warn('No se pudo setear sessionStorage desde sesión JSP:', e);
+          }
+        })();
+      </c:when>
+      <c:otherwise>
+        (function(){
+          try {
+            sessionStorage.removeItem('usuarioLogueado');
+            sessionStorage.removeItem('nombreUsuario');
+            sessionStorage.removeItem('tipoUsuario');
+            sessionStorage.removeItem('fotoUsuario');
+          } catch(e) {
+            /* ignore */
+          }
+        })();
+      </c:otherwise>
+    </c:choose>
+  });
+  </script>
 
 </body>
 
 </html>
-

@@ -203,11 +203,42 @@ public class ConsultaReservaController extends HttpServlet {
                 costoTexto = String.valueOf(costoObj);
             }
 
-            java.util.List<String> pas = (java.util.List<String>) det.get("pasajeros");
+            // ========= PASAJEROS + NÚMERO DE ASIENTO =========
+            Object pasajerosObj = det.get("pasajeros");
             java.util.List<String> lineasPasajeros = new java.util.ArrayList<>();
-            if (pas != null && !pas.isEmpty()) {
-                for (String p : pas) {
-                    lineasPasajeros.add("• " + p);
+
+            if (pasajerosObj instanceof java.util.List<?>) {
+                java.util.List<?> lista = (java.util.List<?>) pasajerosObj;
+
+                if (!lista.isEmpty()) {
+                    for (Object o : lista) {
+                        String linea;
+                        if (o instanceof java.util.Map<?, ?>) {
+                            java.util.Map<?, ?> p = (java.util.Map<?, ?>) o;
+
+                            String nombre   = p.get("nombre")   != null ? String.valueOf(p.get("nombre"))   : "";
+                            String apellido = p.get("apellido") != null ? String.valueOf(p.get("apellido")) : "";
+                            String nickname = p.get("nicknameCliente") != null ? String.valueOf(p.get("nicknameCliente")) : "";
+
+                            // 👇 Clave importante: acá esperamos que ya hayas puesto "numeroAsiento" en el map
+                            String asiento = p.get("numeroAsiento") != null
+                                    ? String.valueOf(p.get("numeroAsiento"))
+                                    : "s/asiento";
+
+                            String nombreCompleto = (nombre + " " + apellido).trim();
+                            if (nombreCompleto.isEmpty()) {
+                                nombreCompleto = nickname.isEmpty() ? "Pasajero sin nombre" : nickname;
+                            }
+
+                            linea = "• " + nombreCompleto + " - Asiento: " + asiento;
+                        } else {
+                            // Fallback si por algún motivo no es un Map
+                            linea = "• " + String.valueOf(o);
+                        }
+                        lineasPasajeros.add(linea);
+                    }
+                } else {
+                    lineasPasajeros.add("No hay pasajeros registrados");
                 }
             } else {
                 lineasPasajeros.add("No hay pasajeros registrados");
@@ -416,6 +447,7 @@ public class ConsultaReservaController extends HttpServlet {
             response.getWriter().print("{\"error\":\"No se pudo generar el PDF\"}");
         }
     }
+
 
 
 
@@ -880,6 +912,7 @@ public class ConsultaReservaController extends HttpServlet {
                                             pasajeroInfo.put("nombre", pasajero.getNombre());
                                             pasajeroInfo.put("apellido", pasajero.getApellido());
                                             pasajeroInfo.put("nicknameCliente", pasajero.getNicknameCliente());
+                                            pasajeroInfo.put("numeroAsiento", pasajero.getNumeroAsiento());
                                             pasajerosInfo.add(pasajeroInfo);
                                         }
                                     }

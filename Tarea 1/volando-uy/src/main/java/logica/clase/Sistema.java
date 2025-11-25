@@ -970,7 +970,8 @@ public class Sistema implements ISistema {
             listaClientes.add(new DTPasajero(
                     c.getNombre(),
                     c.getApellido(),
-                    c.getNickname()
+                    c.getNickname(),
+                    0
             ));
         }
         return listaClientes;
@@ -1150,6 +1151,23 @@ public class Sistema implements ISistema {
                 pasaje.setReserva(reserva);
                 pasaje.setTipoAsiento(tipoAsiento);
                 pasaje.setCostoPasaje((int) costoIndividualPasaje); // Establecer el costo del pasaje
+                if (TipoAsiento.EJECUTIVO.equals(tipoAsiento) || TipoAsiento.Ejecutivo.equals(tipoAsiento)) {
+                    if (!vueloSeleccionado.hayAsientosDisponiblesEjecutivo(cantidadPasaje)) {
+                        throw new IllegalStateException("ERROR: No hay suficientes asientos ejecutivos disponibles para asignar.");
+                    }
+                    pasaje.setNumeroAsiento(vueloSeleccionado.getCantidadAsientosUsadosEjecutivo()+1);
+                    vueloSeleccionado.incrementarAsientosUsadosEjecutivo(1);
+                } else if (TipoAsiento.TURISTA.equals(tipoAsiento) || TipoAsiento.Turista.equals(tipoAsiento)) {
+                    if (!vueloSeleccionado.hayAsientosDisponiblesTurista(cantidadPasaje)) {
+                        throw new IllegalStateException("ERROR: No hay suficientes asientos turista disponibles para asignar.");
+                    }
+                    pasaje.setNumeroAsiento(vueloSeleccionado.getCantidadAsientosUsadosTurista()+1);
+                    vueloSeleccionado.incrementarAsientosUsadosTurista(1);
+                }
+                else {
+                    throw new IllegalStateException("ERROR: No hay suficientes asientos disponibles para asignar");
+                }
+
 
                 // Establecer la relación bidireccional
                 reserva.getPasajeros().add(pasaje);
@@ -2159,8 +2177,9 @@ public class Sistema implements ISistema {
                 String nombre = pasaje.getNombrePasajero();
                 String apellido = pasaje.getApellidoPasajero();
                 String nicknameCliente = pasaje.getPasajero() != null ? pasaje.getPasajero().getNickname() : null;
-                
-                DTPasajero dtPasajero = new DTPasajero(nombre, apellido, nicknameCliente);
+                int numeroAsiento = pasaje.getNumeroAsiento();
+
+                DTPasajero dtPasajero = new DTPasajero(nombre, apellido, nicknameCliente, numeroAsiento);
                 pasajeros.add(dtPasajero);
             }
         }

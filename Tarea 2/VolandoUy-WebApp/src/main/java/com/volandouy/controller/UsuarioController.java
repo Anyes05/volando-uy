@@ -1265,6 +1265,7 @@ public class UsuarioController extends HttpServlet {
                                             pasajeroInfo.put("nombre", pasajero.getNombre());
                                             pasajeroInfo.put("apellido", pasajero.getApellido());
                                             pasajeroInfo.put("nicknameCliente", pasajero.getNicknameCliente());
+                                            pasajeroInfo.put("numeroAsiento", pasajero.getNumeroAsiento());
                                             pasajerosInfo.add(pasajeroInfo);
                                         }
                                     }

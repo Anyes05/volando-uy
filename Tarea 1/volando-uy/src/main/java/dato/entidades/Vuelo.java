@@ -10,6 +10,7 @@ import logica.DataTypes.DTFecha;
 import dato.converter.DTFechaConverter;
 import logica.DataTypes.DTHora;
 import dato.converter.DTHoraConverter;
+import logica.DataTypes.TipoAsiento;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,12 @@ public class Vuelo {
 
     @Column(nullable = false)
     private int asientosMaxEjecutivo;
+
+    @Column(nullable = false)
+    private int cantidadAsientosUsadosTurista;
+
+    @Column(nullable = false)
+    private int cantidadAsientosUsadosEjecutivo;
 
     @Convert(converter = DTFechaConverter.class)
     private DTFecha fechaAlta;
@@ -71,6 +78,8 @@ public class Vuelo {
         this.asientosMaxEjecutivo = asientosMaxEjecutivo;
         this.fechaAlta = fechaAlta;
         this.foto = foto;
+        this.cantidadAsientosUsadosTurista = asientosMaxEjecutivo;
+        this.cantidadAsientosUsadosEjecutivo = 0;
 
         this.rutaVuelo = null;
         this.reserva = new ArrayList<>();
@@ -160,4 +169,37 @@ public class Vuelo {
     public void setFoto(byte[] foto) {
         this.foto = foto;
     }
+
+    public int getCantidadAsientosUsadosTurista() {
+        return cantidadAsientosUsadosTurista;
+    }
+
+    public void setCantidadAsientosUsadosTurista(int cantidadAsientosUsadosTurista) {
+        this.cantidadAsientosUsadosTurista = cantidadAsientosUsadosTurista;
+    }
+
+    public int getCantidadAsientosUsadosEjecutivo() {
+        return cantidadAsientosUsadosEjecutivo;
+    }
+
+    public void setCantidadAsientosUsadosEjecutivo(int cantidadAsientosUsadosEjecutivo) {
+        this.cantidadAsientosUsadosEjecutivo = cantidadAsientosUsadosEjecutivo;
+    }
+
+    public void incrementarAsientosUsadosTurista(int cantidad) {
+        this.cantidadAsientosUsadosTurista += cantidad;
+    }
+
+    public void incrementarAsientosUsadosEjecutivo(int cantidad) {
+        this.cantidadAsientosUsadosEjecutivo += cantidad;
+    }
+
+    public boolean hayAsientosDisponiblesTurista(int cantidadSolicitada) {
+        return (this.cantidadAsientosUsadosTurista + cantidadSolicitada) < this.asientosMaxTurista + this.asientosMaxEjecutivo;
+    }
+
+    public boolean hayAsientosDisponiblesEjecutivo(int cantidadSolicitada) {
+        return (this.cantidadAsientosUsadosEjecutivo + cantidadSolicitada) < this.asientosMaxEjecutivo;
+    }
+
 }

@@ -6,6 +6,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlType(name = "tipoAsiento")
 @XmlEnum
 public enum TipoAsiento {
-    Turista,
-    Ejecutivo
+    TURISTA, EJECUTIVO, Turista, Ejecutivo;
 }

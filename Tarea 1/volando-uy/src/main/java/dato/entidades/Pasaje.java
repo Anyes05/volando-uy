@@ -37,6 +37,9 @@ public class Pasaje {
     @JoinColumn(name = "reserva_id")
     private Reserva reserva;
 
+    @Column(nullable = false)
+    private int numeroAsiento;
+
     public Pasaje() { // Constuctor vacío
     }
 
@@ -44,9 +47,7 @@ public class Pasaje {
         this.pasajero = pasajero;
         this.reserva = reserva;
         this.tipoAsiento = tipoAsiento;
-        // Establecer nombre y apellido del cliente como pasajero
-//        this.nombrePasajero = pasajero.getNombre();
-//        this.apellidoPasajero = pasajero.getApellido();
+
     }
 
     // Getter y Setter
@@ -104,5 +105,13 @@ public class Pasaje {
 
     public void setApellidoPasajero(String apellidoPasajero) {
         this.apellidoPasajero = apellidoPasajero;
+    }
+
+    public int getNumeroAsiento() {
+        return numeroAsiento;
+    }
+
+    public void setNumeroAsiento(int numeroAsiento) {
+        this.numeroAsiento = numeroAsiento;
     }
 }
