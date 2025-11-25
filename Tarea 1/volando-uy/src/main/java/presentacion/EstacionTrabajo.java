@@ -1,6 +1,7 @@
 package presentacion;
 
 import dato.entidades.Categoria;
+import dato.entidades.RutaVuelo;
 import presentacion.helpers.*;
 import logica.DataTypes.*;
 import logica.clase.Factory;
@@ -25,8 +26,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JTable;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import java.time.LocalDate;
 import java.util.List;
+
+import static presentacion.helpers.EstacionTrabajoHelper.cargarRutasMasVisitadas;
 
 
 public class EstacionTrabajo {
@@ -316,6 +321,7 @@ public class EstacionTrabajo {
 
     //CONSULTAR RUTAS MAS VISITADAS
     private JPanel consultarRutasMasVisitadas;
+    private JScrollPane consultarrutasmasvisitadasjscrollpane;
     private JTable consultarRutasMasVisitadasTable;
 
     byte[] fotoSeleccionada = null;
@@ -415,7 +421,15 @@ public class EstacionTrabajo {
         reservaVueloSeleccionarUsuarioTipoAsiento = new JComboBox<>(TipoAsiento.values());
         reservaVueloSeleccionarUsuarioTipoAsiento.setSelectedIndex(0); // Seleccionar Turista por defecto
 
-    }
+
+        // --- NUEVO: panel, tabla y scroll para "Rutas Más Visitadas"
+        consultarRutasMasVisitadas = new JPanel(new BorderLayout());
+        consultarRutasMasVisitadasTable = new JTable();
+        consultarrutasmasvisitadasjscrollpane = new JScrollPane(consultarRutasMasVisitadasTable);
+
+        consultarRutasMasVisitadas.add(consultarrutasmasvisitadasjscrollpane, BorderLayout.CENTER);
+
+}
 
     private void inicializarComboBoxTipoAsientoPaquete() {
         comboBoxTipoAsientoAgrRutaaPaquete.removeAllItems();
@@ -881,7 +895,15 @@ public class EstacionTrabajo {
                         break;
                     case "Consultar rutas mas visitadas":
                         parentPanel.removeAll();
-                        parentPanel.add(consultarRutasMasVisitadas);
+
+                        // cargar modelo desde el helper
+                        consultarRutasMasVisitadasTable.setModel(
+                                EstacionTrabajoHelper.cargarRutasMasVisitadas()
+                        );
+
+                        // agregar el scroll que contiene la tabla
+                        parentPanel.add(consultarrutasmasvisitadasjscrollpane);
+
                         parentPanel.repaint();
                         parentPanel.revalidate();
                         break;
