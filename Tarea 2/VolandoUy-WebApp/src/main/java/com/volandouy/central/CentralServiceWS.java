@@ -37,12 +37,12 @@ public class CentralServiceWS implements CentralService {
             // Obtener el port usando la interfaz CentralWSPort
             // JAX-WS puede crear un proxy dinámico desde una interfaz
             this.port = service.getPort(CentralWSPort.class);
-            
+
             // Configurar timeout si es necesario
             if (port instanceof BindingProvider) {
                 BindingProvider bp = (BindingProvider) port;
                 Map<String, Object> requestContext = bp.getRequestContext();
-                
+
                 // Timeout de conexión (milisegundos)
                 int timeout = ConfiguracionClienteWS.getTimeout();
                 requestContext.put("com.sun.xml.ws.connect.timeout", timeout);
@@ -65,7 +65,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //      AEROLÍNEAS
+    // AEROLÍNEAS
     // ===========================
 
     @Override
@@ -78,7 +78,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //         CIUDADES
+    // CIUDADES
     // ===========================
 
     @Override
@@ -100,7 +100,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //         RUTAS
+    // RUTAS
     // ===========================
 
     @Override
@@ -140,12 +140,12 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista, 
-            float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen, 
-            String ciudadDestino, DTFecha fechaAlta, List<String> categorias, 
+    public void ingresarDatosRuta(String nombreRuta, String descripcion, float costoTurista,
+            float costoEjecutivo, float costoEquipajeExtra, String ciudadOrigen,
+            String ciudadDestino, DTFecha fechaAlta, List<String> categorias,
             byte[] foto, String videoUrl) {
         try {
-            port.ingresarDatosRuta(nombreRuta, descripcion, costoTurista, costoEjecutivo, 
+            port.ingresarDatosRuta(nombreRuta, descripcion, costoTurista, costoEjecutivo,
                     costoEquipajeExtra, ciudadOrigen, ciudadDestino, fechaAlta, categorias, foto, videoUrl);
         } catch (Exception e) {
             throw new RuntimeException("Error al ingresar datos de ruta: " + e.getMessage(), e);
@@ -170,8 +170,17 @@ public class CentralServiceWS implements CentralService {
         }
     }
 
+    @Override
+    public void incrementarVisitasRuta(String nombreRuta) {
+        try {
+            port.incrementarVisitasRuta(nombreRuta);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al incrementar visitas de ruta: " + e.getMessage(), e);
+        }
+    }
+
     // ===========================
-    //         VUELOS
+    // VUELOS
     // ===========================
 
     @Override
@@ -184,11 +193,11 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo, 
-            DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta, 
+    public DTVuelo ingresarDatosVuelo(String nombre, DTFecha fecha, DTHora horaVuelo,
+            DTHora duracion, int maxTurista, int maxEjecutivo, DTFecha fechaAlta,
             DTRutaVuelo ruta, byte[] foto) {
         try {
-            return port.ingresarDatosVuelo(nombre, fecha, horaVuelo, duracion, maxTurista, 
+            return port.ingresarDatosVuelo(nombre, fecha, horaVuelo, duracion, maxTurista,
                     maxEjecutivo, fechaAlta, ruta, foto);
         } catch (Exception e) {
             throw new RuntimeException("Error al ingresar datos de vuelo: " + e.getMessage(), e);
@@ -205,7 +214,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //         CLIENTES
+    // CLIENTES
     // ===========================
 
     @Override
@@ -254,7 +263,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac, 
+    public void modificarDatosCliente(String nombre, String apellido, DTFecha fechaNac,
             String nacionalidad, TipoDoc tipoDocumento, String numeroDocumento) {
         try {
             port.modificarDatosCliente(nombre, apellido, fechaNac, nacionalidad, tipoDocumento, numeroDocumento);
@@ -273,11 +282,11 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public void altaCliente(String nickname, String nombre, String correo, String apellido, 
-            DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento, 
+    public void altaCliente(String nickname, String nombre, String correo, String apellido,
+            DTFecha fechaNac, String nacionalidad, TipoDoc tipoDocumento,
             String numeroDocumento, byte[] foto, String contrasena) {
         try {
-            port.altaCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad, 
+            port.altaCliente(nickname, nombre, correo, apellido, fechaNac, nacionalidad,
                     tipoDocumento, numeroDocumento, foto, contrasena);
         } catch (Exception e) {
             throw new RuntimeException("Error al dar alta cliente: " + e.getMessage(), e);
@@ -285,7 +294,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion, 
+    public void altaAerolinea(String nickname, String nombre, String correo, String descripcion,
             String linkSitioWeb, byte[] foto, String contrasena) {
         try {
             port.altaAerolinea(nickname, nombre, correo, descripcion, linkSitioWeb, foto, contrasena);
@@ -295,7 +304,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //         RESERVAS
+    // RESERVAS
     // ===========================
 
     @Override
@@ -326,7 +335,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra, 
+    public void datosReserva(TipoAsiento tipoAsiento, int cantidadPasaje, int equipajeExtra,
             List<String> nombresPasajeros, DTFecha fechaReserva) {
         try {
             port.datosReserva(tipoAsiento, cantidadPasaje, equipajeExtra, nombresPasajeros, fechaReserva);
@@ -336,13 +345,23 @@ public class CentralServiceWS implements CentralService {
     }
 
     @Override
-    public void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje, 
-            int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva, 
+    public void datosReservaConPaquete(TipoAsiento tipoAsiento, int cantidadPasaje,
+            int equipajeExtra, List<String> nombresPasajeros, DTFecha fechaReserva,
             Long paqueteId) {
         try {
-            port.datosReservaConPaquete(tipoAsiento, cantidadPasaje, equipajeExtra, nombresPasajeros, fechaReserva, paqueteId);
+            port.datosReservaConPaquete(tipoAsiento, cantidadPasaje, equipajeExtra, nombresPasajeros, fechaReserva,
+                    paqueteId);
         } catch (Exception e) {
             throw new RuntimeException("Error al ingresar datos de reserva con paquete: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<DTReserva> listarReservasCheck(String nicknameCliente) {
+        try {
+            return port.listarDTReservasCheck(nicknameCliente);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al listar reservas con check-in: " + e.getMessage(), e);
         }
     }
 
@@ -364,7 +383,6 @@ public class CentralServiceWS implements CentralService {
         }
     }
 
-
     @Override
     public void realizarCheckIn(Long reservaId) {
         try {
@@ -375,7 +393,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //         PAQUETES
+    // PAQUETES
     // ===========================
 
     @Override
@@ -460,7 +478,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //         UTILIDADES
+    // UTILIDADES
     // ===========================
 
     @Override
@@ -491,7 +509,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //         SEGUIDORES
+    // SEGUIDORES
     // ===========================
 
     @Override
@@ -531,7 +549,7 @@ public class CentralServiceWS implements CentralService {
     }
 
     // ===========================
-    //      ACTUALIZAR FOTO
+    // ACTUALIZAR FOTO
     // ===========================
 
     @Override

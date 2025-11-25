@@ -630,7 +630,7 @@ function initConsultaRutaVuelo() {
     function seleccionarRuta(ruta) {
         const card = event.currentTarget;
 
-        // Si esta ruta ya está seleccionada, deseleccionarla
+        // Si esta ruta ya está selecc ionada, deseleccionarla
         if (rutaSeleccionada && rutaSeleccionada.nombre === ruta.nombre) {
             // Deseleccionar ruta actual
             card.classList.remove('seleccionada');
@@ -649,12 +649,37 @@ function initConsultaRutaVuelo() {
             card.classList.add('seleccionada');
             rutaSeleccionada = ruta;
 
+            // Incrementar contador de visitas
+            incrementarVisitaRuta(ruta.nombre);
+
             // Mostrar detalles de la ruta (imagen y video)
             mostrarDetalleRuta(ruta);
 
             // Cargar vuelos de la ruta
             cargarVuelosRuta(ruta.nombre);
             console.log('Ruta seleccionada:', ruta.nombre);
+        }
+    }
+
+    // Función para incrementar las visitas de una ruta
+    async function incrementarVisitaRuta(nombreRuta) {
+        try {
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/incrementar-visita', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'nombreRuta=' + encodeURIComponent(nombreRuta)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Visita registrada:', data.mensaje);
+            } else {
+                console.warn('No se pudo registrar la visita:', response.status);
+            }
+        } catch (error) {
+            console.error('Error al registrar visita:', error);
         }
     }
 

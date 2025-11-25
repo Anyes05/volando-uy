@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 public class RutaVuelo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;   // Clave primaria
+    private Long id; // Clave primaria
 
     @Column(nullable = false, unique = true)
     private String nombre;
@@ -55,13 +55,12 @@ public class RutaVuelo {
     @Column
     private String videoUrl;
 
+    @Column
+    private Integer visitas = 0;
+
     // Relación con categoría
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "ruta_categoria",
-            joinColumns = @JoinColumn(name = "ruta_id"),
-            inverseJoinColumns = @JoinColumn(name = "categoria_id")
-    )
+    @JoinTable(name = "ruta_categoria", joinColumns = @JoinColumn(name = "ruta_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
     private List<Categoria> categorias;
 
     // Relación con vuelo
@@ -70,19 +69,13 @@ public class RutaVuelo {
 
     // Relación con aerolínea
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "ruta_aerolinea",
-            joinColumns = @JoinColumn(name = "ruta_id"),
-            inverseJoinColumns = @JoinColumn(name = "aerolinea_id")
-    )
+    @JoinTable(name = "ruta_aerolinea", joinColumns = @JoinColumn(name = "ruta_id"), inverseJoinColumns = @JoinColumn(name = "aerolinea_id"))
     private List<Aerolinea> aerolineas;
-
 
     @OneToMany(mappedBy = "rutaVuelo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Cantidad> cantidades;
 
-
-    //relacion con ciudad
+    // relacion con ciudad
     @ManyToOne
     @JoinColumn(name = "ciudad_origen_id")
     private Ciudad ciudadOrigen;
@@ -93,9 +86,29 @@ public class RutaVuelo {
 
     // Constructores
     public RutaVuelo() {
-    }  // Obligatorio para JPA
+    } // Obligatorio para JPA
 
-    public RutaVuelo(String nombre, String descripcion, DTCostoBase costoBase, DTFecha fechaAlta, byte[] foto) { // No sé por qué no estaba fechaAlta como atributo en clase/RutaVuelo, por las dudas esperar para ver como han ido implementando
+    public RutaVuelo(String nombre, String descripcion, DTCostoBase costoBase, DTFecha fechaAlta, byte[] foto) { // No
+                                                                                                                 // sé
+                                                                                                                 // por
+                                                                                                                 // qué
+                                                                                                                 // no
+                                                                                                                 // estaba
+                                                                                                                 // fechaAlta
+                                                                                                                 // como
+                                                                                                                 // atributo
+                                                                                                                 // en
+                                                                                                                 // clase/RutaVuelo,
+                                                                                                                 // por
+                                                                                                                 // las
+                                                                                                                 // dudas
+                                                                                                                 // esperar
+                                                                                                                 // para
+                                                                                                                 // ver
+                                                                                                                 // como
+                                                                                                                 // han
+                                                                                                                 // ido
+                                                                                                                 // implementando
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costoBase = costoBase;
@@ -250,5 +263,13 @@ public class RutaVuelo {
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
+    }
+
+    public Integer getVisitas() {
+        return visitas == null ? 0 : visitas;
+    }
+
+    public void setVisitas(Integer visitas) {
+        this.visitas = (visitas == null ? 0 : visitas);
     }
 }

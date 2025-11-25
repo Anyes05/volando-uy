@@ -5,11 +5,12 @@ import logica.DataTypes.EstadoRutaVuelo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class RutaVueloDAO {
-    private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("volandouyPU");
+    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("volandouyPU");
 
     // Guardar una ruta de vuelo en la Base de Datos
     public void guardar(RutaVuelo rutaVuelo) {
@@ -33,9 +34,8 @@ public class RutaVueloDAO {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT rv FROM RutaVuelo rv WHERE rv.nombre = :nombre",
-                            RutaVuelo.class
-                    )
+                    "SELECT rv FROM RutaVuelo rv WHERE rv.nombre = :nombre",
+                    RutaVuelo.class)
                     .setParameter("nombre", nombre)
                     .getResultStream()
                     .findFirst()
@@ -50,9 +50,8 @@ public class RutaVueloDAO {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT rv FROM RutaVuelo rv WHERE rv.estado = :estado",
-                            RutaVuelo.class
-                    )
+                    "SELECT rv FROM RutaVuelo rv WHERE rv.estado = :estado",
+                    RutaVuelo.class)
                     .setParameter("estado", estado)
                     .getResultList();
         } finally {
@@ -65,12 +64,31 @@ public class RutaVueloDAO {
         EntityManager em = emf.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT rv FROM RutaVuelo rv JOIN rv.aerolineas a WHERE a.nickname = :aerolineaNickname AND rv.estado = :estado",
-                            RutaVuelo.class
-                    )
+                    "SELECT rv FROM RutaVuelo rv JOIN rv.aerolineas a WHERE a.nickname = :aerolineaNickname AND rv.estado = :estado",
+                    RutaVuelo.class)
                     .setParameter("aerolineaNickname", aerolineaNickname)
                     .setParameter("estado", estado)
                     .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    // Listar top 5 rutas más visitadas (incluye NULL como 0)
+    public List<RutaVuelo> listarTop5MasVisitadas() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            List<RutaVuelo> rutas = em.createQuery(
+                            "SELECT rv FROM RutaVuelo rv " +
+                                    "WHERE rv.estado = :estado " +
+                                    "ORDER BY COALESCE(rv.visitas, 0) DESC, rv.nombre ASC",
+                            RutaVuelo.class)
+                    .setParameter("estado", EstadoRutaVuelo.CONFIRMADA)
+                    .setMaxResults(5)
+                    .getResultList();
+
+            // Garantiza nunca devolver null
+            return rutas != null ? rutas : new ArrayList<>();
         } finally {
             em.close();
         }
@@ -92,4 +110,3 @@ public class RutaVueloDAO {
         }
     }
 }
-
