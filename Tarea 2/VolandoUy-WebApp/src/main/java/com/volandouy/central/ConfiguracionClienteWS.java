@@ -6,31 +6,46 @@ import java.util.Properties;
 /**
  * Clase utilitaria para leer la configuración del cliente Web Service desde archivos .properties
  * Esta clase permite configurar la URL del Servidor Central sin hardcodearla en el código.
+ * 
+ * PRIORIDAD DE CARGA:
+ * 1. Intenta cargar desde ~/volandouy/cliente.properties (configuración externa)
+ * 2. Si no existe, intenta cargar desde recursos embebidos /config.properties (para desarrollo)
+ * 3. Si no existe ninguno, usa valores por defecto
  */
 public class ConfiguracionClienteWS {
     
-    private static final String CONFIG_FILE = "/config.properties";
+    private static final String CONFIG_FILE_EMBEDDED = "/config.properties";
     private static Properties propiedades;
     
     static {
         propiedades = new Properties();
-        try {
-            InputStream inputStream = ConfiguracionClienteWS.class.getResourceAsStream(CONFIG_FILE);
-            if (inputStream != null) {
-                propiedades.load(inputStream);
-                inputStream.close();
-            } else {
-                System.err.println("ADVERTENCIA: No se encontró el archivo config.properties. Usando valores por defecto.");
-                // Valores por defecto
+        
+        // Primero intentar cargar desde configuración externa (~/volandouy/cliente.properties)
+        Properties propsExternas = ConfiguracionExterna.cargarConfigCliente();
+        if (!propsExternas.isEmpty()) {
+            propiedades.putAll(propsExternas);
+            System.out.println(">>> Configuración del cliente cargada desde archivo externo.");
+        } else {
+            // Si no existe configuración externa, intentar desde recursos embebidos
+            try {
+                InputStream inputStream = ConfiguracionClienteWS.class.getResourceAsStream(CONFIG_FILE_EMBEDDED);
+                if (inputStream != null) {
+                    propiedades.load(inputStream);
+                    inputStream.close();
+                    System.out.println(">>> Configuración del cliente cargada desde recursos embebidos.");
+                } else {
+                    System.err.println("ADVERTENCIA: No se encontró el archivo config.properties. Usando valores por defecto.");
+                    // Valores por defecto
+                    propiedades.setProperty("servidor.central.url", "http://localhost:8082/centralws");
+                    propiedades.setProperty("servidor.central.timeout", "30000");
+                }
+            } catch (Exception ex) {
+                System.err.println("ERROR al cargar config.properties: " + ex.getMessage());
+                ex.printStackTrace();
+                // Valores por defecto en caso de error
                 propiedades.setProperty("servidor.central.url", "http://localhost:8082/centralws");
                 propiedades.setProperty("servidor.central.timeout", "30000");
             }
-        } catch (Exception e) {
-            System.err.println("ERROR al cargar config.properties: " + e.getMessage());
-            e.printStackTrace();
-            // Valores por defecto en caso de error
-            propiedades.setProperty("servidor.central.url", "http://localhost:8082/centralws");
-            propiedades.setProperty("servidor.central.timeout", "30000");
         }
     }
     

@@ -9,7 +9,7 @@ import java.util.List;
 public class GenericDAO<T> {
 
     public static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("volandouyPU");
+            EntityManagerFactoryConfig.getEntityManagerFactory();
 
     // protected EntityManager em;   // <---- antes estaba private
     private Class<T> entityClass;

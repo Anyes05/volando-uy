@@ -398,11 +398,71 @@ public class EstacionTrabajo {
     public List<String> nombresPasajeros = new ArrayList<>();
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Principal");
-        frame.setContentPane(new EstacionTrabajo().mainPrincipal);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            try {
+                JFrame frame = new JFrame("Estación de Trabajo - VolandoUy");
+                EstacionTrabajo estacion = new EstacionTrabajo();
+                
+                // Intentar acceder al campo mainPrincipal usando reflexión
+                JPanel mainPanel = null;
+                try {
+                    java.lang.reflect.Field field = EstacionTrabajo.class.getDeclaredField("mainPrincipal");
+                    field.setAccessible(true);
+                    mainPanel = (JPanel) field.get(estacion);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    System.err.println(">>> ADVERTENCIA: No se pudo acceder al panel principal usando reflexión: " + e.getMessage());
+                }
+                
+                if (mainPanel != null) {
+                    frame.setContentPane(mainPanel);
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.pack();
+                    frame.setVisible(true);
+                    System.out.println(">>> Estación de Trabajo iniciada correctamente.");
+                } else {
+                    // Si mainPrincipal es null, mostrar un mensaje de error más útil
+                    System.err.println(">>> ERROR: El panel principal (mainPrincipal) es null.");
+                    System.err.println(">>> Los componentes GUI no se inicializaron correctamente.");
+                    System.err.println(">>> ");
+                    System.err.println(">>> SOLUCIÓN: Este problema ocurre cuando se ejecuta desde un JAR.");
+                    System.err.println(">>> La Estación de Trabajo requiere que los componentes GUI se inicialicen");
+                    System.err.println(">>> desde el archivo .form, lo cual solo funciona cuando se ejecuta desde el IDE.");
+                    System.err.println(">>> ");
+                    System.err.println(">>> Para usar la Estación de Trabajo:");
+                    System.err.println(">>> 1. Abra el proyecto en IntelliJ IDEA");
+                    System.err.println(">>> 2. Ejecute EstacionTrabajo.main() desde el IDE");
+                    System.err.println(">>> ");
+                    System.err.println(">>> O use el Web Service con: java -jar servidor.jar ws");
+                    
+                    // Crear un panel de error simple
+                    JPanel errorPanel = new JPanel(new BorderLayout());
+                    JTextArea errorText = new JTextArea(
+                        "ERROR: No se pudo inicializar la Estación de Trabajo.\n\n" +
+                        "Los componentes GUI no se cargaron correctamente.\n\n" +
+                        "Esto ocurre cuando se ejecuta desde un JAR porque los componentes\n" +
+                        "GUI generados por IntelliJ IDEA solo se inicializan correctamente\n" +
+                        "cuando se ejecuta desde el IDE.\n\n" +
+                        "SOLUCIÓN:\n" +
+                        "1. Abra el proyecto en IntelliJ IDEA\n" +
+                        "2. Ejecute EstacionTrabajo.main() desde el IDE\n\n" +
+                        "O use el Web Service con:\n" +
+                        "java -jar servidor.jar ws"
+                    );
+                    errorText.setEditable(false);
+                    errorText.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+                    errorPanel.add(new JScrollPane(errorText), BorderLayout.CENTER);
+                    
+                    frame.setContentPane(errorPanel);
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.setSize(600, 400);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+                }
+            } catch (Exception e) {
+                System.err.println(">>> ERROR crítico al iniciar la Estación de Trabajo: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
 
     private void createUIComponents() {
@@ -774,29 +834,37 @@ public class EstacionTrabajo {
 
         /*----- TABLAS -----*/
         // Columnas de la tabla
-        JScrollPane scroll = new JScrollPane(consultaUsuarioTable1);
-        consultaUsuarioJpanel1.setLayout(new BorderLayout());
-        consultaUsuarioJpanel1.add(scroll, BorderLayout.CENTER);
+        // Verificar que los componentes GUI estén inicializados antes de usarlos
+        if (consultaUsuarioTable1 != null && consultaUsuarioJpanel1 != null) {
+            JScrollPane scroll = new JScrollPane(consultaUsuarioTable1);
+            consultaUsuarioJpanel1.setLayout(new BorderLayout());
+            consultaUsuarioJpanel1.add(scroll, BorderLayout.CENTER);
+        }
 
-        JScrollPane scroll3 = new JScrollPane(modificarUsuariotable1);
-        modificarUsuarioJPanel1.setLayout(new BorderLayout());
-        modificarUsuarioJPanel1.add(scroll3, BorderLayout.CENTER);
+        if (modificarUsuariotable1 != null && modificarUsuarioJPanel1 != null) {
+            JScrollPane scroll3 = new JScrollPane(modificarUsuariotable1);
+            modificarUsuarioJPanel1.setLayout(new BorderLayout());
+            modificarUsuarioJPanel1.add(scroll3, BorderLayout.CENTER);
+        }
 
 
         /*----- PANEL DE BOTONES -----*/
         //Boton de inicio
-        botonInicio.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentPanel.removeAll();
-                parentPanel.add(principalVacio);
-                parentPanel.repaint();
-                parentPanel.revalidate();
-            }
-        });
+        if (botonInicio != null && parentPanel != null && principalVacio != null) {
+            botonInicio.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    parentPanel.removeAll();
+                    parentPanel.add(principalVacio);
+                    parentPanel.repaint();
+                    parentPanel.revalidate();
+                }
+            });
+        }
 
         /*----- MENU DE VUELOS Y RUTAS -----*/
-        comboBoxVuelos.addActionListener(new ActionListener() {
+        if (comboBoxVuelos != null) {
+            comboBoxVuelos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String seleccionado = (String) comboBoxVuelos.getSelectedItem();
@@ -924,9 +992,11 @@ public class EstacionTrabajo {
                 }
             }
         });
+        }
 
         /*----- MENU DE PAQUETE -----*/
-        comboBoxPaquetes.addActionListener(new ActionListener() {
+        if (comboBoxPaquetes != null) {
+            comboBoxPaquetes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String seleccionado = (String) comboBoxPaquetes.getSelectedItem();
@@ -974,9 +1044,11 @@ public class EstacionTrabajo {
                 }
             }
         });
+        }
 
         /*----- MENU DE USUARIO -----*/
-        comboBoxUsuario.addActionListener(new ActionListener() {
+        if (comboBoxUsuario != null) {
+            comboBoxUsuario.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String seleccionado = (String) comboBoxUsuario.getSelectedItem();
@@ -1043,10 +1115,13 @@ public class EstacionTrabajo {
                 }
             }
         });
+        }
+        
         /*----- PRECARGA COMPLETA DEL SISTEMA -----*/
         // Agregar botón de precarga completa al toolbar principal
-        JButton precargarCompletoButton = new JButton("Precargar Sistema Completo");
-        JToolBarPrincipal.add(precargarCompletoButton);
+        if (JToolBarPrincipal != null) {
+            JButton precargarCompletoButton = new JButton("Precargar Sistema Completo");
+            JToolBarPrincipal.add(precargarCompletoButton);
 
 
         precargarCompletoButton.addActionListener(new ActionListener() {
@@ -1074,9 +1149,12 @@ public class EstacionTrabajo {
                 }
             }
         });
+        }
+        
         /*----- ALTA CLIENTE -----*/
         //Boton de entrada
-        ButtonCrearNuevoCliente.addActionListener(new ActionListener() {
+        if (ButtonCrearNuevoCliente != null && parentPanel != null && altaCliente != null) {
+            ButtonCrearNuevoCliente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 parentPanel.removeAll();
@@ -2937,5 +3015,6 @@ public class EstacionTrabajo {
                 }
             }
         });
+        }
     }
 }
