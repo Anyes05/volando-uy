@@ -131,6 +131,7 @@ public class UsuarioHelper {
     // CAMBIAR PANEL
 
     public static void cambiarPanel(JPanel parentPanel, JPanel panelNuevo) {
+        if (parentPanel == null || panelNuevo == null) return;
         parentPanel.removeAll();
         parentPanel.add(panelNuevo);
         parentPanel.repaint();
@@ -374,13 +375,17 @@ public class UsuarioHelper {
     // LIMPIEZA
     public static void limpiarCampos(JTextField... campos) {
         for (JTextField campo : campos) {
-            campo.setText("");
+            if (campo != null) {
+                campo.setText("");
+            }
         }
     }
 
     public static void limpiarTextPane(JTextPane... panes) {
         for (JTextPane pane : panes) {
-            pane.setText("");
+            if (pane != null) {
+                pane.setText("");
+            }
         }
     }
 

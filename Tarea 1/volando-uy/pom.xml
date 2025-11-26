@@ -106,6 +106,16 @@
 
         <!-- ========================= -->
 
+        <!-- IntelliJ Forms Runtime (JAR local) -->
+        <!-- IMPORTANTE: Copiar forms_rt.jar desde IntelliJ IDEA/lib/ a lib/forms_rt.jar -->
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>forms_rt</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/forms_rt.jar</systemPath>
+        </dependency>
+
         <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -116,7 +126,41 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.form</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
+            <!-- Plugin para descomprimir forms_rt.jar en target/classes antes del shade -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-forms-rt</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <unzip src="${project.basedir}/lib/forms_rt.jar" dest="${project.build.directory}/classes" overwrite="true" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Surefire para ejecutar tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -219,6 +263,8 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <!-- forms_rt.jar se descomprime en target/classes antes del shade -->
+                            <!-- El shade incluirá automáticamente todo lo que esté en target/classes -->
                         </configuration>
                     </execution>
                 </executions>

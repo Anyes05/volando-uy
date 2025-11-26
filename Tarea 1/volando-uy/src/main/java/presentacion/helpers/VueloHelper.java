@@ -474,7 +474,9 @@ public class VueloHelper {
     //----------LIMPIEZA-----------
     public static void limpiarCampos(JTextArea... campos) {
         for (JTextArea campo : campos) {
-            campo.setText("");
+            if (campo != null) {
+                campo.setText("");
+            }
         }
     }
 
