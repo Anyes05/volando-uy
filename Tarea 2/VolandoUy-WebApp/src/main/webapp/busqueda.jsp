@@ -1,91 +1,217 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div class="busqueda-wrapper">
-  <div class="contenido-principal busqueda-contenedor">
-    <section class="reserve-section">
-      <div class="reserve-card busqueda-card">
+<div class="contenido-principal busqueda-wrapper">
+  <!-- HERO SUPERIOR, ESTILO PORTADA -->
+  <section class="busqueda-hero">
+    <div class="busqueda-hero-left">
+      <h1 class="busqueda-title">
+        <i class="fas fa-search"></i>
+        Resultados de búsqueda
+      </h1>
+      <p class="busqueda-subtitle">
+        Estás viendo resultados para
+        <strong>"<c:out value="${param.q}" />"</strong>.
+        Te mostramos rutas de vuelo y paquetes que coinciden con tu búsqueda.
+      </p>
+    </div>
 
-        <!-- HEADER -->
-        <div class="reserve-header">
-          <div class="header-content">
-            <h1>
-              <i class="fas fa-search"></i>
-              Resultados de búsqueda
-            </h1>
-            <p class="reserve-sub">
-              Estás viendo resultados para
-              <strong>"<c:out value="${param.q}" />"</strong>.
-              Encontramos rutas de vuelo y paquetes que coinciden con tu búsqueda.
-            </p>
-          </div>
+    <div class="busqueda-hero-right">
+      <!-- Botón para volver al home -->
+      <a href="<c:url value='inicio.jsp' />" class="btn-volver-home">
+        <i class="fas fa-home"></i>
+        Volver al inicio
+      </a>
+    </div>
+  </section>
+
+  <!-- SECCIÓN PRINCIPAL DE RESULTADOS -->
+  <section class="busqueda-section">
+    <div class="busqueda-card">
+      <!-- Barra de orden / info -->
+      <div class="search-toolbar">
+        <div class="search-toolbar-left">
+          <i class="fas fa-filter"></i>
+          <span>Resultados:</span>
+          <span class="search-count" id="search-count">0</span>
         </div>
-
-        <!-- CUERPO DE BÚSQUEDA -->
-        <div class="search-body">
-          <!-- Barra de orden / info -->
-          <div class="search-toolbar">
-            <div class="search-toolbar-left">
-              <i class="fas fa-filter"></i>
-              <span>Resultados:</span>
-              <span class="search-count" id="search-count">0</span>
-            </div>
-            <div class="search-toolbar-right">
-              <label for="orden-select" class="orden-label">Ordenar por</label>
-              <select id="orden-select" class="orden-select">
-                <option value="fecha">Por defecto (Fecha más reciente)</option>
-                <option value="alfabetico">Alfabético (A-Z)</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- LISTA DE RESULTADOS -->
-          <div id="resultados-list" class="resultados-list"></div>
+        <div class="search-toolbar-right">
+          <label for="orden-select" class="orden-label">Ordenar por</label>
+          <select id="orden-select" class="orden-select">
+            <option value="fecha">Por defecto (Fecha más reciente)</option>
+            <option value="alfabetico">Alfabético (A-Z)</option>
+          </select>
         </div>
-
       </div>
-    </section>
-  </div>
+
+      <!-- LISTA DE RESULTADOS -->
+      <div id="resultados-list" class="resultados-list"></div>
+    </div>
+  </section>
 </div>
 
 <style>
-  /* ====== FONDO ESTILIZADO PARA BÚSQUEDA ====== */
-  .busqueda-wrapper {
-    width: 100%;
-    padding: 20px 0 30px;
+  /* ===== FONDO GENERAL TIPO "CONSULTA DE VUELO" ===== */
+  body {
+    margin: 0;
+    /* Fondo oscuro con degradado estilo VolandoUY */
     background:
-      radial-gradient(circle at 0% 0%, rgba(1, 170, 245, 0.22) 0, transparent 40%),
-      radial-gradient(circle at 100% 0%, rgba(34, 152, 202, 0.18) 0, transparent 45%),
-      radial-gradient(circle at 0% 100%, rgba(15, 23, 42, 0.95) 0, #020617 60%);
+      radial-gradient(circle at 0% 0%, #0b2937 0%, #051821 40%, #020910 100%);
+    color: #e5e7eb;
   }
 
-  /* ====== CONTEXTO GENERAL BÚSQUEDA ====== */
-  .busqueda-contenedor {
+  /* El wrapper de contenido en esta página no debe tener fondo blanco */
+  .contenido-principal.busqueda-wrapper {
+    background: transparent;
+    padding: 24px 40px 40px;
+    min-height: calc(100vh - 80px); /* ajustá si tenés header/footer altos */
+    box-sizing: border-box;
+  }
+
+  /* ===== CONTEXTO GENERAL ===== */
+  .busqueda-wrapper {
     font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
-  .busqueda-card {
-    padding: 2.2rem 2rem;
+  /* ===== HERO SUPERIOR (similar portada) ===== */
+  .busqueda-hero {
+    background: linear-gradient(135deg, #2298ca 0%, #36b0e8 60%, #2ab0d8 100%);
+    border-radius: 24px;
+    padding: 1.6rem 2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
   }
 
-  .busqueda-card .reserve-header {
-    margin-bottom: 1.75rem;
+  .busqueda-hero::before {
+    content: '';
+    position: absolute;
+    inset: -40%;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(255,255,255,0.20), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(255,255,255,0.10), transparent 55%);
+    opacity: 0.7;
+    pointer-events: none;
   }
 
-  .busqueda-card .header-content h1 {
-    font-size: 2rem;
+  .busqueda-hero-left,
+  .busqueda-hero-right {
+    position: relative;
+    z-index: 1;
   }
 
-  .busqueda-card .reserve-sub strong {
-    color: #01aaf5;
+  .busqueda-title {
+    margin: 0;
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: #f9fafb;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  .busqueda-title i {
+    font-size: 1.9rem;
+  }
+
+  .busqueda-subtitle {
+    margin: 0.6rem 0 0 0;
+    color: #eaf6fb;
+    font-size: 1.02rem;
+    max-width: 600px;
+  }
+
+  .busqueda-subtitle strong {
+    color: #0b1120;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
     font-weight: 700;
   }
 
-  /* ====== BARRA SUPERIOR (FILTRO / INFO) ====== */
-  .search-body {
+  .busqueda-hero-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .btn-volver-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    border: 2px solid rgba(15, 23, 42, 0.12);
+    background: rgba(15, 23, 42, 0.18);
+    color: #f9fafb;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.45);
+    transition: all 0.25s ease;
+    backdrop-filter: blur(10px);
+    white-space: nowrap;
+  }
+
+  .btn-volver-home i {
+    font-size: 1rem;
+  }
+
+  .btn-volver-home:hover {
+    background: rgba(15, 23, 42, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.7);
+  }
+
+  .btn-volver-home:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.6);
+  }
+
+  /* ===== SECCIÓN PRINCIPAL / CARD ===== */
+  .busqueda-section {
     margin-top: 0.5rem;
   }
 
+  .busqueda-card {
+    background:
+      radial-gradient(circle at top left, rgba(34,152,202,0.3), transparent 55%),
+      radial-gradient(circle at bottom right, rgba(1,170,245,0.32), transparent 60%),
+      linear-gradient(135deg, #32434b 0%, #1b262d 100%);
+    border-radius: 22px;
+    padding: 1.7rem 1.6rem 1.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .busqueda-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255,255,255,0.05) 0%,
+      transparent 45%,
+      rgba(255,255,255,0.02) 100%
+    );
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  .busqueda-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== BARRA SUPERIOR (FILTRO / INFO) ===== */
   .search-toolbar {
     display: flex;
     justify-content: space-between;
@@ -93,28 +219,28 @@
     gap: 1rem;
     margin-bottom: 1.25rem;
     padding: 0.9rem 1.1rem;
-    border-radius: 14px;
+    border-radius: 16px;
     background: linear-gradient(
       135deg,
-      rgba(1, 170, 245, 0.12) 0%,
-      rgba(34, 152, 202, 0.06) 36%,
-      rgba(5, 24, 35, 0.9) 100%
+      rgba(1,170,245,0.18) 0%,
+      rgba(34,152,202,0.12) 35%,
+      rgba(5,24,35,0.95) 100%
     );
-    border: 1px solid rgba(34, 152, 202, 0.55);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(34, 152, 202, 0.65);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
   }
 
   .search-toolbar-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     color: #eaf6fb;
-    font-size: 0.95rem;
+    font-size: 0.96rem;
   }
 
   .search-toolbar-left i {
-    color: #01aaf5;
-    font-size: 1rem;
+    color: #7dd3fc;
+    font-size: 1.05rem;
   }
 
   .search-count {
@@ -136,13 +262,13 @@
   .orden-select {
     padding: 0.45rem 0.9rem;
     border-radius: 999px;
-    border: 2px solid rgba(34, 152, 202, 0.6);
-    background: rgba(42, 58, 66, 0.95);
+    border: 2px solid rgba(34, 152, 202, 0.7);
+    background: rgba(15, 23, 42, 0.95);
     color: #eaf6fb;
     font-size: 0.9rem;
     outline: none;
     transition: all 0.25s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
     min-width: 220px;
   }
 
@@ -152,12 +278,12 @@
 
   .orden-select:focus {
     border-color: #01aaf5;
-    box-shadow: 0 0 24px rgba(1, 170, 245, 0.45);
+    box-shadow: 0 0 26px rgba(1, 170, 245, 0.5);
   }
 
-  /* ====== GRID DE RESULTADOS ====== */
+  /* ===== GRID DE RESULTADOS ===== */
   .resultados-list {
-    margin-top: 1rem;
+    margin-top: 1.1rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
     gap: 1.2rem;
@@ -165,13 +291,14 @@
 
   .resultado-card {
     position: relative;
-    background: radial-gradient(circle at top left, rgba(34,152,202,0.25), transparent 55%),
-                radial-gradient(circle at bottom right, rgba(1,170,245,0.25), transparent 60%),
-                linear-gradient(145deg, #32434b 0%, #1e2a30 100%);
-    border-radius: 14px;
+    background:
+      radial-gradient(circle at top left, rgba(34,152,202,0.28), transparent 55%),
+      radial-gradient(circle at bottom right, rgba(1,170,245,0.22), transparent 60%),
+      linear-gradient(145deg, #32434b 0%, #101820 100%);
+    border-radius: 16px;
     padding: 1rem 1rem 0.9rem;
-    border: 1px solid rgba(125, 211, 252, 0.45);
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
     color: #eaf6fb;
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
@@ -184,7 +311,7 @@
     background: linear-gradient(
       135deg,
       rgba(255,255,255,0.06) 0%,
-      transparent 40%,
+      transparent 45%,
       rgba(255,255,255,0.03) 100%
     );
     pointer-events: none;
@@ -198,7 +325,7 @@
 
   .resultado-card:hover {
     transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 22px 50px rgba(0,0,0,0.8);
+    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.95);
     border-color: rgba(1,170,245,0.9);
   }
 
@@ -211,11 +338,11 @@
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.9);
     border: 1px solid rgba(125, 211, 252, 0.9);
     color: #e0f2fe;
     margin-bottom: 0.35rem;
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.9);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.95);
   }
 
   .resultado-tipo-chip i {
@@ -228,13 +355,13 @@
     font-size: 1.05rem;
     font-weight: 600;
     color: #f9fafb;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
   }
 
   .resultado-descripcion {
     margin: 0;
     font-size: 0.9rem;
-    color: rgba(226, 232, 240, 0.95);
+    color: rgba(226, 232, 240, 0.96);
     line-height: 1.5;
   }
 
@@ -265,12 +392,12 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 1.8rem 1rem;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #2a3a42 0%, #182026 100%);
-    border: 1px solid rgba(248, 250, 252, 0.1);
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2a3a42 0%, #141c22 100%);
+    border: 1px solid rgba(248, 250, 252, 0.12);
     color: #eaf6fb;
     font-size: 0.95rem;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.8);
   }
 
   .sin-resultados i {
@@ -278,21 +405,44 @@
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
     color: #7dd3fc;
-    opacity: 0.9;
+    opacity: 0.95;
   }
 
   .sin-resultados p {
     margin: 0.2rem 0;
   }
 
-  /* ====== RESPONSIVE ====== */
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 992px) {
+    .busqueda-hero {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.5rem 1.4rem;
+    }
+
+    .busqueda-hero-right {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
     .busqueda-card {
-      padding: 1.75rem 1.4rem;
+      padding: 1.5rem 1.3rem;
+    }
+
+    .contenido-principal.busqueda-wrapper {
+      padding: 20px;
     }
   }
 
   @media (max-width: 768px) {
+    .busqueda-title {
+      font-size: 1.7rem;
+    }
+
+    .busqueda-subtitle {
+      font-size: 0.97rem;
+    }
+
     .search-toolbar {
       flex-direction: column;
       align-items: flex-start;
@@ -314,16 +464,30 @@
   }
 
   @media (max-width: 480px) {
-    .busqueda-card {
-      padding: 1.3rem 0.9rem;
+    .busqueda-hero {
+      padding: 1.2rem 1rem;
+      border-radius: 18px;
     }
 
-    .busqueda-card .header-content h1 {
+    .busqueda-title {
       font-size: 1.5rem;
     }
 
-    .busqueda-card .reserve-sub {
+    .busqueda-card {
+      padding: 1.2rem 0.9rem;
+    }
+
+    .busqueda-subtitle {
       font-size: 0.9rem;
+    }
+
+    .btn-volver-home {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .contenido-principal.busqueda-wrapper {
+      padding: 16px;
     }
   }
 </style>
@@ -368,7 +532,7 @@
           "<div class='sin-resultados'>" +
             "<i class='fas fa-info-circle'></i>" +
             "<p>No se encontraron rutas de vuelo ni paquetes que coincidan con tu búsqueda.</p>" +
-            "<p>Proba con otro término o usando palabras más generales.</p>" +
+            "<p>Probá con otro término o usando palabras más generales.</p>" +
           "</div>";
         return;
       }
