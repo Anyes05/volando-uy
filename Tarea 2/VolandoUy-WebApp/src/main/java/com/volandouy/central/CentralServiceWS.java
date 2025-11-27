@@ -339,6 +339,8 @@ public class CentralServiceWS implements CentralService {
             List<String> nombresPasajeros, DTFecha fechaReserva) {
         try {
             port.datosReserva(tipoAsiento, cantidadPasaje, equipajeExtra, nombresPasajeros, fechaReserva);
+        } catch (jakarta.xml.ws.soap.SOAPFaultException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al ingresar datos de reserva: " + e.getMessage(), e);
         }
@@ -351,6 +353,8 @@ public class CentralServiceWS implements CentralService {
         try {
             port.datosReservaConPaquete(tipoAsiento, cantidadPasaje, equipajeExtra, nombresPasajeros, fechaReserva,
                     paqueteId);
+        } catch (jakarta.xml.ws.soap.SOAPFaultException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al ingresar datos de reserva con paquete: " + e.getMessage(), e);
         }

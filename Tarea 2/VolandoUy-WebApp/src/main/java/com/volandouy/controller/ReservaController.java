@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.volandouy.central.CentralService;
 import com.volandouy.central.ServiceFactory;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import logica.DataTypes.*;
 
 /**
@@ -32,11 +33,11 @@ import logica.DataTypes.*;
 public class ReservaController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(ReservaController.class.getName());
-    
+
     private ObjectMapper objectMapper = new ObjectMapper();
     private List<Object> reservas;
     private CentralService centralService;
-    
+
     private CentralService getCentralService() {
         if (centralService == null) {
             try {
@@ -70,15 +71,15 @@ public class ReservaController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
+
         String pathInfo = request.getPathInfo();
         PrintWriter out = response.getWriter();
-        
+
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
                 // Devolver todas las reservas del cliente autenticado
@@ -132,7 +133,9 @@ public class ReservaController extends HttpServlet {
             e.printStackTrace();
             try {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail", e.getMessage() != null ? e.getMessage().replaceAll("[\\r\\n]", " ").trim() : "Error desconocido")));
+                out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail",
+                        e.getMessage() != null ? e.getMessage().replaceAll("[\\r\\n]", " ").trim()
+                                : "Error desconocido")));
             } catch (Exception ex) {
                 LOG.severe("Error crítico al enviar respuesta de error en doGet: " + ex.getMessage());
                 ex.printStackTrace();
@@ -149,27 +152,27 @@ public class ReservaController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         // Establecer content type y encoding ANTES de cualquier operación
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
+
         PrintWriter out = null;
         try {
             out = response.getWriter();
-            
+
             // Leer el cuerpo de la petición
             String body = request.getReader().lines().collect(Collectors.joining());
             LOG.info("Datos recibidos para nueva reserva: " + body);
-            
+
             // Parsear el JSON de la nueva reserva
             Map<String, Object> reservaData = objectMapper.readValue(body, Map.class);
-            
+
             // Crear la reserva usando el sistema
             handleCrearReserva(reservaData, request, response, out);
-            
+
         } catch (Exception e) {
             LOG.severe("Error en doPost: " + e.getMessage());
             e.printStackTrace();
@@ -178,7 +181,9 @@ public class ReservaController extends HttpServlet {
                     out = response.getWriter();
                 }
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print(serializarJSON(Map.of("error", "Error al procesar la petición", "detail", e.getMessage() != null ? e.getMessage().replaceAll("[\\r\\n]", " ").trim() : "Error desconocido")));
+                out.print(serializarJSON(Map.of("error", "Error al procesar la petición", "detail",
+                        e.getMessage() != null ? e.getMessage().replaceAll("[\\r\\n]", " ").trim()
+                                : "Error desconocido")));
                 out.flush();
             } catch (Exception ex) {
                 LOG.severe("Error crítico al enviar respuesta de error: " + ex.getMessage());
@@ -202,7 +207,8 @@ public class ReservaController extends HttpServlet {
         try {
             InputStream inputStream = getServletContext().getResourceAsStream("/json/reservas.json");
             if (inputStream != null) {
-                reservas = objectMapper.readValue(inputStream, new TypeReference<List<Object>>() {});
+                reservas = objectMapper.readValue(inputStream, new TypeReference<List<Object>>() {
+                });
                 inputStream.close();
             } else {
                 reservas = new java.util.ArrayList<>();
@@ -218,10 +224,11 @@ public class ReservaController extends HttpServlet {
     /**
      * Obtiene las aerolíneas disponibles para hacer reservas
      */
-    private void handleGetAerolineas(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetAerolineas(HttpServletRequest request, HttpServletResponse response, PrintWriter out)
+            throws IOException {
         try {
             List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
-            
+
             // Crear una lista simplificada para el frontend
             List<Map<String, Object>> aerolineasSimplificadas = new ArrayList<>();
             for (DTAerolinea aerolinea : aerolineas) {
@@ -231,26 +238,28 @@ public class ReservaController extends HttpServlet {
                 aerolineaMap.put("descripcion", aerolinea.getDescripcion());
                 aerolineasSimplificadas.add(aerolineaMap);
             }
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(aerolineasSimplificadas));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener aerolíneas: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener aerolíneas", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener aerolíneas", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Obtiene las rutas de vuelo de una aerolínea específica
      */
-    private void handleGetRutasPorAerolinea(String aerolineaNickname, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetRutasPorAerolinea(String aerolineaNickname, HttpServletRequest request,
+            HttpServletResponse response, PrintWriter out) throws IOException {
         try {
             // Usar la función correcta del sistema que existe realmente
             List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(aerolineaNickname);
-            
+
             // Las rutas ya vienen filtradas por CONFIRMADA desde el sistema
             List<Map<String, Object>> rutasDisponibles = new ArrayList<>();
             for (DTRutaVuelo ruta : rutas) {
@@ -261,25 +270,27 @@ public class ReservaController extends HttpServlet {
                 rutaMap.put("ciudadDestino", ruta.getCiudadDestino().getNombre());
                 rutasDisponibles.add(rutaMap);
             }
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(rutasDisponibles));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener rutas de aerolínea " + aerolineaNickname + ": " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener rutas de la aerolínea", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener rutas de la aerolínea", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Obtiene los vuelos disponibles de una ruta específica
      */
-    private void handleGetVuelosPorRuta(String rutaNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetVuelosPorRuta(String rutaNombre, HttpServletRequest request, HttpServletResponse response,
+            PrintWriter out) throws IOException {
         try {
             List<DTVuelo> vuelos = getCentralService().listarVuelosDeRuta(rutaNombre);
-            
+
             // Crear lista simplificada de vuelos disponibles
             List<Map<String, Object>> vuelosDisponibles = new ArrayList<>();
             for (DTVuelo vuelo : vuelos) {
@@ -292,27 +303,29 @@ public class ReservaController extends HttpServlet {
                 vueloMap.put("asientosMaxEjecutivo", vuelo.getAsientosMaxEjecutivo());
                 vuelosDisponibles.add(vueloMap);
             }
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(vuelosDisponibles));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener vuelos de ruta " + rutaNombre + ": " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener vuelos de la ruta", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener vuelos de la ruta", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Obtiene los detalles completos de un vuelo específico
      */
-    private void handleGetDetalleVuelo(String vueloNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetDetalleVuelo(String vueloNombre, HttpServletRequest request, HttpServletResponse response,
+            PrintWriter out) throws IOException {
         try {
             // Buscar el vuelo entre todas las aerolíneas y rutas de forma más eficiente
             DTVuelo vuelo = null;
             List<DTAerolinea> aerolineas = getCentralService().listarAerolineas();
-            
+
             // Buscar el vuelo entre todas las aerolíneas y rutas
             outer: for (DTAerolinea aerolinea : aerolineas) {
                 List<DTRutaVuelo> rutas = getCentralService().listarRutasPorAerolinea(aerolinea.getNickname());
@@ -326,7 +339,7 @@ public class ReservaController extends HttpServlet {
                     }
                 }
             }
-            
+
             if (vuelo == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.print(serializarJSON(Map.of("error", "Vuelo no encontrado")));
@@ -341,7 +354,7 @@ public class ReservaController extends HttpServlet {
             detalleVuelo.put("duracion", vuelo.getDuracion().toString());
             detalleVuelo.put("asientosMaxTurista", vuelo.getAsientosMaxTurista());
             detalleVuelo.put("asientosMaxEjecutivo", vuelo.getAsientosMaxEjecutivo());
-            
+
             // Información de la ruta
             if (vuelo.getRuta() != null) {
                 Map<String, Object> rutaInfo = new HashMap<>();
@@ -352,22 +365,24 @@ public class ReservaController extends HttpServlet {
                 rutaInfo.put("costoEquipajeExtra", vuelo.getRuta().getCostoBase().getCostoEquipajeExtra());
                 detalleVuelo.put("ruta", rutaInfo);
             }
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(detalleVuelo));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener detalles del vuelo " + vueloNombre + ": " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener detalles del vuelo", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener detalles del vuelo", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Obtiene los paquetes disponibles del cliente autenticado
      */
-    private void handleGetPaquetesCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetPaquetesCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out)
+            throws IOException {
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -386,22 +401,24 @@ public class ReservaController extends HttpServlet {
             // Obtener todos los paquetes del cliente (sin filtro de ruta)
             // Por ahora devolver lista vacía hasta implementar método específico
             List<DTPaqueteVuelos> paquetesCliente = new ArrayList<>();
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(paquetesCliente));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener paquetes del cliente: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener paquetes del cliente", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener paquetes del cliente", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Obtiene los paquetes del cliente que incluyen una ruta específica
      */
-    private void handleGetPaquetesClienteParaRuta(String rutaNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetPaquetesClienteParaRuta(String rutaNombre, HttpServletRequest request,
+            HttpServletResponse response, PrintWriter out) throws IOException {
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -418,26 +435,30 @@ public class ReservaController extends HttpServlet {
             }
 
             // Obtener paquetes del cliente que incluyen la ruta especificada
-            List<DTPaqueteVuelos> paquetesCliente = getCentralService().obtenerPaquetesClienteParaRuta(nicknameCliente, rutaNombre);
-            
+            List<DTPaqueteVuelos> paquetesCliente = getCentralService().obtenerPaquetesClienteParaRuta(nicknameCliente,
+                    rutaNombre);
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(paquetesCliente));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener paquetes del cliente para ruta: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener paquetes del cliente para la ruta", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener paquetes del cliente para la ruta", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
-     * Obtiene la lista de todos los clientes disponibles para ser seleccionados como pasajeros
+     * Obtiene la lista de todos los clientes disponibles para ser seleccionados
+     * como pasajeros
      */
-    private void handleGetClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetClientes(HttpServletRequest request, HttpServletResponse response, PrintWriter out)
+            throws IOException {
         try {
             LOG.info("Iniciando handleGetClientes");
-            
+
             // Verificar autenticación
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -460,11 +481,12 @@ public class ReservaController extends HttpServlet {
             // Obtener todos los clientes del sistema
             List<DTCliente> clientes = getCentralService().listarClientes();
             LOG.info("Clientes obtenidos del sistema: " + clientes.size());
-            
+
             // Crear lista simplificada para el frontend (excluyendo al cliente principal)
             List<Map<String, Object>> clientesDisponibles = new ArrayList<>();
             for (DTCliente cliente : clientes) {
-                // Excluir al cliente que está haciendo la reserva (ya está incluido automáticamente)
+                // Excluir al cliente que está haciendo la reserva (ya está incluido
+                // automáticamente)
                 if (!cliente.getNickname().equals(nicknameCliente)) {
                     Map<String, Object> clienteMap = new HashMap<>();
                     clienteMap.put("nickname", cliente.getNickname());
@@ -474,30 +496,32 @@ public class ReservaController extends HttpServlet {
                     clientesDisponibles.add(clienteMap);
                 }
             }
-            
+
             LOG.info("Clientes disponibles para pasajeros: " + clientesDisponibles.size());
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(clientesDisponibles));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener clientes: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener clientes", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener clientes", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Endpoint de prueba para obtener clientes (sin autenticación)
      */
-    private void handleGetClientesTest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetClientesTest(HttpServletRequest request, HttpServletResponse response, PrintWriter out)
+            throws IOException {
         try {
             LOG.info("Iniciando handleGetClientesTest");
-            
+
             // Obtener todos los clientes del sistema
             List<DTCliente> clientes = getCentralService().listarClientes();
             LOG.info("Clientes obtenidos del sistema: " + clientes.size());
-            
+
             // Crear lista simplificada para el frontend
             List<Map<String, Object>> clientesDisponibles = new ArrayList<>();
             for (DTCliente cliente : clientes) {
@@ -508,23 +532,25 @@ public class ReservaController extends HttpServlet {
                 clienteMap.put("email", cliente.getCorreo());
                 clientesDisponibles.add(clienteMap);
             }
-            
+
             LOG.info("Clientes disponibles: " + clientesDisponibles.size());
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(clientesDisponibles));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al obtener clientes (test): " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener clientes", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener clientes", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Verifica si ya existe una reserva del cliente para un vuelo específico
      */
-    private void handleVerificarReservaExistente(String vueloNombre, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleVerificarReservaExistente(String vueloNombre, HttpServletRequest request,
+            HttpServletResponse response, PrintWriter out) throws IOException {
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -556,26 +582,29 @@ public class ReservaController extends HttpServlet {
                 LOG.warning("Error al buscar reservas existentes: " + e.getMessage());
                 existeReserva = false;
             }
-            
+
             Map<String, Object> resultado = new HashMap<>();
             resultado.put("existeReserva", existeReserva);
-            resultado.put("opciones", new String[]{"cambiar_aerolinea", "cambiar_ruta", "cambiar_vuelo", "cancelar"});
-            
+            resultado.put("opciones",
+                    new String[] { "cambiar_aerolinea", "cambiar_ruta", "cambiar_vuelo", "cancelar" });
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.print(serializarJSON(resultado));
-            
+
         } catch (Exception e) {
             LOG.severe("Error al verificar reserva existente: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al verificar reserva existente", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al verificar reserva existente", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Crea una nueva reserva con todos los datos proporcionados
      */
-    private void handleCrearReserva(Map<String, Object> reservaData, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleCrearReserva(Map<String, Object> reservaData, HttpServletRequest request,
+            HttpServletResponse response, PrintWriter out) throws IOException {
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -614,7 +643,7 @@ public class ReservaController extends HttpServlet {
             // Crear lista de nombres de pasajeros - incluir al cliente principal
             List<String> nombresPasajeros = new ArrayList<>();
             nombresPasajeros.add(nicknameCliente); // Agregar el cliente principal primero
-            
+
             // Agregar pasajeros adicionales usando sus nicknames
             if (pasajeros != null && !pasajeros.isEmpty()) {
                 for (Map<String, String> pasajero : pasajeros) {
@@ -629,12 +658,14 @@ public class ReservaController extends HttpServlet {
                             }
                         } else {
                             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            out.print(serializarJSON(Map.of("error", "El nickname '" + nicknamePasajero + "' no está registrado en el sistema")));
+                            out.print(serializarJSON(Map.of("error",
+                                    "El nickname '" + nicknamePasajero + "' no está registrado en el sistema")));
                             return;
                         }
                     } else {
                         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.print(serializarJSON(Map.of("error", "El nickname es obligatorio para todos los pasajeros")));
+                        out.print(
+                                serializarJSON(Map.of("error", "El nickname es obligatorio para todos los pasajeros")));
                         return;
                     }
                 }
@@ -650,32 +681,59 @@ public class ReservaController extends HttpServlet {
                     // Crear la fecha actual para la reserva
                     java.time.LocalDate hoy = java.time.LocalDate.now();
                     DTFecha fechaReserva = new DTFecha(hoy.getDayOfMonth(), hoy.getMonthValue(), hoy.getYear());
-                    
+
                     // Validar que el paquete existe y pertenece al cliente usando Web Service
                     Long paqueteIdLong = Long.parseLong(paqueteId);
-                    
+
                     // Obtener los paquetes del cliente a través del Web Service para validar
                     // La validación de vencimiento y pertenencia se hace en el servidor
-                    // Si el paquete no es válido, el servidor lanzará una excepción al procesar la reserva
-                    
+                    // Si el paquete no es válido, el servidor lanzará una excepción al procesar la
+                    // reserva
+
                     // Crear la reserva con paquete usando el nuevo método específico
                     try {
                         paqueteIdLong = Long.parseLong(paqueteId);
-                        getCentralService().datosReservaConPaquete(tipoAsientoEnum, cantidadPasajes, equipajeExtra, nombresPasajeros, fechaReserva, paqueteIdLong);
-                        
+                        getCentralService().datosReservaConPaquete(tipoAsientoEnum, cantidadPasajes, equipajeExtra,
+                                nombresPasajeros, fechaReserva, paqueteIdLong);
+
                         // Si llegamos aquí sin excepción, algo inesperado pasó
-                        // porque datosReserva siempre lanza IllegalStateException con SUCCESS: cuando es exitoso
+                        // porque datosReserva siempre lanza IllegalStateException con SUCCESS: cuando
+                        // es exitoso
                         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                         out.print(serializarJSON(Map.of("error", "Error inesperado en la reserva con paquete")));
                         return;
-                        
+
+                    } catch (SOAPFaultException e) {
+                        String msg = e.getMessage();
+
+                        if (msg != null && msg.contains("SUCCESS:")) {
+                            String detalle = msg.substring(msg.indexOf("SUCCESS:") + 8)
+                                    .replaceAll("[\\r\\n]", " ")
+                                    .trim();
+
+                            Map<String, Object> resp = new HashMap<>();
+                            resp.put("success", true);
+                            resp.put("mensaje", "Reserva creada exitosamente");
+                            resp.put("detalles", detalle);
+                            resp.put("cliente", nicknameCliente);
+                            resp.put("vuelo", vueloNombre);
+
+                            response.setStatus(HttpServletResponse.SC_CREATED);
+                            out.print(serializarJSON(resp));
+                            out.flush();
+                            return;
+                        }
+
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.print(serializarJSON(Map.of("error", msg)));
+                        return;
                     } catch (IllegalStateException e) {
                         // Verificar si es un mensaje de éxito especial (como en ReservaHelper)
                         if (e.getMessage() != null && e.getMessage().startsWith("SUCCESS:")) {
                             String mensajeExito = e.getMessage().substring(8); // Remover "SUCCESS:"
                             // Limpiar el mensaje de caracteres problemáticos (saltos de línea, etc.)
                             mensajeExito = mensajeExito.replaceAll("[\\r\\n]", " ").trim();
-                            
+
                             // Respuesta exitosa
                             Map<String, Object> respuesta = new HashMap<>();
                             respuesta.put("success", true);
@@ -696,20 +754,20 @@ public class ReservaController extends HttpServlet {
                                 ex.printStackTrace();
                             }
                             return;
-                            
+
                         } else if (e.getMessage() != null && e.getMessage().startsWith("ADMIN_REQUIRED:")) {
                             // Manejo de conflictos de reserva - cliente ya tiene reserva para este vuelo
                             String mensajeConflicto = e.getMessage().substring(15); // Remover "ADMIN_REQUIRED:"
                             // Limpiar el mensaje de caracteres problemáticos
                             mensajeConflicto = mensajeConflicto.replaceAll("[\\r\\n]", " ").trim();
-                            
+
                             Map<String, Object> conflictoRespuesta = new HashMap<>();
                             conflictoRespuesta.put("conflicto", true);
                             conflictoRespuesta.put("mensaje", "Ya existe una reserva para este vuelo");
                             conflictoRespuesta.put("detalles", mensajeConflicto);
                             conflictoRespuesta.put("cliente", nicknameCliente);
                             conflictoRespuesta.put("vuelo", vueloNombre);
-                            
+
                             try {
                                 response.setStatus(HttpServletResponse.SC_CONFLICT);
                                 out.print(serializarJSON(conflictoRespuesta));
@@ -722,16 +780,18 @@ public class ReservaController extends HttpServlet {
                         } else {
                             // Otros errores del sistema
                             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                            out.print(serializarJSON(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+                            out.print(serializarJSON(
+                                    Map.of("error", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
                             return;
                         }
                     } catch (IllegalArgumentException e) {
                         // Errores de validación de datos
                         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.print(serializarJSON(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error de validación")));
+                        out.print(serializarJSON(
+                                Map.of("error", e.getMessage() != null ? e.getMessage() : "Error de validación")));
                         return;
                     }
-                    
+
                 } catch (NumberFormatException e) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     out.print(serializarJSON(Map.of("error", "ID de paquete inválido")));
@@ -739,7 +799,8 @@ public class ReservaController extends HttpServlet {
                     LOG.severe("Error al crear reserva con paquete: " + e.getMessage());
                     e.printStackTrace();
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(serializarJSON(Map.of("error", "Error al crear reserva con paquete", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+                    out.print(serializarJSON(Map.of("error", "Error al crear reserva con paquete", "detail",
+                            e.getMessage() != null ? e.getMessage() : "Error desconocido")));
                 }
                 return;
             } else {
@@ -747,23 +808,73 @@ public class ReservaController extends HttpServlet {
                 // Crear la fecha actual para la reserva
                 java.time.LocalDate hoy = java.time.LocalDate.now();
                 DTFecha fechaReserva = new DTFecha(hoy.getDayOfMonth(), hoy.getMonthValue(), hoy.getYear());
-                
+
                 try {
-                    getCentralService().datosReserva(tipoAsientoEnum, cantidadPasajes, equipajeExtra != null ? equipajeExtra : 0, nombresPasajeros, fechaReserva);
-                    
+                    getCentralService().datosReserva(tipoAsientoEnum, cantidadPasajes,
+                            equipajeExtra != null ? equipajeExtra : 0, nombresPasajeros, fechaReserva);
+
                     // Si llegamos aquí sin excepción, algo inesperado pasó
-                    // porque datosReserva siempre lanza IllegalStateException con SUCCESS: cuando es exitoso
+                    // porque datosReserva siempre lanza IllegalStateException con SUCCESS: cuando
+                    // es exitoso
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     out.print(serializarJSON(Map.of("error", "Error inesperado en la reserva")));
                     return;
-                    
+
+                } catch (SOAPFaultException e) {
+                    String msg = e.getMessage();
+
+                    if (msg != null && msg.contains("SUCCESS:")) {
+                        String detalle = msg.substring(msg.indexOf("SUCCESS:") + 8)
+                                .replaceAll("[\\r\\n]", " ")
+                                .trim();
+
+                        Map<String, Object> resp = new HashMap<>();
+                        resp.put("success", true);
+                        resp.put("mensaje", "Reserva creada exitosamente");
+                        resp.put("detalles", detalle);
+                        resp.put("cliente", nicknameCliente);
+                        resp.put("vuelo", vueloNombre);
+
+                        response.setStatus(HttpServletResponse.SC_CREATED);
+                        out.print(serializarJSON(resp));
+                        out.flush();
+                        return;
+                    } else if (msg != null && msg.contains("ADMIN_REQUIRED:")) {
+                        // Manejo de conflictos de reserva - cliente ya tiene reserva para este vuelo
+                        String mensajeConflicto = msg.substring(msg.indexOf("ADMIN_REQUIRED:") + 15); // Remover
+                                                                                                      // "ADMIN_REQUIRED:"
+                        // Limpiar el mensaje de caracteres problemáticos
+                        mensajeConflicto = mensajeConflicto.replaceAll("[\\r\\n]", " ").trim();
+
+                        Map<String, Object> conflictoRespuesta = new HashMap<>();
+                        conflictoRespuesta.put("conflicto", true);
+                        conflictoRespuesta.put("mensaje", "Ya existe una reserva para este vuelo");
+                        conflictoRespuesta.put("detalles", mensajeConflicto);
+                        conflictoRespuesta.put("cliente", nicknameCliente);
+                        conflictoRespuesta.put("vuelo", vueloNombre);
+
+                        try {
+                            response.setStatus(HttpServletResponse.SC_CONFLICT);
+                            out.print(serializarJSON(conflictoRespuesta));
+                            out.flush();
+                        } catch (Exception ex) {
+                            LOG.severe("Error al enviar respuesta de conflicto: " + ex.getMessage());
+                            ex.printStackTrace();
+                        }
+                        return;
+                    }
+
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.print(serializarJSON(Map.of("error", msg)));
+                    return;
+
                 } catch (IllegalStateException e) {
                     // Verificar si es un mensaje de éxito especial (como en ReservaHelper)
                     if (e.getMessage() != null && e.getMessage().startsWith("SUCCESS:")) {
                         String mensajeExito = e.getMessage().substring(8); // Remover "SUCCESS:"
                         // Limpiar el mensaje de caracteres problemáticos (saltos de línea, etc.)
                         mensajeExito = mensajeExito.replaceAll("[\\r\\n]", " ").trim();
-                        
+
                         // Respuesta exitosa
                         Map<String, Object> respuesta = new HashMap<>();
                         respuesta.put("success", true);
@@ -785,20 +896,20 @@ public class ReservaController extends HttpServlet {
                         // Agregar a la lista local para compatibilidad
                         reservas.add(respuesta);
                         return;
-                        
+
                     } else if (e.getMessage() != null && e.getMessage().startsWith("ADMIN_REQUIRED:")) {
                         // Manejo de conflictos de reserva - cliente ya tiene reserva para este vuelo
                         String mensajeConflicto = e.getMessage().substring(15); // Remover "ADMIN_REQUIRED:"
                         // Limpiar el mensaje de caracteres problemáticos
                         mensajeConflicto = mensajeConflicto.replaceAll("[\\r\\n]", " ").trim();
-                        
+
                         Map<String, Object> conflictoRespuesta = new HashMap<>();
                         conflictoRespuesta.put("conflicto", true);
                         conflictoRespuesta.put("mensaje", "Ya existe una reserva para este vuelo");
                         conflictoRespuesta.put("detalles", mensajeConflicto);
                         conflictoRespuesta.put("cliente", nicknameCliente);
                         conflictoRespuesta.put("vuelo", vueloNombre);
-                        
+
                         try {
                             response.setStatus(HttpServletResponse.SC_CONFLICT);
                             out.print(serializarJSON(conflictoRespuesta));
@@ -811,13 +922,15 @@ public class ReservaController extends HttpServlet {
                     } else {
                         // Otros errores del sistema
                         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                        out.print(serializarJSON(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+                        out.print(serializarJSON(
+                                Map.of("error", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
                         return;
                     }
                 } catch (IllegalArgumentException e) {
                     // Errores de validación de datos
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    out.print(serializarJSON(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error de validación")));
+                    out.print(serializarJSON(
+                            Map.of("error", e.getMessage() != null ? e.getMessage() : "Error de validación")));
                     return;
                 }
             }
@@ -829,16 +942,16 @@ public class ReservaController extends HttpServlet {
                 String mensajeConflicto = e.getMessage().substring("ADMIN_REQUIRED:".length());
                 // Limpiar el mensaje de caracteres problemáticos
                 mensajeConflicto = mensajeConflicto.replaceAll("[\\r\\n]", " ").trim();
-                
+
                 Map<String, Object> conflicto = new HashMap<>();
                 conflicto.put("error", "CONFLICT");
                 conflicto.put("mensaje", mensajeConflicto);
-                conflicto.put("opciones", new String[]{
-                    "1. Cambiar aerolínea",
-                    "2. Cambiar ruta de vuelo", 
-                    "3. Cambiar vuelo",
-                    "4. Cambiar cliente",
-                    "5. Cancelar caso de uso"
+                conflicto.put("opciones", new String[] {
+                        "1. Cambiar aerolínea",
+                        "2. Cambiar ruta de vuelo",
+                        "3. Cambiar vuelo",
+                        "4. Cambiar cliente",
+                        "5. Cancelar caso de uso"
                 });
                 try {
                     response.setStatus(HttpServletResponse.SC_CONFLICT);
@@ -854,7 +967,9 @@ public class ReservaController extends HttpServlet {
                 e.printStackTrace();
                 try {
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print(serializarJSON(Map.of("error", "Error al crear la reserva", "detail", e.getMessage() != null ? e.getMessage().replaceAll("[\\r\\n]", " ").trim() : "Error desconocido")));
+                    out.print(serializarJSON(Map.of("error", "Error al crear la reserva", "detail",
+                            e.getMessage() != null ? e.getMessage().replaceAll("[\\r\\n]", " ").trim()
+                                    : "Error desconocido")));
                     out.flush();
                 } catch (Exception ex) {
                     LOG.severe("Error al enviar respuesta de error: " + ex.getMessage());
@@ -867,7 +982,8 @@ public class ReservaController extends HttpServlet {
     /**
      * Obtiene las reservas del cliente autenticado
      */
-    private void handleGetReservasCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetReservasCliente(HttpServletRequest request, HttpServletResponse response, PrintWriter out)
+            throws IOException {
         try {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -884,8 +1000,9 @@ public class ReservaController extends HttpServlet {
             }
 
             // Por ahora devolver las reservas del JSON y las agregadas en memoria
-            // TODO: Implementar función específica para obtener reservas de cliente desde el sistema
-            
+            // TODO: Implementar función específica para obtener reservas de cliente desde
+            // el sistema
+
             // Filtrar solo las reservas del cliente actual
             List<Map<String, Object>> reservasCliente = new ArrayList<>();
             for (Object obj : reservas) {
@@ -905,29 +1022,32 @@ public class ReservaController extends HttpServlet {
             LOG.severe("Error al obtener reservas del cliente: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error al obtener reservas del cliente", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error al obtener reservas del cliente", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Obtiene una reserva específica por ID
      */
-    private void handleGetReservaPorId(String idStr, HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException {
+    private void handleGetReservaPorId(String idStr, HttpServletRequest request, HttpServletResponse response,
+            PrintWriter out) throws IOException {
         try {
             int id = Integer.parseInt(idStr);
-            
+
             Object reserva = reservas.stream()
-                .filter(r -> {
-                    try {
-                        java.util.Map<String, Object> reservaMap = objectMapper.convertValue(r, java.util.Map.class);
-                        return reservaMap.get("id").equals(id);
-                    } catch (Exception e) {
-                        return false;
-                    }
-                })
-                .findFirst()
-                .orElse(null);
-            
+                    .filter(r -> {
+                        try {
+                            java.util.Map<String, Object> reservaMap = objectMapper.convertValue(r,
+                                    java.util.Map.class);
+                            return reservaMap.get("id").equals(id);
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    })
+                    .findFirst()
+                    .orElse(null);
+
             if (reserva != null) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 out.print(serializarJSON(reserva));
@@ -935,7 +1055,7 @@ public class ReservaController extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 out.print(serializarJSON(Map.of("error", "Reserva no encontrada")));
             }
-            
+
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             out.print(serializarJSON(Map.of("error", "ID de reserva inválido")));
@@ -943,12 +1063,14 @@ public class ReservaController extends HttpServlet {
             LOG.severe("Error al obtener reserva por ID: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail", e.getMessage() != null ? e.getMessage() : "Error desconocido")));
+            out.print(serializarJSON(Map.of("error", "Error interno del servidor", "detail",
+                    e.getMessage() != null ? e.getMessage() : "Error desconocido")));
         }
     }
 
     /**
      * Valida que un email de pasajero existe en el sistema y devuelve su nickname
+     * 
      * @param email El email a validar
      * @return El nickname del cliente si existe, null si no existe
      */
@@ -956,16 +1078,16 @@ public class ReservaController extends HttpServlet {
         try {
             // Obtener todos los clientes del sistema
             List<DTCliente> clientes = getCentralService().listarClientes();
-            
+
             // Buscar el cliente por email
             for (DTCliente cliente : clientes) {
                 if (cliente.getCorreo().equalsIgnoreCase(email.trim())) {
                     return cliente.getNickname(); // Devolver el nickname del cliente
                 }
             }
-            
+
             return null; // No encontrado
-            
+
         } catch (Exception e) {
             LOG.warning("Error al validar email de pasajero: " + e.getMessage());
             return null;
@@ -974,6 +1096,7 @@ public class ReservaController extends HttpServlet {
 
     /**
      * Valida que un nickname de pasajero existe en el sistema
+     * 
      * @param nickname El nickname a validar
      * @return El nickname si existe, null si no existe
      */
@@ -981,16 +1104,16 @@ public class ReservaController extends HttpServlet {
         try {
             // Obtener todos los clientes del sistema
             List<DTCliente> clientes = getCentralService().listarClientes();
-            
+
             // Buscar el cliente por nickname
             for (DTCliente cliente : clientes) {
                 if (cliente.getNickname().equalsIgnoreCase(nickname.trim())) {
                     return cliente.getNickname(); // Devolver el nickname exacto del sistema
                 }
             }
-            
+
             return null; // No encontrado
-            
+
         } catch (Exception e) {
             LOG.warning("Error al validar nickname de pasajero: " + e.getMessage());
             return null;

@@ -19,6 +19,8 @@
   const btnReserve = document.getElementById('btnReserve');
   const toast = document.getElementById('toast');
   const existingReservationAlert = document.getElementById('existingReservationAlert');
+  const successReservationAlert = document.getElementById('successReservationAlert');
+  const btnCerrarAlerta = document.getElementById('btnCerrarAlerta');
 
   // Variables de estado
   let selectedAirline = null;
@@ -31,19 +33,24 @@
     if (!selAirline) return; // No estamos en la página de reserva
 
     console.log('DEBUG: Inicializando página de reserva');
-    console.log('DEBUG: selPackage encontrado:', !!selPackage);
-    console.log('DEBUG: packageContainer encontrado:', !!packageContainer);
 
     loadAirlines();
     setupEventListeners();
     setupPaymentModeListeners();
     setupExistingReservationListeners();
+
+    if (btnCerrarAlerta) {
+      btnCerrarAlerta.addEventListener('click', () => {
+        successReservationAlert.classList.add('hidden');
+        window.location.reload();
+      });
+    }
   }
 
   // ========== CARGA INICIAL DE DATOS ==========
   function loadAirlines() {
     showLoading(selAirline);
-    
+
     fetch('/VolandoUy-WebApp/api/reservas/aerolineas')
       .then(response => response.json())
       .then(aerolineas => {
@@ -65,14 +72,14 @@
     }
 
     showLoading(selRoute);
-    
+
     fetch(`/VolandoUy-WebApp/api/reservas/rutas/${encodeURIComponent(airlineNickname)}`)
       .then(response => response.json())
       .then(rutas => {
         populateSelect(selRoute, rutas, 'nombre', 'nombre', 'Seleccione ruta');
         selRoute.disabled = false;
         hideLoading(selRoute);
-        
+
         if (rutas.length === 0) {
           showToast('Esta aerolínea no tiene rutas disponibles', 'warning');
         }
@@ -91,14 +98,14 @@
     }
 
     showLoading(selFlight);
-    
+
     fetch(`/VolandoUy-WebApp/api/reservas/vuelos/${encodeURIComponent(routeName)}`)
       .then(response => response.json())
       .then(vuelos => {
         populateSelect(selFlight, vuelos, 'nombre', 'nombre', 'Seleccione vuelo');
         selFlight.disabled = false;
         hideLoading(selFlight);
-        
+
         if (vuelos.length === 0) {
           showToast('Esta ruta no tiene vuelos disponibles', 'warning');
         }
@@ -117,7 +124,7 @@
     }
 
     showLoading(flightDetails);
-    
+
     fetch(`/VolandoUy-WebApp/api/reservas/vuelo-detalle/${encodeURIComponent(flightName)}`)
       .then(response => response.json())
       .then(vuelo => {
@@ -151,7 +158,6 @@
       })
       .catch(error => {
         console.error('Error al verificar reserva existente:', error);
-        // Si hay error, asumir que no existe reserva
         existingReservation = false;
         hideExistingReservationAlert();
         enableReservationForm();
@@ -167,6 +173,12 @@
     existingReservationAlert.classList.add('hidden');
   }
 
+  function showSuccessAlert() {
+    successReservationAlert.classList.remove('hidden');
+    successReservationAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    disableReservationForm();
+  }
+
   // ========== EVENT LISTENERS ==========
   function setupEventListeners() {
     selAirline.addEventListener('change', (e) => {
@@ -180,8 +192,7 @@
       selectedRoute = e.target.value;
       resetFlightSelection();
       loadFlightsForRoute(selectedRoute);
-      
-      // Si está en modo paquete, cargar paquetes para esta ruta
+
       const payMode = document.querySelector('input[name="payMode"]:checked');
       if (payMode && payMode.value === 'paquete') {
         loadClientPackagesForRoute(selectedRoute);
@@ -200,9 +211,7 @@
     seatType.addEventListener('change', updateSummary);
     qtyBaggage.addEventListener('change', updateSummary);
 
-    // Listener para el select de paquetes
     selPackage.addEventListener('change', (e) => {
-      console.log('DEBUG: Paquete seleccionado:', e.target.value);
       updateSummary();
     });
 
@@ -213,23 +222,15 @@
     const payModeRadios = document.querySelectorAll('input[name="payMode"]');
     payModeRadios.forEach(radio => {
       radio.addEventListener('change', (e) => {
-        console.log('DEBUG: Modo de pago cambiado a:', e.target.value);
         if (e.target.value === 'paquete') {
-          console.log('DEBUG: Ruta seleccionada:', selectedRoute);
-          // Solo cargar paquetes si ya se seleccionó una ruta
           if (selectedRoute) {
-            console.log('DEBUG: Cargando paquetes para ruta:', selectedRoute);
             loadClientPackagesForRoute(selectedRoute);
           } else {
-            console.log('DEBUG: No hay ruta seleccionada, mostrando mensaje');
-            // Mostrar mensaje de que debe seleccionar ruta primero
             selPackage.innerHTML = '<option value="">Seleccione una ruta primero</option>';
           }
           packageContainer.classList.remove('hidden');
-          console.log('DEBUG: Contenedor de paquetes mostrado');
         } else {
           packageContainer.classList.add('hidden');
-          console.log('DEBUG: Contenedor de paquetes ocultado');
         }
         updateSummary();
       });
@@ -368,18 +369,16 @@
       passengersList.appendChild(passengerDiv);
     }
 
-    // Agregar event listeners para validación en tiempo real
     setupPassengerValidation();
   }
 
-  // ========== VALIDACIÓN DE PASAJEROS ==========
   function setupPassengerValidation() {
     const nicknameInputs = document.querySelectorAll('.passenger-nickname');
     nicknameInputs.forEach(input => {
       input.addEventListener('blur', (e) => {
         validatePassengerNickname(e.target);
       });
-      
+
       input.addEventListener('input', (e) => {
         clearPassengerValidation(e.target);
       });
@@ -389,47 +388,27 @@
   function validatePassengerNickname(input) {
     const nickname = input.value.trim();
     const index = input.getAttribute('data-passenger-nickname');
-    const validationDiv = document.querySelector(`[data-passenger-validation="${index}"]`);
-    
-    console.log('DEBUG: Validando nickname:', nickname);
-    
+
     if (!nickname) {
       clearPassengerValidation(input);
       return;
     }
 
-    // Verificar si el nickname existe en el sistema
     showPassengerValidation(input, 'Verificando...', 'loading');
-    
+
     fetch('/VolandoUy-WebApp/api/reservas/usuarios')
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(errorData => {
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Unknown error'}`);
-          });
-        }
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        console.log('DEBUG: Clientes recibidos del servidor:', data);
-        console.log('DEBUG: Buscando nickname:', nickname);
-        
-        // Verificar si la respuesta es un array
         if (!Array.isArray(data)) {
-          console.error('Respuesta inesperada del servidor:', data);
           showPassengerValidation(input, 'Error en la respuesta del servidor', 'error');
           return;
         }
-        
-        console.log('DEBUG: Nicknames disponibles:', data.map(c => c.nickname));
-        
+
         const cliente = data.find(c => c.nickname && c.nickname.toLowerCase() === nickname.toLowerCase());
-        console.log('DEBUG: Cliente encontrado:', cliente);
-        
+
         if (cliente) {
           showPassengerValidation(input, `✓ ${cliente.nombre} ${cliente.apellido}`, 'success');
         } else {
-          console.log('DEBUG: Nickname no encontrado en la lista');
           showPassengerValidation(input, 'Nickname no registrado en el sistema', 'error');
         }
       })
@@ -442,9 +421,9 @@
   function showPassengerValidation(input, message, type) {
     const index = input.getAttribute('data-passenger-nickname');
     const validationDiv = document.querySelector(`[data-passenger-validation="${index}"]`);
-    
+
     validationDiv.innerHTML = `<small class="validation-${type}">${message}</small>`;
-    
+
     if (type === 'success') {
       input.classList.remove('error');
       input.classList.add('success');
@@ -465,14 +444,14 @@
 
   // ========== FUNCIONES DE UTILIDAD ==========
   function populateSelect(select, items, valueField, textField, defaultText) {
-    console.log('DEBUG: populateSelect called with:', {select, items, valueField, textField, defaultText});
+    console.log('DEBUG: populateSelect called with:', { select, items, valueField, textField, defaultText });
     select.innerHTML = `<option value="">${defaultText}</option>`;
     items.forEach(item => {
       console.log('DEBUG: Creating option for item:', item);
       const option = document.createElement('option');
       option.value = item[valueField];
       option.textContent = item[textField];
-      console.log('DEBUG: Option created:', {value: option.value, text: option.textContent});
+      console.log('DEBUG: Option created:', { value: option.value, text: option.textContent });
       select.appendChild(option);
     });
     console.log('DEBUG: Select populated. Total options:', select.options.length);
@@ -517,10 +496,10 @@
     const payMode = document.querySelector('input[name="payMode"]:checked')?.value || 'normal';
 
     // Calcular costos (simplificado)
-    const baseCost = seatTypeValue === 'ejecutivo' ? 
-      (selectedFlight.ruta?.costoBaseEjecutivo || 200) : 
+    const baseCost = seatTypeValue === 'ejecutivo' ?
+      (selectedFlight.ruta?.costoBaseEjecutivo || 200) :
       (selectedFlight.ruta?.costoBaseTurista || 100);
-    
+
     const baggageCost = baggage * (selectedFlight.ruta?.costoEquipajeExtra || 50);
     const totalCost = (baseCost * passengers) + baggageCost;
 
@@ -553,7 +532,7 @@
 
     document.querySelector('.summary-placeholder').classList.add('hidden');
     summaryText.classList.remove('hidden');
-    
+
     if (!existingReservation) {
       btnReserve.disabled = false;
     }
@@ -566,43 +545,63 @@
     }
 
     const reservationData = collectReservationData();
-    
+
     btnReserve.disabled = true;
+    const originalHtml = btnReserve.innerHTML;
     btnReserve.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando reserva...';
 
     fetch('/VolandoUy-WebApp/api/reservas', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
+      credentials: 'same-origin',
       body: JSON.stringify(reservationData)
     })
-    .then(response => {
-      if (response.status === 409) { // Conflict - reserva existente
-        return response.json().then(data => {
-          handleReservationConflict(data);
-        });
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (data && data.error && data.error !== 'CONFLICT') {
-        showToast(`Error: ${data.error}`, 'error');
-      } else if (data && data.mensaje) {
-        showToast('¡Reserva creada exitosamente!', 'success');
-        setTimeout(() => {
-          window.location.href = '/VolandoUy-WebApp/inicio.jsp';
-        }, 2000);
-      }
-    })
-    .catch(error => {
-      console.error('Error al crear reserva:', error);
-      showToast('Error al crear la reserva. Inténtalo nuevamente.', 'error');
-    })
-    .finally(() => {
-      btnReserve.disabled = false;
-      btnReserve.innerHTML = '<i class="fas fa-check"></i> Confirmar Reserva';
-    });
+      .then(async (response) => {
+        const text = await response.text();
+        let data = null;
+        const contentType = response.headers.get('content-type') || '';
+
+        if (contentType.includes('application/json') || (/^\s*\{/.test(text))) {
+          try {
+            data = JSON.parse(text);
+          } catch (err) {
+            console.error('Respuesta no JSON válida:', text);
+          }
+        }
+
+        if (response.status === 201 || response.status === 200) {
+          showSuccessAlert();
+          return;
+        }
+
+        if (response.status === 409) {
+          if (data) {
+            handleReservationConflict(data);
+          } else {
+            showToast('Conflicto: ya existe una reserva para este vuelo', 'warning');
+          }
+          return;
+        }
+
+        if (data && data.error) {
+          showToast(`Error: ${data.error}`, 'error');
+        } else if (text) {
+          console.error('Error en la respuesta del servidor:', response.status, text);
+          showToast('Error del servidor. Revisa la consola para más detalles.', 'error');
+        } else {
+          showToast('Error desconocido al crear la reserva', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error en fetch crear reserva:', error);
+        showToast('Error de red al crear la reserva. Intenta de nuevo.', 'error');
+      })
+      .finally(() => {
+        btnReserve.disabled = false;
+        btnReserve.innerHTML = originalHtml;
+      });
   }
 
   function validateReservationForm() {
@@ -622,17 +621,16 @@
       return false;
     }
 
-    // Validar datos de pasajeros adicionales
     if (passengers > 1) {
       const nameInputs = document.querySelectorAll('[data-passenger-name]');
       const lastnameInputs = document.querySelectorAll('[data-passenger-lastname]');
       const nicknameInputs = document.querySelectorAll('[data-passenger-nickname]');
-      
+
       for (let i = 0; i < nameInputs.length; i++) {
         const nombre = nameInputs[i].value.trim();
         const apellido = lastnameInputs[i].value.trim();
         const nickname = nicknameInputs[i].value.trim();
-        
+
         if (!nombre || !apellido || !nickname) {
           showToast(`Complete todos los datos del pasajero ${i + 2}`, 'error');
           if (!nombre) nameInputs[i].focus();
@@ -640,8 +638,7 @@
           else if (!nickname) nicknameInputs[i].focus();
           return false;
         }
-        
-        // Verificar que el nickname tiene validación exitosa
+
         const validationDiv = document.querySelector(`[data-passenger-validation="${i}"]`);
         if (validationDiv && !validationDiv.querySelector('.validation-success')) {
           showToast(`El nickname del pasajero ${i + 2} no está registrado en el sistema`, 'error');
@@ -662,7 +659,7 @@
       const nameInputs = document.querySelectorAll('[data-passenger-name]');
       const lastnameInputs = document.querySelectorAll('[data-passenger-lastname]');
       const nicknameInputs = document.querySelectorAll('[data-passenger-nickname]');
-      
+
       for (let i = 0; i < nameInputs.length; i++) {
         additionalPassengers.push({
           nombre: nameInputs[i].value.trim(),
@@ -673,19 +670,11 @@
     }
 
     const payMode = document.querySelector('input[name="payMode"]:checked')?.value || 'normal';
-    
-    // Validar selección de paquete si es necesario
+
     let paqueteId = null;
     if (payMode === 'paquete') {
       paqueteId = selPackage.value;
-      console.log('DEBUG: Modo de pago: paquete');
-      console.log('DEBUG: Valor del select de paquete:', paqueteId);
-      console.log('DEBUG: Opciones disponibles en el select:', Array.from(selPackage.options).map(opt => ({value: opt.value, text: opt.text})));
-      console.log('DEBUG: Select visible:', !selPackage.classList.contains('hidden'));
-      console.log('DEBUG: Select disabled:', selPackage.disabled);
-      
       if (!paqueteId || paqueteId === '') {
-        console.log('DEBUG: ERROR - No se seleccionó un paquete');
         throw new Error('Debe seleccionar un paquete para continuar');
       }
     }
@@ -701,7 +690,6 @@
     };
   }
 
-  // ========== FUNCIONES DE PAQUETES ==========
   function loadClientPackagesForRoute(rutaNombre) {
     if (!rutaNombre) {
       selPackage.innerHTML = '<option value="">Seleccione una ruta primero</option>';
@@ -709,20 +697,15 @@
     }
 
     showLoading(selPackage);
-    
+
     fetch(`/VolandoUy-WebApp/api/reservas/paquetes-cliente/${encodeURIComponent(rutaNombre)}`)
       .then(response => response.json())
       .then(paquetes => {
-        console.log('DEBUG: Paquetes recibidos del servidor:', paquetes);
-        
         if (paquetes.length === 0) {
           selPackage.innerHTML = '<option value="">No hay paquetes disponibles para esta ruta</option>';
           showToast('No tienes paquetes que incluyan esta ruta', 'warning');
         } else {
-          console.log('DEBUG: Poblando select con paquetes:', paquetes);
           populateSelect(selPackage, paquetes, 'id', 'nombre', 'Seleccione paquete');
-          console.log('DEBUG: Select poblado. Valor actual:', selPackage.value);
-          console.log('DEBUG: Opciones en el select:', Array.from(selPackage.options).map(opt => ({value: opt.value, text: opt.text})));
           showToast(`Se encontraron ${paquetes.length} paquete(s) disponibles`, 'success');
         }
         hideLoading(selPackage);
@@ -769,14 +752,11 @@
     }
   }
 
-  // ========== FUNCIONES GLOBALES ==========
-  window.removePassenger = function(index) {
+  window.removePassenger = function (index) {
     const passengerItems = document.querySelectorAll('.passenger-item');
     if (passengerItems[index]) {
       passengerItems[index].remove();
     }
-    
-    // Recalcular cantidad de pasajeros
     const remainingPassengers = document.querySelectorAll('.passenger-item').length + 1;
     qtyPassengers.value = remainingPassengers;
     updateSummary();
@@ -786,8 +766,7 @@
   function handleReservationConflict(conflictData) {
     const mensaje = conflictData.mensaje || 'Ya existe una reserva para este cliente en este vuelo.';
     const opciones = conflictData.opciones || [];
-    
-    // Crear modal de opciones similar al JOptionPane de Swing
+
     const modalHtml = `
       <div class="conflict-modal-overlay">
         <div class="conflict-modal">
@@ -800,20 +779,18 @@
             <p>¿Qué deseas hacer?</p>
           </div>
           <div class="conflict-options">
-            ${opciones.map((opcion, index) => 
-              `<button class="conflict-option-btn" data-option="${index + 1}">${opcion}</button>`
-            ).join('')}
+            ${opciones.map((opcion, index) =>
+      `<button class="conflict-option-btn" data-option="${index + 1}">${opcion}</button>`
+    ).join('')}
           </div>
         </div>
       </div>
     `;
-    
-    // Agregar modal al DOM
+
     const modalContainer = document.createElement('div');
     modalContainer.innerHTML = modalHtml;
     document.body.appendChild(modalContainer);
-    
-    // Agregar event listeners a las opciones
+
     const optionButtons = modalContainer.querySelectorAll('.conflict-option-btn');
     optionButtons.forEach(button => {
       button.addEventListener('click', (e) => {
@@ -822,8 +799,7 @@
         document.body.removeChild(modalContainer);
       });
     });
-    
-    // Cerrar modal con ESC
+
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
         document.body.removeChild(modalContainer);
@@ -832,25 +808,25 @@
     };
     document.addEventListener('keydown', handleEscape);
   }
-  
+
   function handleConflictOption(option) {
-    switch(option) {
-      case '1': // Cambiar aerolínea
+    switch (option) {
+      case '1':
         resetAirlineSelection();
         showToast('Selecciona una nueva aerolínea', 'info');
         break;
-      case '2': // Cambiar ruta de vuelo  
+      case '2':
         resetRouteSelection();
         showToast('Selecciona una nueva ruta', 'info');
         break;
-      case '3': // Cambiar vuelo
-        resetFlightSelection(); 
+      case '3':
+        resetFlightSelection();
         showToast('Selecciona un nuevo vuelo', 'info');
         break;
-      case '4': // Cambiar cliente (no aplica en web, solo admin puede)
+      case '4':
         showToast('En la interfaz web no puedes cambiar de cliente', 'warning');
         break;
-      case '5': // Cancelar caso de uso
+      case '5':
         if (confirm('¿Estás seguro de que deseas cancelar la reserva?')) {
           window.location.href = '/VolandoUy-WebApp/inicio';
         }
@@ -860,6 +836,5 @@
     }
   }
 
-  // ========== INICIALIZACIÓN ==========
   document.addEventListener('DOMContentLoaded', init);
 })();
