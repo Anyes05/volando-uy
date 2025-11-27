@@ -1,4 +1,9 @@
-const usuariosURL = '/VolandoUy-WebApp/api/usuarios';
+// Helper para construir URLs con contextPath
+function apiUrl(path) {
+  const contextPath = window.APP_CONTEXT_PATH || '';
+  return contextPath + (path.startsWith('/') ? path : '/' + path);
+}
+const usuariosURL = apiUrl('/api/usuarios');
 let usuariosData = [];
 let usuarioActual = null;
 
@@ -34,37 +39,34 @@ function quitarTildes(texto) {
 }
 
 // Cargar usuarios desde la API REST 
-async function cargarUsuarios() {
-  try {
-    console.log('Cargando usuarios desde backend...');
-    
-    // Mostrar loading
-    mostrarLoading(true);
-    
-    const response = await fetch(usuariosURL);
-    
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    usuariosData = data.usuarios || [];
-    console.log('Usuarios cargados:', usuariosData);
-    console.log('Primer usuario:', usuariosData[0]);
-    if (usuariosData[0]) {
-      console.log('Clase del primer usuario:', usuariosData[0].getClass ? usuariosData[0].getClass().simpleName : 'No tiene getClass');
-    }
-    
-    mostrarUsuarios(usuariosData);
-    actualizarContador(usuariosData.length);
-    cargarFiltros(usuariosData);
-  } catch (error) {
-    console.error('Error cargando usuarios:', error);
-    mostrarError('Error al cargar los usuarios. Por favor, intente nuevamente.');
-  } finally {
-    // Ocultar loading
-    mostrarLoading(false);
-  }
+function cargarUsuarios() {
+  console.log('Cargando usuarios desde backend...');
+  
+  // Mostrar loading
+  mostrarLoading(true);
+  
+  fetch(usuariosURL)
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      usuariosData = data.usuarios || [];
+      console.log('Usuarios cargados:', usuariosData);
+      console.log('Primer usuario:', usuariosData[0]);
+      if (usuariosData[0]) {
+        console.log('Clase del primer usuario:', usuariosData[0].getClass ? usuariosData[0].getClass().simpleName : 'No tiene getClass');
+      }
+      
+      mostrarUsuarios(usuariosData);
+      actualizarContador(usuariosData.length);
+      cargarFiltros(usuariosData);
+      // Ocultar loading
+      mostrarLoading(false);
+    })
+    .catch(function (error) {
+      console.error('Error cargando usuarios:', error);
+      mostrarError('Error al cargar los usuarios. Por favor, intente nuevamente.');
+      // Ocultar loading
+      mostrarLoading(false);
+    });
 }
 
 // Mostrar/ocultar loading
@@ -91,20 +93,20 @@ function actualizarContador(total) {
 
 // Mostrar usuarios en el contenedor
 // Obtener usuario logueado desde backend
-async function obtenerUsuarioLogueado() {
-  try {
-    const resp = await fetch("/VolandoUy-WebApp/api/usuarios/perfil", { credentials: "include" });
-    if (resp.ok) {
-      return await resp.json(); // objeto con nickname, tipo, seguidos, etc.
-    }
-  } catch (e) {
-    console.error("No se pudo obtener usuario logueado:", e);
-  }
-  return null;
+function obtenerUsuarioLogueado() {
+  return fetch(apiUrl("/api/usuarios/perfil"), { credentials: "include" })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      return data; // objeto con nickname, tipo, seguidos, etc.
+    })
+    .catch(function (e) {
+      console.error("No se pudo obtener usuario logueado:", e);
+      return null;
+    });
 }
 
 // Mostrar usuarios en el contenedor
-async function mostrarUsuarios(lista) {
+function mostrarUsuarios(lista) {
   const contenedor = document.getElementById("lista-usuarios");
   if (!contenedor) return;
 
@@ -115,7 +117,7 @@ async function mostrarUsuarios(lista) {
     return;
   }
 
-  const usuarioLogueado = await obtenerUsuarioLogueado();
+  obtenerUsuarioLogueado().then(function (usuarioLogueado) {
 
   lista.forEach(usuario => {
     const card = document.createElement("div");
@@ -166,6 +168,7 @@ async function mostrarUsuarios(lista) {
 
     contenedor.appendChild(card);
   });
+  });
 }
 
 
@@ -211,7 +214,7 @@ function mostrarError(mensaje) {
 
 async function mostrarDetalleUsuario(nickname) {
   try {
-    const resp = await fetch(`/VolandoUy-WebApp/api/usuarios/${nickname}`, { credentials: "include" });
+    const resp = await fetch(apiUrl(`/api/usuarios/${nickname}`), { credentials: "include" });
     if (!resp.ok) return;
 
     const usuario = await resp.json();
@@ -496,7 +499,7 @@ async function verificarSiEsAerolineaLogueada(usuario) {
     console.log('Nickname del usuario consultado:', usuario.nickname);
     
     // Obtener información del usuario logueado desde el servidor
-    const response = await fetch('/VolandoUy-WebApp/api/usuarios/perfil', {
+    const response = await fetch(apiUrl('/api/usuarios/perfil'), {
       credentials: 'include' // Importante: enviar cookies de sesión
     });
     console.log('Response del perfil:', response.status);
@@ -537,7 +540,7 @@ async function verificarSiEsUsuarioLogueado(usuario) {
     console.log('Verificando si es usuario logueado:', usuario.nickname);
     
     // Obtener información del usuario logueado desde el servidor
-    const response = await fetch('/VolandoUy-WebApp/api/usuarios/perfil', {
+    const response = await fetch(apiUrl('/api/usuarios/perfil'), {
       credentials: 'include' // Importante: enviar cookies de sesión
     });
     console.log('Response del perfil:', response.status);
@@ -563,7 +566,7 @@ async function verificarSiEsUsuarioLogueado(usuario) {
 // Verificar si el usuario logueado es un cliente
 async function verificarSiEsClienteLogueado() {
   try {
-    const response = await fetch('/VolandoUy-WebApp/api/usuarios/perfil', {
+    const response = await fetch(apiUrl('/api/usuarios/perfil'), {
       credentials: 'include'
     });
     
@@ -600,7 +603,7 @@ async function mostrarRutasAerolinea(usuario, contenedor) {
     } else {
       // Si no, llamar a la API para obtener solo las rutas confirmadas
       console.log('Llamando a la API para obtener rutas confirmadas');
-      const url = `/VolandoUy-WebApp/api/rutas?aerolinea=${encodeURIComponent(usuario.nickname)}`;
+      const url = apiUrl(`/api/rutas?aerolinea=${encodeURIComponent(usuario.nickname)}`);
       console.log('URL de la petición:', url);
       
       const response = await fetch(url, {
@@ -661,7 +664,7 @@ async function mostrarRutasAerolinea(usuario, contenedor) {
           // Si es cliente logueado, buscar paquetes primero
           if (esClienteLogueado) {
             try {
-              const response = await fetch(`/VolandoUy-WebApp/api/reservas/paquetes-cliente/${encodeURIComponent(rutaNombre)}`, {
+              const response = await fetch(apiUrl(`/api/reservas/paquetes-cliente/${encodeURIComponent(rutaNombre)}`), {
                 credentials: 'include'
               });
               
@@ -742,14 +745,14 @@ async function mostrarReservasCliente(usuario, contenedor, esUsuarioLogueado = f
       
       // Intentar obtener reservas usando el método mostrarDatosUsuario directamente
       try {
-        const debugResponse = await fetch(`/VolandoUy-WebApp/api/usuarios/debug?nickname=${usuario.nickname}`);
+        const debugResponse = await fetch(apiUrl(`/api/usuarios/debug?nickname=${usuario.nickname}`));
         if (debugResponse.ok) {
           const debugData = await debugResponse.json();
           console.log('Debug data:', debugData);
           
           if (debugData.mostrarDatosUsuario === 'OK') {
             // Si mostrarDatosUsuario funciona, usar el endpoint completo
-            const fullResponse = await fetch(`/VolandoUy-WebApp/api/usuarios/${usuario.nickname}`);
+            const fullResponse = await fetch(apiUrl(`/api/usuarios/${usuario.nickname}`));
             if (fullResponse.ok) {
               const fullData = await fullResponse.json();
               console.log('Full data:', fullData);
@@ -955,7 +958,7 @@ async function mostrarDetalleRutaEnModal(rutaNombre) {
   
   try {
     // Cargar detalles de la ruta
-    const response = await fetch(`/VolandoUy-WebApp/api/rutas/${encodeURIComponent(rutaNombre)}`, {
+    const response = await fetch(apiUrl(`/api/rutas/${encodeURIComponent(rutaNombre)}`), {
       credentials: 'include'
     });
     
@@ -966,7 +969,7 @@ async function mostrarDetalleRutaEnModal(rutaNombre) {
     const ruta = await response.json();
     
     // Cargar vuelos de la ruta
-    const vuelosResponse = await fetch(`/VolandoUy-WebApp/api/rutas/${encodeURIComponent(rutaNombre)}/vuelos`, {
+    const vuelosResponse = await fetch(apiUrl(`/api/rutas/${encodeURIComponent(rutaNombre)}/vuelos`), {
       credentials: 'include'
     });
     
@@ -1024,7 +1027,7 @@ async function mostrarDetalleVueloEnModal(vueloNombre) {
   
   try {
     // Cargar detalles del vuelo
-    const response = await fetch(`/VolandoUy-WebApp/api/reservas/vuelo-detalle/${encodeURIComponent(vueloNombre)}`, {
+    const response = await fetch(apiUrl(`/api/reservas/vuelo-detalle/${encodeURIComponent(vueloNombre)}`), {
       credentials: 'include'
     });
     
@@ -1035,7 +1038,7 @@ async function mostrarDetalleVueloEnModal(vueloNombre) {
     const vuelo = await response.json();
     
     // Cargar reservas del vuelo
-    const reservasResponse = await fetch(`/VolandoUy-WebApp/api/vuelos/reservas/${encodeURIComponent(vueloNombre)}`, {
+    const reservasResponse = await fetch(apiUrl(`/api/vuelos/reservas/${encodeURIComponent(vueloNombre)}`), {
       credentials: 'include'
     });
     
@@ -1102,7 +1105,7 @@ async function mostrarDetallePaqueteEnModal(paquete) {
   
   try {
     // Cargar detalles completos del paquete
-    const response = await fetch(`/VolandoUy-WebApp/api/paquetes/${encodeURIComponent(paquete.nombre)}`, {
+    const response = await fetch(apiUrl(`/api/paquetes/${encodeURIComponent(paquete.nombre)}`), {
       credentials: 'include'
     });
     
@@ -1166,7 +1169,7 @@ async function mostrarDetalleReservaEnModal(reserva) {
     
     // Intentar cargar detalles adicionales usando el endpoint de consulta de reservas
     try {
-      const reservaResponse = await fetch(`/VolandoUy-WebApp/api/consulta-reservas/detalle-reserva/${reserva.id}`, {
+      const reservaResponse = await fetch(apiUrl(`/api/consulta-reservas/detalle-reserva/${reserva.id}`), {
         credentials: 'include'
       });
       
@@ -1178,7 +1181,7 @@ async function mostrarDetalleReservaEnModal(reserva) {
         
         // Fallback: intentar con el endpoint de usuarios
         try {
-          const reservaResponse2 = await fetch(`/VolandoUy-WebApp/api/usuarios/reserva-detalle/${reserva.id}`, {
+          const reservaResponse2 = await fetch(apiUrl(`/api/usuarios/reserva-detalle/${reserva.id}`), {
             credentials: 'include'
           });
           
@@ -1503,7 +1506,7 @@ window.initConsultaUsuario = function() {
 // Obtener usuario logueado desde backend
 async function obtenerUsuarioLogueado() {
   try {
-    const resp = await fetch("/VolandoUy-WebApp/api/usuarios/perfil", { credentials: "include" });
+    const resp = await fetch(apiUrl("/api/usuarios/perfil"), { credentials: "include" });
     if (resp.ok) {
       return await resp.json(); // objeto con nickname, tipo, seguidos, etc.
     }
@@ -1526,7 +1529,7 @@ document.addEventListener('click', async function(e) {
 
     try {
       if (isFollowing) {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/dejar`, {
+        const resp = await fetch(apiUrl(`/api/seguidores/${nickname}/dejar`), {
           method: 'POST',
           credentials: 'include'
         });
@@ -1537,7 +1540,7 @@ document.addEventListener('click', async function(e) {
           btn.classList.add('seguir');
         }
       } else {
-        const resp = await fetch(`/VolandoUy-WebApp/api/seguidores/${nickname}/seguir`, {
+        const resp = await fetch(apiUrl(`/api/seguidores/${nickname}/seguir`), {
           method: 'POST',
           credentials: 'include'
         });

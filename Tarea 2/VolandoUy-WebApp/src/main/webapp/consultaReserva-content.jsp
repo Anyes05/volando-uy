@@ -218,52 +218,60 @@ function limpiarSeccionesDependientes(secciones) {
 async function cargarInfoInicial() {
     try {
         console.log('Probando endpoint de prueba...');
-        var testResponse = await fetch('/VolandoUy-WebApp/api/consulta-reservas/test');
-        var testData = await testResponse.json();
-        console.log('Respuesta del endpoint de prueba:', testData);
+        var TEST_URL = "<c:url value='/api/consulta-reservas/test' />";
+        fetch(TEST_URL)
+            .then(function (r) { return r.json(); })
+            .then(function (testData) {
+                console.log('Respuesta del endpoint de prueba:', testData);
 
-        if (!testData.status || testData.status !== 'ok') {
-            mostrarError('Error en el endpoint de prueba: ' + (testData.error || 'Respuesta inesperada'));
-            return;
-        }
+                if (!testData.status || testData.status !== 'ok') {
+                    mostrarError('Error en el endpoint de prueba: ' + (testData.error || 'Respuesta inesperada'));
+                    return;
+                }
 
-        console.log('Endpoint de prueba OK, cargando información inicial...');
-        var response = await fetch('/VolandoUy-WebApp/api/consulta-reservas');
+                console.log('Endpoint de prueba OK, cargando información inicial...');
+                var CONSULTA_URL = "<c:url value='/api/consulta-reservas' />";
+                fetch(CONSULTA_URL)
+                    .then(function (r) { return r.json(); })
+                    .then(function (info) {
+                        if (info.error) {
+                            mostrarError(info.error);
+                            return;
+                        }
 
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-        }
+                        infoInicial = info;
+                        console.log('Información inicial:', info);
 
-        var info = await response.json();
+                        if (info.warning) {
+                            mostrarWarning(info.warning);
+                        }
 
-        if (info.error) {
-            mostrarError(info.error);
-            return;
-        }
+                        var loadingInfo = document.getElementById('loading-info');
+                        if (loadingInfo) {
+                            loadingInfo.style.display = 'none';
+                        }
 
-        infoInicial = info;
-        console.log('Información inicial:', info);
-
-        if (info.warning) {
-            mostrarWarning(info.warning);
-        }
-
-        var loadingInfo = document.getElementById('loading-info');
-        if (loadingInfo) {
-            loadingInfo.style.display = 'none';
-        }
-
-        if (info.tipoUsuario === 'aerolinea') {
-            // Para aerolínea mantenemos la lógica de rutas propias
-            mostrarRutasAerolinea(info.rutas || []);
-        } else if (info.tipoUsuario === 'cliente') {
-            // Cliente: primero cargamos sus reservas SIN check-in
-            await cargarReservasSinCheckin();
-            mostrarAerolineas(info.aerolineas || []);
-        } else {
-            mostrarError('Tipo de usuario no reconocido: ' + info.tipoUsuario);
-        }
-
+                        if (info.tipoUsuario === 'aerolinea') {
+                            // Para aerolínea mantenemos la lógica de rutas propias
+                            mostrarRutasAerolinea(info.rutas || []);
+                        } else if (info.tipoUsuario === 'cliente') {
+                            // Cliente: primero cargamos sus reservas SIN check-in
+                            cargarReservasSinCheckin().then(function () {
+                                mostrarAerolineas(info.aerolineas || []);
+                            });
+                        } else {
+                            mostrarError('Tipo de usuario no reconocido: ' + info.tipoUsuario);
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Error al cargar información inicial:', error);
+                        mostrarError('Error al cargar la información inicial: ' + error.message);
+                    });
+            })
+            .catch(function (error) {
+                console.error('Error al probar endpoint:', error);
+                mostrarError('Error al probar el endpoint: ' + error.message);
+            });
     } catch (error) {
         console.error('Error al cargar información inicial:', error);
 
@@ -277,26 +285,22 @@ async function cargarInfoInicial() {
 }
 
 // Reservas sin check-in del cliente
-async function cargarReservasSinCheckin() {
-    try {
-        console.log('Cargando reservas SIN check-in del cliente...');
-        var resp = await fetch('/VolandoUy-WebApp/api/consulta-reservas/reservas-no-checkin');
+function cargarReservasSinCheckin() {
+    console.log('Cargando reservas SIN check-in del cliente...');
+    var NO_CHECKIN_URL = "<c:url value='/api/consulta-reservas/reservas-no-checkin' />";
+    return fetch(NO_CHECKIN_URL)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            console.log('Reservas sin check-in recibidas:', data);
 
-        if (!resp.ok) {
-            console.warn('No se pudieron obtener reservas sin check-in. HTTP', resp.status);
-            return;
-        }
-
-        var data = await resp.json();
-        console.log('Reservas sin check-in recibidas:', data);
-
-        if (Array.isArray(data)) {
-            reservasSinCheckinIds = new Set(data.map(function(r){ return r.id; }));
-            console.log('Set reservasSinCheckinIds:', Array.from(reservasSinCheckinIds));
-        }
-    } catch (e) {
-        console.error('Error al cargar reservas sin check-in:', e);
-    }
+            if (Array.isArray(data)) {
+                reservasSinCheckinIds = new Set(data.map(function(r){ return r.id; }));
+                console.log('Set reservasSinCheckinIds:', Array.from(reservasSinCheckinIds));
+            }
+        })
+        .catch(function (e) {
+            console.error('Error al cargar reservas sin check-in:', e);
+        });
 }
 
 // ============================
@@ -364,30 +368,25 @@ function handleAerolineaChange(e) {
     }
 }
 
-async function cargarRutasAerolinea(aerolineaNickname) {
-    try {
-        console.log('Cargando rutas para aerolínea:', aerolineaNickname);
-        var url = '/VolandoUy-WebApp/api/consulta-reservas/rutas/' + encodeURIComponent(aerolineaNickname);
+function cargarRutasAerolinea(aerolineaNickname) {
+    console.log('Cargando rutas para aerolínea:', aerolineaNickname);
+    var RUTAS_URL = "<c:url value='/api/consulta-reservas/rutas/' />";
+    fetch(RUTAS_URL + encodeURIComponent(aerolineaNickname))
+        .then(function (r) { return r.json(); })
+        .then(function (rutas) {
+            console.log('Rutas recibidas:', rutas);
 
-        var response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-        }
+            if (rutas.error) {
+                mostrarError(rutas.error);
+                return;
+            }
 
-        var rutas = await response.json();
-        console.log('Rutas recibidas:', rutas);
-
-        if (rutas.error) {
-            mostrarError(rutas.error);
-            return;
-        }
-
-        mostrarRutasCliente(rutas);
-
-    } catch (error) {
-        console.error('Error al cargar rutas:', error);
-        mostrarError('Error al cargar las rutas');
-    }
+            mostrarRutasCliente(rutas);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar rutas:', error);
+            mostrarError('Error al cargar las rutas');
+        });
 }
 
 // ============================
@@ -426,22 +425,22 @@ function mostrarRutasCliente(rutas) {
 // ============================
 // Vuelos
 // ============================
-async function cargarVuelosRuta(rutaNombre) {
-    try {
-        var response = await fetch('/VolandoUy-WebApp/api/consulta-reservas/vuelos/' + encodeURIComponent(rutaNombre));
-        var vuelos = await response.json();
+function cargarVuelosRuta(rutaNombre) {
+    var VUELOS_URL = "<c:url value='/api/consulta-reservas/vuelos/' />";
+    fetch(VUELOS_URL + encodeURIComponent(rutaNombre))
+        .then(function (r) { return r.json(); })
+        .then(function (vuelos) {
+            if (vuelos.error) {
+                mostrarError(vuelos.error);
+                return;
+            }
 
-        if (vuelos.error) {
-            mostrarError(vuelos.error);
-            return;
-        }
-
-        mostrarVuelos(vuelos);
-
-    } catch (error) {
-        console.error('Error al cargar vuelos:', error);
-        mostrarError('Error al cargar los vuelos');
-    }
+            mostrarVuelos(vuelos);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar vuelos:', error);
+            mostrarError('Error al cargar los vuelos');
+        });
 }
 
 function mostrarVuelos(vuelos) {
@@ -490,44 +489,44 @@ async function seleccionarVuelo(vuelo) {
 
     limpiarSeccionesDependientes(['lista-reservas', 'reserva-cliente', 'detalle-reserva']);
 
-    try {
-        var response = await fetch('/VolandoUy-WebApp/api/consulta-reservas');
-        var info = await response.json();
-
-        // Siempre cargamos reservas del vuelo,
-        // pero luego filtramos SOLO las del cliente logueado.
-        await cargarReservasVuelo(vuelo.nombre);
-
-        // Si es cliente, también mostramos "Mi Reserva"
-        if (info.tipoUsuario === 'cliente') {
-            await cargarReservaCliente(vuelo.nombre);
-        }
-
-    } catch (error) {
-        console.error('Error al verificar tipo de usuario:', error);
-        mostrarError('Error al verificar el tipo de usuario');
-    }
+    var CONSULTA_URL = "<c:url value='/api/consulta-reservas' />";
+    fetch(CONSULTA_URL)
+        .then(function (r) { return r.json(); })
+        .then(function (info) {
+            // Siempre cargamos reservas del vuelo,
+            // pero luego filtramos SOLO las del cliente logueado.
+            cargarReservasVuelo(vuelo.nombre).then(function () {
+                // Si es cliente, también mostramos "Mi Reserva"
+                if (info.tipoUsuario === 'cliente') {
+                    cargarReservaCliente(vuelo.nombre);
+                }
+            });
+        })
+        .catch(function (error) {
+            console.error('Error al verificar tipo de usuario:', error);
+            mostrarError('Error al verificar el tipo de usuario');
+        });
 }
 
 // ============================
 // Reservas del vuelo (solo del cliente logueado)
 // ============================
-async function cargarReservasVuelo(vueloNombre) {
-    try {
-        var response = await fetch('/VolandoUy-WebApp/api/consulta-reservas/reservas-vuelo/' + encodeURIComponent(vueloNombre));
-        var reservas = await response.json();
+function cargarReservasVuelo(vueloNombre) {
+    var RESERVAS_VUELO_URL = "<c:url value='/api/consulta-reservas/reservas-vuelo/' />";
+    return fetch(RESERVAS_VUELO_URL + encodeURIComponent(vueloNombre))
+        .then(function (r) { return r.json(); })
+        .then(function (reservas) {
+            if (reservas.error) {
+                mostrarError(reservas.error);
+                return;
+            }
 
-        if (reservas.error) {
-            mostrarError(reservas.error);
-            return;
-        }
-
-        mostrarReservasVuelo(reservas);
-
-    } catch (error) {
-        console.error('Error al cargar reservas del vuelo:', error);
-        mostrarError('Error al cargar las reservas del vuelo');
-    }
+            mostrarReservasVuelo(reservas);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar reservas del vuelo:', error);
+            mostrarError('Error al cargar las reservas del vuelo');
+        });
 }
 
 function mostrarReservasVuelo(reservas) {
@@ -609,26 +608,22 @@ function mostrarReservasVuelo(reservas) {
 // ============================
 // Reserva del cliente (resumen rápido)
 // ============================
-async function cargarReservaCliente(vueloNombre) {
-    try {
-        var response = await fetch('/VolandoUy-WebApp/api/consulta-reservas/reserva-cliente/' + encodeURIComponent(vueloNombre));
-        var reserva = await response.json();
-
-        if (reserva.error) {
-            if (response.status === 404) {
+function cargarReservaCliente(vueloNombre) {
+    var RESERVA_CLIENTE_URL = "<c:url value='/api/consulta-reservas/reserva-cliente/' />";
+    return fetch(RESERVA_CLIENTE_URL + encodeURIComponent(vueloNombre))
+        .then(function (r) { return r.json(); })
+        .then(function (reserva) {
+            if (reserva.error) {
                 mostrarReservaCliente(null);
-            } else {
-                mostrarError(reserva.error);
+                return;
             }
-            return;
-        }
 
-        mostrarReservaCliente(reserva);
-
-    } catch (error) {
-        console.error('Error al cargar reserva del cliente:', error);
-        mostrarError('Error al cargar la reserva del cliente');
-    }
+            mostrarReservaCliente(reserva);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar reserva del cliente:', error);
+            mostrarError('Error al cargar la reserva del cliente');
+        });
 }
 
 function mostrarReservaCliente(reserva) {
@@ -661,22 +656,22 @@ function mostrarReservaCliente(reserva) {
 // ============================
 // Detalle de reserva
 // ============================
-async function mostrarDetalleReserva(reservaId) {
-    try {
-        var response = await fetch('/VolandoUy-WebApp/api/consulta-reservas/detalle-reserva/' + reservaId);
-        var detalle = await response.json();
+function mostrarDetalleReserva(reservaId) {
+    var DETALLE_URL = "<c:url value='/api/consulta-reservas/detalle-reserva/' />";
+    fetch(DETALLE_URL + reservaId)
+        .then(function (r) { return r.json(); })
+        .then(function (detalle) {
+            if (detalle.error) {
+                mostrarError(detalle.error);
+                return;
+            }
 
-        if (detalle.error) {
-            mostrarError(detalle.error);
-            return;
-        }
-
-        mostrarDetalleEnInterfaz(detalle);
-
-    } catch (error) {
-        console.error('Error al cargar detalle de reserva:', error);
-        mostrarError('Error al cargar el detalle de la reserva');
-    }
+            mostrarDetalleEnInterfaz(detalle);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar detalle de reserva:', error);
+            mostrarError('Error al cargar el detalle de la reserva');
+        });
 }
 
 function mostrarDetalleEnInterfaz(detalle) {
@@ -774,44 +769,34 @@ function obtenerTextoPasajeros(pasajeros) {
 // ============================
 // Check-in (versión simple)
 // ============================
-async function realizarCheckIn(reservaId) {
-  try {
-    // Llamamos al endpoint sin confirm() ni nada visual raro
-    const resp = await fetch(
-      '/VolandoUy-WebApp/api/consulta-reservas/realizar-checkin/' + encodeURIComponent(reservaId),
-      { method: 'POST' }
-    );
+function realizarCheckIn(reservaId) {
+  // Llamamos al endpoint sin confirm() ni nada visual raro
+  const CHECKIN_URL = "<c:url value='/api/consulta-reservas/realizar-checkin/' />";
+  fetch(CHECKIN_URL + encodeURIComponent(reservaId), { method: 'POST' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.error) {
+        mostrarError('Error al realizar el check-in: ' + data.error);
+        return;
+      }
 
-    let data = {};
-    try {
-      data = await resp.json();
-    } catch (e) {
-      data = {};
-    }
+      // Sacamos esta reserva del set de "sin check-in"
+      reservasSinCheckinIds.delete(reservaId);
 
-    if (!resp.ok || data.error) {
-      const msg = (data && data.error) ? data.error : ('HTTP ' + resp.status);
-      mostrarError('Error al realizar el check-in: ' + msg);
-      return;
-    }
+      // Aviso amigable
+      if (typeof showToast === 'function') {
+        showToast('Check-in realizado correctamente', 'success');
+      } else {
+        alert('Check-in realizado correctamente');
+      }
 
-    // Sacamos esta reserva del set de "sin check-in"
-    reservasSinCheckinIds.delete(reservaId);
-
-    // Aviso amigable
-    if (typeof showToast === 'function') {
-      showToast('Check-in realizado correctamente', 'success');
-    } else {
-      alert('Check-in realizado correctamente');
-    }
-
-    // Refrescar la pantalla de consulta
-    initConsultaReserva();
-
-  } catch (e) {
-    console.error('Error en realizarCheckIn:', e);
-    mostrarError('Error al realizar el check-in');
-  }
+      // Refrescar la pantalla de consulta
+      initConsultaReserva();
+    })
+    .catch(function (e) {
+      console.error('Error en realizarCheckIn:', e);
+      mostrarError('Error al realizar el check-in');
+    });
 }
 
 // ============================

@@ -97,43 +97,36 @@ function limpiarInterfaz() {
 }
 
 async function cargarInfoInicial() {
-    try {
-        console.log('Cargando información inicial desde:', BASE_URL);
-        const response = await fetch(BASE_URL);
+    console.log('Cargando información inicial desde:', BASE_URL);
+    fetch(BASE_URL)
+        .then(function (r) { return r.json(); })
+        .then(function (info) {
+            console.log('Información inicial recibida:', info);
 
-        console.log('Respuesta info inicial status:', response.status, response.statusText);
+            if (info.error) {
+                mostrarError(info.error);
+                ocultarLoading();
+                return;
+            }
 
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-        }
+            infoInicial = info;
 
-        const info = await response.json();
-        console.log('Información inicial recibida:', info);
-
-        if (info.error) {
-            mostrarError(info.error);
             ocultarLoading();
-            return;
-        }
+            mostrarResumenInicial(info);
 
-        infoInicial = info;
+            if (info.tipoUsuario !== 'cliente') {
+                mostrarError('Solo los clientes pueden acceder a esta consulta de reservas.');
+                return;
+            }
 
-        ocultarLoading();
-        mostrarResumenInicial(info);
-
-        if (info.tipoUsuario !== 'cliente') {
-            mostrarError('Solo los clientes pueden acceder a esta consulta de reservas.');
-            return;
-        }
-
-        // Cargar reservas con check in del cliente
-        cargarReservasCheckinCliente();
-
-    } catch (error) {
-        console.error('Error al cargar información inicial:', error);
-        ocultarLoading();
-        mostrarError('Error al cargar la información inicial: ' + error.message);
-    }
+            // Cargar reservas con check in del cliente
+            cargarReservasCheckinCliente();
+        })
+        .catch(function (error) {
+            console.error('Error al cargar información inicial:', error);
+            ocultarLoading();
+            mostrarError('Error al cargar la información inicial: ' + error.message);
+        });
 }
 
 function ocultarLoading() {
@@ -158,36 +151,28 @@ function mostrarResumenInicial(info) {
    RESERVAS CON CHECK IN (CLIENTE)
    ================================ */
 
-async function cargarReservasCheckinCliente() {
-    try {
-        const url = BASE_URL + '/reservas-checkin';
-        console.log('Cargando reservas con check in del cliente desde:', url);
+function cargarReservasCheckinCliente() {
+    const url = BASE_URL + '/reservas-checkin';
+    console.log('Cargando reservas con check in del cliente desde:', url);
 
-        const response = await fetch(url);
+    fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (reservas) {
+            console.log('Reservas con check in recibidas:', reservas);
 
-        console.log('Respuesta reservas-checkin status:', response.status, response.statusText);
+            if (reservas && reservas.error) {
+                mostrarReservasCheckinCliente([]);
+                mostrarError(reservas.error);
+                return;
+            }
 
-        if (!response.ok) {
+            mostrarReservasCheckinCliente(reservas || []);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar reservas con check in:', error);
             mostrarReservasCheckinCliente([]);
-            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-        }
-
-        const reservas = await response.json();
-        console.log('Reservas con check in recibidas:', reservas);
-
-        if (reservas && reservas.error) {
-            mostrarReservasCheckinCliente([]);
-            mostrarError(reservas.error);
-            return;
-        }
-
-        mostrarReservasCheckinCliente(reservas || []);
-
-    } catch (error) {
-        console.error('Error al cargar reservas con check in:', error);
-        mostrarReservasCheckinCliente([]);
-        mostrarError('Error al cargar las reservas con check in: ' + error.message);
-    }
+            mostrarError('Error al cargar las reservas con check in: ' + error.message);
+        });
 }
 
 function mostrarReservasCheckinCliente(reservas) {
@@ -250,32 +235,24 @@ function mostrarReservasCheckinCliente(reservas) {
    DETALLE DE RESERVA
    ================================ */
 
-async function mostrarDetalleReserva(reservaId) {
-    try {
-        const url = BASE_URL + '/detalle-reserva/' + reservaId;
-        console.log('Cargando detalle de reserva ID:', reservaId, 'desde', url);
+function mostrarDetalleReserva(reservaId) {
+    const url = BASE_URL + '/detalle-reserva/' + reservaId;
+    console.log('Cargando detalle de reserva ID:', reservaId, 'desde', url);
 
-        const response = await fetch(url);
+    fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (detalle) {
+            if (detalle.error) {
+                mostrarError(detalle.error);
+                return;
+            }
 
-        console.log('Respuesta detalle-reserva status:', response.status, response.statusText);
-
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-        }
-
-        const detalle = await response.json();
-
-        if (detalle.error) {
-            mostrarError(detalle.error);
-            return;
-        }
-
-        mostrarDetalleEnInterfaz(detalle);
-
-    } catch (error) {
-        console.error('Error al cargar detalle de reserva:', error);
-        mostrarError('Error al cargar el detalle de la reserva: ' + error.message);
-    }
+            mostrarDetalleEnInterfaz(detalle);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar detalle de reserva:', error);
+            mostrarError('Error al cargar el detalle de la reserva: ' + error.message);
+        });
 }
 
 function mostrarDetalleEnInterfaz(detalle) {

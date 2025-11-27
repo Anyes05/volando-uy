@@ -1,4 +1,10 @@
 // JavaScript para consulta de reservas de vuelo
+// Helper para construir URLs con contextPath
+function apiUrl(path) {
+  const contextPath = window.APP_CONTEXT_PATH || '';
+  return contextPath + (path.startsWith('/') ? path : '/' + path);
+}
+
 let infoInicial = null;
 let rutaSeleccionada = null;
 let vueloSeleccionado = null;
@@ -37,51 +43,51 @@ function initConsultaReserva() {
     cargarInfoInicial();
 }
 
-async function cargarInfoInicial() {
-    try {
-        // Primero probar el endpoint de prueba
-        console.log('Probando endpoint de prueba...');
-        const testResponse = await fetch('/VolandoUy-WebApp/api/consulta-reservas/test');
-        const testData = await testResponse.json();
-        console.log('Respuesta del endpoint de prueba:', testData);
-        
-        if (!testData.status || testData.status !== 'ok') {
-            mostrarError('Error en el endpoint de prueba: ' + (testData.error || 'Respuesta inesperada'));
-            return;
-        }
-        
-        // Si el endpoint de prueba funciona, proceder con el principal
-        console.log('Endpoint de prueba OK, cargando información inicial...');
-        const response = await fetch('/VolandoUy-WebApp/api/consulta-reservas');
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const info = await response.json();
-        
-        if (info.error) {
-            mostrarError(info.error);
-            return;
-        }
-        
-        infoInicial = info;
-        console.log('Información inicial:', info);
-        
-        if (info.tipoUsuario === 'aerolinea') {
-            // Mostrar rutas directamente para aerolíneas
-            mostrarRutasAerolinea(info.rutas || []);
-        } else if (info.tipoUsuario === 'cliente') {
-            // Mostrar aerolíneas para clientes
-            mostrarAerolineas(info.aerolineas || []);
-        } else {
-            mostrarError('Tipo de usuario no reconocido: ' + info.tipoUsuario);
-        }
-        
-    } catch (error) {
-        console.error('Error al cargar información inicial:', error);
-        mostrarError('Error al cargar la información inicial: ' + error.message);
-    }
+function cargarInfoInicial() {
+    // Primero probar el endpoint de prueba
+    console.log('Probando endpoint de prueba...');
+    fetch(apiUrl('/api/consulta-reservas/test'))
+        .then(function (r) { return r.json(); })
+        .then(function (testData) {
+            console.log('Respuesta del endpoint de prueba:', testData);
+            
+            if (!testData.status || testData.status !== 'ok') {
+                mostrarError('Error en el endpoint de prueba: ' + (testData.error || 'Respuesta inesperada'));
+                return;
+            }
+            
+            // Si el endpoint de prueba funciona, proceder con el principal
+            console.log('Endpoint de prueba OK, cargando información inicial...');
+            fetch(apiUrl('/api/consulta-reservas'))
+                .then(function (r) { return r.json(); })
+                .then(function (info) {
+                    if (info.error) {
+                        mostrarError(info.error);
+                        return;
+                    }
+                    
+                    infoInicial = info;
+                    console.log('Información inicial:', info);
+                    
+                    if (info.tipoUsuario === 'aerolinea') {
+                        // Mostrar rutas directamente para aerolíneas
+                        mostrarRutasAerolinea(info.rutas || []);
+                    } else if (info.tipoUsuario === 'cliente') {
+                        // Mostrar aerolíneas para clientes
+                        mostrarAerolineas(info.aerolineas || []);
+                    } else {
+                        mostrarError('Tipo de usuario no reconocido: ' + info.tipoUsuario);
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error al cargar información inicial:', error);
+                    mostrarError('Error al cargar la información inicial: ' + error.message);
+                });
+        })
+        .catch(function (error) {
+            console.error('Error al probar endpoint:', error);
+            mostrarError('Error al probar el endpoint: ' + error.message);
+        });
 }
 
 function mostrarRutasAerolinea(rutas) {
@@ -131,22 +137,21 @@ function mostrarAerolineas(aerolineas) {
     seccionAerolinea.style.display = 'block';
 }
 
-async function cargarRutasAerolinea(aerolineaNickname) {
-    try {
-        const response = await fetch(`/VolandoUy-WebApp/api/consulta-reservas/rutas/${encodeURIComponent(aerolineaNickname)}`);
-        const rutas = await response.json();
-        
-        if (rutas.error) {
-            mostrarError(rutas.error);
-            return;
-        }
-        
-        mostrarRutasCliente(rutas);
-        
-    } catch (error) {
-        console.error('Error al cargar rutas:', error);
-        mostrarError('Error al cargar las rutas');
-    }
+function cargarRutasAerolinea(aerolineaNickname) {
+    fetch(apiUrl(`/api/consulta-reservas/rutas/${encodeURIComponent(aerolineaNickname)}`))
+        .then(function (r) { return r.json(); })
+        .then(function (rutas) {
+            if (rutas.error) {
+                mostrarError(rutas.error);
+                return;
+            }
+            
+            mostrarRutasCliente(rutas);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar rutas:', error);
+            mostrarError('Error al cargar las rutas');
+        });
 }
 
 function mostrarRutasCliente(rutas) {
@@ -170,22 +175,21 @@ function mostrarRutasCliente(rutas) {
     seccionRuta.style.display = 'block';
 }
 
-async function cargarVuelosRuta(rutaNombre) {
-    try {
-        const response = await fetch(`/VolandoUy-WebApp/api/consulta-reservas/vuelos/${encodeURIComponent(rutaNombre)}`);
-        const vuelos = await response.json();
-        
-        if (vuelos.error) {
-            mostrarError(vuelos.error);
-            return;
-        }
-        
-        mostrarVuelos(vuelos);
-        
-    } catch (error) {
-        console.error('Error al cargar vuelos:', error);
-        mostrarError('Error al cargar los vuelos');
-    }
+function cargarVuelosRuta(rutaNombre) {
+    fetch(apiUrl(`/api/consulta-reservas/vuelos/${encodeURIComponent(rutaNombre)}`))
+        .then(function (r) { return r.json(); })
+        .then(function (vuelos) {
+            if (vuelos.error) {
+                mostrarError(vuelos.error);
+                return;
+            }
+            
+            mostrarVuelos(vuelos);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar vuelos:', error);
+            mostrarError('Error al cargar los vuelos');
+        });
 }
 
 function mostrarVuelos(vuelos) {
@@ -229,22 +233,21 @@ async function seleccionarVuelo(vuelo) {
     }
 }
 
-async function cargarReservasVuelo(vueloNombre) {
-    try {
-        const response = await fetch(`/VolandoUy-WebApp/api/consulta-reservas/reservas-vuelo/${encodeURIComponent(vueloNombre)}`);
-        const reservas = await response.json();
-        
-        if (reservas.error) {
-            mostrarError(reservas.error);
-            return;
-        }
-        
-        mostrarReservasVuelo(reservas);
-        
-    } catch (error) {
-        console.error('Error al cargar reservas del vuelo:', error);
-        mostrarError('Error al cargar las reservas del vuelo');
-    }
+function cargarReservasVuelo(vueloNombre) {
+    fetch(apiUrl(`/api/consulta-reservas/reservas-vuelo/${encodeURIComponent(vueloNombre)}`))
+        .then(function (r) { return r.json(); })
+        .then(function (reservas) {
+            if (reservas.error) {
+                mostrarError(reservas.error);
+                return;
+            }
+            
+            mostrarReservasVuelo(reservas);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar reservas del vuelo:', error);
+            mostrarError('Error al cargar las reservas del vuelo');
+        });
 }
 
 function mostrarReservasVuelo(reservas) {
@@ -275,26 +278,21 @@ function mostrarReservasVuelo(reservas) {
     seccionReservas.style.display = 'block';
 }
 
-async function cargarReservaCliente(vueloNombre) {
-    try {
-        const response = await fetch(`/VolandoUy-WebApp/api/consulta-reservas/reserva-cliente/${encodeURIComponent(vueloNombre)}`);
-        const reserva = await response.json();
-        
-        if (reserva.error) {
-            if (response.status === 404) {
+function cargarReservaCliente(vueloNombre) {
+    fetch(apiUrl(`/api/consulta-reservas/reserva-cliente/${encodeURIComponent(vueloNombre)}`))
+        .then(function (r) { return r.json(); })
+        .then(function (reserva) {
+            if (reserva.error) {
                 mostrarReservaCliente(null);
-            } else {
-                mostrarError(reserva.error);
+                return;
             }
-            return;
-        }
-        
-        mostrarReservaCliente(reserva);
-        
-    } catch (error) {
-        console.error('Error al cargar reserva del cliente:', error);
-        mostrarError('Error al cargar la reserva del cliente');
-    }
+            
+            mostrarReservaCliente(reserva);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar reserva del cliente:', error);
+            mostrarError('Error al cargar la reserva del cliente');
+        });
 }
 
 function mostrarReservaCliente(reserva) {
@@ -322,22 +320,21 @@ function mostrarReservaCliente(reserva) {
     seccionReserva.style.display = 'block';
 }
 
-async function mostrarDetalleReserva(reservaId) {
-    try {
-        const response = await fetch(`/VolandoUy-WebApp/api/consulta-reservas/detalle-reserva/${reservaId}`);
-        const detalle = await response.json();
-        
-        if (detalle.error) {
-            mostrarError(detalle.error);
-            return;
-        }
-        
-        mostrarDetalleEnInterfaz(detalle);
-        
-    } catch (error) {
-        console.error('Error al cargar detalle de reserva:', error);
-        mostrarError('Error al cargar el detalle de la reserva');
-    }
+function mostrarDetalleReserva(reservaId) {
+    fetch(apiUrl(`/api/consulta-reservas/detalle-reserva/${reservaId}`))
+        .then(function (r) { return r.json(); })
+        .then(function (detalle) {
+            if (detalle.error) {
+                mostrarError(detalle.error);
+                return;
+            }
+            
+            mostrarDetalleEnInterfaz(detalle);
+        })
+        .catch(function (error) {
+            console.error('Error al cargar detalle de reserva:', error);
+            mostrarError('Error al cargar el detalle de la reserva');
+        });
 }
 
 function mostrarDetalleEnInterfaz(detalle) {

@@ -109,15 +109,10 @@ function initConsultaVuelo() {
 
     // Función para cargar aerolíneas
     function cargarAerolineas() {
-        fetch('/VolandoUy-WebApp/api/vuelos/aerolineas')
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-                return response.json();
-            })
-            .then(aerolineas => {
+        var AEROLINEAS_URL = "<c:url value='/api/vuelos/aerolineas' />";
+        fetch(AEROLINEAS_URL)
+            .then(function (r) { return r.json(); })
+            .then(function (aerolineas) {
                 console.log('Aerolíneas recibidas:', aerolineas);
                 console.log('Tipo de aerolíneas:', typeof aerolineas);
                 console.log('Es array:', Array.isArray(aerolineas));
@@ -134,7 +129,7 @@ function initConsultaVuelo() {
                     selectAerolinea.appendChild(option);
                 });
             })
-            .catch(error => {
+            .catch(function (error) {
                 console.error('Error al cargar aerolíneas:', error);
                 selectAerolinea.innerHTML = '<option value="">Error al cargar aerolíneas</option>';
             });
@@ -151,15 +146,16 @@ function initConsultaVuelo() {
         }
 
         // Cargar rutas de la aerolínea seleccionada
-        fetch(`/VolandoUy-WebApp/api/vuelos/rutas/\${nickname}`)
-            .then(response => {
-                console.log('Response status para rutas:', response.status);
-                if (!response.ok) {
+        var RUTAS_URL = "<c:url value='/api/vuelos/rutas/' />";
+        fetch(RUTAS_URL + encodeURIComponent(nickname))
+            .then(function (r) { return r.json(); })
+            .then(function (rutas) {
+                console.log('Rutas recibidas:', rutas);
                     throw new Error('HTTP ' + response.status);
                 }
                 return response.json();
             })
-            .then(rutas => {
+            .then(function (rutas) {
                 console.log('Rutas recibidas:', rutas);
                 console.log('Tipo de rutas:', typeof rutas);
                 console.log('Es array:', Array.isArray(rutas));
@@ -178,7 +174,7 @@ function initConsultaVuelo() {
                 // Filtrar rutas según parámetros de búsqueda si existen
                 let rutasFiltradas = rutas;
                 if (busquedaOrigen || busquedaDestino) {
-                    rutasFiltradas = rutas.filter(ruta => {
+                    rutasFiltradas = rutas.filter(function (ruta) {
                         const origenMatch = !busquedaOrigen || 
                             ruta.ciudadOrigen.nombre.toLowerCase().includes(busquedaOrigen.toLowerCase());
                         const destinoMatch = !busquedaDestino || 
@@ -192,14 +188,14 @@ function initConsultaVuelo() {
                     return;
                 }
                 
-                rutasFiltradas.forEach(ruta => {
+                rutasFiltradas.forEach(function (ruta) {
                     const pill = document.createElement('div');
                     pill.className = 'ruta-pill';
                     pill.textContent = `\${ruta.nombre} (\${ruta.ciudadOrigen.nombre} → \${ruta.ciudadDestino.nombre})`;
                     pill.dataset.rutaNombre = ruta.nombre;
-                    pill.addEventListener('click', () => {
+                    pill.addEventListener('click', function () {
                         // Remover selección anterior
-                        document.querySelectorAll('.ruta-pill').forEach(p => p.classList.remove('active'));
+                        document.querySelectorAll('.ruta-pill').forEach(function (p) { p.classList.remove('active'); });
                         pill.classList.add('active');
                         mostrarVuelos(ruta.nombre, busquedaFecha);
                     });
@@ -214,7 +210,7 @@ function initConsultaVuelo() {
                     }
                 }
             })
-            .catch(error => {
+            .catch(function (error) {
                 console.error('Error al cargar rutas:', error);
                 listaRutas.innerHTML = 'Error al cargar rutas: ' + error.message;
             });
@@ -227,9 +223,10 @@ function initConsultaVuelo() {
         reservasDiv.style.display = 'none';
         detalleReservaDiv.style.display = 'none';
 
-        fetch(`/VolandoUy-WebApp/api/vuelos/vuelos/\${encodeURIComponent(nombreRuta)}`)
-            .then(response => response.json())
-            .then(vuelos => {
+        var VUELOS_URL = "<c:url value='/api/vuelos/vuelos/' />";
+        fetch(VUELOS_URL + encodeURIComponent(nombreRuta))
+            .then(function (r) { return r.json(); })
+            .then(function (vuelos) {
                 if (vuelos.length === 0) {
                     listaVuelos.innerHTML = '<p>No hay vuelos para esta ruta.</p>';
                     return;
@@ -238,7 +235,7 @@ function initConsultaVuelo() {
                 // Filtrar vuelos por fecha si se proporciona
                 let vuelosFiltrados = vuelos;
                 if (fechaFiltro) {
-                    vuelosFiltrados = vuelos.filter(vuelo => {
+                    vuelosFiltrados = vuelos.filter(function (vuelo) {
                         const fechaVuelo = new Date(vuelo.fechaVuelo);
                         const fechaBusqueda = new Date(fechaFiltro);
                         return fechaVuelo.toDateString() === fechaBusqueda.toDateString();
@@ -250,7 +247,7 @@ function initConsultaVuelo() {
                     return;
                 }
 
-                vuelosFiltrados.forEach(vuelo => {
+                vuelosFiltrados.forEach(function (vuelo) {
                     const card = document.createElement('div');
                     card.className = 'vuelo-card';
                     const imagenHtml = vuelo.foto ? 
@@ -264,11 +261,11 @@ function initConsultaVuelo() {
                             <p>\${vuelo.ruta.nombre} — \${vuelo.fechaVuelo} \${vuelo.horaVuelo}</p>
                         </div>
                     `;
-                    card.addEventListener('click', () => mostrarDetalleVuelo(vuelo));
+                    card.addEventListener('click', function () { mostrarDetalleVuelo(vuelo); });
                     listaVuelos.appendChild(card);
                 });
             })
-            .catch(error => {
+            .catch(function (error) {
                 console.error('Error al cargar vuelos:', error);
                 listaVuelos.innerHTML = '<p>Error al cargar vuelos</p>';
             });
@@ -317,23 +314,24 @@ function initConsultaVuelo() {
         listaReservas.innerHTML = '';
         detalleReservaDiv.style.display = 'none';
 
-        fetch(`/VolandoUy-WebApp/api/vuelos/reservas/\${encodeURIComponent(nombreVuelo)}`)
-            .then(response => response.json())
-            .then(reservas => {
+        var RESERVAS_URL = "<c:url value='/api/vuelos/reservas/' />";
+        fetch(RESERVAS_URL + encodeURIComponent(nombreVuelo))
+            .then(function (r) { return r.json(); })
+            .then(function (reservas) {
                 if (reservas.length === 0) {
                     listaReservas.innerHTML = '<p>No hay reservas disponibles para mostrar.</p>';
                     return;
                 }
 
-                reservas.forEach((reserva) => {
+                reservas.forEach(function (reserva) {
                     const div = document.createElement('div');
                     div.className = 'reserva-card';
                     div.innerHTML = '<strong>' + reserva.cliente + '</strong> — Fecha: ' + reserva.fechaReserva + ' • Costo: ' + formatearCostoReserva(reserva.costoReserva);
-                    div.addEventListener('click', () => mostrarDetalleReserva(reserva));
+                    div.addEventListener('click', function () { mostrarDetalleReserva(reserva); });
                     listaReservas.appendChild(div);
                 });
             })
-            .catch(error => {
+            .catch(function (error) {
                 console.error('Error al cargar reservas:', error);
                 listaReservas.innerHTML = '<p>Error al cargar reservas</p>';
             });

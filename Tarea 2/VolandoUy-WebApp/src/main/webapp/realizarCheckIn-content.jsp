@@ -188,44 +188,37 @@
         }
     }
 
-    async function cargarInfoInicialSinCheck() {
-        try {
-            console.log('Cargando información inicial desde:', BASE_URL);
-            const response = await fetch(BASE_URL);
+    function cargarInfoInicialSinCheck() {
+        console.log('Cargando información inicial desde:', BASE_URL);
+        fetch(BASE_URL)
+            .then(function (r) { return r.json(); })
+            .then(function (info) {
+                console.log('Información inicial recibida:', info);
 
-            console.log('Respuesta info inicial status:', response.status, response.statusText);
+                if (info.error) {
+                    mostrarError(info.error);
+                    ocultarLoadingSinCheck();
+                    return;
+                }
 
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-            }
+                infoInicial = info;
 
-            const info = await response.json();
-            console.log('Información inicial recibida:', info);
-
-            if (info.error) {
-                mostrarError(info.error);
                 ocultarLoadingSinCheck();
-                return;
-            }
+                mostrarResumenInicialSinCheck(info);
 
-            infoInicial = info;
+                if (info.tipoUsuario !== 'cliente') {
+                    mostrarError('Solo los clientes pueden acceder a esta funcionalidad.');
+                    return;
+                }
 
-            ocultarLoadingSinCheck();
-            mostrarResumenInicialSinCheck(info);
-
-            if (info.tipoUsuario !== 'cliente') {
-                mostrarError('Solo los clientes pueden acceder a esta funcionalidad.');
-                return;
-            }
-
-            // Cargar reservas SIN check in
-            cargarReservasSinCheckinCliente();
-
-        } catch (error) {
-            console.error('Error al cargar información inicial:', error);
-            ocultarLoadingSinCheck();
-            mostrarError('Error al cargar la información inicial: ' + error.message);
-        }
+                // Cargar reservas SIN check in
+                cargarReservasSinCheckinCliente();
+            })
+            .catch(function (error) {
+                console.error('Error al cargar información inicial:', error);
+                ocultarLoadingSinCheck();
+                mostrarError('Error al cargar la información inicial: ' + error.message);
+            });
     }
 
     function ocultarLoadingSinCheck() {
@@ -248,36 +241,28 @@
        RESERVAS SIN CHECK IN (CLIENTE)
        ================================ */
 
-    async function cargarReservasSinCheckinCliente() {
-        try {
-            const url = BASE_URL + '/reservas-no-checkin';
-            console.log('Cargando reservas SIN check in desde:', url);
+    function cargarReservasSinCheckinCliente() {
+        const url = BASE_URL + '/reservas-no-checkin';
+        console.log('Cargando reservas SIN check in desde:', url);
 
-            const response = await fetch(url);
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (reservas) {
+                console.log('Reservas SIN check in recibidas:', reservas);
 
-            console.log('Respuesta reservas-no-checkin status:', response.status, response.statusText);
+                if (reservas && reservas.error) {
+                    mostrarReservasSinCheckinCliente([]);
+                    mostrarError(reservas.error);
+                    return;
+                }
 
-            if (!response.ok) {
+                mostrarReservasSinCheckinCliente(reservas || []);
+            })
+            .catch(function (error) {
+                console.error('Error al cargar reservas sin check in:', error);
                 mostrarReservasSinCheckinCliente([]);
-                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-            }
-
-            const reservas = await response.json();
-            console.log('Reservas SIN check in recibidas:', reservas);
-
-            if (reservas && reservas.error) {
-                mostrarReservasSinCheckinCliente([]);
-                mostrarError(reservas.error);
-                return;
-            }
-
-            mostrarReservasSinCheckinCliente(reservas || []);
-
-        } catch (error) {
-            console.error('Error al cargar reservas sin check in:', error);
-            mostrarReservasSinCheckinCliente([]);
-            mostrarError('Error al cargar las reservas sin check in: ' + error.message);
-        }
+                mostrarError('Error al cargar las reservas sin check in: ' + error.message);
+            });
     }
 
     function mostrarReservasSinCheckinCliente(reservas) {
@@ -344,32 +329,24 @@
        DETALLE DE RESERVA (reutilizado)
        ================================ */
 
-    async function mostrarDetalleReserva(reservaId) {
-        try {
-            const url = BASE_URL + '/detalle-reserva/' + reservaId;
-            console.log('Cargando detalle de reserva ID:', reservaId, 'desde', url);
+    function mostrarDetalleReserva(reservaId) {
+        const url = BASE_URL + '/detalle-reserva/' + reservaId;
+        console.log('Cargando detalle de reserva ID:', reservaId, 'desde', url);
 
-            const response = await fetch(url);
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (detalle) {
+                if (detalle.error) {
+                    mostrarError(detalle.error);
+                    return;
+                }
 
-            console.log('Respuesta detalle-reserva status:', response.status, response.statusText);
-
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-            }
-
-            const detalle = await response.json();
-
-            if (detalle.error) {
-                mostrarError(detalle.error);
-                return;
-            }
-
-            mostrarDetalleEnInterfaz(detalle);
-
-        } catch (error) {
-            console.error('Error al cargar detalle de reserva:', error);
-            mostrarError('Error al cargar el detalle de la reserva: ' + error.message);
-        }
+                mostrarDetalleEnInterfaz(detalle);
+            })
+            .catch(function (error) {
+                console.error('Error al cargar detalle de reserva:', error);
+                mostrarError('Error al cargar el detalle de la reserva: ' + error.message);
+            });
     }
 
     function mostrarDetalleEnInterfaz(detalle) {
@@ -422,36 +399,26 @@
        REALIZAR CHECK IN
        ================================ */
 
-    async function realizarCheckIn(reservaId) {
-        try {
-            const url = BASE_URL + '/realizar-checkin/' + reservaId;
-            console.log('Realizando check in para reserva ID:', reservaId, 'en', url);
+    function realizarCheckIn(reservaId) {
+        const url = BASE_URL + '/realizar-checkin/' + reservaId;
+        console.log('Realizando check in para reserva ID:', reservaId, 'en', url);
 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.error) {
+                    mostrarError('No se pudo realizar el check in: ' + data.error);
+                    return;
                 }
-            });
 
-            console.log('Respuesta realizar-checkin status:', response.status, response.statusText);
-
-            const data = await response.json().catch(() => ({}));
-
-            if (!response.ok) {
-                const msg = data.error || ('HTTP ' + response.status + ': ' + response.statusText);
-                mostrarError('No se pudo realizar el check in: ' + msg);
-                return;
-            }
-
-            if (data.error) {
-                mostrarError('No se pudo realizar el check in: ' + data.error);
-                return;
-            }
-
-            if (typeof showToast === 'function') {
-                showToast('Check in realizado correctamente para la reserva #' + reservaId, 'success');
-            } else {
+                if (typeof showToast === 'function') {
+                    showToast('Check in realizado correctamente para la reserva #' + reservaId, 'success');
+                } else {
                 mostrarWarning('Check in realizado correctamente para la reserva #' + reservaId);
             }
 

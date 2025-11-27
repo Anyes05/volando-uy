@@ -239,13 +239,8 @@
         method: 'GET',
         headers: { 'Accept': 'application/json' }
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Error al obtener rutas: " + response.status);
-          }
-          return response.json();
-        })
-        .then(rutas => {
+        .then(function (r) { return r.json(); })
+        .then(function (rutas) {
           console.log('Rutas recibidas para finalizar:', rutas);
 
           rutas
@@ -266,7 +261,7 @@
 
           toggleButton();
         })
-        .catch(err => {
+        .catch(function (err) {
           console.error('Error al cargar rutas para finalizar:', err);
           // Si tenés toasts:
           // showToast('error', 'No se pudieron cargar las rutas para finalizar');
@@ -291,10 +286,15 @@
           method: 'POST',
           body: formData
         })
-          .then(response =>
-            response.json().then(body => ({ ok: response.ok, status: response.status, body }))
-          )
-          .then(({ ok, status, body }) => {
+          .then(function (r) {
+            return r.json().then(function (body) {
+              return { ok: r.ok, status: r.status, body: body };
+            });
+          })
+          .then(function (result) {
+            var ok = result.ok;
+            var status = result.status;
+            var body = result.body;
             if (ok) {
               // showToast('success', body.mensaje || 'Ruta finalizada correctamente');
               alert(body.mensaje || 'Ruta finalizada correctamente');
@@ -314,7 +314,7 @@
               alert(body.error || 'Error al finalizar ruta');
             }
           })
-          .catch(err => {
+          .catch(function (err) {
             console.error('Error inesperado al finalizar ruta:', err);
             // showToast('error', 'Error inesperado al finalizar ruta');
             alert('Error inesperado al finalizar ruta');
@@ -330,31 +330,25 @@
 
 <script>
   // Cargar categorías dinámicamente
-  async function cargarCategorias() {
+  function cargarCategorias() {
     const container = document.getElementById('categorias-container');
     
-    try {
-      container.innerHTML = '<div class="categorias-loading">Cargando categorías...</div>';
-      
-      const response = await fetch('<%= request.getContextPath() %>/api/rutas/categorias', {
-        method: 'GET',
-        credentials: 'include'
-      });
+    container.innerHTML = '<div class="categorias-loading">Cargando categorías...</div>';
+    
+    fetch('<%= request.getContextPath() %>/api/rutas/categorias', {
+      method: 'GET',
+      credentials: 'include'
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (categorias) {
+        if (!Array.isArray(categorias) || categorias.length === 0) {
+          container.innerHTML = '<div class="categorias-loading">No hay categorías disponibles</div>';
+          return;
+        }
 
-      if (!response.ok) {
-        throw new Error('Error HTTP: ' + response.status);
-      }
-
-      const categorias = await response.json();
-      
-      if (!Array.isArray(categorias) || categorias.length === 0) {
-        container.innerHTML = '<div class="categorias-loading">No hay categorías disponibles</div>';
-        return;
-      }
-
-      // Crear checkboxes para cada categoría
-      container.innerHTML = '';
-      categorias.forEach((categoria, index) => {
+        // Crear checkboxes para cada categoría
+        container.innerHTML = '';
+        categorias.forEach(function (categoria, index) {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'categoria-checkbox-item';
         
@@ -385,30 +379,25 @@
         
         itemDiv.appendChild(checkbox);
         itemDiv.appendChild(label);
-        container.appendChild(itemDiv);
+          container.appendChild(itemDiv);
+        });
+      })
+      .catch(function (error) {
+        console.error('Error al cargar categorías:', error);
+        container.innerHTML = '<div class="categorias-loading" style="color: #ff6b6b;">Error al cargar categorías</div>';
       });
-      
-    } catch (error) {
-      console.error('Error al cargar categorías:', error);
-      container.innerHTML = '<div class="categorias-loading" style="color: #ff6b6b;">Error al cargar categorías</div>';
-    }
   }
 
   // Cargar ciudades dinámicamente
-  async function cargarCiudades() {
-    try {
-      console.log('Cargando ciudades...');
-      
-      const response = await fetch('<%= request.getContextPath() %>/api/rutas/ciudades', {
-        method: 'GET',
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        throw new Error('Error HTTP: ' + response.status);
-      }
-
-      const ciudades = await response.json();
+  function cargarCiudades() {
+    console.log('Cargando ciudades...');
+    
+    fetch('<%= request.getContextPath() %>/api/rutas/ciudades', {
+      method: 'GET',
+      credentials: 'include'
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (ciudades) {
       
       if (!Array.isArray(ciudades) || ciudades.length === 0) {
         console.warn('No hay ciudades disponibles');
@@ -419,45 +408,45 @@
       const selectOrigen = document.getElementById('ciudadOrigen');
       const selectDestino = document.getElementById('ciudadDestino');
       
-      // Limpiar opciones existentes (excepto la primera)
-      selectOrigen.innerHTML = '<option value="">Seleccione ciudad origen</option>';
-      selectDestino.innerHTML = '<option value="">Seleccione ciudad destino</option>';
-      
-      // Agregar ciudades a ambos selects
-      ciudades.forEach(ciudad => {
-        const optionOrigen = document.createElement('option');
-        optionOrigen.value = ciudad.nombre;
-        optionOrigen.textContent = ciudad.nombreCompleto;
-        selectOrigen.appendChild(optionOrigen);
-        
-        const optionDestino = document.createElement('option');
-        optionDestino.value = ciudad.nombre;
-        optionDestino.textContent = ciudad.nombreCompleto;
-        selectDestino.appendChild(optionDestino);
-      });
-      
-      // Agregar listener para filtrar destino cuando se seleccione origen
-      selectOrigen.addEventListener('change', function() {
-        const ciudadOrigenSeleccionada = this.value;
-        
-        // Recargar ciudades destino excluyendo la seleccionada como origen
+        // Limpiar opciones existentes (excepto la primera)
+        selectOrigen.innerHTML = '<option value="">Seleccione ciudad origen</option>';
         selectDestino.innerHTML = '<option value="">Seleccione ciudad destino</option>';
         
-        ciudades.forEach(ciudad => {
-          if (ciudad.nombre !== ciudadOrigenSeleccionada) {
-            const option = document.createElement('option');
-            option.value = ciudad.nombre;
-            option.textContent = ciudad.nombreCompleto;
-            selectDestino.appendChild(option);
-          }
+        // Agregar ciudades a ambos selects
+        ciudades.forEach(function (ciudad) {
+          const optionOrigen = document.createElement('option');
+          optionOrigen.value = ciudad.nombre;
+          optionOrigen.textContent = ciudad.nombreCompleto;
+          selectOrigen.appendChild(optionOrigen);
+          
+          const optionDestino = document.createElement('option');
+          optionDestino.value = ciudad.nombre;
+          optionDestino.textContent = ciudad.nombreCompleto;
+          selectDestino.appendChild(optionDestino);
         });
+        
+        // Agregar listener para filtrar destino cuando se seleccione origen
+        selectOrigen.addEventListener('change', function() {
+          const ciudadOrigenSeleccionada = this.value;
+          
+          // Recargar ciudades destino excluyendo la seleccionada como origen
+          selectDestino.innerHTML = '<option value="">Seleccione ciudad destino</option>';
+          
+          ciudades.forEach(function (ciudad) {
+            if (ciudad.nombre !== ciudadOrigenSeleccionada) {
+              const option = document.createElement('option');
+              option.value = ciudad.nombre;
+              option.textContent = ciudad.nombreCompleto;
+              selectDestino.appendChild(option);
+            }
+          });
+        });
+        
+        console.log('Ciudades cargadas exitosamente:', ciudades.length);
+      })
+      .catch(function (error) {
+        console.error('Error al cargar ciudades:', error);
       });
-      
-      console.log('Ciudades cargadas exitosamente:', ciudades.length);
-      
-    } catch (error) {
-      console.error('Error al cargar ciudades:', error);
-    }
   }
 
   // Cargar datos al cargar la página
@@ -524,7 +513,7 @@
     msgDiv.textContent = text;
   }
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
     msgDiv.style.display = "none";
 
@@ -561,17 +550,13 @@
     const originalText = submitBtn.textContent;
     submitBtn.textContent = "Guardando...";
 
-    try {
-      const response = await fetch("<%= request.getContextPath() %>/api/rutas", {
-        method: "POST",
-        body: formData,
-        credentials: "include"
-      });
-
-      let result = {};
-      try { result = await response.json(); } catch (err) {}
-
-      if (response.ok) {
+    fetch("<%= request.getContextPath() %>/api/rutas", {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (result) {
         showMessage(result.mensaje || "Ruta de vuelo creada exitosamente.", false);
         form.reset();
         document.getElementById("fechaAlta").valueAsDate = new Date();
@@ -581,14 +566,17 @@
         // Recargar categorías para limpiar selecciones
         cargarCategorias();
       } else {
-        showMessage(result.error || ("Error al crear ruta de vuelo: " + response.status));
+        showMessage(result.error || "Error al crear ruta de vuelo");
       }
-    } catch (error) {
-      showMessage("Error al crear ruta de vuelo: " + (error.message || error));
-    } finally {
+      
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
-    }
+    })
+    .catch(function (error) {
+      showMessage("Error al crear ruta de vuelo: " + (error.message || error));
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    });
   });
 
 </script>

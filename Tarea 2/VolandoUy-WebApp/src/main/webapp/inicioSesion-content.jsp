@@ -30,7 +30,7 @@
 </div>
 
 <script>
-document.getElementById('login-form').addEventListener('submit', async function(e) {
+document.getElementById('login-form').addEventListener('submit', function(e) {
   e.preventDefault();
 
   const email = document.getElementById('email').value;
@@ -42,22 +42,19 @@ document.getElementById('login-form').addEventListener('submit', async function(
   submitBtn.classList.add('loading');
   submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando sesi&oacute;n...';
 
-  try {
-    const response = await fetch('${pageContext.request.contextPath}/login', {
-      method: 'POST',
-      credentials: 'include', // importante: envia cookie de sesion (JSESSIONID)
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        email: email,
-        password: password
-      })
-    });
-
-    const result = await response.json().catch(() => ({}));
-
-    if (response.ok) {
+  fetch('${pageContext.request.contextPath}/login', {
+    method: 'POST',
+    credentials: 'include', // importante: envia cookie de sesion (JSESSIONID)
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      email: email,
+      password: password
+    })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (result) {
       // Guardar datos utiles en sessionStorage para reutilizar en frontend
       if (result.nickname) sessionStorage.setItem('usuarioLogueado', result.nickname);
       if (result.nombre) sessionStorage.setItem('nombreUsuario', result.nombre);
@@ -74,20 +71,13 @@ document.getElementById('login-form').addEventListener('submit', async function(
 
       // Redirigir según el dispositivo: en móvil después de login, ir a inicio.jsp (que mostrará el contenido apropiado)
       window.location.href = '${pageContext.request.contextPath}/inicio.jsp';
-    } else {
-      // Mostrar error y restaurar boton
-      const msg = result.mensaje || result.error || 'Error al iniciar sesi&oacute;n';
-      showToast(msg, 'error');
+    })
+    .catch(function (error) {
+      console.error('Error:', error);
+      showToast('Error de conexi&oacute;n: ' + (error.message || error), 'error');
       submitBtn.disabled = false;
       submitBtn.classList.remove('loading');
       submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    showToast('Error de conexi&oacute;n: ' + (error.message || error), 'error');
-    submitBtn.disabled = false;
-    submitBtn.classList.remove('loading');
-    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesi&oacute;n';
-  }
+    });
 });
 </script>

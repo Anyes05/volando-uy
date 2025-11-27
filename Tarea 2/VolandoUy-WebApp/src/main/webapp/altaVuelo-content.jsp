@@ -83,22 +83,16 @@
 </section>
 
 <script>
-  (async function loadRutas() {
+  (function loadRutas() {
     const select = document.getElementById('selectRuta');
     if (!select) return;
 
-    try {
-      const resp = await fetch('<%= request.getContextPath() %>/api/rutas', {
-        method: 'GET',
-        credentials: 'include'
-      });
-
-      if (!resp.ok) {
-        console.warn('No se pudieron cargar rutas: ', resp.status);
-        return;
-      }
-
-      const data = await resp.json();
+    fetch('<%= request.getContextPath() %>/api/rutas', {
+      method: 'GET',
+      credentials: 'include'
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
 
       // La API podría devolver directamente un array o un objeto { rutas: [...] }
       const rutas = Array.isArray(data) ? data : (Array.isArray(data.rutas) ? data.rutas : []);
@@ -112,30 +106,42 @@
       select.innerHTML = '';
       if (placeholder) select.appendChild(placeholder);
 
-      rutas.forEach(r => {
-        // r puede tener distintas propiedades según tu API: id, nombre, nombreRuta, etc.
-        const opt = document.createElement('option');
+        // La API podría devolver directamente un array o un objeto { rutas: [...] }
+        const rutas = Array.isArray(data) ? data : (Array.isArray(data.rutas) ? data.rutas : []);
 
-        // Evitar value = undefined: elegir la mejor propiedad disponible
-        const idVal = r.id ?? r.idRuta ?? r.codigo ?? "";
-        const nombreVal = r.nombre ?? r.nombreRuta ?? (r.origen && r.destino ? `${r.origen} - ${r.destino}` : "");
+        // Depuración (quitar/ocultar en producción)
+        console.debug('Rutas cargadas:', rutas);
 
-        // Si la lógica del back espera el NOMBRE de la ruta, podríamos setear value=nombreVal.
-        // Para ser conservadores, dejamos value = idVal si existe, si no usamos nombreVal.
-        opt.value = (idVal !== "") ? idVal : (nombreVal !== "" ? nombreVal : "");
+        // Limpiar opciones excepto la primera (placeholder)
+        // Más seguro: dejar solo el primer option
+        const placeholder = select.querySelector('option[value=""]');
+        select.innerHTML = '';
+        if (placeholder) select.appendChild(placeholder);
 
-        // Mostrar texto legible
-        opt.textContent = nombreVal || idVal || 'Ruta sin nombre';
+        rutas.forEach(function (r) {
+          // r puede tener distintas propiedades según tu API: id, nombre, nombreRuta, etc.
+          const opt = document.createElement('option');
 
-        // Guardar el nombre en data-* por si querés usarlo en cliente
-        opt.dataset.nombre = nombreVal;
+          // Evitar value = undefined: elegir la mejor propiedad disponible
+          const idVal = r.id || r.idRuta || r.codigo || "";
+          const nombreVal = r.nombre || r.nombreRuta || (r.origen && r.destino ? r.origen + " - " + r.destino : "");
 
-        select.appendChild(opt);
+          // Si la lógica del back espera el NOMBRE de la ruta, podríamos setear value=nombreVal.
+          // Para ser conservadores, dejamos value = idVal si existe, si no usamos nombreVal.
+          opt.value = (idVal !== "") ? idVal : (nombreVal !== "" ? nombreVal : "");
+
+          // Mostrar texto legible
+          opt.textContent = nombreVal || idVal || 'Ruta sin nombre';
+
+          // Guardar el nombre en data-* por si querés usarlo en cliente
+          opt.dataset.nombre = nombreVal;
+
+          select.appendChild(opt);
+        });
+      })
+      .catch(function (err) {
+        console.error('Error cargando rutas:', err);
       });
-
-    } catch (err) {
-      console.error('Error cargando rutas:', err);
-    }
   })();
 </script>
 
@@ -195,7 +201,7 @@
     msgDiv.textContent = text;
   }
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
     msgDiv.style.display = "none";
 
@@ -219,29 +225,28 @@
     const originalText = submitBtn.textContent;
     submitBtn.textContent = "Guardando...";
 
-    try {
-      const response = await fetch("<%= request.getContextPath() %>/api/vuelos", {
-        method: "POST",
-        body: formData,
-        credentials: "include"
-      });
-
-      let result = {};
-      try { result = await response.json(); } catch (err) {}
-
-      if (response.ok) {
+    fetch("<%= request.getContextPath() %>/api/vuelos", {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (result) {
         showToast(result.mensaje || "Vuelo creado exitosamente.", "success");
         form.reset();
         document.getElementById("fechaAlta").valueAsDate = new Date();
         msgDiv.style.display = "none";
       } else {
-        showToast(result.error || ("Error al crear vuelo: " + response.status), "error");
+        showToast(result.error || "Error al crear vuelo", "error");
       }
-    } catch (error) {
-      showToast("Error al crear vuelo: " + (error.message || error), "error");
-    } finally {
+      
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
-    }
+    })
+    .catch(function (error) {
+      showToast("Error al crear vuelo: " + (error.message || error), "error");
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    });
   });
 </script>
