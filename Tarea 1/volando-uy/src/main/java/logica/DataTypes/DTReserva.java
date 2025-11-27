@@ -5,12 +5,14 @@ public class DTReserva {
     private DTCostoBase costoReserva;
     private Long id;
     private String nickname;
+    private boolean checkInRealizado;
 
     public DTReserva(DTFecha fechaReserva, DTCostoBase costoReserva) {
         this.fechaReserva = fechaReserva;
         this.costoReserva = costoReserva;
         this.id = null;
         this.nickname = null;
+        this.checkInRealizado = false;
     }
 
     //constructor vacio
@@ -51,9 +53,6 @@ public class DTReserva {
         this.nickname = nickname;
     }
 
-    public void setCheckInRealizado(boolean checkInRealizado) {
-    }
-
     public void setTipo(String compraComun) {
     }
 
@@ -73,5 +72,12 @@ public class DTReserva {
     }
 
     public void setPaqueteNombre(String nombre) {
+    }
+    public boolean isCheckInRealizado() {
+        return checkInRealizado;
+    }
+
+    public void setCheckInRealizado(boolean checkInRealizado) {
+        this.checkInRealizado = checkInRealizado;
     }
 }
