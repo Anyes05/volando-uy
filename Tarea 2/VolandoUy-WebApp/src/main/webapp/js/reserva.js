@@ -21,6 +21,7 @@
   const existingReservationAlert = document.getElementById('existingReservationAlert');
   const successReservationAlert = document.getElementById('successReservationAlert');
   const btnCerrarAlerta = document.getElementById('btnCerrarAlerta');
+  const summaryPlaceholder = document.querySelector('.summary-placeholder');
 
   // Variables de estado
   let selectedAirline = null;
@@ -39,7 +40,7 @@
     setupPaymentModeListeners();
     setupExistingReservationListeners();
 
-    if (btnCerrarAlerta) {
+    if (btnCerrarAlerta && successReservationAlert) {
       btnCerrarAlerta.addEventListener('click', () => {
         successReservationAlert.classList.add('hidden');
         window.location.reload();
@@ -165,15 +166,18 @@
   }
 
   function showExistingReservationAlert() {
+    if (!existingReservationAlert) return;
     existingReservationAlert.classList.remove('hidden');
     existingReservationAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function hideExistingReservationAlert() {
+    if (!existingReservationAlert) return;
     existingReservationAlert.classList.add('hidden');
   }
 
   function showSuccessAlert() {
+    if (!successReservationAlert) return;
     successReservationAlert.classList.remove('hidden');
     successReservationAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
     disableReservationForm();
@@ -183,14 +187,13 @@
   function setupEventListeners() {
     selAirline.addEventListener('change', (e) => {
       selectedAirline = e.target.value;
-      resetRouteSelection();
-      resetFlightSelection();
+      resetRouteSelection();   // limpia rutas + vuelos + datos
       loadRoutesForAirline(selectedAirline);
     });
 
     selRoute.addEventListener('change', (e) => {
       selectedRoute = e.target.value;
-      resetFlightSelection();
+      resetFlightSelection();  // limpia vuelos + datos
       loadFlightsForRoute(selectedRoute);
 
       const payMode = document.querySelector('input[name="payMode"]:checked');
@@ -200,6 +203,8 @@
     });
 
     selFlight.addEventListener('change', (e) => {
+      // al cambiar vuelo, limpiamos detalles dependientes antes de cargar
+      clearReservationDependentData();
       loadFlightDetails(e.target.value);
     });
 
@@ -211,7 +216,7 @@
     seatType.addEventListener('change', updateSummary);
     qtyBaggage.addEventListener('change', updateSummary);
 
-    selPackage.addEventListener('change', (e) => {
+    selPackage.addEventListener('change', () => {
       updateSummary();
     });
 
@@ -231,6 +236,7 @@
           packageContainer.classList.remove('hidden');
         } else {
           packageContainer.classList.add('hidden');
+          selPackage.innerHTML = '<option value="">No hay paquetes disponibles</option>';
         }
         updateSummary();
       });
@@ -256,33 +262,74 @@
       showToast('Selecciona un nuevo vuelo', 'info');
     });
 
+    // CANCELAR → simplemente ir a inicio.jsp, sin confirm
     document.getElementById('btnCancelarCaso')?.addEventListener('click', () => {
-      if (confirm('¿Estás seguro de que deseas cancelar la reserva?')) {
-        window.location.href = '/VolandoUy-WebApp/inicio';
-      }
+      window.location.href = 'inicio.jsp';
     });
   }
 
-  // ========== FUNCIONES DE RESET ==========
+  // ========== FUNCIONES DE RESET / LIMPIEZA ==========
+
+  // Limpia todo lo que depende del vuelo seleccionado:
+  // asientos, pasajeros, paquetes, resumen, detalles.
+  function clearReservationDependentData() {
+    // Detalles de vuelo
+    clearFlightDetails();
+
+    // Campos de asiento y cantidades
+    seatType.value = '';
+    seatType.disabled = true;
+
+    qtyPassengers.value = 1;
+    qtyPassengers.disabled = true;
+
+    qtyBaggage.value = 0;
+    qtyBaggage.disabled = true;
+
+    // Pasajeros adicionales
+    passengersContainer.classList.add('hidden');
+    passengersList.innerHTML = '';
+
+    // Paquetes
+    packageContainer.classList.add('hidden');
+    selPackage.innerHTML = '<option value="">No hay paquetes disponibles</option>';
+
+    // Resumen
+    if (summaryText) {
+      summaryText.innerHTML = '';
+      summaryText.classList.add('hidden');
+    }
+    if (summaryPlaceholder) {
+      summaryPlaceholder.classList.remove('hidden');
+    }
+
+    // Botón reservar
+    btnReserve.disabled = true;
+  }
+
   function resetAirlineSelection() {
     selAirline.value = '';
     selectedAirline = null;
+
+    // al cambiar aerolínea, se limpia TODO lo siguiente
     resetRouteSelection();
-    resetFlightSelection();
   }
 
   function resetRouteSelection() {
     selRoute.innerHTML = '<option value="">Seleccione aerolínea primero</option>';
     selRoute.disabled = true;
     selectedRoute = null;
+
+    // al cambiar ruta, también limpiamos vuelos y datos
+    resetFlightSelection();
   }
 
   function resetFlightSelection() {
     selFlight.innerHTML = '<option value="">Seleccione ruta primero</option>';
     selFlight.disabled = true;
     selectedFlight = null;
-    clearFlightDetails();
-    disableReservationFields();
+
+    clearReservationDependentData();
   }
 
   // ========== DISPLAY DE DETALLES ==========
@@ -387,7 +434,6 @@
 
   function validatePassengerNickname(input) {
     const nickname = input.value.trim();
-    const index = input.getAttribute('data-passenger-nickname');
 
     if (!nickname) {
       clearPassengerValidation(input);
@@ -422,6 +468,8 @@
     const index = input.getAttribute('data-passenger-nickname');
     const validationDiv = document.querySelector(`[data-passenger-validation="${index}"]`);
 
+    if (!validationDiv) return;
+
     validationDiv.innerHTML = `<small class="validation-${type}">${message}</small>`;
 
     if (type === 'success') {
@@ -438,7 +486,7 @@
   function clearPassengerValidation(input) {
     const index = input.getAttribute('data-passenger-nickname');
     const validationDiv = document.querySelector(`[data-passenger-validation="${index}"]`);
-    validationDiv.innerHTML = '';
+    if (validationDiv) validationDiv.innerHTML = '';
     input.classList.remove('success', 'error');
   }
 
@@ -447,11 +495,9 @@
     console.log('DEBUG: populateSelect called with:', { select, items, valueField, textField, defaultText });
     select.innerHTML = `<option value="">${defaultText}</option>`;
     items.forEach(item => {
-      console.log('DEBUG: Creating option for item:', item);
       const option = document.createElement('option');
       option.value = item[valueField];
       option.textContent = item[textField];
-      console.log('DEBUG: Option created:', { value: option.value, text: option.textContent });
       select.appendChild(option);
     });
     console.log('DEBUG: Select populated. Total options:', select.options.length);
@@ -484,8 +530,8 @@
 
   function updateSummary() {
     if (!selectedFlight || !seatType.value) {
-      summaryText.classList.add('hidden');
-      document.querySelector('.summary-placeholder').classList.remove('hidden');
+      if (summaryText) summaryText.classList.add('hidden');
+      if (summaryPlaceholder) summaryPlaceholder.classList.remove('hidden');
       btnReserve.disabled = true;
       return;
     }
@@ -495,43 +541,46 @@
     const seatTypeValue = seatType.value;
     const payMode = document.querySelector('input[name="payMode"]:checked')?.value || 'normal';
 
-    // Calcular costos (simplificado)
-    const baseCost = seatTypeValue === 'ejecutivo' ?
-      (selectedFlight.ruta?.costoBaseEjecutivo || 200) :
-      (selectedFlight.ruta?.costoBaseTurista || 100);
+    const baseCost = seatTypeValue === 'ejecutivo'
+      ? (selectedFlight.ruta?.costoBaseEjecutivo || 200)
+      : (selectedFlight.ruta?.costoBaseTurista || 100);
 
     const baggageCost = baggage * (selectedFlight.ruta?.costoEquipajeExtra || 50);
     const totalCost = (baseCost * passengers) + baggageCost;
 
-    summaryText.innerHTML = `
-      <div class="summary-item">
-        <span>Vuelo:</span>
-        <span>${selectedFlight.nombre}</span>
-      </div>
-      <div class="summary-item">
-        <span>Tipo de asiento:</span>
-        <span>${seatTypeValue === 'ejecutivo' ? 'Ejecutivo' : 'Turista'}</span>
-      </div>
-      <div class="summary-item">
-        <span>Pasajeros:</span>
-        <span>${passengers}</span>
-      </div>
-      <div class="summary-item">
-        <span>Equipaje extra:</span>
-        <span>${baggage} unidades</span>
-      </div>
-      <div class="summary-item">
-        <span>Forma de pago:</span>
-        <span>${payMode === 'paquete' ? 'Con paquete' : 'Normal'}</span>
-      </div>
-      <div class="summary-total">
-        <span>Total estimado:</span>
-        <span>$${totalCost}</span>
-      </div>
-    `;
+    if (summaryText) {
+      summaryText.innerHTML = `
+        <div class="summary-item">
+          <span>Vuelo:</span>
+          <span>${selectedFlight.nombre}</span>
+        </div>
+        <div class="summary-item">
+          <span>Tipo de asiento:</span>
+          <span>${seatTypeValue === 'ejecutivo' ? 'Ejecutivo' : 'Turista'}</span>
+        </div>
+        <div class="summary-item">
+          <span>Pasajeros:</span>
+          <span>${passengers}</span>
+        </div>
+        <div class="summary-item">
+          <span>Equipaje extra:</span>
+          <span>${baggage} unidades</span>
+        </div>
+        <div class="summary-item">
+          <span>Forma de pago:</span>
+          <span>${payMode === 'paquete' ? 'Con paquete' : 'Normal'}</span>
+        </div>
+        <div class="summary-total">
+          <span>Total estimado:</span>
+          <span>$${totalCost}</span>
+        </div>
+      `;
+      summaryText.classList.remove('hidden');
+    }
 
-    document.querySelector('.summary-placeholder').classList.add('hidden');
-    summaryText.classList.remove('hidden');
+    if (summaryPlaceholder) {
+      summaryPlaceholder.classList.add('hidden');
+    }
 
     if (!existingReservation) {
       btnReserve.disabled = false;
@@ -766,7 +815,6 @@
   function handleReservationConflict(conflictData) {
     const mensaje = conflictData.mensaje || 'Ya existe una reserva para este vuelo.';
 
-    // HTML del modal simplificado
     const modalHtml = `
       <div class="conflict-modal-overlay">
         <div class="conflict-modal">
@@ -784,18 +832,15 @@
       </div>
     `;
 
-    // Crear el contenedor y agregar al body
     const modalContainer = document.createElement('div');
     modalContainer.innerHTML = modalHtml;
     document.body.appendChild(modalContainer);
 
-    // Manejar cierre al presionar el botón
     const btnAceptar = modalContainer.querySelector('#conflictAcceptBtn');
     btnAceptar.addEventListener('click', () => {
       document.body.removeChild(modalContainer);
     });
 
-    // Manejar cierre al presionar Escape
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
         document.body.removeChild(modalContainer);
@@ -804,7 +849,6 @@
     };
     document.addEventListener('keydown', handleEscape);
   }
-
 
   function handleConflictOption(option) {
     switch (option) {
@@ -825,7 +869,7 @@
         break;
       case '5':
         if (confirm('¿Estás seguro de que deseas cancelar la reserva?')) {
-          window.location.href = '/VolandoUy-WebApp/inicio';
+          window.location.href = 'inicio.jsp';
         }
         break;
       default:

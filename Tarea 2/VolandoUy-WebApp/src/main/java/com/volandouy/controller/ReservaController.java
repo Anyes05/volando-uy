@@ -749,7 +749,7 @@ public class ReservaController extends HttpServlet {
                                 response.setStatus(HttpServletResponse.SC_CREATED);
                                 out.print(serializarJSON(respuesta));
                                 out.flush();
-                            } catch (Exception ex) {
+                          } catch (Exception ex) {
                                 LOG.severe("Error al enviar respuesta de éxito: " + ex.getMessage());
                                 ex.printStackTrace();
                             }
