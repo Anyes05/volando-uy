@@ -17,8 +17,8 @@ if not exist "dist\web.war" (
 
 REM Detectar Tomcat
 set TOMCAT_PATH=
-if exist "C:\apache-tomcat-9.0.110" (
-    set TOMCAT_PATH=C:\apache-tomcat-9.0.110
+if exist "C:\Users\Administrador\Documents\Tomcat\apache-tomcat-9.0.110" (
+    set TOMCAT_PATH=C:\Users\Administrador\Documents\Tomcat\apache-tomcat-9.0.110
 ) else if exist "%CATALINA_HOME%" (
     set TOMCAT_PATH=%CATALINA_HOME%
 ) else (

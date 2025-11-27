@@ -4470,4 +4470,5 @@ public class EstacionTrabajo {
     public JComponent $$$getRootComponent$$$() {
         return mainPrincipal;
     }
+
 }

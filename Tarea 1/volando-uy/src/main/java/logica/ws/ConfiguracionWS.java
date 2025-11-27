@@ -1,6 +1,7 @@
 package logica.ws;
 
 import logica.config.ConfiguracionExterna;
+import java.net.InetAddress;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -84,9 +85,16 @@ public class ConfiguracionWS {
         String ip = getIP();
         int puerto = getPuerto();
         String contexto = getContexto();
-        
-        // Si la IP es 0.0.0.0, usar localhost para la URL (aunque el servidor escuchará en todas las interfaces)
-        String ipParaURL = "0.0.0.0".equals(ip) ? "localhost" : ip;
+
+        String ipParaURL;
+        if ("0.0.0.0".equals(ip)) {
+            // Intentar usar 0.0.0.0 directamente (funciona con JAX-WS moderno)
+            // Si no funciona, JAX-WS lanzará una excepción y podremos usar la IP real como fallback
+            ipParaURL = "0.0.0.0";
+            System.out.println(">>> IP configurada como 0.0.0.0, el servidor escuchará en todas las interfaces");
+        } else {
+            ipParaURL = ip;
+        }
         
         return String.format("http://%s:%d%s", ipParaURL, puerto, contexto);
     }
