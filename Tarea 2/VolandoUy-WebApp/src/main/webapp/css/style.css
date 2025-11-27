@@ -181,31 +181,6 @@ body {
   color: white;
   cursor: pointer;
   transition: transform .2s ease;
-}
-
-.sidebar .close-btn:hover {
-  transform: scale(1.1);
-}
-
-/* class para estado hidden en mobile */
-.sidebar.mobile-hidden {
-  transform: translateX(-100%);
-}
-
-.sidebar.active {
-  transform: translateX(0);
-}
-
-/* Main content */
-.main {
-  margin-left: 280px;
-  transition: margin-left .3s ease;
-  min-height: 100vh;
-}
-
-/* Loading state para evitar parpadeo */
-#main-content.loading {
-  opacity: 0.7;
   transition: opacity 0.2s ease;
 }
 
@@ -2369,4 +2344,41 @@ input:focus {
 
     }
   }
+}
+
+/* --- TEXTO RESPONSIVE --- */
+.modal-header h3 {
+    font-size: clamp(1rem, 3vw, 1.4rem);
+}
+
+.modal-body p {
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    text-align: center;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+/* --- BOTONES RESPONSIVE --- */
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;   /* permite que bajen en pantallas chicas */
+}
+
+.btn-modal {
+    padding: 10px 12px;
+    font-size: clamp(0.9rem, 3vw, 1rem);
+    flex: 1;           /* ambos botones se acomodan solos */
+    min-width: 120px;  /* evita que queden demasiado chicos */
+}
+
+/* --- MOBILE --- */
+@media (max-width: 480px) {
+    .modal-footer {
+        flex-direction: column; /* botones uno bajo otro si no entran */
+    }
+
+    .btn-modal {
+        width: 100%;
+    }
 }

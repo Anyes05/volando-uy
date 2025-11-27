@@ -764,9 +764,9 @@
 
   // ========== MANEJO DE CONFLICTOS ==========
   function handleReservationConflict(conflictData) {
-    const mensaje = conflictData.mensaje || 'Ya existe una reserva para este cliente en este vuelo.';
-    const opciones = conflictData.opciones || [];
+    const mensaje = conflictData.mensaje || 'Ya existe una reserva para este vuelo.';
 
+    // HTML del modal simplificado
     const modalHtml = `
       <div class="conflict-modal-overlay">
         <div class="conflict-modal">
@@ -776,30 +776,26 @@
           </div>
           <div class="conflict-message">
             <p>${mensaje}</p>
-            <p>¿Qué deseas hacer?</p>
           </div>
           <div class="conflict-options">
-            ${opciones.map((opcion, index) =>
-      `<button class="conflict-option-btn" data-option="${index + 1}">${opcion}</button>`
-    ).join('')}
+            <button id="conflictAcceptBtn">Aceptar</button>
           </div>
         </div>
       </div>
     `;
 
+    // Crear el contenedor y agregar al body
     const modalContainer = document.createElement('div');
     modalContainer.innerHTML = modalHtml;
     document.body.appendChild(modalContainer);
 
-    const optionButtons = modalContainer.querySelectorAll('.conflict-option-btn');
-    optionButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        const option = e.target.getAttribute('data-option');
-        handleConflictOption(option);
-        document.body.removeChild(modalContainer);
-      });
+    // Manejar cierre al presionar el botón
+    const btnAceptar = modalContainer.querySelector('#conflictAcceptBtn');
+    btnAceptar.addEventListener('click', () => {
+      document.body.removeChild(modalContainer);
     });
 
+    // Manejar cierre al presionar Escape
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
         document.body.removeChild(modalContainer);
@@ -808,6 +804,7 @@
     };
     document.addEventListener('keydown', handleEscape);
   }
+
 
   function handleConflictOption(option) {
     switch (option) {
