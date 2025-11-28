@@ -122,7 +122,7 @@ function initConsultaVuelo() {
                 }
                 
                 selectAerolinea.innerHTML = '<option value="">-- Elegir aerolínea --</option>';
-                aerolineas.forEach(aero => {
+                aerolineas.forEach(function (aero) {
                     const option = document.createElement('option');
                     option.value = aero.nickname;
                     option.textContent = aero.nombre;
@@ -149,12 +149,6 @@ function initConsultaVuelo() {
         var RUTAS_URL = "<c:url value='/api/vuelos/rutas/' />";
         fetch(RUTAS_URL + encodeURIComponent(nickname))
             .then(function (r) { return r.json(); })
-            .then(function (rutas) {
-                console.log('Rutas recibidas:', rutas);
-                    throw new Error('HTTP ' + response.status);
-                }
-                return response.json();
-            })
             .then(function (rutas) {
                 console.log('Rutas recibidas:', rutas);
                 console.log('Tipo de rutas:', typeof rutas);
@@ -191,7 +185,7 @@ function initConsultaVuelo() {
                 rutasFiltradas.forEach(function (ruta) {
                     const pill = document.createElement('div');
                     pill.className = 'ruta-pill';
-                    pill.textContent = `\${ruta.nombre} (\${ruta.ciudadOrigen.nombre} → \${ruta.ciudadDestino.nombre})`;
+                    pill.textContent = ruta.nombre + ' (' + (ruta.ciudadOrigen ? ruta.ciudadOrigen.nombre : 'N/A') + ' → ' + (ruta.ciudadDestino ? ruta.ciudadDestino.nombre : 'N/A') + ')';
                     pill.dataset.rutaNombre = ruta.nombre;
                     pill.addEventListener('click', function () {
                         // Remover selección anterior
@@ -251,16 +245,15 @@ function initConsultaVuelo() {
                     const card = document.createElement('div');
                     card.className = 'vuelo-card';
                     const imagenHtml = vuelo.foto ? 
-                        `<img src="\${vuelo.foto}" alt="\${vuelo.nombre}">` : 
+                        '<img src="' + vuelo.foto + '" alt="' + (vuelo.nombre || 'Vuelo') + '">' : 
                         '<div class="no-image">Sin imagen</div>';
                     
-                    card.innerHTML = `
-                        \${imagenHtml}
-                        <div class="card-body">
-                            <h4>\${vuelo.nombre}</h4>
-                            <p>\${vuelo.ruta.nombre} — \${vuelo.fechaVuelo} \${vuelo.horaVuelo}</p>
-                        </div>
-                    `;
+                    card.innerHTML = 
+                        imagenHtml +
+                        '<div class="card-body">' +
+                            '<h4>' + (vuelo.nombre || 'Sin nombre') + '</h4>' +
+                            '<p>' + (vuelo.ruta ? vuelo.ruta.nombre : 'Sin ruta') + ' — ' + (vuelo.fechaVuelo || '') + ' ' + (vuelo.horaVuelo || '') + '</p>' +
+                        '</div>';
                     card.addEventListener('click', function () { mostrarDetalleVuelo(vuelo); });
                     listaVuelos.appendChild(card);
                 });
@@ -279,15 +272,14 @@ function initConsultaVuelo() {
         vueloImg.src = vuelo.foto || '';
         vueloImg.style.display = vuelo.foto ? 'block' : 'none';
         
-        vueloInfo.innerHTML = `
-            <p><strong>Nombre:</strong> \${vuelo.nombre}</p>
-            <p><strong>Fecha:</strong> \${vuelo.fechaVuelo}</p>
-            <p><strong>Hora:</strong> \${vuelo.horaVuelo}</p>
-            <p><strong>Duración:</strong> \${vuelo.duracion}</p>
-            <p><strong>Asientos Turista (máx):</strong> \${vuelo.asientosMaxTurista}</p>
-            <p><strong>Asientos Ejecutivo (máx):</strong> \${vuelo.asientosMaxEjecutivo}</p>
-            <p><strong>Fecha de alta:</strong> \${vuelo.fechaAlta || '—'}</p>
-        `;
+        vueloInfo.innerHTML = 
+            '<p><strong>Nombre:</strong> ' + (vuelo.nombre || '—') + '</p>' +
+            '<p><strong>Fecha:</strong> ' + (vuelo.fechaVuelo || '—') + '</p>' +
+            '<p><strong>Hora:</strong> ' + (vuelo.horaVuelo || '—') + '</p>' +
+            '<p><strong>Duración:</strong> ' + (vuelo.duracion || '—') + '</p>' +
+            '<p><strong>Asientos Turista (máx):</strong> ' + (vuelo.asientosMaxTurista || '—') + '</p>' +
+            '<p><strong>Asientos Ejecutivo (máx):</strong> ' + (vuelo.asientosMaxEjecutivo || '—') + '</p>' +
+            '<p><strong>Fecha de alta:</strong> ' + (vuelo.fechaAlta || '—') + '</p>';
 
         // Verificar si el usuario puede ver reservas y mostrarlas solo si corresponde
         verificarYMostrarReservas(vuelo.nombre);
