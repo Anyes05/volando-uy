@@ -118,6 +118,16 @@
       }
     }
   </style>
+
+  <!-- Definir contextPath para uso en JavaScript (debe estar antes de cualquier script) -->
+  <script>
+    (function() {
+      var contextPath = '${pageContext.request.contextPath}';
+      // Asegurar que tenga la barra inicial pero no la final
+      window.APP_CONTEXT_PATH = contextPath || '';
+      console.log('APP_CONTEXT_PATH definido como:', window.APP_CONTEXT_PATH);
+    })();
+  </script>
 </head>
 
 <body>
