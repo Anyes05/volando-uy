@@ -2,12 +2,7 @@
 // Helper para construir URLs con contextPath
 function apiUrl(path) {
   const contextPath = window.APP_CONTEXT_PATH || '';
-  const url = contextPath + (path.startsWith('/') ? path : '/' + path);
-  // Debug: solo mostrar si hay un problema
-  if (!contextPath) {
-    console.warn('APP_CONTEXT_PATH no está definido. URL generada:', url);
-  }
-  return url;
+  return contextPath + (path.startsWith('/') ? path : '/' + path);
 }
 
 let rutasData = [];
