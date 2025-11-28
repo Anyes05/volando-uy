@@ -43,7 +43,7 @@ echo.
 echo # URL completa del Servidor Central ^(incluye IP, puerto y contexto^)
 echo # Formato: http://IP:PUERTO/CONTEXTO
 echo # Ejemplo para servidor local: http://localhost:8082/centralws
-echo # Ejemplo para servidor remoto: http://192.168.1.99:8082/centralws
+echo # Ejemplo para servidor remoto: http://192.168.1.100:8082/centralws
 echo.
 echo servidor.central.url=http://192.168.1.99:8082/centralws
 echo.

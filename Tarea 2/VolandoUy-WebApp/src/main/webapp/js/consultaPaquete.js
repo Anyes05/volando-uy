@@ -1,10 +1,4 @@
 // JavaScript para consulta de paquetes - Conectado con backend
-// Helper para construir URLs con contextPath
-function apiUrl(path) {
-  const contextPath = window.APP_CONTEXT_PATH || '';
-  return contextPath + (path.startsWith('/') ? path : '/' + path);
-}
-
 let paquetesData = [];
 let paqueteActual = null;
 let rutasPaqueteActual = [];
@@ -15,21 +9,28 @@ function quitarTildes(texto) {
 }
 
 // Función para cargar paquetes desde el backend
-function cargarPaquetes() {
-  console.log('Cargando paquetes desde backend...');
-  fetch(apiUrl('/api/paquetes'))
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      paquetesData = data.paquetes || [];
-      console.log('Paquetes cargados:', paquetesData);
-      
-      mostrarPaquetes(paquetesData);
-      cargarFiltros(paquetesData);
-    })
-    .catch(function (err) {
-      console.error('Error cargando paquetes:', err);
-      mostrarError('Error al cargar los paquetes. Por favor, intente nuevamente.');
-    });
+async function cargarPaquetes() {
+  try {
+    console.log('Cargando paquetes desde backend...');
+    const response = await fetch('/VolandoUy-WebApp/api/paquetes');
+    
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    paquetesData = data.paquetes || [];
+    console.log('Paquetes cargados:', paquetesData);
+    
+    mostrarPaquetes(paquetesData);
+    cargarFiltros(paquetesData);
+    
+    return Promise.resolve();
+  } catch (error) {
+    console.error('Error cargando paquetes:', error);
+    mostrarError('Error al cargar los paquetes. Por favor, intente nuevamente.');
+    return Promise.reject(error);
+  }
 }
 
 // Función para mostrar error al usuario (usando sistema estético)
@@ -114,26 +115,31 @@ function mostrarPaquetes(lista) {
 }
 
 // Función para mostrar detalle de un paquete específico
-function mostrarDetallePaquete(paquete) {
-  console.log('Cargando detalle del paquete:', paquete.nombre);
-  
-  // Cargar detalles completos del paquete desde el backend
-  fetch(apiUrl(`/api/paquetes/${encodeURIComponent(paquete.nombre)}`))
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      const paqueteCompleto = data.paquete;
-      rutasPaqueteActual = data.rutas || [];
-      
-      console.log('Detalle del paquete cargado:', paqueteCompleto);
-      console.log('Rutas del paquete:', rutasPaqueteActual);
-      
-      paqueteActual = paqueteCompleto;
-      mostrarDetalleEnInterfaz(paqueteCompleto);
-    })
-    .catch(function (err) {
-      console.error('Error cargando detalle del paquete:', err);
-      mostrarError('Error al cargar los detalles del paquete. Por favor, intente nuevamente.');
-    });
+async function mostrarDetallePaquete(paquete) {
+  try {
+    console.log('Cargando detalle del paquete:', paquete.nombre);
+    
+    // Cargar detalles completos del paquete desde el backend
+    const response = await fetch(`/VolandoUy-WebApp/api/paquetes/${encodeURIComponent(paquete.nombre)}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const paqueteCompleto = data.paquete;
+    rutasPaqueteActual = data.rutas || [];
+    
+    console.log('Detalle del paquete cargado:', paqueteCompleto);
+    console.log('Rutas del paquete:', rutasPaqueteActual);
+    
+    paqueteActual = paqueteCompleto;
+    mostrarDetalleEnInterfaz(paqueteCompleto);
+    
+  } catch (error) {
+    console.error('Error cargando detalle del paquete:', error);
+    mostrarError('Error al cargar los detalles del paquete. Por favor, intente nuevamente.');
+  }
 }
 
 // Función para mostrar el detalle en la interfaz
@@ -267,11 +273,12 @@ function initConsultaPaquete() {
       sessionStorage.removeItem('paqueteSeleccionado');
       
       // Cargar paquetes primero y luego mostrar el detalle
-      cargarPaquetes();
-      // Esperar un momento para que se carguen los paquetes
-      setTimeout(function() {
-        mostrarDetallePaquete(paquete);
-      }, 300);
+      cargarPaquetes().then(() => {
+        // Esperar un momento para que se carguen los paquetes
+        setTimeout(() => {
+          mostrarDetallePaquete(paquete);
+        }, 300);
+      });
       
       return;
     } catch (error) {

@@ -1,10 +1,4 @@
 // JavaScript para consulta de ruta de vuelo
-// Helper para construir URLs con contextPath
-function apiUrl(path) {
-  const contextPath = window.APP_CONTEXT_PATH || '';
-  return contextPath + (path.startsWith('/') ? path : '/' + path);
-}
-
 let rutasData = [];
 let rutaSeleccionada = null;
 let vueloSeleccionado = null;
@@ -27,10 +21,10 @@ function cerrarModalDetalleVueloMobile() {
     }
 }
 
-function verDetalleVueloMobileDesdeLista(nombreVuelo) {
+async function verDetalleVueloMobileDesdeLista(nombreVuelo) {
     // Primero buscar en los vuelos ya cargados (más eficiente)
     if (vuelosRutaActual && vuelosRutaActual.length > 0) {
-        const vuelo = vuelosRutaActual.find(function (v) { return v.nombre === nombreVuelo; });
+        const vuelo = vuelosRutaActual.find(v => v.nombre === nombreVuelo);
         if (vuelo) {
             mostrarDetalleVueloMobile(vuelo);
             return;
@@ -38,56 +32,40 @@ function verDetalleVueloMobileDesdeLista(nombreVuelo) {
     }
     
     // Si no encontramos en los vuelos cargados, buscar en la ruta seleccionada
-    if (rutaSeleccionada && rutaSeleccionada.nombre) {
-        fetch(apiUrl('/api/rutas/' + encodeURIComponent(rutaSeleccionada.nombre) + '/vuelos'))
-            .then(function (r) { return r.json(); })
-            .then(function (vuelos) {
-                const vuelo = vuelos.find(function (v) { return v.nombre === nombreVuelo; });
-                if (vuelo) {
-                    mostrarDetalleVueloMobile(vuelo);
-                    return;
+    try {
+        if (rutaSeleccionada && rutaSeleccionada.nombre) {
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(rutaSeleccionada.nombre) + '/vuelos');
+            const vuelos = await response.json();
+            const vuelo = vuelos.find(v => v.nombre === nombreVuelo);
+            if (vuelo) {
+                mostrarDetalleVueloMobile(vuelo);
+                return;
+            }
+        }
+        
+        // Si no encontramos, intentar buscar en todas las rutas (más costoso, último recurso)
+        const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
+        const aerolineas = await response.json();
+        
+        for (const aero of aerolineas) {
+            const rutasResponse = await fetch('/VolandoUy-WebApp/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname));
+            if (rutasResponse.ok) {
+                const rutas = await rutasResponse.json();
+                for (const ruta of rutas) {
+                    const vuelosResponse = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(ruta.nombre) + '/vuelos');
+                    if (vuelosResponse.ok) {
+                        const vuelos = await vuelosResponse.json();
+                        const vuelo = vuelos.find(v => v.nombre === nombreVuelo);
+                        if (vuelo) {
+                            mostrarDetalleVueloMobile(vuelo);
+                            return;
+                        }
+                    }
                 }
-                
-                // Si no encontramos, intentar buscar en todas las rutas (más costoso, último recurso)
-                fetch(apiUrl('/api/rutas/aerolineas'))
-                    .then(function (r) { return r.json(); })
-                    .then(function (aerolineas) {
-                        let encontrado = false;
-                        let promesas = [];
-                        
-                        aerolineas.forEach(function (aero) {
-                            promesas.push(
-                                fetch(apiUrl('/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname)))
-                                    .then(function (r) { return r.json(); })
-                                    .then(function (rutas) {
-                                        if (encontrado) return;
-                                        
-                                        let promesasVuelos = [];
-                                        rutas.forEach(function (ruta) {
-                                            promesasVuelos.push(
-                                                fetch(apiUrl('/api/rutas/' + encodeURIComponent(ruta.nombre) + '/vuelos'))
-                                                    .then(function (r) { return r.json(); })
-                                                    .then(function (vuelos) {
-                                                        if (encontrado) return;
-                                                        const vuelo = vuelos.find(function (v) { return v.nombre === nombreVuelo; });
-                                                        if (vuelo) {
-                                                            encontrado = true;
-                                                            mostrarDetalleVueloMobile(vuelo);
-                                                        }
-                                                    })
-                                            );
-                                        });
-                                        return Promise.all(promesasVuelos);
-                                    })
-                            );
-                        });
-                        
-                        Promise.all(promesas);
-                    });
-            })
-            .catch(function (error) {
-                console.error('Error al cargar vuelo:', error);
-            });
+            }
+        }
+    } catch (error) {
+        console.error('Error al cargar vuelo:', error);
     }
 }
 
@@ -139,50 +117,50 @@ function mostrarDetalleVueloMobile(vuelo) {
     }
 }
 
-function cargarReservasVueloMobile(nombreVuelo) {
-    fetch(apiUrl('/api/vuelos/reservas/' + encodeURIComponent(nombreVuelo)))
-        .then(function (r) { return r.json(); })
-        .then(function (reservas) {
-            const contenidoReservas = document.getElementById('contenido-reservas-mobile-' + nombreVuelo);
-            if (!contenidoReservas) return;
+async function cargarReservasVueloMobile(nombreVuelo) {
+    try {
+        const response = await fetch('/VolandoUy-WebApp/api/vuelos/reservas/' + encodeURIComponent(nombreVuelo));
+        const reservas = await response.json();
+        
+        const contenidoReservas = document.getElementById('contenido-reservas-mobile-' + nombreVuelo);
+        if (!contenidoReservas) return;
 
-            if (reservas.length === 0) {
-                contenidoReservas.innerHTML = '<p>No tienes reservas para este vuelo</p>';
-                return;
-            }
+        if (reservas.length === 0) {
+            contenidoReservas.innerHTML = '<p>No tienes reservas para este vuelo</p>';
+            return;
+        }
 
-            let html = '';
-            reservas.forEach(function(reserva) {
-                html += '<div class="reserva-item-mobile">' +
-                    '<p><strong>ID Reserva:</strong> ' + reserva.id + '</p>' +
-                    '<p><strong>Fecha:</strong> ' + reserva.fechaReserva + '</p>' +
-                    '<p><strong>Costo:</strong> ' + formatearCostoReserva(reserva.costoReserva) + '</p>';
-                
-                // Botón de check-in si no está realizado
-                if (!reserva.checkInRealizado) {
-                    html += '<button class="btn-checkin-mobile" onclick="realizarCheckInMobile(\'' + reserva.id + '\')">' +
-                        '<i class="fas fa-check-circle"></i> Realizar Check-in</button>';
-                } else {
-                    html += '<p class="checkin-realizado"><i class="fas fa-check-circle"></i> Check-in realizado</p>';
-                }
-                
-                html += '</div>';
-            });
+        let html = '';
+        reservas.forEach(function(reserva) {
+            html += '<div class="reserva-item-mobile">' +
+                '<p><strong>ID Reserva:</strong> ' + reserva.id + '</p>' +
+                '<p><strong>Fecha:</strong> ' + reserva.fechaReserva + '</p>' +
+                '<p><strong>Costo:</strong> ' + formatearCostoReserva(reserva.costoReserva) + '</p>';
             
-            contenidoReservas.innerHTML = html;
-        })
-        .catch(function (error) {
-            console.error('Error al cargar reservas:', error);
-            const contenidoReservas = document.getElementById('contenido-reservas-mobile-' + nombreVuelo);
-            if (contenidoReservas) {
-                contenidoReservas.innerHTML = '<p>Error al cargar reservas</p>';
+            // Botón de check-in si no está realizado
+            if (!reserva.checkInRealizado) {
+                html += '<button class="btn-checkin-mobile" onclick="realizarCheckInMobile(\'' + reserva.id + '\')">' +
+                    '<i class="fas fa-check-circle"></i> Realizar Check-in</button>';
+            } else {
+                html += '<p class="checkin-realizado"><i class="fas fa-check-circle"></i> Check-in realizado</p>';
             }
+            
+            html += '</div>';
         });
+        
+        contenidoReservas.innerHTML = html;
+    } catch (error) {
+        console.error('Error al cargar reservas:', error);
+        const contenidoReservas = document.getElementById('contenido-reservas-mobile-' + nombreVuelo);
+        if (contenidoReservas) {
+            contenidoReservas.innerHTML = '<p>Error al cargar reservas</p>';
+        }
+    }
 }
 
 function realizarCheckInMobile(reservaId) {
     // Redirigir a la página de check-in o hacer la llamada al API
-    window.location.href = apiUrl('/consultacheckin.jsp?reservaId=' + reservaId);
+    window.location.href = '/VolandoUy-WebApp/consultacheckin.jsp?reservaId=' + reservaId;
 }
 
 function formatearCostoReserva(costoReserva) {
@@ -278,134 +256,140 @@ function initConsultaRutaVuelo() {
     buscadorNombre.addEventListener('input', filtrarRutas);
 
     // Función para cargar aerolíneas
-    function cargarAerolineas() {
-        console.log('Cargando aerolíneas...');
-        fetch(apiUrl('/api/rutas/aerolineas'))
-            .then(function (r) { return r.json(); })
-            .then(function (aerolineas) {
-                console.log('Aerolíneas recibidas:', aerolineas);
+    async function cargarAerolineas() {
+        try {
+            console.log('Cargando aerolíneas...');
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
 
-                selectAerolinea.innerHTML = '<option value="">Todas las aerolíneas</option>';
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
 
-                if (Array.isArray(aerolineas)) {
-                    aerolineas.forEach(function (aero) {
-                        const option = document.createElement('option');
-                        option.value = aero.nickname;
-                        option.textContent = aero.nombre;
-                        selectAerolinea.appendChild(option);
-                    });
-                    console.log('Aerolíneas cargadas en el select:', aerolineas.length);
-                }
-            })
-            .catch(function (error) {
-                console.error('Error al cargar aerolíneas:', error);
-                selectAerolinea.innerHTML = '<option value="">Error al cargar aerolíneas</option>';
-            });
+            const aerolineas = await response.json();
+            console.log('Aerolíneas recibidas:', aerolineas);
+
+            selectAerolinea.innerHTML = '<option value="">Todas las aerolíneas</option>';
+
+            if (Array.isArray(aerolineas)) {
+                aerolineas.forEach(function (aero) {
+                    const option = document.createElement('option');
+                    option.value = aero.nickname;
+                    option.textContent = aero.nombre;
+                    selectAerolinea.appendChild(option);
+                });
+                console.log('Aerolíneas cargadas en el select:', aerolineas.length);
+            }
+        } catch (error) {
+            console.error('Error al cargar aerolíneas:', error);
+            selectAerolinea.innerHTML = '<option value="">Error al cargar aerolíneas</option>';
+        }
     }
 
     // Función para cargar categorías
-    function cargarCategorias() {
-        console.log('Cargando categorías...');
-        fetch(apiUrl('/api/rutas/categorias'))
-            .then(function (r) { return r.json(); })
-            .then(function (categorias) {
-                console.log('Categorías recibidas:', categorias);
+    async function cargarCategorias() {
+        try {
+            console.log('Cargando categorías...');
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/categorias');
 
-                selectCategoria.innerHTML = '<option value="">Todas las categorías</option>';
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
 
-                if (Array.isArray(categorias)) {
-                    categorias.forEach(function (cat) {
-                        const option = document.createElement('option');
-                        option.value = cat;
-                        option.textContent = cat;
-                        selectCategoria.appendChild(option);
-                    });
-                    console.log('Categorías cargadas en el select:', categorias.length);
-                }
-            })
-            .catch(function (error) {
-                console.error('Error al cargar categorías:', error);
-                selectCategoria.innerHTML = '<option value="">Error al cargar categorías</option>';
-            });
+            const categorias = await response.json();
+            console.log('Categorías recibidas:', categorias);
+
+            selectCategoria.innerHTML = '<option value="">Todas las categorías</option>';
+
+            if (Array.isArray(categorias)) {
+                categorias.forEach(function (cat) {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    selectCategoria.appendChild(option);
+                });
+                console.log('Categorías cargadas en el select:', categorias.length);
+            }
+        } catch (error) {
+            console.error('Error al cargar categorías:', error);
+            selectCategoria.innerHTML = '<option value="">Error al cargar categorías</option>';
+        }
     }
 
     // Función para cargar todas las rutas
-    function cargarTodasLasRutas() {
-        console.log('Iniciando carga de rutas...');
+    async function cargarTodasLasRutas() {
+        try {
+            console.log('Iniciando carga de rutas...');
 
-        fetch(apiUrl('/api/rutas/aerolineas'))
-            .then(function (r) { return r.json(); })
-            .then(function (aerolineas) {
-                console.log('Aerolíneas cargadas:', aerolineas);
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
 
-                let todasLasRutas = [];
-                let promesas = [];
-                let precargado = false;
+            if (!response.ok) {
+                throw new Error('Error HTTP: ' + response.status);
+            }
 
-                // Procesar cada aerolínea
-                aerolineas.forEach(function (aero, i) {
-                    promesas.push(
-                        fetch(apiUrl('/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname)))
-                            .then(function (rutasResponse) {
-                                if (rutasResponse.ok) {
-                                    return rutasResponse.json().then(function (rutas) {
-                                        if (Array.isArray(rutas)) {
-                                            todasLasRutas = todasLasRutas.concat(rutas);
-                                            console.log('Rutas cargadas de ' + aero.nombre + ':', rutas.length);
+            const aerolineas = await response.json();
+            console.log('Aerolíneas cargadas:', aerolineas);
+
+            let todasLasRutas = [];
+
+            // Procesar cada aerolínea de forma secuencial
+            for (let i = 0; i < aerolineas.length; i++) {
+                const aero = aerolineas[i];
+                try {
+                    console.log('Cargando rutas de aerolínea: ' + aero.nombre);
+                    const rutasResponse = await fetch('/VolandoUy-WebApp/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname));
+
+                    if (rutasResponse.ok) {
+                        const rutas = await rutasResponse.json();
+                        if (Array.isArray(rutas)) {
+                            todasLasRutas = todasLasRutas.concat(rutas);
+                            console.log('Rutas cargadas de ' + aero.nombre + ':', rutas.length);
+                        }
+                    } else if (rutasResponse.status === 500) {
+                        // Error del servidor - intentar precargar si es el primer error
+                        console.warn('Error HTTP 500 cargando rutas de ' + aero.nombre);
+                        if (i === 0) {
+                            console.log('Intentando precargar sistema...');
+                            try {
+                                const precargarResponse = await fetch('/VolandoUy-WebApp/api/rutas/precargar', {
+                                    method: 'GET'
+                                });
+                                if (precargarResponse.ok) {
+                                    console.log('Sistema precargado exitosamente, reintentando...');
+                                    // Reintentar esta aerolínea
+                                    const retryResponse = await fetch('/VolandoUy-WebApp/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname));
+                                    if (retryResponse.ok) {
+                                        const retryRutas = await retryResponse.json();
+                                        if (Array.isArray(retryRutas)) {
+                                            todasLasRutas = todasLasRutas.concat(retryRutas);
+                                            console.log('Rutas cargadas de ' + aero.nombre + ' (después de precarga):', retryRutas.length);
                                         }
-                                    });
-                                } else if (rutasResponse.status === 500 && i === 0 && !precargado) {
-                                    // Error del servidor - intentar precargar si es el primer error
-                                    console.warn('Error HTTP 500 cargando rutas de ' + aero.nombre);
-                                    console.log('Intentando precargar sistema...');
-                                    precargado = true;
-                                    return fetch(apiUrl('/api/rutas/precargar'), { method: 'GET' })
-                                        .then(function (precargarResponse) {
-                                            if (precargarResponse.ok) {
-                                                console.log('Sistema precargado exitosamente, reintentando...');
-                                                // Reintentar esta aerolínea
-                                                return fetch(apiUrl('/api/rutas?aerolinea=' + encodeURIComponent(aero.nickname)))
-                                                    .then(function (retryResponse) {
-                                                        if (retryResponse.ok) {
-                                                            return retryResponse.json().then(function (retryRutas) {
-                                                                if (Array.isArray(retryRutas)) {
-                                                                    todasLasRutas = todasLasRutas.concat(retryRutas);
-                                                                    console.log('Rutas cargadas de ' + aero.nombre + ' (después de precarga):', retryRutas.length);
-                                                                }
-                                                            });
-                                                        }
-                                                    });
-                                            } else {
-                                                console.error('Error al precargar sistema');
-                                            }
-                                        })
-                                        .catch(function (precargarError) {
-                                            console.error('Error al precargar sistema:', precargarError);
-                                        });
+                                    }
                                 } else {
-                                    console.warn('Error HTTP ' + rutasResponse.status + ' cargando rutas de ' + aero.nombre);
+                                    console.error('Error al precargar sistema');
                                 }
-                            })
-                            .catch(function (error) {
-                                console.warn('Error cargando rutas de ' + aero.nombre + ':', error);
-                            })
-                    );
-                });
+                            } catch (precargarError) {
+                                console.error('Error al precargar sistema:', precargarError);
+                            }
+                        }
+                    } else {
+                        console.warn('Error HTTP ' + rutasResponse.status + ' cargando rutas de ' + aero.nombre);
+                    }
+                } catch (error) {
+                    console.warn('Error cargando rutas de ' + aero.nombre + ':', error);
+                }
+            }
 
-                Promise.all(promesas).then(function () {
-                    console.log('Total de rutas cargadas:', todasLasRutas.length);
-                    rutasData = todasLasRutas;
-                    mostrarRutas(todasLasRutas);
-                });
-            })
-            .catch(function (error) {
-                console.error('Error al cargar rutas:', error);
-                mostrarError('Error al cargar las rutas disponibles');
-            });
+            console.log('Total de rutas cargadas:', todasLasRutas.length);
+            rutasData = todasLasRutas;
+            mostrarRutas(todasLasRutas);
+        } catch (error) {
+            console.error('Error al cargar rutas:', error);
+            mostrarError('Error al cargar las rutas disponibles');
+        }
     }
 
     // Función para filtrar rutas
-    function filtrarRutas() {
+    async function filtrarRutas() {
         const aerolineaSeleccionada = selectAerolinea.value;
         const categoriaSeleccionada = selectCategoria.value;
         const textoBusqueda = buscadorNombre.value.toLowerCase();
@@ -417,98 +401,45 @@ function initConsultaRutaVuelo() {
 
         // Filtrar por aerolínea
         if (aerolineaSeleccionada) {
-            fetch(apiUrl('/api/rutas?aerolinea=' + encodeURIComponent(aerolineaSeleccionada)))
-                .then(function (r) { return r.json(); })
-                .then(function (rutasAerolinea) {
+            try {
+                const response = await fetch('/VolandoUy-WebApp/api/rutas?aerolinea=' + encodeURIComponent(aerolineaSeleccionada));
+                if (response.ok) {
+                    const rutasAerolinea = await response.json();
                     rutasFiltradas = rutasAerolinea;
-                    
-                    // Filtrar por categoría si está seleccionada
-                    if (categoriaSeleccionada) {
-                        fetch(apiUrl('/api/rutas/por-categoria?categoria=' + encodeURIComponent(categoriaSeleccionada)))
-                            .then(function (r) { return r.json(); })
-                            .then(function (rutasCategoria) {
-                                rutasFiltradas = rutasFiltradas.filter(function (ruta) {
-                                    return rutasCategoria.some(function (rc) {
-                                        return rc.nombre === ruta.nombre;
-                                    });
-                                });
-                                
-                                // Filtrar por texto de búsqueda
-                                if (textoBusqueda) {
-                                    rutasFiltradas = rutasFiltradas.filter(function (ruta) {
-                                        return ruta.nombre.toLowerCase().includes(textoBusqueda) ||
-                                            ruta.descripcion.toLowerCase().includes(textoBusqueda) ||
-                                            (ruta.ciudadOrigen && ruta.ciudadOrigen.nombre.toLowerCase().includes(textoBusqueda)) ||
-                                            (ruta.ciudadDestino && ruta.ciudadDestino.nombre.toLowerCase().includes(textoBusqueda));
-                                    });
-                                }
-                                
-                                mostrarRutas(rutasFiltradas);
-                            })
-                            .catch(function (error) {
-                                console.error('Error filtrando por categoría:', error);
-                                mostrarRutas(rutasFiltradas);
-                            });
-                    } else {
-                        // Filtrar por texto de búsqueda
-                        if (textoBusqueda) {
-                            rutasFiltradas = rutasFiltradas.filter(function (ruta) {
-                                return ruta.nombre.toLowerCase().includes(textoBusqueda) ||
-                                    ruta.descripcion.toLowerCase().includes(textoBusqueda) ||
-                                    (ruta.ciudadOrigen && ruta.ciudadOrigen.nombre.toLowerCase().includes(textoBusqueda)) ||
-                                    (ruta.ciudadDestino && ruta.ciudadDestino.nombre.toLowerCase().includes(textoBusqueda));
-                            });
-                        }
-                        
-                        mostrarRutas(rutasFiltradas);
-                    }
-                })
-                .catch(function (error) {
-                    console.error('Error filtrando por aerolínea:', error);
-                    mostrarRutas(rutasFiltradas);
-                });
-        } else {
-            // Filtrar por categoría si está seleccionada
-            if (categoriaSeleccionada) {
-                fetch(apiUrl('/api/rutas/por-categoria?categoria=' + encodeURIComponent(categoriaSeleccionada)))
-                    .then(function (r) { return r.json(); })
-                    .then(function (rutasCategoria) {
-                        rutasFiltradas = rutasFiltradas.filter(function (ruta) {
-                            return rutasCategoria.some(function (rc) {
-                                return rc.nombre === ruta.nombre;
-                            });
-                        });
-                        
-                        // Filtrar por texto de búsqueda
-                        if (textoBusqueda) {
-                            rutasFiltradas = rutasFiltradas.filter(function (ruta) {
-                                return ruta.nombre.toLowerCase().includes(textoBusqueda) ||
-                                    ruta.descripcion.toLowerCase().includes(textoBusqueda) ||
-                                    (ruta.ciudadOrigen && ruta.ciudadOrigen.nombre.toLowerCase().includes(textoBusqueda)) ||
-                                    (ruta.ciudadDestino && ruta.ciudadDestino.nombre.toLowerCase().includes(textoBusqueda));
-                            });
-                        }
-                        
-                        mostrarRutas(rutasFiltradas);
-                    })
-                    .catch(function (error) {
-                        console.error('Error filtrando por categoría:', error);
-                        mostrarRutas(rutasFiltradas);
-                    });
-            } else {
-                // Filtrar por texto de búsqueda
-                if (textoBusqueda) {
-                    rutasFiltradas = rutasFiltradas.filter(function (ruta) {
-                        return ruta.nombre.toLowerCase().includes(textoBusqueda) ||
-                            ruta.descripcion.toLowerCase().includes(textoBusqueda) ||
-                            (ruta.ciudadOrigen && ruta.ciudadOrigen.nombre.toLowerCase().includes(textoBusqueda)) ||
-                            (ruta.ciudadDestino && ruta.ciudadDestino.nombre.toLowerCase().includes(textoBusqueda));
-                    });
                 }
-                
-                mostrarRutas(rutasFiltradas);
+            } catch (error) {
+                console.error('Error filtrando por aerolínea:', error);
             }
         }
+
+        // Filtrar por categoría
+        if (categoriaSeleccionada) {
+            try {
+                const response = await fetch('/VolandoUy-WebApp/api/rutas/por-categoria?categoria=' + encodeURIComponent(categoriaSeleccionada));
+                if (response.ok) {
+                    const rutasCategoria = await response.json();
+                    rutasFiltradas = rutasFiltradas.filter(function (ruta) {
+                        return rutasCategoria.some(function (rc) {
+                            return rc.nombre === ruta.nombre;
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Error filtrando por categoría:', error);
+            }
+        }
+
+        // Filtrar por texto de búsqueda
+        if (textoBusqueda) {
+            rutasFiltradas = rutasFiltradas.filter(function (ruta) {
+                return ruta.nombre.toLowerCase().includes(textoBusqueda) ||
+                    ruta.descripcion.toLowerCase().includes(textoBusqueda) ||
+                    (ruta.ciudadOrigen && ruta.ciudadOrigen.nombre.toLowerCase().includes(textoBusqueda)) ||
+                    (ruta.ciudadDestino && ruta.ciudadDestino.nombre.toLowerCase().includes(textoBusqueda));
+            });
+        }
+
+        mostrarRutas(rutasFiltradas);
     }
 
     // Función para detectar si es móvil
@@ -731,21 +662,25 @@ function initConsultaRutaVuelo() {
     }
 
     // Función para incrementar las visitas de una ruta
-    function incrementarVisitaRuta(nombreRuta) {
-        fetch(apiUrl('/api/rutas/incrementar-visita'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'nombreRuta=' + encodeURIComponent(nombreRuta)
-        })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                console.log('Visita registrada:', data.mensaje);
-            })
-            .catch(function (error) {
-                console.error('Error al registrar visita:', error);
+    async function incrementarVisitaRuta(nombreRuta) {
+        try {
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/incrementar-visita', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'nombreRuta=' + encodeURIComponent(nombreRuta)
             });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Visita registrada:', data.mensaje);
+            } else {
+                console.warn('No se pudo registrar la visita:', response.status);
+            }
+        } catch (error) {
+            console.error('Error al registrar visita:', error);
+        }
     }
 
     // Función para mostrar detalles de la ruta (solo video)
@@ -828,7 +763,7 @@ function initConsultaRutaVuelo() {
     }
 
     // Función para mostrar detalle completo de ruta en móvil
-    function mostrarDetalleRutaMobile(ruta) {
+    async function mostrarDetalleRutaMobile(ruta) {
         // Guardar ruta seleccionada para uso posterior
         rutaSeleccionada = ruta;
         
@@ -843,22 +778,15 @@ function initConsultaRutaVuelo() {
 
         // Cargar vuelos de la ruta
         let vuelos = [];
-        fetch(apiUrl('/api/rutas/' + encodeURIComponent(ruta.nombre) + '/vuelos'))
-            .then(function (r) { return r.json(); })
-            .then(function (vuelosData) {
-                vuelos = vuelosData;
-                // Guardar vuelos para uso posterior
-                vuelosRutaActual = vuelos;
-                construirModalDetalleRutaMobile(ruta, vuelos, modal);
-            })
-            .catch(function (error) {
-                console.error('Error al cargar vuelos:', error);
-                vuelosRutaActual = [];
-                construirModalDetalleRutaMobile(ruta, [], modal);
-            });
-    }
-    
-    function construirModalDetalleRutaMobile(ruta, vuelos, modal) {
+        try {
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(ruta.nombre) + '/vuelos');
+            vuelos = await response.json();
+            // Guardar vuelos para uso posterior
+            vuelosRutaActual = vuelos;
+        } catch (error) {
+            console.error('Error al cargar vuelos:', error);
+            vuelosRutaActual = [];
+        }
 
         // Construir HTML del modal
         const imagenHtml = ruta.imagen ?
@@ -936,16 +864,16 @@ function initConsultaRutaVuelo() {
     // Las funciones para móvil están ahora en el scope global (arriba del archivo)
 
     // Función para cargar vuelos de una ruta
-    function cargarVuelosRuta(nombreRuta) {
-        fetch(apiUrl('/api/rutas/' + encodeURIComponent(nombreRuta) + '/vuelos'))
-            .then(function (r) { return r.json(); })
-            .then(function (vuelos) {
-                mostrarVuelos(vuelos);
-            })
-            .catch(function (error) {
-                console.error('Error al cargar vuelos:', error);
-                mostrarErrorVuelos('Error al cargar los vuelos de esta ruta');
-            });
+    async function cargarVuelosRuta(nombreRuta) {
+        try {
+            const response = await fetch('/VolandoUy-WebApp/api/rutas/' + encodeURIComponent(nombreRuta) + '/vuelos');
+            const vuelos = await response.json();
+
+            mostrarVuelos(vuelos);
+        } catch (error) {
+            console.error('Error al cargar vuelos:', error);
+            mostrarErrorVuelos('Error al cargar los vuelos de esta ruta');
+        }
     }
 
     // Función para mostrar vuelos
@@ -1127,9 +1055,9 @@ function initConsultaRutaVuelo() {
         detalleReserva.style.display = 'none';
 
         // Obtener información del usuario logueado desde el servidor
-        fetch(apiUrl('/api/vuelos/reservas/' + encodeURIComponent(nombreVuelo)))
-            .then(function (r) { return r.json(); })
-            .then(function (reservas) {
+        fetch('/VolandoUy-WebApp/api/vuelos/reservas/' + encodeURIComponent(nombreVuelo))
+            .then(response => response.json())
+            .then(reservas => {
                 if (reservas.length === 0) {
                     listaReservas.innerHTML = '<p>No hay reservas disponibles para mostrar.</p>';
                     seccionReservas.style.display = 'block';
@@ -1140,7 +1068,7 @@ function initConsultaRutaVuelo() {
                 mostrarReservas(reservas, nombreVuelo);
                 seccionReservas.style.display = 'block';
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.error('Error al cargar reservas:', error);
                 listaReservas.innerHTML = '<p>Error al cargar reservas</p>';
                 seccionReservas.style.display = 'block';

@@ -3,12 +3,6 @@
   if (window.__reservaInit) return;
   window.__reservaInit = true;
 
-  // Helper para construir URLs con contextPath
-  function apiUrl(path) {
-    const contextPath = window.APP_CONTEXT_PATH || '';
-    return contextPath + (path.startsWith('/') ? path : '/' + path);
-  }
-
   // Referencias a elementos del DOM
   const selAirline = document.getElementById('selAirline');
   const selRoute = document.getElementById('selRoute');
@@ -58,14 +52,14 @@
   function loadAirlines() {
     showLoading(selAirline);
 
-    fetch(apiUrl('/api/reservas/aerolineas'))
-      .then(function (r) { return r.json(); })
-      .then(function (aerolineas) {
+    fetch('/VolandoUy-WebApp/api/reservas/aerolineas')
+      .then(response => response.json())
+      .then(aerolineas => {
         populateSelect(selAirline, aerolineas, 'nickname', 'nombre', 'Seleccione aerolínea');
         selAirline.disabled = false;
         hideLoading(selAirline);
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error al cargar aerolíneas:', error);
         showToast('Error al cargar aerolíneas', 'error');
         hideLoading(selAirline);
@@ -80,9 +74,9 @@
 
     showLoading(selRoute);
 
-    fetch(apiUrl(`/api/reservas/rutas/${encodeURIComponent(airlineNickname)}`))
-      .then(function (r) { return r.json(); })
-      .then(function (rutas) {
+    fetch(`/VolandoUy-WebApp/api/reservas/rutas/${encodeURIComponent(airlineNickname)}`)
+      .then(response => response.json())
+      .then(rutas => {
         populateSelect(selRoute, rutas, 'nombre', 'nombre', 'Seleccione ruta');
         selRoute.disabled = false;
         hideLoading(selRoute);
@@ -91,7 +85,7 @@
           showToast('Esta aerolínea no tiene rutas disponibles', 'warning');
         }
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error al cargar rutas:', error);
         showToast('Error al cargar rutas de la aerolínea', 'error');
         hideLoading(selRoute);
@@ -106,9 +100,9 @@
 
     showLoading(selFlight);
 
-    fetch(apiUrl(`/api/reservas/vuelos/${encodeURIComponent(routeName)}`))
-      .then(function (r) { return r.json(); })
-      .then(function (vuelos) {
+    fetch(`/VolandoUy-WebApp/api/reservas/vuelos/${encodeURIComponent(routeName)}`)
+      .then(response => response.json())
+      .then(vuelos => {
         populateSelect(selFlight, vuelos, 'nombre', 'nombre', 'Seleccione vuelo');
         selFlight.disabled = false;
         hideLoading(selFlight);
@@ -117,7 +111,7 @@
           showToast('Esta ruta no tiene vuelos disponibles', 'warning');
         }
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error al cargar vuelos:', error);
         showToast('Error al cargar vuelos de la ruta', 'error');
         hideLoading(selFlight);
@@ -132,16 +126,16 @@
 
     showLoading(flightDetails);
 
-    fetch(apiUrl(`/api/reservas/vuelo-detalle/${encodeURIComponent(flightName)}`))
-      .then(function (r) { return r.json(); })
-      .then(function (vuelo) {
+    fetch(`/VolandoUy-WebApp/api/reservas/vuelo-detalle/${encodeURIComponent(flightName)}`)
+      .then(response => response.json())
+      .then(vuelo => {
         selectedFlight = vuelo;
         displayFlightDetails(vuelo);
         checkExistingReservation(flightName);
         enableReservationFields();
         hideLoading(flightDetails);
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error al cargar detalles del vuelo:', error);
         showToast('Error al cargar detalles del vuelo', 'error');
         hideLoading(flightDetails);
@@ -150,9 +144,9 @@
 
   // ========== MANEJO DE RESERVAS EXISTENTES ==========
   function checkExistingReservation(flightName) {
-    fetch(apiUrl(`/api/reservas/verificar-reserva-existente/${encodeURIComponent(flightName)}`))
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
+    fetch(`/VolandoUy-WebApp/api/reservas/verificar-reserva-existente/${encodeURIComponent(flightName)}`)
+      .then(response => response.json())
+      .then(data => {
         if (data.existeReserva) {
           existingReservation = true;
           showExistingReservationAlert();
@@ -163,7 +157,7 @@
           enableReservationForm();
         }
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error al verificar reserva existente:', error);
         existingReservation = false;
         hideExistingReservationAlert();
@@ -448,17 +442,15 @@
 
     showPassengerValidation(input, 'Verificando...', 'loading');
 
-    fetch(apiUrl('/api/reservas/usuarios'))
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
+    fetch('/VolandoUy-WebApp/api/reservas/usuarios')
+      .then(response => response.json())
+      .then(data => {
         if (!Array.isArray(data)) {
           showPassengerValidation(input, 'Error en la respuesta del servidor', 'error');
           return;
         }
 
-        const cliente = data.find(function (c) {
-          return c.nickname && c.nickname.toLowerCase() === nickname.toLowerCase();
-        });
+        const cliente = data.find(c => c.nickname && c.nickname.toLowerCase() === nickname.toLowerCase());
 
         if (cliente) {
           showPassengerValidation(input, `✓ ${cliente.nombre} ${cliente.apellido}`, 'success');
@@ -466,7 +458,7 @@
           showPassengerValidation(input, 'Nickname no registrado en el sistema', 'error');
         }
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error al validar nickname:', error);
         showPassengerValidation(input, 'Error al verificar nickname', 'error');
       });
@@ -607,7 +599,7 @@
     const originalHtml = btnReserve.innerHTML;
     btnReserve.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando reserva...';
 
-    fetch(apiUrl('/api/reservas'), {
+    fetch('/VolandoUy-WebApp/api/reservas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -615,48 +607,47 @@
       credentials: 'same-origin',
       body: JSON.stringify(reservationData)
     })
-      .then(function (response) {
-        return response.text().then(function (text) {
-          let data = null;
-          const contentType = response.headers.get('content-type') || '';
+      .then(async (response) => {
+        const text = await response.text();
+        let data = null;
+        const contentType = response.headers.get('content-type') || '';
 
-          if (contentType.includes('application/json') || (/^\s*\{/.test(text))) {
-            try {
-              data = JSON.parse(text);
-            } catch (err) {
-              console.error('Respuesta no JSON válida:', text);
-            }
+        if (contentType.includes('application/json') || (/^\s*\{/.test(text))) {
+          try {
+            data = JSON.parse(text);
+          } catch (err) {
+            console.error('Respuesta no JSON válida:', text);
           }
+        }
 
-          if (response.status === 201 || response.status === 200) {
-            showSuccessAlert();
-            return;
-          }
+        if (response.status === 201 || response.status === 200) {
+          showSuccessAlert();
+          return;
+        }
 
-          if (response.status === 409) {
-            if (data) {
-              handleReservationConflict(data);
-            } else {
-              showToast('Conflicto: ya existe una reserva para este vuelo', 'warning');
-            }
-            return;
-          }
-
-          if (data && data.error) {
-            showToast(`Error: ${data.error}`, 'error');
-          } else if (text) {
-            console.error('Error en la respuesta del servidor:', response.status, text);
-            showToast('Error del servidor. Revisa la consola para más detalles.', 'error');
+        if (response.status === 409) {
+          if (data) {
+            handleReservationConflict(data);
           } else {
-            showToast('Error desconocido al crear la reserva', 'error');
+            showToast('Conflicto: ya existe una reserva para este vuelo', 'warning');
           }
-        });
+          return;
+        }
+
+        if (data && data.error) {
+          showToast(`Error: ${data.error}`, 'error');
+        } else if (text) {
+          console.error('Error en la respuesta del servidor:', response.status, text);
+          showToast('Error del servidor. Revisa la consola para más detalles.', 'error');
+        } else {
+          showToast('Error desconocido al crear la reserva', 'error');
+        }
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error en fetch crear reserva:', error);
         showToast('Error de red al crear la reserva. Intenta de nuevo.', 'error');
       })
-      .then(function () {
+      .finally(() => {
         btnReserve.disabled = false;
         btnReserve.innerHTML = originalHtml;
       });
@@ -756,9 +747,9 @@
 
     showLoading(selPackage);
 
-    fetch(apiUrl(`/api/reservas/paquetes-cliente/${encodeURIComponent(rutaNombre)}`))
-      .then(function (r) { return r.json(); })
-      .then(function (paquetes) {
+    fetch(`/VolandoUy-WebApp/api/reservas/paquetes-cliente/${encodeURIComponent(rutaNombre)}`)
+      .then(response => response.json())
+      .then(paquetes => {
         if (paquetes.length === 0) {
           selPackage.innerHTML = '<option value="">No hay paquetes disponibles para esta ruta</option>';
           showToast('No tienes paquetes que incluyan esta ruta', 'warning');
@@ -768,7 +759,7 @@
         }
         hideLoading(selPackage);
       })
-      .catch(function (error) {
+      .catch(error => {
         console.error('Error al cargar paquetes:', error);
         selPackage.innerHTML = '<option value="">Error al cargar paquetes</option>';
         hideLoading(selPackage);

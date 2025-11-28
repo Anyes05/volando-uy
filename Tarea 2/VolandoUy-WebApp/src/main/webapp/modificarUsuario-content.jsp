@@ -317,27 +317,36 @@ document.addEventListener("DOMContentLoaded", () => {
       loadingMessage.style.display = "block";
     }
     
-    console.log("Haciendo fetch a /api/usuarios/perfil");
-    fetch("<%= request.getContextPath() %>/api/usuarios/perfil")
-      .then(function (r) { return r.json(); })
-      .then(function (usuario) {
+    try {
+      console.log("Haciendo fetch a /api/usuarios/perfil");
+      const response = await fetch("<%= request.getContextPath() %>/api/usuarios/perfil");
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+      
+      if (response.ok) {
+        const usuario = await response.json();
         console.log("Usuario obtenido:", usuario);
         mostrarFormularioUsuario(usuario);
-        
-        const loadingMessage = document.getElementById("loading-message");
-        if (loadingMessage) {
-          loadingMessage.style.display = "none";
-        }
-      })
-      .catch(function (error) {
-        console.error("Error en cargarDatosUsuario:", error);
-        mostrarError("Error de conexión: " + error.message);
-        
-        const loadingMessage = document.getElementById("loading-message");
-        if (loadingMessage) {
-          loadingMessage.style.display = "none";
-        }
-      });
+      } else if (response.status === 401) {
+        // Sesión expirada
+        console.error("Sesión expirada (401)");
+        showToast("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", "warning");
+        window.location.href = "<%= request.getContextPath() %>/inicioSesion.jsp";
+      } else {
+        console.error("Error HTTP:", response.status);
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        mostrarError("Error al cargar los datos del perfil: " + response.status + " - " + errorText);
+      }
+    } catch (error) {
+      console.error("Error en cargarDatosUsuario:", error);
+      mostrarError("Error de conexión: " + error.message);
+    } finally {
+      const loadingMessage = document.getElementById("loading-message");
+      if (loadingMessage) {
+        loadingMessage.style.display = "none";
+      }
+    }
   }
 
   function mostrarFormularioUsuario(usuario) {
@@ -442,46 +451,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function guardarCambiosAerolinea(e) {
+  async function guardarCambiosAerolinea(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     
-    fetch("<%= request.getContextPath() %>/api/usuarios/perfil", {
-      method: "PUT",
-      body: formData
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (result) {
+    try {
+      const response = await fetch("<%= request.getContextPath() %>/api/usuarios/perfil", {
+        method: "PUT",
+        body: formData
+      });
+
+      const result = await response.json();
+      if (response.ok) {
         mostrarMensaje("mensaje-modificar-aerolinea", result.mensaje || "Perfil modificado exitosamente", "success");
         // Recargar datos para mostrar los cambios, pero mantener la imagen si se subió una
-        setTimeout(function () {
+        setTimeout(() => {
           cargarDatosUsuario();
         }, 1500);
-      })
-      .catch(function (error) {
-        mostrarMensaje("mensaje-modificar-aerolinea", "Error de conexión: " + error.message, "error");
-      });
+      } else {
+        mostrarMensaje("mensaje-modificar-aerolinea", result.error || "Error al modificar perfil", "error");
+      }
+    } catch (error) {
+      mostrarMensaje("mensaje-modificar-aerolinea", "Error de conexión: " + error.message, "error");
+    }
   }
 
-  function guardarCambiosCliente(e) {
+  async function guardarCambiosCliente(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     
-    fetch("<%= request.getContextPath() %>/api/usuarios/perfil", {
-      method: "PUT",
-      body: formData
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (result) {
+    try {
+      const response = await fetch("<%= request.getContextPath() %>/api/usuarios/perfil", {
+        method: "PUT",
+        body: formData
+      });
+
+      const result = await response.json();
+      if (response.ok) {
         mostrarMensaje("mensaje-modificar-cliente", result.mensaje || "Perfil modificado exitosamente", "success");
         // Recargar datos para mostrar los cambios, pero mantener la imagen si se subió una
-        setTimeout(function () {
+        setTimeout(() => {
           cargarDatosUsuario();
         }, 1500);
-      })
-      .catch(function (error) {
-        mostrarMensaje("mensaje-modificar-cliente", "Error de conexión: " + error.message, "error");
-      });
+      } else {
+        mostrarMensaje("mensaje-modificar-cliente", result.error || "Error al modificar perfil", "error");
+      }
+    } catch (error) {
+      mostrarMensaje("mensaje-modificar-cliente", "Error de conexión: " + error.message, "error");
+    }
   }
 
   function cancelarModificacion() {

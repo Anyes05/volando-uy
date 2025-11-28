@@ -214,15 +214,15 @@
       fetch(contextPath + '/api/usuarios/check-nickname?nickname=' + encodeURIComponent(nickname), {
         signal: nicknameAbortController.signal
       })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+        .then(response => response.json())
+        .then(data => {
           if (data.disponible) {
             mostrarValidacion(nicknameInput, 'Nickname disponible', 'success');
           } else {
             mostrarValidacion(nicknameInput, 'Este nickname ya esta en uso', 'error');
           }
         })
-        .catch(function (error) {
+        .catch(error => {
           if (error.name !== 'AbortError') {
             console.error('Error al verificar nickname:', error);
             mostrarValidacion(nicknameInput, 'Error al verificar disponibilidad', 'error');
@@ -250,15 +250,15 @@
       fetch(contextPath + '/api/usuarios/check-email?email=' + encodeURIComponent(email), {
         signal: emailAbortController.signal
       })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+        .then(response => response.json())
+        .then(data => {
           if (data.disponible) {
             mostrarValidacion(correoInput, 'Email disponible', 'success');
           } else {
             mostrarValidacion(correoInput, 'Este email ya esta registrado', 'error');
           }
         })
-        .catch(function (error) {
+        .catch(error => {
           if (error.name !== 'AbortError') {
             console.error('Error al verificar email:', error);
             mostrarValidacion(correoInput, 'Error al verificar disponibilidad', 'error');
@@ -359,34 +359,39 @@
         formData.append("foto", fotoInput.files[0]);
       }
 
-      // NO establecer header Content-Type manualmente para FormData
-      fetch(contextPath + "/api/usuarios", {
-        method: "POST",
-        body: formData
-      })
-        .then(function (r) { return r.json(); })
-        .then(function (result) {
-          if (tipo == "Cliente" && (tipoDocumento != "DNI" || tipoDocumento != "Cedula" || tipoDocumento != "Pasaporte")) {
-            showToast(result.mensaje || "Operacion no valida, seleccione un tipo de documento.", "error");
+      try {
+        // NO establecer header Content-Type manualmente para FormData
+        const response = await fetch(contextPath + "/api/usuarios", {
+          method: "POST",
+          body: formData
+        });
+
+        let result = {};
+        try { result = await response.json(); } catch (err) { /* no-json */ }
+        if (tipo == "Cliente" && (tipoDocumento != "DNI" || tipoDocumento != "Cedula" || tipoDocumento != "Pasaporte")) {
+          showToast(result.mensaje || "Operacion no valida, seleccione un tipo de documento.", "error");
             return;
-          }
-          
+        }
+        if (response.ok) {
           showToast(result.mensaje || "Operacion completada.", "success");
 
           // Iniciar sesión automáticamente después del registro exitoso
-          fetch(contextPath + "/login", {
-            method: "POST",
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              email: form.correo.value,
-              password: form.contrasena.value
-            })
-          })
-            .then(function (r) { return r.json(); })
-            .then(function (loginResult) {
+          try {
+            const loginResponse = await fetch(contextPath + "/login", {
+              method: "POST",
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: new URLSearchParams({
+                email: form.correo.value,
+                password: form.contrasena.value
+              })
+            });
+
+            const loginResult = await loginResponse.json().catch(() => ({}));
+
+            if (loginResponse.ok) {
               // Guardar datos útiles en sessionStorage
               if (loginResult.nickname) sessionStorage.setItem('usuarioLogueado', loginResult.nickname);
               if (loginResult.nombre) sessionStorage.setItem('nombreUsuario', loginResult.nombre);
@@ -396,17 +401,22 @@
 
               // Redirigir al inicio con sesión iniciada
               window.location.href = contextPath + "/inicio.jsp";
-            })
-            .catch(function (loginError) {
-              console.error('Error en login automático:', loginError);
+            } else {
+              // Si falla el login automático, redirigir a la página de login
               showToast("Registro exitoso. Por favor, inicia sesión manualmente.", "success");
               window.location.href = contextPath + "/inicioSesion.jsp";
-            });
-        })
-        .catch(function (error) {
-          console.error("Error al registrar usuario:", error);
-          showToast("Error al registrar usuario. Por favor, intente nuevamente.", "error");
-        });
+            }
+          } catch (loginError) {
+            console.error('Error en login automático:', loginError);
+            showToast("Registro exitoso. Por favor, inicia sesión manualmente.", "success");
+            window.location.href = contextPath + "/inicioSesion.jsp";
+          }
+        } else {
+          showToast(result.error || ("Error: " + response.status), "error");
+        }
+      } catch (error) {
+        showToast("Error al registrar: " + error.message, "error");
+      }
     });
   });
 </script>

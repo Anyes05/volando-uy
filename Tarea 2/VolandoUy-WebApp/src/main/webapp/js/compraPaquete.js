@@ -1,12 +1,6 @@
 // Script para manejar la compra de paquetes
 // Implementa el caso de uso "Compra de Paquete de Rutas de Vuelo"
 
-// Helper para construir URLs con contextPath
-function apiUrl(path) {
-  const contextPath = window.APP_CONTEXT_PATH || '';
-  return contextPath + (path.startsWith('/') ? path : '/' + path);
-}
-
 let paquetesDisponibles = [];
 let paqueteSeleccionado = null;
 let clienteActual = null;
@@ -27,16 +21,24 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Cargar información del cliente logueado
-function cargarInformacionCliente() {
-    fetch(apiUrl('/api/usuarios/perfil'))
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+async function cargarInformacionCliente() {
+    try {
+        const response = await fetch('/VolandoUy-WebApp/api/usuarios/perfil');
+        if (response.ok) {
+            const data = await response.json();
             clienteActual = data;
             actualizarInformacionCliente(data);
-        })
-        .catch(function (error) {
-            console.error('Error al cargar información del cliente:', error);
-        });
+        } else if (response.status === 401) {
+            // Usuario no autenticado, redirigir al login
+            console.log('Usuario no autenticado, redirigiendo al login...');
+            // Usar la ruta correcta que incluye el layout
+            window.location.href = '/VolandoUy-WebApp/inicioSesion.jsp';
+        } else {
+            console.error('Error al cargar información del cliente:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error al cargar información del cliente:', error);
+    }
 }
 
 // Actualizar la información del cliente en la interfaz
@@ -51,44 +53,55 @@ function actualizarInformacionCliente(cliente) {
 }
 
 // Cargar paquetes disponibles desde el servidor
-function cargarPaquetesDisponibles() {
-    console.log('Iniciando carga de paquetes disponibles...');
-    fetch(apiUrl('/api/paquetes'))
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+async function cargarPaquetesDisponibles() {
+    try {
+        console.log('Iniciando carga de paquetes disponibles...');
+        const response = await fetch('/VolandoUy-WebApp/api/paquetes');
+        console.log('Respuesta recibida:', response.status, response.statusText);
+        
+        if (response.ok) {
+            const data = await response.json();
             console.log('Datos recibidos:', data);
             paquetesDisponibles = data.paquetes || [];
             
             // Verificar cuáles paquetes ya fueron comprados
-            verificarPaquetesComprados();
+            await verificarPaquetesComprados();
             
             console.log('Paquetes disponibles:', paquetesDisponibles);
             mostrarPaquetesDisponibles();
-        })
-        .catch(function (error) {
-            console.error('Error al cargar paquetes:', error);
+        } else {
+            console.error('Error al cargar paquetes:', response.statusText);
             mostrarMensajeSinPaquetes();
-        });
+        }
+    } catch (error) {
+        console.error('Error al cargar paquetes:', error);
+        mostrarMensajeSinPaquetes();
+    }
 }
 
 // Verificar qué paquetes ya fueron comprados por el cliente
-function verificarPaquetesComprados() {
+async function verificarPaquetesComprados() {
     if (!clienteActual || paquetesDisponibles.length === 0) {
         return;
     }
     
-    // Verificar cada paquete individualmente
-    paquetesDisponibles.forEach(function (paquete) {
-        fetch(apiUrl(`/api/compra-paquetes?paquete=${encodeURIComponent(paquete.nombre)}`))
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                paquete.yaComprado = data.yaCompro || false;
-            })
-            .catch(function (error) {
+    try {
+        // Verificar cada paquete individualmente
+        for (let paquete of paquetesDisponibles) {
+            try {
+                const response = await fetch(`/VolandoUy-WebApp/api/compra-paquetes?paquete=${encodeURIComponent(paquete.nombre)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    paquete.yaComprado = data.yaCompro || false;
+                }
+            } catch (error) {
                 console.warn(`Error verificando compra del paquete ${paquete.nombre}:`, error);
                 paquete.yaComprado = false;
-            });
-    });
+            }
+        }
+    } catch (error) {
+        console.error('Error verificando paquetes comprados:', error);
+    }
 }
 
 // Mostrar paquetes disponibles en la interfaz
@@ -204,10 +217,9 @@ function crearCardPaquete(paquete) {
            <span class="costo">$${Math.round(precioConDescuento)}</span>`
         : `<span class="costo">$${Math.round(precioConDescuento)}</span>`;
     
-    const logoUrl = apiUrl('/img/logoAvionSolo.png');
     card.innerHTML = `
         <div class="paquete-imagen">
-            <img src="${imagenSrc}" alt="${paquete.nombre}" onerror="this.src='${logoUrl}'" loading="lazy">
+            <img src="${imagenSrc}" alt="${paquete.nombre}" onerror="this.src='/VolandoUy-WebApp/img/logoAvionSolo.png'" loading="lazy">
             ${yaComprado ? '<div class="comprado-badge"><i class="fas fa-check-circle"></i> Comprado</div>' : ''}
         </div>
         <div class="paquete-info">
@@ -250,28 +262,32 @@ function mostrarMensajeSinPaquetes() {
 }
 
 // Seleccionar paquete para compra
-function seleccionarPaqueteParaCompra(paquete) {
+async function seleccionarPaqueteParaCompra(paquete) {
     console.log('Seleccionando paquete para compra:', paquete.nombre);
     
-    // Verificar si el cliente ya compró este paquete
-    fetch(apiUrl(`/api/compra-paquetes?paquete=${encodeURIComponent(paquete.nombre)}`))
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+    try {
+        // Verificar si el cliente ya compró este paquete
+        const response = await fetch(`/VolandoUy-WebApp/api/compra-paquetes?paquete=${encodeURIComponent(paquete.nombre)}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            
             if (data.yaCompro) {
                 mostrarMensajeYaComprado();
                 return;
             }
-            
-            // Si no lo compró, proceder con la selección
-            paqueteSeleccionado = paquete;
-            mostrarDetalleCompra(paquete);
-        })
-        .catch(function (error) {
-            console.error('Error al verificar compra previa:', error);
-            // Continuar con la selección en caso de error
-            paqueteSeleccionado = paquete;
-            mostrarDetalleCompra(paquete);
-        });
+        }
+        
+        // Si no lo compró, proceder con la selección
+        paqueteSeleccionado = paquete;
+        mostrarDetalleCompra(paquete);
+        
+    } catch (error) {
+        console.error('Error al verificar compra previa:', error);
+        // Continuar con la selección en caso de error
+        paqueteSeleccionado = paquete;
+        mostrarDetalleCompra(paquete);
+    }
 }
 
 // Mostrar mensaje de que ya compró el paquete
@@ -332,7 +348,7 @@ function actualizarDetallePaquete(paquete) {
                 elemento.src = valor;
                 elemento.alt = paquete.nombre;
                 elemento.onerror = function() {
-                    this.src = apiUrl('/img/logoAvionSolo.png');
+                    this.src = '/VolandoUy-WebApp/img/logoAvionSolo.png';
                 };
             } else {
                 elemento.textContent = valor;
@@ -383,15 +399,18 @@ function actualizarDetallePaquete(paquete) {
 }
 
 // Cargar rutas del paquete
-function cargarRutasPaquete(nombrePaquete) {
-    fetch(apiUrl(`/api/paquetes/${encodeURIComponent(nombrePaquete)}`))
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+async function cargarRutasPaquete(nombrePaquete) {
+    try {
+        const response = await fetch(`/VolandoUy-WebApp/api/paquetes/${encodeURIComponent(nombrePaquete)}`);
+        if (response.ok) {
+            const data = await response.json();
             mostrarRutasPaquete(data.rutas || []);
-        })
-        .catch(function (error) {
-            console.error('Error al cargar rutas del paquete:', error);
-        });
+        } else {
+            console.error('Error al cargar rutas del paquete:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error al cargar rutas del paquete:', error);
+    }
 }
 
 // Mostrar rutas del paquete
@@ -427,7 +446,7 @@ function mostrarRutasPaquete(rutas) {
 }
 
 // Confirmar compra
-function confirmarCompra() {
+async function confirmarCompra() {
     if (!paqueteSeleccionado) {
         showToast('No hay paquete seleccionado', 'warning');
         return;
@@ -444,39 +463,42 @@ function confirmarCompra() {
         btnComprar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
     }
     
-    const requestData = {
-        nombrePaquete: paqueteSeleccionado.nombre,
-        costo: paqueteSeleccionado.costoTotal
-    };
-    
-    fetch(apiUrl('/api/compra-paquetes'), {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-    })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            if (data.compra) {
-                mostrarModalConfirmacion(data.compra);
-            } else if (data.error) {
-                mostrarMensajeYaComprado();
-                showToast('Ya has comprado este paquete anteriormente. Puedes seleccionar otro paquete.', 'warning');
-            } else {
-                showToast('Error al realizar la compra: ' + (data.error || 'Error desconocido'), 'error');
-            }
-        })
-        .catch(function (error) {
-            console.error('Error al confirmar compra:', error);
-            showToast('Error al realizar la compra. Por favor, intenta nuevamente.', 'error');
-        })
-        .then(function () {
-            if (btnComprar) {
-                btnComprar.disabled = false;
-                btnComprar.innerHTML = '<i class="fas fa-shopping-cart"></i> Confirmar Compra';
-            }
+    try {
+        const requestData = {
+            nombrePaquete: paqueteSeleccionado.nombre,
+            costo: paqueteSeleccionado.costoTotal
+        };
+        
+        const response = await fetch('/VolandoUy-WebApp/api/compra-paquetes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
         });
+        
+        if (response.ok) {
+            const data = await response.json();
+            mostrarModalConfirmacion(data.compra);
+        } else if (response.status === 409) {
+            // Ya compró el paquete
+            const data = await response.json();
+            mostrarMensajeYaComprado();
+            showToast('Ya has comprado este paquete anteriormente. Puedes seleccionar otro paquete.', 'warning');
+        } else {
+            const errorData = await response.json();
+            showToast('Error al realizar la compra: ' + (errorData.error || 'Error desconocido'), 'error');
+        }
+        
+    } catch (error) {
+        console.error('Error al confirmar compra:', error);
+        showToast('Error al realizar la compra. Por favor, intenta nuevamente.', 'error');
+    } finally {
+        if (btnComprar) {
+            btnComprar.disabled = false;
+            btnComprar.innerHTML = '<i class="fas fa-shopping-cart"></i> Confirmar Compra';
+        }
+    }
 }
 
 // Mostrar modal de confirmación
@@ -537,15 +559,18 @@ function volverAListaCompra() {
 }
 
 // Ver detalle del paquete (función auxiliar)
-function verDetallePaquete(nombrePaquete) {
-    fetch(apiUrl(`/api/paquetes/${encodeURIComponent(nombrePaquete)}`))
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+async function verDetallePaquete(nombrePaquete) {
+    try {
+        const response = await fetch(`/VolandoUy-WebApp/api/paquetes/${encodeURIComponent(nombrePaquete)}`);
+        if (response.ok) {
+            const data = await response.json();
             mostrarDetalleCompra(data.paquete);
-        })
-        .catch(function (error) {
-            console.error('Error al cargar detalle del paquete:', error);
-        });
+        } else {
+            console.error('Error al cargar detalle del paquete:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error al cargar detalle del paquete:', error);
+    }
 }
 
 // Cerrar modal al hacer clic fuera de él

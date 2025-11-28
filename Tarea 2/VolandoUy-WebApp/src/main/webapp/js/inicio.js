@@ -1,10 +1,4 @@
 // JavaScript simplificado para la página de inicio - Buscador funcional
-// Helper para construir URLs con contextPath
-function apiUrl(path) {
-  const contextPath = window.APP_CONTEXT_PATH || '';
-  return contextPath + (path.startsWith('/') ? path : '/' + path);
-}
-
 let ciudadesData = [];
 
 // Función de inicialización
@@ -51,39 +45,36 @@ function configurarFechaPorDefecto(fechaInput) {
 }
 
 // Cargar ciudades disponibles desde el servidor
-function cargarCiudades() {
-    // Usar la API existente para obtener ciudades de las rutas
-    fetch(apiUrl('/api/rutas/aerolineas'))
-        .then(function (r) { return r.json(); })
-        .then(function (aerolineas) {
+async function cargarCiudades() {
+    try {
+        // Usar la API existente para obtener ciudades de las rutas
+        const response = await fetch('/VolandoUy-WebApp/api/rutas/aerolineas');
+        if (response.ok) {
+            const aerolineas = await response.json();
             let todasLasCiudades = new Set();
             
             // Obtener ciudades de cada aerolínea
-            let promesas = [];
-            aerolineas.forEach(function (aerolinea) {
-                promesas.push(
-                    fetch(apiUrl(`/api/rutas?aerolinea=${encodeURIComponent(aerolinea.nickname)}`))
-                        .then(function (r) { return r.json(); })
-                        .then(function (rutas) {
-                            rutas.forEach(function (ruta) {
-                                if (ruta.ciudadOrigen) todasLasCiudades.add(ruta.ciudadOrigen);
-                                if (ruta.ciudadDestino) todasLasCiudades.add(ruta.ciudadDestino);
-                            });
-                        })
-                        .catch(function (error) {
-                            console.error('Error al cargar rutas de aerolínea:', aerolinea.nickname, error);
-                        })
-                );
-            });
+            for (const aerolinea of aerolineas) {
+                try {
+                    const rutasResponse = await fetch(`/VolandoUy-WebApp/api/rutas?aerolinea=${encodeURIComponent(aerolinea.nickname)}`);
+                    if (rutasResponse.ok) {
+                        const rutas = await rutasResponse.json();
+                        rutas.forEach(ruta => {
+                            if (ruta.ciudadOrigen) todasLasCiudades.add(ruta.ciudadOrigen);
+                            if (ruta.ciudadDestino) todasLasCiudades.add(ruta.ciudadDestino);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error al cargar rutas de aerolínea:', aerolinea.nickname, error);
+                }
+            }
             
-            Promise.all(promesas).then(function () {
-                ciudadesData = Array.from(todasLasCiudades).sort();
-                console.log('Ciudades cargadas:', ciudadesData.length);
-            });
-        })
-        .catch(function (error) {
-            console.error('Error al cargar ciudades:', error);
-        });
+            ciudadesData = Array.from(todasLasCiudades).sort();
+            console.log('Ciudades cargadas:', ciudadesData.length);
+        }
+    } catch (error) {
+        console.error('Error al cargar ciudades:', error);
+    }
 }
 
 // Configurar autocompletado para origen y destino
@@ -212,7 +203,7 @@ function buscarVuelos(origen, destino, fechaVuelo) {
         sessionStorage.setItem('busquedaFecha', fechaVuelo);
         
         // Redirigir a la página de consulta de vuelos
-        window.location.href = apiUrl('/consultaVuelo.jsp');
+        window.location.href = 'consultaVuelo.jsp';
         
     } catch (error) {
         console.error('Error en la búsqueda:', error);
