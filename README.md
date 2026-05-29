@@ -97,19 +97,6 @@ La arquitectura evolucionó progresivamente a lo largo de tres grandes iteracion
 
 ---
 
-# Mi Participación
-
-Participé en el desarrollo del sistema junto a un equipo de 5 estudiantes, colaborando en distintas áreas del proyecto como:
-
-* Desarrollo backend
-* Desarrollo frontend
-* Implementación de interfaces
-* Integración entre componentes
-* Testing y depuración
-* Trabajo colaborativo mediante Git
-
----
-
 # Contexto Académico
 
 Proyecto desarrollado para la carrera Tecnólogo en Informática - UTEC.
